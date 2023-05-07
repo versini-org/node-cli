@@ -1,11 +1,11 @@
-import { Logger } from "../Logger";
+import { Logger } from "../logger";
 
 let mock = {
-		info: null,
-		debug: null,
-		warn: null,
-		error: null,
-		log: null,
+		info: jest.fn(),
+		debug: jest.fn(),
+		warn: jest.fn(),
+		error: jest.fn(),
+		log: jest.fn(),
 	},
 	spyDate: any,
 	spyLocaleTime: any,
