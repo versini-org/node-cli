@@ -40,13 +40,13 @@ export class Logger {
 	}
 
 	_log(
-		type: { method: string | number; color: (arg0: any) => any },
-		...args: string[]
+		type: { method: string | number; color: (argument0: any) => any },
+		...arguments_: string[]
 	) {
 		if (this.shouldLog) {
-			let msg: string;
+			let message: string;
 			if (!this.showTimestamp && !this.globalPrefix) {
-				msg = util.formatWithOptions(this.printOptions, ...args);
+				message = util.formatWithOptions(this.printOptions, ...arguments_);
 			} else {
 				const prefix = this.globalPrefix ? [this.globalPrefix] : [];
 				if (this.showTimestamp) {
@@ -60,35 +60,35 @@ export class Logger {
 					);
 				}
 
-				msg = util.formatWithOptions(
+				message = util.formatWithOptions(
 					this.printOptions,
 					prefix.join(" "),
-					...args
+					...arguments_
 				);
 			}
 			console[type.method](
-				this.printOptions.colors ? `${type.color(msg)}` : msg
+				this.printOptions.colors ? `${type.color(message)}` : message
 			);
 		}
 	}
 
-	info(...args: any) {
-		this._log({ method: "info", color: kleur.blue }, ...args);
+	info(...arguments_: any) {
+		this._log({ method: "info", color: kleur.blue }, ...arguments_);
 	}
 
-	log(...args: any) {
-		this._log({ method: "log", color: kleur.white }, ...args);
+	log(...arguments_: any) {
+		this._log({ method: "log", color: kleur.white }, ...arguments_);
 	}
 
-	debug(...args: any) {
-		this._log({ method: "debug", color: kleur.grey }, ...args);
+	debug(...arguments_: any) {
+		this._log({ method: "debug", color: kleur.grey }, ...arguments_);
 	}
 
-	warn(...args: any) {
-		this._log({ method: "warn", color: kleur.yellow }, ...args);
+	warn(...arguments_: any) {
+		this._log({ method: "warn", color: kleur.yellow }, ...arguments_);
 	}
 
-	error(...args: any) {
-		this._log({ method: "error", color: kleur.red }, ...args);
+	error(...arguments_: any) {
+		this._log({ method: "error", color: kleur.red }, ...arguments_);
 	}
 }
