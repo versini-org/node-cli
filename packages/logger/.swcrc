@@ -1,9 +1,14 @@
 {
+	"$schema": "http://json.schemastore.org/swcrc",
 	"exclude": ["test"],
 	"jsc": {
+		"target": "esnext",
 		"parser": {
 			"syntax": "typescript"
 		},
-		"externalHelpers": true
+		"externalHelpers": false
+	},
+	"module": {
+		"type": "es6"
 	}
 }
