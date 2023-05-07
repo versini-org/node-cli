@@ -1,0 +1,25 @@
+{
+	"name": "@node-cli/logger",
+	"version": "0.0.1",
+	"license": "MIT",
+	"author": "Arno Versini",
+	"description": "A tiny console logger for nodejs CLI apps",
+	"type": "module",
+	"types": "./dist/Logger.d.ts",
+	"exports": "./dist/Logger.js",
+	"files": [
+		"dist"
+	],
+	"dependencies": {
+		"kleur": "4.1.5"
+	},
+	"scripts": {
+		"build": "npm-run-all --serial clean build:types build:js build:copy",
+		"build:copy": "copyfiles -f types/* dist/",
+		"build:js": "swc --out-dir dist src",
+		"build:types": "tsc",
+		"clean": "rimraf dist types coverage",
+		"test": "jest",
+		"test:coverage": "npm run test -- --coverage"
+	}
+}

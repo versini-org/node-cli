@@ -1,0 +1,11 @@
+{
+	"name": "@node-cli/examples-logger",
+	"version": "0.0.1",
+	"license": "MIT",
+	"author": "Arno Versini",
+	"description": "Examples",
+	"dependencies": {
+		"@node-cli/logger": "*"
+	},
+	"type": "module"
+}
