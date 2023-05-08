@@ -39,7 +39,7 @@ export class Logger {
 		this.showTimestamp = flag;
 	}
 
-	_log(
+	#_log(
 		type: { method: string | number; color: (argument0: any) => any },
 		...arguments_: string[]
 	) {
@@ -73,22 +73,22 @@ export class Logger {
 	}
 
 	info(...arguments_: any) {
-		this._log({ method: "info", color: kleur.blue }, ...arguments_);
+		this.#_log({ method: "info", color: kleur.blue }, ...arguments_);
 	}
 
 	log(...arguments_: any) {
-		this._log({ method: "log", color: kleur.white }, ...arguments_);
+		this.#_log({ method: "log", color: kleur.white }, ...arguments_);
 	}
 
 	debug(...arguments_: any) {
-		this._log({ method: "debug", color: kleur.grey }, ...arguments_);
+		this.#_log({ method: "debug", color: kleur.grey }, ...arguments_);
 	}
 
 	warn(...arguments_: any) {
-		this._log({ method: "warn", color: kleur.yellow }, ...arguments_);
+		this.#_log({ method: "warn", color: kleur.yellow }, ...arguments_);
 	}
 
 	error(...arguments_: any) {
-		this._log({ method: "error", color: kleur.red }, ...arguments_);
+		this.#_log({ method: "error", color: kleur.red }, ...arguments_);
 	}
 }
