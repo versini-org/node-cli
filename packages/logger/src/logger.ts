@@ -2,10 +2,10 @@ import kleur from "kleur";
 import util from "node:util";
 
 export class Logger {
-	shouldLog: boolean;
-	globalPrefix: string;
-	showTimestamp: boolean;
-	printOptions: { colors: boolean; compact: boolean; depth: number };
+	#shouldLog: boolean;
+	#globalPrefix: string;
+	#showTimestamp: boolean;
+	#printOptions: { colors: boolean; compact: boolean; depth: number };
 
 	constructor({
 		boring = false,
@@ -13,10 +13,10 @@ export class Logger {
 		prefix = "",
 		timestamp = false,
 	} = {}) {
-		this.shouldLog = !silent;
-		this.globalPrefix = prefix;
-		this.showTimestamp = timestamp;
-		this.printOptions = {
+		this.#shouldLog = !silent;
+		this.#globalPrefix = prefix;
+		this.#showTimestamp = timestamp;
+		this.#printOptions = {
 			colors: !boring,
 			compact: false,
 			depth: 5,
@@ -24,35 +24,35 @@ export class Logger {
 	}
 
 	set silent(flag: boolean) {
-		this.shouldLog = !flag;
+		this.#shouldLog = !flag;
 	}
 
 	set boring(flag: boolean) {
-		this.printOptions.colors = !flag;
+		this.#printOptions.colors = !flag;
 	}
 
 	set prefix(prefix: string) {
-		this.globalPrefix = prefix;
+		this.#globalPrefix = prefix;
 	}
 
 	set timestamp(flag: boolean) {
-		this.showTimestamp = flag;
+		this.#showTimestamp = flag;
 	}
 
 	#_log(
 		type: { method: string | number; color: (argument0: any) => any },
 		...arguments_: string[]
 	) {
-		if (this.shouldLog) {
+		if (this.#shouldLog) {
 			let message: string;
-			if (!this.showTimestamp && !this.globalPrefix) {
-				message = util.formatWithOptions(this.printOptions, ...arguments_);
+			if (!this.#showTimestamp && !this.#globalPrefix) {
+				message = util.formatWithOptions(this.#printOptions, ...arguments_);
 			} else {
-				const prefix = this.globalPrefix ? [this.globalPrefix] : [];
-				if (this.showTimestamp) {
+				const prefix = this.#globalPrefix ? [this.#globalPrefix] : [];
+				if (this.#showTimestamp) {
 					const now = new Date();
 					prefix.push(
-						this.printOptions.colors
+						this.#printOptions.colors
 							? `${kleur.grey(
 									`[ ${now.toDateString()} ${now.toLocaleTimeString()} ]`
 							  )}`
@@ -61,13 +61,13 @@ export class Logger {
 				}
 
 				message = util.formatWithOptions(
-					this.printOptions,
+					this.#printOptions,
 					prefix.join(" "),
 					...arguments_
 				);
 			}
 			console[type.method](
-				this.printOptions.colors ? `${type.color(message)}` : message
+				this.#printOptions.colors ? `${type.color(message)}` : message
 			);
 		}
 	}
