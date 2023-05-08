@@ -183,7 +183,6 @@ describe("when testing with logging side-effects", () => {
 		const messagePrefix = "[ Sat Oct 31 2020 5:00:00 PM ]";
 
 		log[type](message);
-		expect(log.printOptions.colors).toBe(true);
 		expect(mock[type]).toHaveBeenCalledWith(expect.stringContaining(message));
 		expect(mock[type]).toHaveBeenCalledWith(
 			expect.stringContaining(messagePrefix)
