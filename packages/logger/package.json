@@ -10,6 +10,7 @@
 	"files": [
 		"dist"
 	],
+	"node": ">=16",
 	"dependencies": {
 		"kleur": "4.1.5"
 	},

@@ -6,3 +6,4 @@ const logger = new Logger();
 logger.timestamp = true;
 logger.info("hello world");
 logger.error("hello world");
+logger.warn("hello warning");
