@@ -22,3 +22,8 @@ jobs:
       - run: npx lerna bootstrap
       - run: npx lerna run lint
       - run: npx lerna run test:coverage
+      - name: Set commit status according to job status
+      - if: always()
+        uses: ouzi-dev/commit-status-updater@v2
+        with:
+          status: "${{ job.status }}"
