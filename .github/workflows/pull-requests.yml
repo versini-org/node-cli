@@ -16,18 +16,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Set commit status as pending
-        uses: myrotvorets/set-commit-status-action@master
-        with:
-          sha: ${{ steps.comment-branch.outputs.head_sha }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          status: pending
+        uses: ouzi-dev/commit-status-updater@v2
       - run: npx lerna bootstrap
       - run: npx lerna run lint
       - run: npx lerna run test:coverage
-      - name: Set final commit status
-        uses: myrotvorets/set-commit-status-action@master
-        if: always()
-        with:
-          sha: ${{ steps.comment-branch.outputs.head_sha }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          status: ${{ job.status }}
