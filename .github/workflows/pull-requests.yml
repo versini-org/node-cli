@@ -2,6 +2,8 @@ name: Check Pull Requests
 on:
   pull_request:
     branches: [main]
+permissions:
+  statuses: write
 jobs:
   check:
     runs-on: ubuntu-latest
