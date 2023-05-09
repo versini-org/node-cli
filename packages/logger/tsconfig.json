@@ -1,25 +1,10 @@
 {
 	"$schema": "https://json.schemastore.org/tsconfig",
-	"ts-node": {
-		"swc": true
-	},
+	"extends": ["../../configuration/tsconfig.common.json"],
 	"compilerOptions": {
-		"target": "ES2015",
-		"lib": ["DOM", "DOM.Iterable", "ESNext"],
-		"allowJs": true,
-		"skipLibCheck": true,
-		"esModuleInterop": true,
-		"allowSyntheticDefaultImports": true,
-		"strict": false,
-		"module": "ESNext",
-		"moduleResolution": "node",
-		"resolveJsonModule": true,
-		"isolatedModules": true,
-		"declaration": true,
-		"declarationDir": "types",
-		"emitDeclarationOnly": true,
+		"declarationDir": "dist",
 		"outDir": "dist"
 	},
 	"include": ["src"],
-	"exclude": ["**/__tests__"]
+	"exclude": ["src/__tests__"]
 }
