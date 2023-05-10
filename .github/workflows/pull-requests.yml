@@ -4,9 +4,6 @@ on:
   pull_request:
     branches: [main]
 
-permissions:
-  statuses: write
-
 jobs:
   inspect:
     runs-on: ubuntu-latest
@@ -15,12 +12,6 @@ jobs:
         node-version: [16.x, 18.x, 20.x]
 
     steps:
-      - name: Set commit status as pending
-        uses: ouzi-dev/commit-status-updater@v2
-        with:
-          name: "Pull Request Inspections"
-          status: "pending"
-
       - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
@@ -30,34 +21,3 @@ jobs:
       - run: npx lerna bootstrap
       - run: npx lerna run lint
       - run: npx lerna run test:coverage
-
-      # - name: Set commit status according to job status
-      #   uses: ouzi-dev/commit-status-updater@v2
-      #   if: always()
-      #   with:
-      #     name: "Pull Request Inspections"
-      #     status: "${{ job.status }}"
-
-  results:
-    if: ${{ always() }}
-    runs-on: ubuntu-latest
-    name: Gathering All Inspections Results
-    # see https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#needs-context
-    needs: [inspect]
-    steps:
-      - name: Check all job status
-        # see https://stackoverflow.com/a/67532120/4907315
-        if: >-
-          ${{
-              contains(needs.*.result, 'failure')
-            || contains(needs.*.result, 'cancelled')
-            || contains(needs.*.result, 'skipped')
-          }}
-        run: exit 1
-
-      - name: Set commit status according to job status
-        uses: ouzi-dev/commit-status-updater@v2
-        if: always()
-        with:
-          name: "Pull Request Inspections"
-          status: "${{ job.status }}"
