@@ -41,7 +41,7 @@ jobs:
   results:
     if: ${{ always() }}
     runs-on: ubuntu-latest
-    name: Final Results
+    name: Gathering All Inspections Results
     # see https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#needs-context
     needs: [inspect]
     steps:
@@ -55,11 +55,6 @@ jobs:
           }}
         run: exit 1
 
-  complete:
-    if: ${{ always() }}
-    runs-on: ubuntu-latest
-    needs: [results]
-    steps:
       - name: Set commit status according to job status
         uses: ouzi-dev/commit-status-updater@v2
         if: always()
