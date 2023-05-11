@@ -5,6 +5,7 @@ module.exports = {
 	plugins: ["@typescript-eslint"],
 	root: true,
 	rules: {
+		"unicorn/no-console-spaces": 0,
 		"unicorn/filename-case": [
 			"error",
 			{
