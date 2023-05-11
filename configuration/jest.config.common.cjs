@@ -14,6 +14,7 @@ module.exports = {
 			},
 		],
 	},
+	transformIgnorePatterns: ["/node_modules/?!(execa)/"],
 	collectCoverageFrom: ["src/*.{js,mjs,jsx,ts,tsx}"],
 	coverageThreshold: {
 		global: {
