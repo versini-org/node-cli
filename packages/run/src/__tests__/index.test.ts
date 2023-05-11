@@ -23,6 +23,7 @@ describe("when testing for run utilities with no logging side-effects", () => {
 			ignoreError: true,
 		});
 		expect(result).toStrictEqual({
+			stderr: 1,
 			exitCode: 1,
 			shortMessage:
 				"Command failed with ENOENT: not-a-command\nspawn not-a-command ENOENT",
