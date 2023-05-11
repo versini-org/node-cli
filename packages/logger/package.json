@@ -1,6 +1,6 @@
 {
 	"name": "@node-cli/logger",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "A tiny console logger for nodejs CLI apps",

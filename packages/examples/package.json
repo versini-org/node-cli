@@ -1,13 +1,13 @@
 {
 	"name": "@node-cli/examples",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"private": true,
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "Examples",
 	"dependencies": {
-		"@node-cli/logger": "*",
-		"@node-cli/run": "*"
+		"@node-cli/logger": "^0.0.5",
+		"@node-cli/run": "^0.0.5"
 	},
 	"type": "module",
 	"publishConfig": {
