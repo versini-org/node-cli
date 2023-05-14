@@ -8,6 +8,7 @@ import {
 import { defaults } from "./defaults.js";
 import fs from "fs-extra";
 import meow from "meow";
+import path from "node:path";
 
 const { helpText, options } = meowOptionsHelper({
 	flags: {
@@ -79,10 +80,7 @@ const customCfg = cli.flags;
 if (cli.input.length > 0) {
 	let customPath: string = cli.input[0];
 	if (fs.pathExistsSync(customPath)) {
-		if (!customPath.endsWith("/")) {
-			customPath += "/";
-		}
-		customCfg.path = customPath;
+		customCfg.path = path.resolve(customPath);
 	} else {
 		displayErrorMessages([`Folder ${customPath} does not exist!`]);
 	}
