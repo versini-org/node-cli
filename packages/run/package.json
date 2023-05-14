@@ -1,6 +1,6 @@
 {
 	"name": "@node-cli/run",
-	"version": "0.0.7",
+	"version": "0.0.8",
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "A wrapper for child_process for nodejs CLI apps",
