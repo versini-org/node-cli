@@ -1,6 +1,6 @@
 {
 	"name": "@node-cli/static-server",
-	"version": "0.0.6",
+	"version": "0.0.7",
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "A simple, zero-configuration, command line HTTP server to serve static files locally",
@@ -19,7 +19,7 @@
 		"@fastify/compress": "6.2.1",
 		"@fastify/cors": "8.2.1",
 		"@fastify/static": "6.10.1",
-		"@node-cli/logger": "^0.0.6",
+		"@node-cli/logger": "^0.0.7",
 		"boxen": "7.1.0",
 		"cli-table3": "0.6.3",
 		"fastify": "4.17.0",
