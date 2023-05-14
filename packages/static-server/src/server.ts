@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { cert, key } from "./certs.js";
 
 import Fastify from "fastify";
