@@ -19,5 +19,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - run: npx lerna bootstrap
+      - run: npx lerna run build
       - run: npx lerna run lint
       - run: npx lerna run test:coverage
