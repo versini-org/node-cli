@@ -116,7 +116,6 @@ const start = async () => {
 
 		if (config.open) {
 			await open(url, {
-				url: true,
 				wait: false,
 			});
 		}
