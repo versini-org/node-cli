@@ -16,7 +16,7 @@
 		"kleur": "4.1.5"
 	},
 	"scripts": {
-		"build": "npm-run-all --serial clean build:types build:js",
+		"build": "yarn run clean && yarn run build:types && yarn run build:js",
 		"build:js": "swc --source-maps --out-dir dist src",
 		"build:types": "tsc",
 		"clean": "rimraf dist types coverage",

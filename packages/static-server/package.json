@@ -33,7 +33,7 @@
 		"portfinder": "1.0.32"
 	},
 	"scripts": {
-		"build": "npm-run-all --serial clean build:types build:js",
+		"build": "yarn run clean && yarn run build:types && yarn run build:js",
 		"build:js": "swc --source-maps --out-dir dist src --copy-files",
 		"build:types": "tsc",
 		"clean": "rimraf dist types coverage",
