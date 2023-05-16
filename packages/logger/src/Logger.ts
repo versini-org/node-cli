@@ -91,4 +91,24 @@ export class Logger {
 	error(...arguments_: any) {
 		this.#_log({ method: "error", color: kleur.red }, ...arguments_);
 	}
+
+	/**
+	 * Log multiple error messages at the prompt using `console.error` behind the scenes.
+	 * @param {string[]} errorMessages array of error message to display line by line
+	 * @param {number} [exitStatus] the process will exit with this value if provided
+	 */
+	printErrorsAndExit(errorMessages: string[], exitStatus?: number) {
+		if (errorMessages && errorMessages.length > 0) {
+			this.log();
+			for (const message of errorMessages) {
+				this.error(message);
+			}
+			this.log();
+
+			if (typeof exitStatus === "number") {
+				// eslint-disable-next-line unicorn/no-process-exit
+				process.exit(exitStatus);
+			}
+		}
+	}
 }

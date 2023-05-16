@@ -28,13 +28,14 @@ log.error("this is an error log");
 
 Logger relies on `console` behind the scenes, and therefore supports the same [string substitution](https://developer.mozilla.org/en-US/docs/Web/API/console#Using_string_substitutions) capabilities and uses the following methods:
 
-| Method | Description                                               | Output color |
-| ------ | --------------------------------------------------------- | ------------ |
-| debug  | Outputs a message to the console with the log level debug | grey         |
-| log    | For general output of logging information.                | white        |
-| info   | Informative logging of information.                       | blue         |
-| warn   | Outputs a message to the console with the log level debug | yellow       |
-| error  | Outputs an error message.                                 | red          |
+| Method             | Description                                               | Output color |
+| ------------------ | --------------------------------------------------------- | ------------ |
+| debug              | Outputs a message to the console with the log level debug | grey         |
+| log                | For general output of logging information.                | white        |
+| info               | Informative logging of information.                       | blue         |
+| warn               | Outputs a message to the console with the log level debug | yellow       |
+| error              | Outputs an error message.                                 | red          |
+| printErrorsAndExit | Output error message(s) and exit                          | red          |
 
 ### Options
 
@@ -150,6 +151,18 @@ const log = new Logger({ timestamp: true });
 log.info("this will be logged with a timestamp");
 log.timestamp = false;
 log.info("this will be NOT be logged with a timestamp");
+```
+
+### Log multiple errors and optionally exit the main program
+
+The following will print 2 error messages and exit with error code 666.
+If the second parameter (a number) is not provided, the process does not exit.
+
+```js
+import { Logger } from "@node-cli/logger";
+const log = new Logger();
+
+log.printErrorsAndExit(["Error One!", "Error Two!"], 666);
 ```
 
 ## License

@@ -6,6 +6,9 @@ let mock = {
 		warn: jest.fn(),
 		error: jest.fn(),
 		log: jest.fn(),
+		exit: () => {
+			return undefined as never;
+		},
 	},
 	spyDate: any,
 	spyLocaleTime: any,
@@ -30,6 +33,11 @@ let mock = {
 		any
 	>,
 	spyError: jest.SpyInstance<
+		void,
+		[message?: any, ...optionalParams: any[]],
+		any
+	>,
+	spyExit: jest.SpyInstance<
 		void,
 		[message?: any, ...optionalParams: any[]],
 		any
@@ -187,5 +195,49 @@ describe("when testing with logging side-effects", () => {
 		expect(mock[type]).toHaveBeenCalledWith(
 			expect.stringContaining(messagePrefix)
 		);
+	});
+});
+
+/**
+ * printErrorsAndExit logging capabilities need to be
+ * tested a little bit differently:
+ * - mocking process.exit
+ * - console.log
+ */
+describe("when testing for printErrorsAndExit with logging side-effects", () => {
+	beforeEach(() => {
+		mock.log = jest.fn();
+		mock.warn = jest.fn();
+		mock.error = jest.fn();
+		mock.exit = () => {
+			return undefined as never;
+		};
+
+		spyLog = jest.spyOn(console, "log").mockImplementation(mock.log);
+		spyWarn = jest.spyOn(console, "warn").mockImplementation(mock.warn);
+		spyError = jest.spyOn(console, "error").mockImplementation(mock.error);
+		spyExit = jest.spyOn(process, "exit").mockImplementation(mock.exit);
+	});
+	afterEach(() => {
+		spyExit.mockRestore();
+		spyLog.mockRestore();
+		spyError.mockRestore();
+		spyWarn.mockRestore();
+	});
+
+	it("should display the proper error messages and exit with 666", async () => {
+		const log = new Logger();
+		log.printErrorsAndExit(["message one", "message two"], 666);
+		expect(mock.error).toHaveBeenCalledWith("message one");
+		expect(mock.error).toHaveBeenCalledWith("message two");
+		expect(spyExit).toHaveBeenCalledWith(666);
+	});
+
+	it("should display the proper error messages but will not NOT exit", async () => {
+		const log = new Logger();
+		log.printErrorsAndExit(["message one", "message two"]);
+		expect(mock.error).toHaveBeenCalledWith("message one");
+		expect(mock.error).toHaveBeenCalledWith("message two");
+		expect(spyExit).not.toHaveBeenCalled();
 	});
 });
