@@ -1,5 +1,5 @@
 import {
-	displayErrorMessages,
+	logger,
 	meowOptionsHelper,
 	meowParserHelper,
 	shallowMerge,
@@ -82,7 +82,7 @@ if (cli.input.length > 0) {
 	if (fs.pathExistsSync(customPath)) {
 		customCfg.path = path.resolve(customPath);
 	} else {
-		displayErrorMessages([`Folder ${customPath} does not exist!`]);
+		logger.printErrorsAndExit([`Folder ${customPath} does not exist!`], 0);
 	}
 }
 

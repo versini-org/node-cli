@@ -200,25 +200,3 @@ export const meowParserHelper = (parameters: {
 		}
 	}
 };
-
-/**
- * Log multiple error messages at the prompt using `console.error` behind the scenes.
- * @param {string[]} errorMessages array of error message to display line by line
- * @param {number} [exitStatus=0] the process will exit with this value, unless set to false
- */
-export const displayErrorMessages = (
-	errorMessages: any[],
-	exitStatus: number = 0
-) => {
-	if (errorMessages && errorMessages.length > 0) {
-		logger.log();
-		for (const message of errorMessages) {
-			logger.error(message);
-		}
-		logger.log();
-
-		if (typeof exitStatus === "number") {
-			process.exit(exitStatus);
-		}
-	}
-};
