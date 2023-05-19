@@ -1,11 +1,11 @@
 /* eslint-disable unicorn/no-process-exit */
 
-// import { Logger } from "@node-cli/logger";
+import { Logger } from "@node-cli/logger";
 import Table from "cli-table3";
 import _ from "lodash";
 import kleur from "kleur";
 import path from "node:path";
-// export const logger = new Logger();
+export const logger = new Logger();
 
 kleur.enabled = false;
 
@@ -191,7 +191,7 @@ export const meowParserHelper = (parameters: {
 	if (restrictions && restrictions.length > 0) {
 		for (const rule of restrictions) {
 			if (rule.test(cli.flags)) {
-				console.error(rule.message(cli.flags));
+				logger.error(rule.message(cli.flags));
 				process.exit(rule.exit);
 			}
 		}

@@ -19,7 +19,8 @@
 		"meow": "12.0.1"
 	},
 	"scripts": {
-		"build": "yarn run clean && yarn run build:types && yarn run build:js",
+		"build": "yarn run clean && yarn run build:types && yarn run build:js && yarn run build:barrel",
+		"build:barrel": "barrelsby --delete --directory dist/types --pattern \"**/*.d.ts\" --name \"index.d\"",
 		"build:js": "swc --source-maps --out-dir dist src",
 		"build:types": "tsc",
 		"clean": "rimraf dist types coverage",

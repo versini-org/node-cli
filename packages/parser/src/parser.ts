@@ -6,21 +6,24 @@ import {
 
 import meow from "meow";
 
-export type Configuration = {
+export type ParserConfiguration = {
 	flags?: any;
 	parameters?: any;
 	usage?: boolean | string;
 	examples?:
 		| string
 		| { command?: string; description?: string; comment?: string }[];
+	defaultFlags?: any;
+	defaultsParameters?: any;
 };
 
-export const parser = (
-	configuration: Configuration,
-	defaultFlags?: any,
-	defaultsParameters?: any
-) => {
-	const { helpText, options } = meowOptionsHelper(configuration);
+export const parser = (configuration: ParserConfiguration) => {
+	const {
+		defaultFlags = {},
+		defaultsParameters = {},
+		...others
+	} = configuration;
+	const { helpText, options } = meowOptionsHelper(others);
 	const cli = meow(helpText, { ...options, importMeta: import.meta });
 	meowParserHelper({ cli });
 
