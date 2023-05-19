@@ -21,7 +21,7 @@
 		"build:types": "tsc",
 		"clean": "rimraf dist types coverage",
 		"lint": "eslint \"src/*.ts\"",
-		"test": "jest",
+		"test": "cross-env-shell NODE_OPTIONS=--experimental-vm-modules jest",
 		"test:coverage": "npm run test -- --coverage",
 		"watch": "swc --watch --out-dir dist src"
 	},

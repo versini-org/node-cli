@@ -31,18 +31,22 @@
 		 * relying on other imports.
 		 */
 		"isolatedModules": true,
+		/**
+		 * Specify a set of bundled library declaration files that
+		 * describe the target runtime environment.
+		 */
 		"lib": ["ESNext"],
 		/**
 		 * Specify what module code is generated.
 		 */
-		"module": "ESNext",
+		"module": "Node16",
 		/**
 		 * Specify the module resolution strategy:
 		 * - 'node' for Node.js’ CommonJS implementation
 		 * - 'node16' or 'nodenext' for Node.js’ ECMAScript Module Support
 		 *   from TypeScript 4.7 onwards
 		 */
-		"moduleResolution": "node",
+		"moduleResolution": "nodenext",
 		/**
 		 * Enable importing .json files
 		 */
