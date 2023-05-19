@@ -5,7 +5,7 @@
 	"author": "Arno Versini",
 	"description": "A tiny console logger for nodejs CLI apps",
 	"type": "module",
-	"types": "./dist/types.d.ts",
+	"types": "./dist/types/index.d.ts",
 	"exports": "./dist/Logger.js",
 	"files": [
 		"dist"
