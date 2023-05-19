@@ -82,9 +82,9 @@ const fastifyCacheOptions: {
 if (config.flags.cache > 0) {
 	fastifyCacheOptions.expiresIn = config.flags.cache;
 	fastifyCacheOptions.serverExpiresIn = config.flags.cache;
-	fastifyCacheOptions.privacy = fastifyCache.privacy.PUBLIC;
+	fastifyCacheOptions.privacy = "public";
 } else {
-	fastifyCacheOptions.privacy = fastifyCache.privacy.NOCACHE;
+	fastifyCacheOptions.privacy = "no-cache";
 }
 
 fastify.register(fastifyCache, fastifyCacheOptions);

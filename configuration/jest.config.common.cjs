@@ -6,6 +6,7 @@ module.exports = {
 				exclude: [],
 				swcrc: false,
 				jsc: {
+					target: "es2022",
 					parser: {
 						syntax: "typescript",
 					},
@@ -24,5 +25,8 @@ module.exports = {
 			statements: 100,
 		},
 	},
-	setupFilesAfterEnv: ["<rootDir>/../../configuration/jest.before.all.cjs"],
+	extensionsToTreatAsEsm: [".ts"],
+	moduleNameMapper: {
+		"(.+)\\.js": "$1",
+	},
 };

@@ -1,4 +1,6 @@
 import { Logger } from "../Logger";
+import { jest } from "@jest/globals";
+import kleur from "kleur";
 
 let mock = {
 		info: jest.fn(),
@@ -12,39 +14,16 @@ let mock = {
 	},
 	spyDate: any,
 	spyLocaleTime: any,
-	spyInfo: jest.SpyInstance<
-		void,
-		[message?: any, ...optionalParams: any[]],
-		any
-	>,
-	spyLog: jest.SpyInstance<
-		void,
-		[message?: any, ...optionalParams: any[]],
-		any
-	>,
-	spyDebug: jest.SpyInstance<
-		void,
-		[message?: any, ...optionalParams: any[]],
-		any
-	>,
-	spyWarn: jest.SpyInstance<
-		void,
-		[message?: any, ...optionalParams: any[]],
-		any
-	>,
-	spyError: jest.SpyInstance<
-		void,
-		[message?: any, ...optionalParams: any[]],
-		any
-	>,
-	spyExit: jest.SpyInstance<
-		void,
-		[message?: any, ...optionalParams: any[]],
-		any
-	>;
+	spyInfo: any,
+	spyLog: any,
+	spyDebug: any,
+	spyWarn: any,
+	spyError: any,
+	spyExit: any;
 
 describe("when testing with logging side-effects", () => {
 	beforeEach(() => {
+		kleur.enabled = false;
 		mock.info = jest.fn();
 		mock.log = jest.fn();
 		mock.debug = jest.fn();
@@ -206,6 +185,7 @@ describe("when testing with logging side-effects", () => {
  */
 describe("when testing for printErrorsAndExit with logging side-effects", () => {
 	beforeEach(() => {
+		kleur.enabled = false;
 		mock.log = jest.fn();
 		mock.warn = jest.fn();
 		mock.error = jest.fn();
@@ -234,7 +214,7 @@ describe("when testing for printErrorsAndExit with logging side-effects", () => 
 	});
 
 	it("should display the proper error messages but will not NOT exit", async () => {
-		const log = new Logger();
+		const log = new Logger({ boring: true });
 		log.printErrorsAndExit(["message one", "message two"]);
 		expect(mock.error).toHaveBeenCalledWith("message one");
 		expect(mock.error).toHaveBeenCalledWith("message two");
