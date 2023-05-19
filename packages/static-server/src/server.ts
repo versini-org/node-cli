@@ -3,6 +3,7 @@
 import { cert, key } from "./certs.js";
 
 import Fastify from "fastify";
+import { Logger } from "@node-cli/logger";
 import boxen from "boxen";
 import { config } from "./parse.js";
 import fastifyCache from "@fastify/caching";
@@ -12,12 +13,13 @@ import fastifyLogs from "./logs.js";
 import fastifyStatic from "@fastify/static";
 import fs from "fs-extra";
 import kleur from "kleur";
-import { logger } from "./utilities.js";
 import open from "open";
 import path from "node:path";
 import portfinder from "portfinder";
 
-console.log("==> ", config);
+export const logger = new Logger({
+	boring: process.env.NODE_ENV === "test",
+});
 
 let customPath = config.parameters[0];
 if (fs.pathExistsSync(customPath)) {
@@ -25,8 +27,6 @@ if (fs.pathExistsSync(customPath)) {
 } else {
 	logger.printErrorsAndExit([`Folder ${customPath} does not exist!`], 0);
 }
-
-console.log("==> ", customPath);
 
 const fastifyOptions: {
 	disableRequestLogging?: boolean;
