@@ -5,7 +5,7 @@
 	"author": "Arno Versini",
 	"description": "A simple CLI parser helper",
 	"type": "module",
-	"types": "./dist/parser.d.ts",
+	"types": "./dist/types/index.d.ts",
 	"exports": "./dist/parser.js",
 	"files": [
 		"dist"
