@@ -1,0 +1,35 @@
+{
+	"name": "@node-cli/parser",
+	"version": "0.0.8",
+	"license": "MIT",
+	"author": "Arno Versini",
+	"description": "A simple CLI parser helper",
+	"type": "module",
+	"types": "./dist/parser.d.ts",
+	"exports": "./dist/parser.js",
+	"files": [
+		"dist"
+	],
+	"node": ">=16",
+	"dependencies": {
+		"@node-cli/logger": "^0.0.8",
+		"cli-table3": "0.6.3",
+		"kleur": "4.1.5",
+		"lodash": "4.17.21",
+		"meow": "12.0.1"
+	},
+	"scripts": {
+		"build": "yarn run clean && yarn run build:types && yarn run build:js && yarn run build:barrel",
+		"build:barrel": "barrelsby --delete --directory dist/types --pattern \"**/*.d.ts\" --name \"index.d\"",
+		"build:js": "swc --source-maps --out-dir dist src",
+		"build:types": "tsc",
+		"clean": "rimraf dist types coverage",
+		"lint": "eslint \"src/*.ts\"",
+		"test": "cross-env-shell NODE_OPTIONS=--experimental-vm-modules jest",
+		"test:coverage": "npm run test -- --coverage",
+		"watch": "swc --watch --out-dir dist src"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
+}
