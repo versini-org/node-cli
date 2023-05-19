@@ -10,10 +10,23 @@ import fastifyCompress from "@fastify/compress";
 import fastifyCors from "@fastify/cors";
 import fastifyLogs from "./logs.js";
 import fastifyStatic from "@fastify/static";
+import fs from "fs-extra";
 import kleur from "kleur";
 import { logger } from "./utilities.js";
 import open from "open";
+import path from "node:path";
 import portfinder from "portfinder";
+
+console.log("==> ", config);
+
+let customPath = config.parameters[0];
+if (fs.pathExistsSync(customPath)) {
+	customPath = path.resolve(customPath);
+} else {
+	logger.printErrorsAndExit([`Folder ${customPath} does not exist!`], 0);
+}
+
+console.log("==> ", customPath);
 
 const fastifyOptions: {
 	disableRequestLogging?: boolean;
@@ -24,7 +37,7 @@ const fastifyOptions: {
 	disableRequestLogging: true,
 };
 
-if (config.logs) {
+if (config.flags.logs) {
 	fastifyOptions.logger = {
 		level: "info",
 		transport: {
@@ -38,25 +51,25 @@ if (config.logs) {
 	};
 }
 
-if (config.http2) {
+if (config.flags.http2) {
 	fastifyOptions.http2 = true;
 	fastifyOptions.https = { key, cert };
 }
 
 const fastify = Fastify(fastifyOptions);
 
-if (config.logs) {
+if (config.flags.logs) {
 	fastify.register(fastifyLogs);
 }
 
-if (config.gzip) {
+if (config.flags.gzip) {
 	fastify.register(fastifyCompress, {
 		global: true,
 		encodings: ["gzip", "deflate", "br", "identity"],
 	});
 }
 
-if (config.cors) {
+if (config.flags.cors) {
 	fastify.register(fastifyCors);
 }
 
@@ -66,9 +79,9 @@ const fastifyCacheOptions: {
 	privacy?: any;
 } = {};
 
-if (config.cache > 0) {
-	fastifyCacheOptions.expiresIn = config.cache;
-	fastifyCacheOptions.serverExpiresIn = config.cache;
+if (config.flags.cache > 0) {
+	fastifyCacheOptions.expiresIn = config.flags.cache;
+	fastifyCacheOptions.serverExpiresIn = config.flags.cache;
 	fastifyCacheOptions.privacy = fastifyCache.privacy.PUBLIC;
 } else {
 	fastifyCacheOptions.privacy = fastifyCache.privacy.NOCACHE;
@@ -77,7 +90,7 @@ if (config.cache > 0) {
 fastify.register(fastifyCache, fastifyCacheOptions);
 
 fastify.register(fastifyStatic, {
-	root: config.path,
+	root: customPath,
 });
 
 /**
@@ -87,16 +100,18 @@ let port: number,
 	portMessage = "";
 const start = async () => {
 	try {
-		port = await portfinder.getPortPromise({ port: Number(config.port) });
-		if (port !== config.port) {
+		port = await portfinder.getPortPromise({ port: Number(config.flags.port) });
+		if (port !== config.flags.port) {
 			portMessage = `\n\n${kleur.yellow(
-				`Warning: port ${config.port} was not available!`
+				`Warning: port ${config.flags.port} was not available!`
 			)}`;
-			config.port = port;
+			config.flags.port = port;
 		}
-		await fastify.listen({ port: config.port });
+		await fastify.listen({ port: config.flags.port });
 
-		const url = `${config.http2 ? "https" : "http"}://localhost:${config.port}`;
+		const url = `${config.flags.http2 ? "https" : "http"}://localhost:${
+			config.flags.port
+		}`;
 		const messages = [
 			`${kleur.cyan("Static Server")} is up and running!`,
 			"",
@@ -114,7 +129,7 @@ const start = async () => {
 			})
 		);
 
-		if (config.open) {
+		if (config.flags.open) {
 			await open(url, {
 				wait: false,
 			});
