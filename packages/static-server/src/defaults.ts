@@ -1,4 +1,4 @@
-export const defaultsFlags = {
+export const defaultFlags = {
 	cache: 0,
 	cors: false,
 	gzip: true,
@@ -8,6 +8,6 @@ export const defaultsFlags = {
 	port: 8080,
 };
 
-export const defaultsParameters = {
+export const defaultParameters = {
 	"0": `${process.cwd()}/`,
 };

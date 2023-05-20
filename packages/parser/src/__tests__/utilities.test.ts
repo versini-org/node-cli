@@ -7,6 +7,9 @@ import {
 import _ from "lodash";
 import { deepEqual } from "../deepEqual.js";
 import { jest } from "@jest/globals";
+import kleur from "kleur";
+
+kleur.enabled = false;
 
 let processArgv: string[];
 const mockProcessName = "my-app";
@@ -305,37 +308,22 @@ describe("when testing for meowHelpers with no logging side-effects", () => {
  * - inquirer.prompt
  */
 let mockLog:
-		| jest.Mock<any, any, any>
+		| jest.Mock<any>
 		| ((message?: any, ...optionalParameters: any[]) => void)
 		| undefined,
 	mockLogError:
-		| jest.Mock<any, any, any>
+		| jest.Mock<any>
 		| ((message?: any, ...optionalParameters: any[]) => void)
 		| undefined,
 	mockLogWarning:
-		| jest.Mock<any, any, any>
+		| jest.Mock<any>
 		| ((message?: any, ...optionalParameters: any[]) => void)
 		| undefined,
-	spyExit: jest.SpyInstance<never, [code?: number | undefined], any>,
-	spyLog: jest.SpyInstance<
-		void,
-		[message?: any, ...optionalParams: any[]],
-		any
-	>,
-	spyLogError: jest.SpyInstance<
-		void,
-		[message?: any, ...optionalParams: any[]],
-		any
-	>,
-	spyLogWarning: jest.SpyInstance<
-		void,
-		[message?: any, ...optionalParams: any[]],
-		any
-	>,
-	mockExit:
-		| jest.Mock<any, any, any>
-		| ((code?: number | undefined) => never)
-		| undefined;
+	spyExit: any,
+	spyLog: any,
+	spyLogError: any,
+	spyLogWarning: any,
+	mockExit: jest.Mock<any> | ((code?: number | undefined) => never) | undefined;
 describe("when testing for utilities with logging side-effects", () => {
 	beforeEach(() => {
 		mockExit = () => {
