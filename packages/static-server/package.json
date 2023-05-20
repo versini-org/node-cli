@@ -5,7 +5,7 @@
 	"author": "Arno Versini",
 	"description": "A simple, zero-configuration, command line HTTP server to serve static files locally",
 	"type": "module",
-	"types": "./dist/types/index.d.ts",
+	"types": "./dist/index.d.ts",
 	"exports": "./dist/server.js",
 	"bin": {
 		"static-server": "dist/server.js"
@@ -35,7 +35,7 @@
 	},
 	"scripts": {
 		"build": "yarn run clean && yarn run build:types && yarn run build:js&& yarn run build:barrel",
-		"build:barrel": "barrelsby --delete --directory dist/types --pattern \"**/*.d.ts\" --name \"index.d\"",
+		"build:barrel": "barrelsby --delete --directory dist --pattern \"**/*.d.ts\" --name \"index.d\"",
 		"build:js": "swc --source-maps --out-dir dist src --copy-files",
 		"build:types": "tsc",
 		"clean": "rimraf dist types coverage",

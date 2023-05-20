@@ -7,8 +7,6 @@ import kleur from "kleur";
 import path from "node:path";
 export const logger = new Logger();
 
-kleur.enabled = false;
-
 /**
  * Converts the first character of string to upper case
  * @param {string} string_ the string to convert

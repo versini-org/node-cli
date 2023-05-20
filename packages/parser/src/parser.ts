@@ -14,13 +14,13 @@ export type ParserConfiguration = {
 		| string
 		| { command?: string; description?: string; comment?: string }[];
 	defaultFlags?: any;
-	defaultsParameters?: any;
+	defaultParameters?: any;
 };
 
 export const parser = (configuration: ParserConfiguration) => {
 	const {
 		defaultFlags = {},
-		defaultsParameters = {},
+		defaultParameters = {},
 		...others
 	} = configuration;
 	const { helpText, options } = meowOptionsHelper(others);
@@ -29,6 +29,6 @@ export const parser = (configuration: ParserConfiguration) => {
 
 	return {
 		flags: shallowMerge(defaultFlags, cli.flags),
-		parameters: shallowMerge(defaultsParameters, cli.input),
+		parameters: shallowMerge(defaultParameters, cli.input),
 	};
 };

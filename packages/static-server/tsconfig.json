@@ -2,7 +2,7 @@
 	"$schema": "https://json.schemastore.org/tsconfig",
 	"extends": ["../../configuration/tsconfig.common.json"],
 	"compilerOptions": {
-		"declarationDir": "dist/types",
+		"declarationDir": "dist",
 		"outDir": "dist"
 	},
 	"include": ["src"]
