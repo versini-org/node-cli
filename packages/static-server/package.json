@@ -14,25 +14,6 @@
 		"dist"
 	],
 	"node": ">=16",
-	"dependencies": {
-		"@fastify/caching": "8.3.0",
-		"@fastify/compress": "6.3.0",
-		"@fastify/cors": "8.2.1",
-		"@fastify/static": "6.10.1",
-		"@node-cli/logger": ">=0.0.8",
-		"@node-cli/parser": ">=0.0.8",
-		"boxen": "7.1.0",
-		"cli-table3": "0.6.3",
-		"fastify": "4.17.0",
-		"fastify-plugin": "4.5.0",
-		"fs-extra": "11.1.1",
-		"kleur": "4.1.5",
-		"lodash": "4.17.21",
-		"meow": "12.0.1",
-		"open": "9.1.0",
-		"pino-pretty": "10.0.0",
-		"portfinder": "1.0.32"
-	},
 	"scripts": {
 		"build": "yarn run clean && yarn run build:types && yarn run build:js&& yarn run build:barrel",
 		"build:barrel": "barrelsby --delete --directory dist --pattern \"**/*.d.ts\" --name \"index.d\"",
@@ -43,6 +24,23 @@
 		"test": "jest",
 		"test:coverage": "echo 'No coverage available yet'",
 		"watch": "swc --watch --out-dir dist src"
+	},
+	"dependencies": {
+		"@fastify/caching": "8.3.0",
+		"@fastify/compress": "6.3.0",
+		"@fastify/cors": "8.2.1",
+		"@fastify/static": "6.10.1",
+		"@node-cli/logger": ">=0.0.8",
+		"@node-cli/parser": ">=0.0.8",
+		"boxen": "7.1.0",
+		"fastify": "4.17.0",
+		"fastify-plugin": "4.5.0",
+		"fs-extra": "11.1.1",
+		"kleur": "4.1.5",
+		"lodash": "4.17.21",
+		"open": "9.1.0",
+		"pino-pretty": "10.0.0",
+		"portfinder": "1.0.32"
 	},
 	"publishConfig": {
 		"access": "public"

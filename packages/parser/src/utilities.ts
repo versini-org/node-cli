@@ -5,7 +5,7 @@ import Table from "cli-table3";
 import _ from "lodash";
 import kleur from "kleur";
 import path from "node:path";
-export const logger = new Logger();
+const logger = new Logger();
 
 /**
  * Converts the first character of string to upper case
