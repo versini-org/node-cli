@@ -1,0 +1,8 @@
+{
+	"packages": {
+		"packages/logger": {},
+		"packages/parser": {},
+		"packages/run": {},
+		"packages/static-server": {}
+	}
+}
