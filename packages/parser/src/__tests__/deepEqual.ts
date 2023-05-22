@@ -10,8 +10,8 @@
  * @flow
  */
 
-const aStackPool = [];
-const bStackPool = [];
+const aStackPool: any = [];
+const bStackPool: any = [];
 
 /**
  * Checks if two values are equal. Values may be primitives, arrays, or objects.
@@ -21,7 +21,7 @@ const bStackPool = [];
  * @copyright 2009-2013 Jeremy Ashkenas, DocumentCloud Inc.
  * @license MIT
  */
-function eq(a, b, aStack, bStack) {
+function eq(a: any, b: any, aStack: any[], bStack: any[]) {
 	if (a === b) {
 		// Identical objects are equal. `0 === -0`, but they aren't identical.
 		return a !== 0 || 1 / a === 1 / b;
@@ -103,12 +103,17 @@ function eq(a, b, aStack, bStack) {
 }
 
 export function deepEqual(a?: any, b?: any) {
-	const aStack = aStackPool.length > 0 ? aStackPool.pop() : [];
+	const aStack: any = aStackPool.length > 0 ? aStackPool.pop() : [];
 	const bStack = bStackPool.length > 0 ? bStackPool.pop() : [];
 	const result = eq(a, b, aStack, bStack);
-	aStack.length = 0;
-	bStack.length = 0;
-	aStackPool.push(aStack);
-	bStackPool.push(bStack);
+	if (aStack) {
+		aStack.length = 0;
+		aStackPool.push(aStack);
+	}
+	if (bStack) {
+		bStack.length = 0;
+		bStackPool.push(bStack);
+	}
+
 	return result;
 }

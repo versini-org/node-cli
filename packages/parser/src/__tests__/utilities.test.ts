@@ -5,7 +5,7 @@ import {
 } from "../utilities.js";
 
 import _ from "lodash";
-import { deepEqual } from "../deepEqual.js";
+import { deepEqual } from "./deepEqual.js";
 import { jest } from "@jest/globals";
 import kleur from "kleur";
 
