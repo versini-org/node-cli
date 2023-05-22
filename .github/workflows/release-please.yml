@@ -19,15 +19,28 @@ jobs:
           token: ${{ secrets.NODE_CLI }}
           command: manifest
           monorepo-tags: true
-      - uses: actions/checkout@v3
+
+      - name: Checkout Repository
         if: ${{ steps.release.outputs.releases_created }}
-      - uses: actions/setup-node@v3
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
         if: ${{ steps.release.outputs.releases_created }}
         with:
           node-version: 20.x
-      - run: npx lerna bootstrap
+
+      - name: Build Packages
         if: ${{ steps.release.outputs.releases_created }}
-      - run: npx lerna run build
+        run: |
+          npx lerna bootstrap
+          npx lerna run build
+
+      # Release Please has already incremented versions and published tags, so we just
+      # need to publish all unpublished versions to NPM here
+      # See: https://github.com/lerna/lerna/tree/main/commands/publish#bump-from-package
+      - name: Publish to NPM
         if: ${{ steps.release.outputs.releases_created }}
-      - run: node ./scripts/publish.js '${{toJSON(steps.release.outputs)}}'
-        if: ${{ steps.release.outputs.releases_created }}
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+        run: npx lerna publish from-package --no-push --no-private --yes
