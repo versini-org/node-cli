@@ -28,6 +28,7 @@ At that point, you should be able to visit `http://localhost:8080` and see the f
 | -------------------------- | ------- | ----------------------------------------------------------- |
 | `-c` or `--cache <number>` | 0       | Time in seconds for caching files                           |
 | `-C` or `--cors`           | false   | Set CORS headers to \* to allow requests from any origin    |
+| `-d` or `--dirs`           | false   | List the directory's contents                               |
 | `-h` or `--help`           |         | Display help instructions                                   |
 | `-H` or `--http2`          | false   | Enable HTTP v2 and SSL (https)                              |
 | `-l` or `--logs`           | false   | Log HTTP requests at the prompt                             |
