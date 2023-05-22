@@ -6,9 +6,23 @@ import {
 
 import meow from "meow";
 
+type Flags = {
+	[key: string]: {
+		shortFlag?: string;
+		default?: string | number | boolean;
+		description: string;
+		type: string;
+	};
+};
+type Parameters = {
+	[key: string]: {
+		default?: string | number | boolean;
+		description: string;
+	};
+};
 export type ParserConfiguration = {
-	flags?: any;
-	parameters?: any;
+	flags?: Flags;
+	parameters?: Parameters;
 	usage?: boolean | string;
 	examples?:
 		| string
