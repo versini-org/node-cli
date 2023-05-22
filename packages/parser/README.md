@@ -6,7 +6,7 @@
 
 # API
 
-**parser(options, defaultFlags, defaultParameters) ⇒ { flags, parameters }**
+**parser(options) ⇒ { flags, parameters }**
 
 ## Arguments
 
