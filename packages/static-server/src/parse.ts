@@ -5,6 +5,7 @@ import { parser } from "@node-cli/parser";
 export type Flags = {
 	cache?: number;
 	cors?: boolean;
+	dirs?: boolean;
 	gzip?: boolean;
 	http2?: boolean;
 	logs?: boolean;
@@ -35,6 +36,12 @@ export const config: Configuration = parser({
 			shortFlag: "C",
 			default: defaultFlags.cors,
 			description: "Set CORS headers to * to allow requests from any origin",
+			type: "boolean",
+		},
+		dirs: {
+			shortFlag: "d",
+			default: defaultFlags.dirs,
+			description: "List the directory's contents",
 			type: "boolean",
 		},
 		gzip: {

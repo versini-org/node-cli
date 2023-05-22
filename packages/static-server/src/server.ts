@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { cert, key } from "./certs.js";
+import fastifyStatic, { FastifyStaticOptions } from "@fastify/static";
 
 import Fastify from "fastify";
 import { Logger } from "@node-cli/logger";
@@ -10,12 +11,12 @@ import fastifyCache from "@fastify/caching";
 import fastifyCompress from "@fastify/compress";
 import fastifyCors from "@fastify/cors";
 import fastifyLogs from "./logs.js";
-import fastifyStatic from "@fastify/static";
 import fs from "fs-extra";
 import kleur from "kleur";
 import open from "open";
 import path from "node:path";
 import portfinder from "portfinder";
+import { renderDirectories } from "./directories.js";
 
 export const logger = new Logger({
 	boring: process.env.NODE_ENV === "test",
@@ -89,9 +90,17 @@ if (config.flags.cache > 0) {
 
 fastify.register(fastifyCache, fastifyCacheOptions);
 
-fastify.register(fastifyStatic, {
+const staticOptions: FastifyStaticOptions = {
 	root: customPath,
-});
+};
+if (config.flags.dirs) {
+	staticOptions.index = false;
+	staticOptions.list = {
+		format: "html",
+		render: renderDirectories,
+	};
+}
+fastify.register(fastifyStatic, staticOptions);
 
 /**
  * Run the server!
