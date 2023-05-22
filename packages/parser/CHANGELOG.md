@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/aversini/node-cli/compare/parser-v1.0.0...parser-v1.0.1) (2023-05-22)
+
+
+### Bug Fixes
+
+* better types for flags and parameters ([76c45e8](https://github.com/aversini/node-cli/commit/76c45e88b77bf2d0cd43c0f099bbf3132a5932bf))
+
 ## 1.0.0 (2023-05-22)
 
 
