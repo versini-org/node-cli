@@ -1,5 +1,7 @@
 # Parser
 
+![npm](https://img.shields.io/npm/v/@node-cli/parser?label=version&logo=npm)
+
 > Simple, non-interactive, CLI app arguments parser
 
 # API
