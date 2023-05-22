@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/aversini/node-cli/compare/static-server-v1.0.0...static-server-v1.1.0) (2023-05-22)
+
+
+### Features
+
+* adding support for directory listing ([92c4537](https://github.com/aversini/node-cli/commit/92c4537c949ce06b9db30de4d82fb707c8fe0aca))
+
 ## 1.0.0 (2023-05-22)
 
 
