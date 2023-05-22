@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/aversini/node-cli/compare/parser-v1.0.1...parser-v1.0.2) (2023-05-22)
+
+
+### Bug Fixes
+
+* update README with valid API ([97f0e06](https://github.com/aversini/node-cli/commit/97f0e0611d7fefa61c620a18cb847ad1e5d56b01))
+
 ## [1.0.1](https://github.com/aversini/node-cli/compare/parser-v1.0.0...parser-v1.0.1) (2023-05-22)
 
 
