@@ -1,6 +1,11 @@
 /* eslint-env node */
 module.exports = {
-	extends: ["plugin:unicorn/recommended", "prettier"],
+	extends: [
+		"plugin:unicorn/recommended",
+		"prettier",
+		"./configuration/eslint-rules/best-practices.cjs",
+		"./configuration/eslint-rules/possible-errors.cjs",
+	],
 	parser: "@typescript-eslint/parser",
 	plugins: ["@typescript-eslint"],
 	root: true,

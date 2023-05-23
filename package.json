@@ -6,6 +6,7 @@
 	],
 	"scripts": {
 		"build": "yarn lerna run build",
+		"lint": "yarn lerna run lint",
 		"test": "yarn lerna run test"
 	},
 	"devDependencies": {
