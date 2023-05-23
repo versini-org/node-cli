@@ -1,5 +1,12 @@
+import boxen, { Options as BoxenOptions } from "boxen";
+
 import kleur from "kleur";
 import util from "node:util";
+
+export type PrintBoxOptions = {
+	newLineAfter?: boolean;
+	newLineBefore?: boolean;
+} & BoxenOptions;
 
 export class Logger {
 	#shouldLog: boolean;
@@ -110,5 +117,48 @@ export class Logger {
 				process.exit(exitStatus);
 			}
 		}
+	}
+
+	/**
+	 * Print sets of logs in a box (wrapper to Boxen)
+	 * @param messages Messages to print
+	 * @param options
+	 */
+	printBox(messages: string | string[], options: PrintBoxOptions = {}) {
+		const { newLineAfter, newLineBefore } = {
+			newLineAfter: true,
+			newLineBefore: true,
+			...options,
+		};
+
+		/**
+		 * Setting some sensible Boxen options if
+		 * not provided by the user.
+		 */
+		const boxenOptions: BoxenOptions = {
+			...options,
+			borderColor:
+				options.borderColor || (this.#printOptions.colors ? "yellow" : "white"),
+			padding: typeof options.padding === "number" ? options.padding : 1,
+			textAlignment: options.textAlignment || "center",
+		};
+
+		const oldPrefix = this.#globalPrefix;
+		const oldTimestamp = this.#showTimestamp;
+
+		this.#globalPrefix = "";
+		this.#showTimestamp = false;
+
+		newLineBefore && this.log();
+		this.log(
+			boxen(
+				typeof messages === "string" ? messages : messages.join("\n"),
+				boxenOptions
+			)
+		);
+		newLineAfter && this.log();
+
+		this.#showTimestamp = oldTimestamp;
+		this.#globalPrefix = oldPrefix;
 	}
 }
