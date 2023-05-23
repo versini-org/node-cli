@@ -5,7 +5,6 @@ import fastifyStatic, { FastifyStaticOptions } from "@fastify/static";
 
 import Fastify from "fastify";
 import { Logger } from "@node-cli/logger";
-import boxen from "boxen";
 import { config } from "./parse.js";
 import fastifyCache from "@fastify/caching";
 import fastifyCompress from "@fastify/compress";
@@ -129,14 +128,7 @@ const start = async () => {
 			`Hit CTRL+C to shut it down.${portMessage}`,
 		];
 
-		logger.log();
-		logger.log(
-			boxen(messages.join("\n"), {
-				align: "center",
-				borderColor: "yellow",
-				padding: 1,
-			})
-		);
+		logger.printBox(messages, { newLineAfter: false });
 
 		if (config.flags.open) {
 			await open(url, {
