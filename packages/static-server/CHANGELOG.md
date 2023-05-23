@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/aversini/node-cli/compare/static-server-v1.1.0...static-server-v1.1.1) (2023-05-23)
+
+
+### Bug Fixes
+
+* replacing boxen with @node-cli/logger printBox ([37c5635](https://github.com/aversini/node-cli/commit/37c5635b12a0b390a9495fb5408266f00962a89b))
+
 ## [1.1.0](https://github.com/aversini/node-cli/compare/static-server-v1.0.0...static-server-v1.1.0) (2023-05-22)
 
 

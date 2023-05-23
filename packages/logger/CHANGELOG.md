@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/aversini/node-cli/compare/logger-v1.0.0...logger-v1.1.0) (2023-05-23)
+
+
+### Features
+
+* adding printBox method ([9f8765d](https://github.com/aversini/node-cli/commit/9f8765d760ee72df63ab0c05e7b47c5f8a1f0347))
+
 ## 1.0.0 (2023-05-22)
 
 
