@@ -21,8 +21,6 @@
 		"build:types": "tsc",
 		"clean": "rimraf dist types coverage",
 		"lint": "eslint \"src/*.ts\"",
-		"test": "jest",
-		"test:coverage": "echo 'No coverage available yet'",
 		"watch": "swc --watch --out-dir dist src"
 	},
 	"dependencies": {
