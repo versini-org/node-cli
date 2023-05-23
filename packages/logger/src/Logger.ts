@@ -73,6 +73,7 @@ export class Logger {
 					...arguments_
 				);
 			}
+			// eslint-disable-next-line no-console
 			console[type.method](
 				this.#printOptions.colors ? `${type.color(message)}` : message
 			);

@@ -21,7 +21,7 @@
 		"build:js": "swc --source-maps --out-dir dist src",
 		"build:types": "tsc",
 		"clean": "rimraf dist types coverage",
-		"lint": "eslint \"src/*.ts\"",
+		"lint": "prettier --write \"src/*.ts\" && eslint --fix \"src/*.ts\"",
 		"test": "cross-env-shell NODE_OPTIONS=--experimental-vm-modules jest",
 		"test:coverage": "npm run test -- --coverage",
 		"watch": "swc --watch --out-dir dist src"

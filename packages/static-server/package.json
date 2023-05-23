@@ -20,7 +20,7 @@
 		"build:js": "swc --source-maps --out-dir dist src --copy-files",
 		"build:types": "tsc",
 		"clean": "rimraf dist types coverage",
-		"lint": "eslint \"src/*.ts\"",
+		"lint": "prettier --write \"src/*.ts\" && eslint --fix \"src/*.ts\"",
 		"watch": "swc --watch --out-dir dist src"
 	},
 	"dependencies": {
