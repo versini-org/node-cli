@@ -7,6 +7,7 @@
 	"description": "Examples",
 	"dependencies": {
 		"@node-cli/logger": ">=1.0.0",
+		"@node-cli/perf": ">=1.0.0",
 		"@node-cli/run": ">=1.0.0"
 	},
 	"type": "module",
