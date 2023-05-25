@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/aversini/node-cli/compare/static-server-v1.1.1...static-server-v1.1.2) (2023-05-25)
+
+
+### Bug Fixes
+
+* improving the default not-found page ([b4b122c](https://github.com/aversini/node-cli/commit/b4b122c7055537c79dda6ffe53a17a2fc582a4eb))
+
 ## [1.1.1](https://github.com/aversini/node-cli/compare/static-server-v1.1.0...static-server-v1.1.1) (2023-05-23)
 
 
