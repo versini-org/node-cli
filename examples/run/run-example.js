@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 // ts-check
 
 import { run } from "@node-cli/run";
