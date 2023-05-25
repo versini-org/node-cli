@@ -15,8 +15,8 @@ import kleur from "kleur";
 import open from "open";
 import path from "node:path";
 import portfinder from "portfinder";
-import { renderDirectories } from "./directories.js";
-import { renderNotFound } from "./not-found.js";
+import { renderDirectories } from "./templates/directories.js";
+import { renderNotFound } from "./templates/not-found.js";
 
 export const logger = new Logger({
 	boring: process.env.NODE_ENV === "test",
@@ -94,7 +94,6 @@ const staticOptions: FastifyStaticOptions = {
 	root: customPath,
 };
 if (config.flags.dirs) {
-	staticOptions.index = false;
 	staticOptions.list = {
 		format: "html",
 		render: renderDirectories,
@@ -103,7 +102,7 @@ if (config.flags.dirs) {
 fastify.register(fastifyStatic, staticOptions);
 
 fastify.setNotFoundHandler((request, reply) => {
-	reply.code(404).type("text/html").send(renderNotFound());
+	reply.code(404).type("text/html").send(renderNotFound(config.flags.dirs));
 });
 
 /**

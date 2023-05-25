@@ -58,7 +58,7 @@ export const config: Configuration = parser({
 		http2: {
 			shortFlag: "H",
 			default: defaultFlags.http2,
-			description: "Set HTTP to version 2",
+			description: "Use HTTP/2 and SSL (local certificate provided)",
 			type: "boolean",
 		},
 		logs: {
