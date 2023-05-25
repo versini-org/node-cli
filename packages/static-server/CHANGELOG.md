@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/aversini/node-cli/compare/static-server-v1.1.2...static-server-v2.0.0) (2023-05-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* directory listing is now enabled by default
+
+### Features
+
+* directory listing is now enabled by default ([c68674b](https://github.com/aversini/node-cli/commit/c68674b9b2bd47e7c5db8c36dcf718e35c60ce8c))
+
 ## [1.1.2](https://github.com/aversini/node-cli/compare/static-server-v1.1.1...static-server-v1.1.2) (2023-05-25)
 
 
