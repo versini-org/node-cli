@@ -1,7 +1,7 @@
 export const defaultFlags = {
 	cache: 0,
 	cors: false,
-	dirs: false,
+	dirs: true,
 	gzip: true,
 	http2: false,
 	logs: false,
