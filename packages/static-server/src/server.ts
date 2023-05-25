@@ -16,6 +16,7 @@ import open from "open";
 import path from "node:path";
 import portfinder from "portfinder";
 import { renderDirectories } from "./directories.js";
+import { renderNotFound } from "./not-found.js";
 
 export const logger = new Logger({
 	boring: process.env.NODE_ENV === "test",
@@ -100,6 +101,10 @@ if (config.flags.dirs) {
 	};
 }
 fastify.register(fastifyStatic, staticOptions);
+
+fastify.setNotFoundHandler((request, reply) => {
+	reply.code(404).type("text/html").send(renderNotFound());
+});
 
 /**
  * Run the server!
