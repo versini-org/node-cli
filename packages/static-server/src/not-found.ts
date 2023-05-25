@@ -10,34 +10,34 @@ export const renderNotFound = () => {
     <title>Static Server Directory Listing</title>
 
     <style>
-		body {
-		  -webkit-font-smoothing: antialiased;
-		  font-family: -apple-system, Calibri, "Helvetica Neue", sans-serif;
-		  margin: 0;
-		  padding: 20px;
-		}
-		main {
-		  max-width: 900px;
-		}
-		header {
-		  display: flex;
-		  flex-wrap: wrap;
-		  justify-content: space-between;
-		}
-		h1 {
-		  color: #000;
-		  font-size: 18px;
-		  font-weight: bold;
-		  margin-top: 0;
-		}
-    code {
-      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
-      font-size: 13px;
-      background-color: #f7f7f7;
-      padding: 2px 4px;
-      border-radius: 3px;
-    }
-	</style>
+      body {
+        -webkit-font-smoothing: antialiased;
+        font-family: -apple-system, Calibri, "Helvetica Neue", sans-serif;
+        margin: 0;
+        padding: 20px;
+      }
+      main {
+        max-width: 900px;
+      }
+      header {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+      }
+      h1 {
+        color: #000;
+        font-size: 18px;
+        font-weight: bold;
+        margin-top: 0;
+      }
+      code {
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+        font-size: 13px;
+        background-color: #f7f7f7;
+        padding: 2px 4px;
+        border-radius: 3px;
+      }
+    </style>
   </head>
 
   <body>
