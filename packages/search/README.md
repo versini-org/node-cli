@@ -32,3 +32,9 @@ Search in all the markdown files under the "src" folder for the keywords "Table 
 ```sh
 > search --type f --pattern ".md$" --grep "Table of Content"
 ```
+
+Get help
+
+```sh
+> search --help
+```
