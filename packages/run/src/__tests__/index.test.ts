@@ -1,4 +1,4 @@
-import { run } from "../index";
+import { run } from "../run";
 
 describe("when testing for run utilities with no logging side-effects", () => {
 	it("should return the command output via stdout", async () => {

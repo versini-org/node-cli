@@ -10,10 +10,16 @@ import kleur from "kleur";
  *
  * @async
  */
+export type RunResult = {
+	stderr?: string | number;
+	stdout?: string | number;
+	exitCode?: number;
+	shortMessage?: string;
+};
 export const run = async (
 	command: string,
 	options?: { ignoreError?: boolean }
-): Promise<any> => {
+): Promise<RunResult> => {
 	const { ignoreError } = {
 		ignoreError: false,
 		...options,
