@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/aversini/node-cli/compare/static-server-v2.0.0...static-server-v2.0.1) (2023-05-27)
+
+
+### Bug Fixes
+
+* using parser 2.0.0 to fix invalid version reporting ([04708d1](https://github.com/aversini/node-cli/commit/04708d13f90bed1facadd273f82ed3d1d7e2fc4a))
+
 ## [2.0.0](https://github.com/aversini/node-cli/compare/static-server-v1.1.2...static-server-v2.0.0) (2023-05-25)
 
 
