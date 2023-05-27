@@ -6,7 +6,7 @@
 	"description": "A wrapper for child_process for nodejs CLI apps",
 	"type": "module",
 	"types": "./dist/index.d.ts",
-	"exports": "./dist/index.js",
+	"exports": "./dist/run.js",
 	"files": [
 		"dist"
 	],
