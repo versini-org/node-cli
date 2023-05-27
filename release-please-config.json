@@ -4,6 +4,7 @@
 		"packages/parser": {},
 		"packages/perf": {},
 		"packages/run": {},
+		"packages/search": {},
 		"packages/static-server": {}
 	}
 }
