@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/aversini/node-cli/compare/search-v1.0.0...search-v1.0.1) (2023-05-27)
+
+
+### Bug Fixes
+
+* using parser 2.0.0 to fix invalid version reporting ([38ad701](https://github.com/aversini/node-cli/commit/38ad7013edb7888f73062e3daed3051d258a5546))
+
 ## 1.0.0 (2023-05-27)
 
 
