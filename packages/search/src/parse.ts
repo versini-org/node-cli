@@ -23,6 +23,7 @@ export type Configuration = {
 
 /* istanbul ignore next */
 export const config: Configuration = parser({
+	meta: import.meta,
 	examples: [
 		{
 			command: 'search --type f --pattern ".jsx$" src/',

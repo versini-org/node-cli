@@ -25,6 +25,7 @@ export type Configuration = {
 };
 
 export const config: Configuration = parser({
+	meta: import.meta,
 	flags: {
 		cache: {
 			shortFlag: "c",

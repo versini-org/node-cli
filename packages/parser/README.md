@@ -13,6 +13,7 @@
 | Argument                  | Type              |
 | ------------------------- | ----------------- |
 | options                   | Object            |
+| options.meta              | import.meta       |
 | options.examples          | Array of Object   |
 | options.flags             | Object            |
 | options.parameters        | Object            |
@@ -25,6 +26,7 @@
 ```js
 import { parser } from "@node-cli/parser";
 const { flags, parameters } = parser({
+	meta: import.meta, // this is required for --version to work correctly
 	examples: [
 		{
 			command: 'my-cli --verbose --command "chmod +x" bin',
