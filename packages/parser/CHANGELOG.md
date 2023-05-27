@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/aversini/node-cli/compare/parser-v1.0.2...parser-v2.0.0) (2023-05-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* meta is now required to find the correct pkg version
+
+### Bug Fixes
+
+* meta is now required to find the correct pkg version ([3c741e1](https://github.com/aversini/node-cli/commit/3c741e1f5825129b2d05b7fc223e17ebdfd54f54))
+
 ## [1.0.2](https://github.com/aversini/node-cli/compare/parser-v1.0.1...parser-v1.0.2) (2023-05-22)
 
 

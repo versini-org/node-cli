@@ -1,6 +1,6 @@
 {
 	"name": "@node-cli/parser",
-	"version": "1.0.2",
+	"version": "2.0.0",
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "A simple CLI parser helper",
