@@ -21,6 +21,7 @@ type Parameters = {
 	};
 };
 export type ParserConfiguration = {
+	meta: any;
 	flags?: Flags;
 	parameters?: Parameters;
 	usage?: boolean | string;
@@ -33,12 +34,16 @@ export type ParserConfiguration = {
 
 export const parser = (configuration: ParserConfiguration) => {
 	const {
+		meta,
 		defaultFlags = {},
 		defaultParameters = {},
 		...others
 	} = configuration;
 	const { helpText, options } = meowOptionsHelper(others);
-	const cli = meow(helpText, { ...options, importMeta: import.meta });
+	const cli = meow(helpText, {
+		...options,
+		importMeta: meta,
+	});
 	meowParserHelper({ cli });
 
 	return {
