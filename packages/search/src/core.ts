@@ -97,7 +97,7 @@ export class Search {
 		return this.foldersBlacklist.test(basename(directory));
 	}
 
-	filterHidden(value: string[]) {
+	filterHidden(value: string[] | string) {
 		if (this.displayHiddenFilesAndFolders) {
 			return true;
 		}
@@ -126,9 +126,12 @@ export class Search {
 		}
 	}
 
-	async scanFileSystem(nodes) {
+	async scanFileSystem(nodes: string[]) {
 		for (const node of nodes) {
-			let result, files, shortname, stat;
+			let result: boolean | RegExpExecArray,
+				files: string[],
+				shortname: string,
+				stat: fs.Stats;
 			try {
 				stat = await lstatAsync(node);
 			} catch {
