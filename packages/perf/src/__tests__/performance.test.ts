@@ -1,6 +1,6 @@
 import { Mock, UnknownFunction } from "jest-mock";
 
-import { Performance } from "../index";
+import { Performance } from "../performance";
 import { jest } from "@jest/globals";
 
 let mockLogError: Mock<UnknownFunction>, spyLogError: any;
