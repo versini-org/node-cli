@@ -9,6 +9,8 @@
 
 ## Installation
 
+This command line utility can be installed globally or locally within your project. It does make more sense to have it installed globally though, since it then can be use anywhere by simply starting it to search files and folders located in the current folder.
+
 ```sh
 > npm install --global @node-cli/search
 ```
