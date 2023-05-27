@@ -53,3 +53,7 @@ const { exitCode, shortMessage } = await runCommand("ls /not-a-folder", {
 });
 // -> exitCode is 1 and shortMessage is "Command failed with exit code 1: ls /not-a-folder"
 ```
+
+## License
+
+MIT © Arno Versini

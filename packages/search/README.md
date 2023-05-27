@@ -40,3 +40,7 @@ Get help
 ```sh
 > search --help
 ```
+
+## License
+
+MIT © Arno Versini

@@ -75,3 +75,7 @@ const { flags, parameters } = parser({
 ## Note
 
 If options `--version` or `--help` are used, they will automatically print version or help, respectively, and exit with 0 (`process.exit(0)`).
+
+## License
+
+MIT © Arno Versini
