@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/aversini/node-cli/compare/perf-v1.0.0...perf-v1.0.1) (2023-05-27)
+
+
+### Bug Fixes
+
+* better types export ([b78b471](https://github.com/aversini/node-cli/commit/b78b471a5206bd3f5e556199946f934d16020ce6))
+
 ## 1.0.0 (2023-05-24)
 
 

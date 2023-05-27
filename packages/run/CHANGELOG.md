@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/aversini/node-cli/compare/run-v1.0.0...run-v1.0.1) (2023-05-27)
+
+
+### Bug Fixes
+
+* better types export ([5950501](https://github.com/aversini/node-cli/commit/5950501610b7fca4c1ce74411f429b5fbd6a5cff))
+
 ## 1.0.0 (2023-05-22)
 
 
