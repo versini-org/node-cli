@@ -27,7 +27,6 @@ const logger = new Logger({
 export class Search {
 	boring?: boolean;
 	command?: string;
-	depth?: number;
 	displayHiddenFilesAndFolders?: boolean;
 	displayLongListing?: boolean;
 	displayStats?: boolean;
@@ -77,7 +76,6 @@ export class Search {
 		this.displayLongListing = !short;
 		this.displayStats = stats;
 		this.displayHiddenFilesAndFolders = dot;
-		this.depth = 2;
 		this.nodesList = [];
 		this.foldersBlacklist = foldersBlacklist;
 		this.totalDirScanned = 0;

@@ -47,7 +47,6 @@ export const config: Configuration = parser({
 		},
 		command: {
 			shortFlag: "c",
-			default: "N/A",
 			description: "Command to execute over each node (ex: chmod +x)",
 			type: "string",
 		},
@@ -58,7 +57,6 @@ export const config: Configuration = parser({
 		},
 		grep: {
 			shortFlag: "g",
-			default: "N/A",
 			description: "A RegExp to match the content of the files found",
 			type: "string",
 		},
@@ -75,7 +73,6 @@ export const config: Configuration = parser({
 		},
 		pattern: {
 			shortFlag: "p",
-			default: "N/A",
 			description: "A regular expression to match file or folder names",
 			type: "string",
 		},
