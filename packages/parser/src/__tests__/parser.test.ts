@@ -3,6 +3,7 @@ import { parser } from "../parser.js";
 let processArgv: string[];
 const mockProcessName = "my-app";
 const parserOptions = {
+	meta: import.meta,
 	examples: [
 		{
 			command: 'my-cli --type f --pattern=".sh$" --command "chmod +x"',
