@@ -180,11 +180,11 @@ export class Spinner {
 		this.spinner.text = message;
 	}
 
-	start(message: string) {
+	start(message?: string) {
 		this.spinner.start(message);
 	}
 
-	stop(message: string, type?: string) {
+	stop(message?: string, type?: string) {
 		switch (type) {
 			case Spinner.ERROR: {
 				this.spinner.fail(message);
