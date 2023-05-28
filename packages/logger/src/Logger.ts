@@ -1,4 +1,5 @@
 import boxen, { Options as BoxenOptions } from "boxen";
+import ora, { Ora } from "ora";
 
 import kleur from "kleur";
 import util from "node:util";
@@ -161,5 +162,35 @@ export class Logger {
 
 		this.#showTimestamp = oldTimestamp;
 		this.#globalPrefix = oldPrefix;
+	}
+}
+
+/* istanbul ignore next */
+export class Spinner {
+	spinner: Ora;
+
+	constructor(message: string) {
+		this.spinner = ora({
+			isSilent: process.env.NODE_ENV === "test",
+		});
+		this.spinner.start(message);
+	}
+
+	set text(message: string) {
+		this.spinner.text = message;
+	}
+
+	start(message: string) {
+		this.spinner.start(message);
+	}
+
+	fail(message: string) {
+		this.spinner.fail(message);
+	}
+
+	succeed(message: string) {
+		setTimeout(() => {
+			this.spinner.succeed(message);
+		}, 1000);
 	}
 }

@@ -11,6 +11,11 @@
 > npm install --save-dev @node-cli/logger
 ```
 
+2 classes are available:
+
+- `Logger` which is a facade for `console` and with added methods, such as `printBox()`
+- `Spinner` is an "elegant terminal spinner", relying behind the scenes on the excellent [ora](https://github.com/sindresorhus/ora)
+
 ## Usage
 
 ```js
@@ -22,9 +27,25 @@ log.warn("this is a warning log");
 log.error("this is an error log");
 ```
 
+```js
+import { Spinner } from "@node-cli/logger";
+const spinner = new Spinner("Updating package.json...");
+
+// assuming a long running process here...
+spinner.text = "Git stage and commit, please wait...";
+// assuming a long running process here...
+spinner.text = "Almost there...";
+// assuming a long running process here... returning some result
+if (result === "success") {
+	spinner.succeed("Process completed successfully!");
+} else {
+	spinner.fail("Process failed miserably...");
+}
+```
+
 ## API
 
-### Methods
+### Logger methods
 
 Logger relies on `console` behind the scenes, and therefore supports the same [string substitution](https://developer.mozilla.org/en-US/docs/Web/API/console#Using_string_substitutions) capabilities and uses the following methods:
 
