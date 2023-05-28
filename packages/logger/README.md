@@ -156,7 +156,7 @@ log.info("this will be NOT be logged with a timestamp");
 
 ### Log one or more messages in a box
 
-the `printBox` method is a wrapper around the excellent [Boxen](https://github.com/sindresorhus/boxen), with sensible defaults.
+The `printBox` method is a wrapper around the excellent [Boxen](https://github.com/sindresorhus/boxen), with sensible defaults.
 
 ```js
 import { Logger } from "@node-cli/logger";
