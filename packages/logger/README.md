@@ -11,6 +11,11 @@
 > npm install --save-dev @node-cli/logger
 ```
 
+2 classes are available:
+
+- `Logger` which is a facade for `console` and with added methods, such as `printBox()`
+- `Spinner` is an "elegant terminal spinner", relying behind the scenes on the excellent [ora](https://github.com/sindresorhus/ora)
+
 ## Usage
 
 ```js
@@ -22,9 +27,37 @@ log.warn("this is a warning log");
 log.error("this is an error log");
 ```
 
+```js
+import { Spinner } from "@node-cli/logger";
+const spinner = new Spinner("Updating package.json...");
+
+// assuming a long running process here...
+spinner.text = "Git stage and commit, please wait...";
+// assuming a long running process here...
+spinner.text = "Almost there...";
+// assuming a long running process here... returning some result
+if (result === "success") {
+	spinner.stop("Process completed successfully!");
+} else {
+	spinner.stop("Process failed miserably...", Spinner.ERROR);
+}
+```
+
 ## API
 
-### Methods
+### Spinner methods
+
+| Method      | Arguments    | Description                                                                                                                                                                                                                        |
+| ----------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| constructor | options      | Initialize a Spinner instance with [ora](https://github.com/sindresorhus/ora) options                                                                                                                                              |
+| start       | text         | Starts the spinner on the terminal and append a string to it                                                                                                                                                                       |
+| stop        | text, status | Stop the spinner, change it to a green, red, yellow or blue marker, and persist the current text, or text if provided. The argument `status` can be one of `Spinner.SUCCESS`, `Spinner.ERROR`, `Spinner.WARNING` or `Spinner.INFO` |
+
+| Setter | Description                                                                         |
+| ------ | ----------------------------------------------------------------------------------- |
+| text   | Set the text of the spinner. If the spinner is stopped, the text will be persisted. |
+
+### Logger methods
 
 Logger relies on `console` behind the scenes, and therefore supports the same [string substitution](https://developer.mozilla.org/en-US/docs/Web/API/console#Using_string_substitutions) capabilities and uses the following methods:
 

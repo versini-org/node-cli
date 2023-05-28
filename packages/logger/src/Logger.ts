@@ -1,7 +1,8 @@
 import boxen, { Options as BoxenOptions } from "boxen";
+import ora, { Ora, Options as OraOptions } from "ora";
+import util, { types } from "node:util";
 
 import kleur from "kleur";
-import util from "node:util";
 
 export type PrintBoxOptions = {
 	newLineAfter?: boolean;
@@ -162,4 +163,52 @@ export class Logger {
 		this.#showTimestamp = oldTimestamp;
 		this.#globalPrefix = oldPrefix;
 	}
+}
+
+/* istanbul ignore next */
+export class Spinner {
+	spinner: Ora;
+
+	constructor(options?: OraOptions) {
+		this.spinner = ora({
+			...options,
+			isSilent: process.env.NODE_ENV === "test",
+		});
+	}
+
+	set text(message: string) {
+		this.spinner.text = message;
+	}
+
+	start(message: string) {
+		this.spinner.start(message);
+	}
+
+	stop(message: string, type?: string) {
+		switch (type) {
+			case Spinner.ERROR: {
+				this.spinner.fail(message);
+				break;
+			}
+			case Spinner.WARNING: {
+				this.spinner.warn(message);
+				break;
+			}
+			case Spinner.INFO: {
+				this.spinner.info(message);
+				break;
+			}
+			default: {
+				setTimeout(() => {
+					this.spinner.succeed(message);
+				}, 1000);
+				break;
+			}
+		}
+	}
+
+	static SUCCESS = "success";
+	static ERROR = "fail";
+	static WARNING = "warn";
+	static INFO = "info";
 }

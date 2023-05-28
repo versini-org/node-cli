@@ -1,8 +1,9 @@
 // ts-check
 
-import { Logger } from "@node-cli/logger";
+import { Logger, Spinner } from "@node-cli/logger";
 
 const log = new Logger();
+
 log.timestamp = true;
 // log.boring = true;
 log.prefix = "==>";
@@ -23,3 +24,15 @@ log.printBox(["hello world", "hello world hello world"], {
 });
 // log.log();
 // log.log("after the box");
+
+const spinner = new Spinner({
+	text: "Updating package.json...",
+	// color: "red",
+});
+spinner.start();
+setTimeout(() => {
+	spinner.text = "Almost there...";
+	setTimeout(() => {
+		spinner.stop("Process completed successfully!", Spinner.WARNING);
+	}, 100);
+}, 200);
