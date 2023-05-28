@@ -161,14 +161,14 @@ import { Logger } from "@node-cli/logger";
 const log = new Logger();
 
 log.printBox(["Message One!", "Message Two!"]);
-/*
+
 ┌──────────────────┐
 │                  │
 │   Message One!   │
 │   Message Two!   │
 │                  │
 └──────────────────┘
-*/
+
 ```
 
 `printBox` accepts the following options as a second argument:
@@ -176,6 +176,27 @@ log.printBox(["Message One!", "Message Two!"]);
 - `printLineAfter`
 - `printLineBefore`
 - All the options available on [Boxen](https://github.com/sindresorhus/boxen)
+
+Custom example with:
+
+- a red border color
+- no extra line after the box
+- no padding (no space between the border and the text)
+- text is justified to the right
+- there is a title injected at the top of the box
+
+```js
+import { Logger } from "@node-cli/logger";
+const log = new Logger();
+
+log.printBox(["Message One!", "Message Two!"], {
+	borderColor: "red",
+	newLineAfter: false,
+	padding: 0,
+	textAlignment: "right",
+	title: "Hello World Box Title",
+});
+```
 
 ### Log multiple errors and optionally exit the main program
 
