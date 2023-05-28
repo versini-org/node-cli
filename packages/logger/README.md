@@ -35,6 +35,7 @@ Logger relies on `console` behind the scenes, and therefore supports the same [s
 | info               | Informative logging of information.                       | blue         |
 | warn               | Outputs a message to the console with the log level debug | yellow       |
 | error              | Outputs an error message.                                 | red          |
+| printBox           | Output message(s) in a box                                | custom       |
 | printErrorsAndExit | Output error message(s) and exit                          | red          |
 
 ### Options
@@ -151,6 +152,52 @@ const log = new Logger({ timestamp: true });
 log.info("this will be logged with a timestamp");
 log.timestamp = false;
 log.info("this will be NOT be logged with a timestamp");
+```
+
+### Log one or more messages in a box
+
+The `printBox` method is a wrapper around the excellent [Boxen](https://github.com/sindresorhus/boxen), with sensible defaults.
+
+```js
+import { Logger } from "@node-cli/logger";
+const log = new Logger();
+
+log.printBox(["Message One!", "Message Two!"]);
+
+┌──────────────────┐
+│                  │
+│   Message One!   │
+│   Message Two!   │
+│                  │
+└──────────────────┘
+
+```
+
+`printBox` accepts the following options as a second argument:
+
+- `printLineAfter` (default to `true`)
+- `printLineBefore` (default to `true`)
+- As well as all the options available with [Boxen](https://github.com/sindresorhus/boxen)
+
+Here is a custom example with:
+
+- a red border color
+- no extra line after the box
+- no padding (no space between the border and the text)
+- text is justified to the right
+- there is a title injected at the top of the box
+
+```js
+import { Logger } from "@node-cli/logger";
+const log = new Logger();
+
+log.printBox(["Message One!", "Message Two!"], {
+	borderColor: "red",
+	newLineAfter: false,
+	padding: 0,
+	textAlignment: "right",
+	title: "Hello World Box Title",
+});
 ```
 
 ### Log multiple errors and optionally exit the main program
