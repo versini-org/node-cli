@@ -37,9 +37,9 @@ spinner.text = "Git stage and commit, please wait...";
 spinner.text = "Almost there...";
 // assuming a long running process here... returning some result
 if (result === "success") {
-	spinner.succeed("Process completed successfully!");
+	spinner.stop("Process completed successfully!");
 } else {
-	spinner.fail("Process failed miserably...");
+	spinner.stop("Process failed miserably...", Spinner.ERROR);
 }
 ```
 
