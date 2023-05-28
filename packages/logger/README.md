@@ -35,6 +35,7 @@ Logger relies on `console` behind the scenes, and therefore supports the same [s
 | info               | Informative logging of information.                       | blue         |
 | warn               | Outputs a message to the console with the log level debug | yellow       |
 | error              | Outputs an error message.                                 | red          |
+| printBox           | Output message(s) in a box                                | custom       |
 | printErrorsAndExit | Output error message(s) and exit                          | red          |
 
 ### Options
@@ -152,6 +153,29 @@ log.info("this will be logged with a timestamp");
 log.timestamp = false;
 log.info("this will be NOT be logged with a timestamp");
 ```
+
+### Log one or more messages in a box
+
+```js
+import { Logger } from "@node-cli/logger";
+const log = new Logger();
+
+log.printBox(["Message One!", "Message Two!"]);
+/*
+┌──────────────────┐
+│                  │
+│   Message One!   │
+│   Message Two!   │
+│                  │
+└──────────────────┘
+*/
+```
+
+`printBox` accepts the following options as a second argument:
+
+- `printLineAfter`
+- `printLineBefore`
+- All the options available on [Boxen](https://github.com/sindresorhus/boxen)
 
 ### Log multiple errors and optionally exit the main program
 
