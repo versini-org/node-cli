@@ -103,6 +103,17 @@ describe("when testing for meowHelpers with no logging side-effects", () => {
 	});
 
 	it("should return the right result from parser", async () => {
-		const { flags, parameters } = parser(parserOptions);
+		const { flags, parameters, showHelp } = parser(parserOptions);
+		expect(flags).toEqual({
+			boring: false,
+			dot: false,
+			help: false,
+			ignoreCase: false,
+			short: false,
+			stats: false,
+			version: false,
+		});
+		expect(parameters).toEqual({});
+		expect(showHelp).toBeInstanceOf(Function);
 	});
 });
