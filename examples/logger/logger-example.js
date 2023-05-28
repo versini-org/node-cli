@@ -25,11 +25,14 @@ log.printBox(["hello world", "hello world hello world"], {
 // log.log();
 // log.log("after the box");
 
-const spinner = new Spinner("Updating package.json...");
+const spinner = new Spinner({
+	text: "Updating package.json...",
+	// color: "red",
+});
 spinner.start();
 setTimeout(() => {
 	spinner.text = "Almost there...";
 	setTimeout(() => {
-		spinner.succeed("Process completed successfully!");
-	}, 1000);
-}, 2000);
+		spinner.stop("Process completed successfully!", Spinner.WARNING);
+	}, 100);
+}, 200);
