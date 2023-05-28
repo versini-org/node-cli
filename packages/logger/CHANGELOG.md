@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0](https://github.com/aversini/node-cli/compare/logger-v1.1.0...logger-v1.2.0) (2023-05-28)
+
+
+### Features
+
+* adding Spinner class ([a123cf6](https://github.com/aversini/node-cli/commit/a123cf6ee1b89df47ba348f52db487aa26e4d7c3))
+
+
+### Bug Fixes
+
+* start() and stop() methods arguments are optional ([e6df4c3](https://github.com/aversini/node-cli/commit/e6df4c3d13709ae15bdcc23587a5a666f100316f))
+
 ## [1.1.0](https://github.com/aversini/node-cli/compare/logger-v1.0.0...logger-v1.1.0) (2023-05-23)
 
 

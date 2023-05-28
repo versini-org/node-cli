@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/aversini/node-cli/compare/parser-v2.0.0...parser-v2.1.0) (2023-05-28)
+
+
+### Features
+
+* expose showHelp method ([c833d04](https://github.com/aversini/node-cli/commit/c833d04cfc01a81722d35704a20088fb29f891e1))
+
 ## [2.0.0](https://github.com/aversini/node-cli/compare/parser-v1.0.2...parser-v2.0.0) (2023-05-27)
 
 
