@@ -6,7 +6,7 @@
 
 # API
 
-**parser(options) ⇒ { flags, parameters }**
+**parser(options) ⇒ { flags, parameters, showHelp }**
 
 ## Arguments
 
@@ -25,7 +25,8 @@
 
 ```js
 import { parser } from "@node-cli/parser";
-const { flags, parameters } = parser({
+
+const { flags, parameters, showHelp } = parser({
 	meta: import.meta, // this is required for --version to work correctly
 	examples: [
 		{
@@ -70,6 +71,10 @@ const { flags, parameters } = parser({
 		verbose: false,
 	},
 });
+
+// `flags` will be an object with what the user provided
+// `parameters` will be an object with what the user provided
+// `showHelp` is a method that can be invoked to display help instructions
 ```
 
 ## Note

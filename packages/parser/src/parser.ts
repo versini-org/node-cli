@@ -47,6 +47,7 @@ export const parser = (configuration: ParserConfiguration) => {
 	meowParserHelper({ cli });
 
 	return {
+		showHelp: cli.showHelp,
 		flags: shallowMerge(defaultFlags, cli.flags),
 		parameters: shallowMerge(defaultParameters, cli.input),
 	};
