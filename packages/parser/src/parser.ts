@@ -20,6 +20,14 @@ type Parameters = {
 		description: string;
 	};
 };
+type Restrictions = {
+	[key: string | number]: {
+		exit: number;
+		message: string | (() => void);
+		test: (value: any) => boolean;
+	};
+};
+
 export type ParserConfiguration = {
 	meta: any;
 	flags?: Flags;
@@ -30,6 +38,7 @@ export type ParserConfiguration = {
 		| { command?: string; description?: string; comment?: string }[];
 	defaultFlags?: any;
 	defaultParameters?: any;
+	restrictions?: Restrictions;
 };
 
 export const parser = (configuration: ParserConfiguration) => {
@@ -37,6 +46,7 @@ export const parser = (configuration: ParserConfiguration) => {
 		meta,
 		defaultFlags = {},
 		defaultParameters = {},
+		restrictions,
 		...others
 	} = configuration;
 	const { helpText, options } = meowOptionsHelper(others);
@@ -44,7 +54,7 @@ export const parser = (configuration: ParserConfiguration) => {
 		...options,
 		importMeta: meta,
 	});
-	meowParserHelper({ cli });
+	meowParserHelper({ cli, restrictions });
 
 	return {
 		showHelp: cli.showHelp,

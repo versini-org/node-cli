@@ -17,6 +17,7 @@
 | options.examples          | Array of Object   |
 | options.flags             | Object            |
 | options.parameters        | Object            |
+| options.restrictions      | Array of Object   |
 | options.usage             | String or Boolean |
 | options.defaultFlags      | Object            |
 | options.defaultParameters | Object            |
@@ -35,6 +36,16 @@ const { flags, parameters, showHelp } = parser({
 		},
 	],
 	flags: {
+		encrypt: {
+			shortFlag: "e",
+			description: "Encrypt the file",
+			type: "boolean",
+		},
+		decrypt: {
+			shortFlag: "d",
+			description: "Decrypt the file",
+			type: "boolean",
+		},
 		verbose: {
 			shortFlag: "V",
 			description: "Enable extra logging",
@@ -65,6 +76,14 @@ const { flags, parameters, showHelp } = parser({
 			description: "the destination",
 		},
 	},
+	restrictions: [
+		{
+			exit: 1,
+			message: () =>
+				log.error("Error: --encrypt or --decrypt option must be provided."),
+			test: (x) => x.encrypt === false && x.decrypt === false,
+		},
+	],
 	// use usage:true is equivalent to the following line
 	usage: "my-cli [options] [src] [dest]",
 	defaultFlags: {
