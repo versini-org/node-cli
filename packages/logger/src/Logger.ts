@@ -1,8 +1,8 @@
 import boxen, { Options as BoxenOptions } from "boxen";
 import ora, { Ora, Options as OraOptions } from "ora";
-import util, { types } from "node:util";
 
 import kleur from "kleur";
+import util from "node:util";
 
 export type PrintBoxOptions = {
 	newLineAfter?: boolean;

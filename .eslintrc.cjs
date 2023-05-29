@@ -5,6 +5,7 @@ module.exports = {
 		"prettier",
 		"./configuration/eslint-rules/best-practices.cjs",
 		"./configuration/eslint-rules/possible-errors.cjs",
+		"./configuration/eslint-rules/variables.cjs",
 	],
 	parser: "@typescript-eslint/parser",
 	plugins: ["@typescript-eslint"],
