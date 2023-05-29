@@ -20,12 +20,10 @@ type Parameters = {
 		description: string;
 	};
 };
-type Restrictions = {
-	[key: string | number]: {
-		exit: number;
-		message: string | (() => void);
-		test: (value: any) => boolean;
-	};
+type Restriction = {
+	exit: number;
+	message: string | (() => void);
+	test: (value: any) => boolean;
 };
 
 export type ParserConfiguration = {
@@ -38,7 +36,7 @@ export type ParserConfiguration = {
 		| { command?: string; description?: string; comment?: string }[];
 	defaultFlags?: any;
 	defaultParameters?: any;
-	restrictions?: Restrictions;
+	restrictions?: Restriction[];
 };
 
 export const parser = (configuration: ParserConfiguration) => {
