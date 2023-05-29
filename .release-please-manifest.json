@@ -1,9 +1,10 @@
 {
 	"packages/logger": "1.2.0",
-	"packages/parser": "2.1.0",
+	"packages/parser": "2.2.0",
 	"packages/run": "1.0.1",
 	"packages/static-server": "2.0.1",
 	"packages/perf": "1.0.1",
 	"packages/search": "1.0.1",
-	"packages/timer": "1.0.0"
+	"packages/timer": "1.0.0",
+	"packages/secret": "1.0.0"
 }
