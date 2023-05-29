@@ -5,6 +5,7 @@
 		"packages/perf": {},
 		"packages/run": {},
 		"packages/search": {},
+		"packages/secret": {},
 		"packages/static-server": {},
 		"packages/timer": {}
 	}
