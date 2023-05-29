@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This repository is a monorepo. There are multiple packages available under the "packages" folder. They are all intended to either provide Node CLI tools or library helpers for Node CLI tools.
+This repository is a monorepo. There are multiple packages available under the ["packages"](https://github.com/aversini/node-cli/tree/main/packages) folder. They are all intended to either provide Node CLI tools or library helpers for Node CLI tools.
 
 ## Node.js compatibility
 
