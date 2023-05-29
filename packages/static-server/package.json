@@ -25,7 +25,7 @@
 	},
 	"dependencies": {
 		"@fastify/caching": "8.3.0",
-		"@fastify/compress": "6.3.0",
+		"@fastify/compress": "6.4.0",
 		"@fastify/cors": "8.2.1",
 		"@fastify/static": "6.10.1",
 		"@node-cli/logger": ">=1.0.0",
