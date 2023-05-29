@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.2.0](https://github.com/aversini/node-cli/compare/parser-v2.1.0...parser-v2.2.0) (2023-05-29)
+
+
+### Features
+
+* adding support for "restrictions" ([44bc43c](https://github.com/aversini/node-cli/commit/44bc43cae817f714f67c2d9bb12e8d190c6d3c87))
+
+
+### Bug Fixes
+
+* restrictions type is an array of objects ([7b1f2fa](https://github.com/aversini/node-cli/commit/7b1f2faf7243f622fa97ce774e26c913fb58dae2))
+
 ## [2.1.0](https://github.com/aversini/node-cli/compare/parser-v2.0.0...parser-v2.1.0) (2023-05-28)
 
 
