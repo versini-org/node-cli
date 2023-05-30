@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/aversini/node-cli/compare/perf-v1.0.1...perf-v1.0.2) (2023-05-30)
+
+
+### Code Refactoring
+
+* use @node-cli/utilities and remove lodash dep ([e93c5e3](https://github.com/aversini/node-cli/commit/e93c5e3d269d8ee3432c690fdfda982668331254))
+
 ## [1.0.1](https://github.com/aversini/node-cli/compare/perf-v1.0.0...perf-v1.0.1) (2023-05-27)
 
 

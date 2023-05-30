@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.2](https://github.com/aversini/node-cli/compare/static-server-v2.0.1...static-server-v2.0.2) (2023-05-30)
+
+
+### Bug Fixes
+
+* removing unused dependencies ([391cf2c](https://github.com/aversini/node-cli/commit/391cf2ca05ce800712256637869dbfa8f5a98329))
+
 ## [2.0.1](https://github.com/aversini/node-cli/compare/static-server-v2.0.0...static-server-v2.0.1) (2023-05-27)
 
 
