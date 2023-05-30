@@ -1,9 +1,6 @@
-import {
-	meowOptionsHelper,
-	meowParserHelper,
-	shallowMerge,
-} from "./utilities.js";
+import { meowOptionsHelper, meowParserHelper } from "./utilities.js";
 
+import { fastMerge } from "@node-cli/utilities";
 import meow from "meow";
 
 type Flags = {
@@ -56,7 +53,7 @@ export const parser = (configuration: ParserConfiguration) => {
 
 	return {
 		showHelp: cli.showHelp,
-		flags: shallowMerge(defaultFlags, cli.flags),
-		parameters: shallowMerge(defaultParameters, cli.input),
+		flags: fastMerge(defaultFlags, cli.flags),
+		parameters: fastMerge(defaultParameters, cli.input),
 	};
 };
