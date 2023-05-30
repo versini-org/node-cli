@@ -1,7 +1,7 @@
 import { PerformanceObserver, performance } from "node:perf_hooks";
 
 import { Logger } from "@node-cli/logger";
-import { uniqueID } from "./unique-id.js";
+import { uniqueID } from "@node-cli/utilities";
 
 const logger = new Logger({
 	boring: process.env.NODE_ENV === "test",
