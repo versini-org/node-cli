@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.1](https://github.com/aversini/node-cli/compare/parser-v2.2.0...parser-v2.2.1) (2023-05-30)
+
+
+### Code Refactoring
+
+* use @node-cli/utilities and remove lodash dep ([615e88e](https://github.com/aversini/node-cli/commit/615e88e12ac65287646a277deb43c1b484bca57c))
+
 ## [2.2.0](https://github.com/aversini/node-cli/compare/parser-v2.1.0...parser-v2.2.0) (2023-05-29)
 
 
