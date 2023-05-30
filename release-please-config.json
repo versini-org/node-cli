@@ -7,6 +7,7 @@
 		"packages/search": {},
 		"packages/secret": {},
 		"packages/static-server": {},
-		"packages/timer": {}
+		"packages/timer": {},
+		"packages/utilities": {}
 	}
 }
