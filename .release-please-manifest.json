@@ -6,5 +6,6 @@
 	"packages/perf": "1.0.1",
 	"packages/search": "1.0.1",
 	"packages/timer": "1.0.0",
-	"packages/secret": "1.0.0"
+	"packages/secret": "1.0.0",
+	"packages/utilities": "1.0.0"
 }
