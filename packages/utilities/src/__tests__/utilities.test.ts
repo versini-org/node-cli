@@ -1,10 +1,5 @@
+import { fastMerge, lowerFirst, uniqueID, upperFirst } from "../utilities.js";
 import { isArray, keyBy, merge, orderBy, values } from "lodash-es";
-import {
-	lowerFirst,
-	shallowMerge,
-	uniqueID,
-	upperFirst,
-} from "../utilities.js";
 
 import { deepEqual } from "./deepEqual.js";
 
@@ -56,7 +51,7 @@ describe("when testing for utilities with no logging side-effects", () => {
 		process.env.NODE_ENV = nodeEnvironment;
 	});
 
-	it("should return a new configuration with keys for objB replacing keys from objA with shallowMerge", async () => {
+	it("should return a new configuration with keys for objB replacing keys from objA with fastMerge", async () => {
 		const configDefault = {
 			cache: 0,
 			cors: false,
@@ -90,7 +85,7 @@ describe("when testing for utilities with no logging side-effects", () => {
 		 * equality AFTER the merge is done... Only thing we can do is test
 		 * that the end result gets the right values.
 		 */
-		const result: any = shallowMerge(configDefault, configCustom);
+		const result: any = fastMerge(configDefault, configCustom);
 
 		// eslint-disable-next-line no-magic-numbers
 		expect(result.port).toBe(8081);
@@ -113,7 +108,7 @@ describe("when testing for utilities with no logging side-effects", () => {
 		const other = {
 			a: [{ c: 3 }, { e: 5 }],
 		};
-		const result = shallowMerge(object, other);
+		const result = fastMerge(object, other);
 		expect(
 			deepEqual(result, {
 				a: [
@@ -151,7 +146,7 @@ describe("when testing for utilities with no logging side-effects", () => {
 		 * equality AFTER the merge is done... Only thing we can do is test
 		 * that the end result gets the right values.
 		 */
-		const result: any = shallowMerge(
+		const result: any = fastMerge(
 			configA,
 			configB,
 			(defined: any, custom: any, key: string) => {
@@ -177,7 +172,7 @@ describe("when testing for utilities with no logging side-effects", () => {
 	it("should behave exactly as lodash.mergeWith", async () => {
 		const object = { a: [1], b: [2] };
 		const other = { a: [3], b: [4] };
-		const result = shallowMerge(
+		const result = fastMerge(
 			object,
 			other,
 			(objectValue: string | any[], sourceValue: any) => {

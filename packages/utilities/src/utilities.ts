@@ -53,7 +53,7 @@ export const uniqueID = (prefix: string = ""): string => {
  *
  * With the `customizer` function, the behavior is the same except that `customizer` is
  * invoked to produce the merged values of the destination and source properties.
- * If customizer returns undefined, merging is handled by the `shallowMerge` instead.
+ * If customizer returns undefined, merging is handled by the `fastMerge` instead.
  * The customizer is invoked with six arguments: `(objValue, srcValue, key, object,
  * source, stack)`
  * @param {object} objectA
@@ -61,7 +61,7 @@ export const uniqueID = (prefix: string = ""): string => {
  * @param {function} customizer
  * @returns {object} !! WARNING: this method will mutate objectA
  */
-export const shallowMerge = (
+export const fastMerge = (
 	objectA: any,
 	objectB: any,
 	customizer?: any

@@ -10,7 +10,7 @@
 - [Installation](#installation)
 - [API](#api)
   - [lowerFirst](#lowerfirst)
-  - [shallowMerge](#shallowmerge)
+  - [fastMerge](#fastmerge)
   - [uniqueID](#uniqueid)
   - [upperFirst](#upperfirst)
 - [License](#license)
@@ -36,35 +36,35 @@ const str = lowerFirst("HELLO WORLD");
 // str is "hELLO WORLD"
 ```
 
-### shallowMerge
+### fastMerge
 
-**shallowMerge(objA: object, objB: object, customizer: () => void) ⇒ `object`**
+**fastMerge(objA: object, objB: object, customizer: () => void) ⇒ `object`**
 
 Wrapper method for lodash `merge()` and `mergeWith()` methods.
 
 Without the `customizer` function, this method recursively merges own and inherited enumerable string keyed properties of source objects into the destination object. Source properties that resolve to undefined are skipped if a destination value exists. Array and plain object properties are merged recursively. Other objects and value types are overridden by assignment. Source objects are applied from left to right. Subsequent sources overwrite property assignments of previous sources.
 
-With the `customizer` function, the behavior is the same except that `customizer` is invoked to produce the merged values of the destination and source properties. If customizer returns undefined, merging is handled by the `shallowMerge` instead. The customizer is invoked with six arguments: `(objValue, srcValue, key, object, source, stack)`
+With the `customizer` function, the behavior is the same except that `customizer` is invoked to produce the merged values of the destination and source properties. If customizer returns undefined, merging is handled by the `fastMerge` instead. The customizer is invoked with six arguments: `(objValue, srcValue, key, object, source, stack)`
 
 **WARNING**: this method will mutate objA!
 
 ```js
-import { shallowMerge } from "@node-cli/utilities";
+import { fastMerge } from "@node-cli/utilities";
 
 const objA = { port: 123, cache: false, gzip: true };
 const objB = { port: 456, gzip: false };
-const objC = shallowMerge(objA, objB);
+const objC = fastMerge(objA, objB);
 
 // objC is { port: 456, cache: false, gzip: false };
 ```
 
 ```js
 import { isArray } from "lodash-es";
-import { shallowMerge } from "@node-cli/utilities";
+import { fastMerge } from "@node-cli/utilities";
 
 const objA = { a: [1], b: [2] };
 const objB = { a: [3], b: [4] };
-const objC = shallowMerge(objA, objB, (objValue, srcValue) => {
+const objC = fastMerge(objA, objB, (objValue, srcValue) => {
 	if (isArray(objValue)) {
 		return objValue.concat(srcValue);
 	}
