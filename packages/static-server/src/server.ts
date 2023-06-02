@@ -109,6 +109,7 @@ fastify.setNotFoundHandler((request, reply) => {
  * Run the server!
  */
 let port: number,
+	address: string,
 	portMessage = "";
 const start = async () => {
 	try {
@@ -119,9 +120,18 @@ const start = async () => {
 			)}`;
 			config.flags.port = port;
 		}
-		await fastify.listen({ port: config.flags.port });
+		const listenOptions: { port?: number; host?: string } = {
+			port: config.flags.port,
+		};
+		if (config.flags.host) {
+			listenOptions.host = config.flags.host;
+			address = config.flags.host;
+		} else {
+			address = "localhost";
+		}
+		await fastify.listen(listenOptions);
 
-		const url = `${config.flags.http2 ? "https" : "http"}://localhost:${
+		const url = `${config.flags.http2 ? "https" : "http"}://${address}:${
 			config.flags.port
 		}`;
 		const messages = [

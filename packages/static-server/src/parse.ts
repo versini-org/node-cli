@@ -11,6 +11,7 @@ export type Flags = {
 	logs?: boolean;
 	open?: boolean;
 	port?: number;
+	host?: string;
 };
 
 export type Parameters = {
@@ -27,6 +28,10 @@ export type Configuration = {
 export const config: Configuration = parser({
 	meta: import.meta,
 	flags: {
+		host: {
+			description: "Host to listen on",
+			type: "string",
+		},
 		cache: {
 			shortFlag: "c",
 			default: defaultFlags.cache,
