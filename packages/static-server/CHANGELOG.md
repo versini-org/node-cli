@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/aversini/node-cli/compare/static-server-v2.0.2...static-server-v2.1.0) (2023-06-02)
+
+
+### Features
+
+* adding --host option ([20e74fd](https://github.com/aversini/node-cli/commit/20e74fdfb0c79fef9b7ab11ae2d93b2566337f9e))
+
 ## [2.0.2](https://github.com/aversini/node-cli/compare/static-server-v2.0.1...static-server-v2.0.2) (2023-05-30)
 
 
