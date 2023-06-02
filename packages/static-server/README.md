@@ -24,18 +24,19 @@ At that point, you should be able to visit `http://localhost:8080` and see the f
 
 ### Options
 
-| option                     | default | description                                                 |
-| -------------------------- | ------- | ----------------------------------------------------------- |
-| `-c` or `--cache <number>` | 0       | Time in seconds for caching files                           |
-| `-C` or `--cors`           | false   | Set CORS headers to \* to allow requests from any origin    |
-| `-d` or `--dirs`           | true    | List the directory's contents                               |
-| `-h` or `--help`           |         | Display help instructions                                   |
-| `-H` or `--http2`          | false   | Enable HTTP/2 and SSL (https)                               |
-| `-l` or `--logs`           | false   | Log HTTP requests at the prompt                             |
-| `-o` or `--open`           | false   | Open in your default browser                                |
-| `-p` or `--port <n>`       | 8080    | Port to listen on - Will try next available if already used |
-| `-g` or `--gzip`           | true    | Enable GZIP compression                                     |
-| `-v` or `--version`        |         | Output the current version                                  |
+| option                     | default   | description                                                 |
+| -------------------------- | --------- | ----------------------------------------------------------- |
+| `-c` or `--cache <number>` | 0         | Time in seconds for caching files                           |
+| `-C` or `--cors`           | false     | Set CORS headers to \* to allow requests from any origin    |
+| `-d` or `--dirs`           | true      | List the directory's contents                               |
+| `-h` or `--help`           |           | Display help instructions                                   |
+| `--host`                   | 127.0.0.1 | Change the default host address to bind to                  |
+| `-H` or `--http2`          | false     | Enable HTTP/2 and SSL (https)                               |
+| `-l` or `--logs`           | false     | Log HTTP requests at the prompt                             |
+| `-o` or `--open`           | false     | Open in your default browser                                |
+| `-p` or `--port <n>`       | 8080      | Port to listen on - Will try next available if already used |
+| `-g` or `--gzip`           | true      | Enable GZIP compression                                     |
+| `-v` or `--version`        |           | Output the current version                                  |
 
 ## License
 
