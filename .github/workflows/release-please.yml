@@ -34,7 +34,7 @@ jobs:
       - name: Build Packages
         if: ${{ steps.release.outputs.releases_created }}
         run: |
-          npx lerna bootstrap
+          yarn install
           git checkout yarn.lock
           npx lerna run build
 
