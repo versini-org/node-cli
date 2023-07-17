@@ -68,7 +68,7 @@ export const config: Configuration = parser({
 			exit: 1,
 			message: () =>
 				kleur.red(
-					`\nError: one of --encrypt or --decrypt option must be provided.`
+					`\nError: one of --encrypt or --decrypt option must be provided.`,
 				),
 			test: (x: { encrypt: boolean; decrypt: boolean }) =>
 				x.encrypt === false && x.decrypt === false,
@@ -77,7 +77,7 @@ export const config: Configuration = parser({
 			exit: 1,
 			message: () =>
 				kleur.red(
-					`\nError: either --encrypt or --decrypt option must be provided, but not both.`
+					`\nError: either --encrypt or --decrypt option must be provided, but not both.`,
 				),
 			test: (x: { encrypt: boolean; decrypt: boolean }) =>
 				x.encrypt === true && x.decrypt === true,

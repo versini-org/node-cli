@@ -40,13 +40,13 @@ if (Object.entries(config.parameters).length > 0) {
 
 if (outputFileExists) {
 	const goodToGo = await displayConfirmation(
-		`The file ${outputFile} already exists, overwrite it?`
+		`The file ${outputFile} already exists, overwrite it?`,
 	);
 	shouldContinue(goodToGo);
 }
 
 const password = await displayPromptWithPassword(
-	`Enter password to ${actionName} the file`
+	`Enter password to ${actionName} the file`,
 );
 
 try {

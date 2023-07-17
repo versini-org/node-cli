@@ -5,7 +5,7 @@ import kleur from "kleur";
 const plugin: FastifyPluginAsync = async (fastify): Promise<void> => {
 	fastify.addHook("onResponse", async (request, reply) => {
 		request.log.info(
-			kleur.cyan(`${request.method} ${request.url} ${reply.statusCode}`)
+			kleur.cyan(`${request.method} ${request.url} ${reply.statusCode}`),
 		);
 	});
 };

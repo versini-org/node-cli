@@ -62,21 +62,21 @@ export class Logger {
 					prefix.push(
 						this.#printOptions.colors
 							? `${kleur.grey(
-									`[ ${now.toDateString()} ${now.toLocaleTimeString()} ]`
+									`[ ${now.toDateString()} ${now.toLocaleTimeString()} ]`,
 							  )}`
-							: `[ ${now.toDateString()} ${now.toLocaleTimeString()} ]`
+							: `[ ${now.toDateString()} ${now.toLocaleTimeString()} ]`,
 					);
 				}
 
 				message = util.formatWithOptions(
 					this.#printOptions,
 					prefix.join(" "),
-					...arguments_
+					...arguments_,
 				);
 			}
 			// eslint-disable-next-line no-console
 			console[type.method](
-				this.#printOptions.colors ? `${type.color(message)}` : message
+				this.#printOptions.colors ? `${type.color(message)}` : message,
 			);
 		}
 	}
@@ -155,8 +155,8 @@ export class Logger {
 		this.log(
 			boxen(
 				typeof messages === "string" ? messages : messages.join("\n"),
-				boxenOptions
-			)
+				boxenOptions,
+			),
 		);
 		newLineAfter && this.log();
 

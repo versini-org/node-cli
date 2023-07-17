@@ -116,7 +116,7 @@ const start = async () => {
 		port = await portfinder.getPortPromise({ port: Number(config.flags.port) });
 		if (port !== config.flags.port) {
 			portMessage = `\n\n${kleur.yellow(
-				`Warning: port ${config.flags.port} was not available!`
+				`Warning: port ${config.flags.port} was not available!`,
 			)}`;
 			config.flags.port = port;
 		}

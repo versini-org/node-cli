@@ -25,7 +25,7 @@ const DEFAULT_FILE_ENCODING = UTF8;
  */
 export const createHash = (
 	string: string,
-	algorithm: string = DEFAULT_HASH_ALGO
+	algorithm: string = DEFAULT_HASH_ALGO,
 ): string => {
 	return crypto.createHash(algorithm).update(string, UTF8).digest(HEX);
 };
@@ -97,7 +97,7 @@ export type ProcessFileOptions = {
 	password: string;
 };
 export const processFileWithPassword = async (
-	options: ProcessFileOptions
+	options: ProcessFileOptions,
 ): Promise<void> => {
 	const { encode, input, output, password } = options;
 	const fileProcessor = encode ? encrypt : decrypt;
