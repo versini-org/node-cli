@@ -12,7 +12,7 @@
 	],
 	"node": ">=16",
 	"dependencies": {
-		"@node-cli/logger": ">=1.0.0",
+		"@node-cli/logger": ">=1.2.0",
 		"@node-cli/utilities": ">=1.0.0"
 	},
 	"scripts": {

@@ -28,14 +28,14 @@
 		"@fastify/compress": "6.4.0",
 		"@fastify/cors": "8.3.0",
 		"@fastify/static": "6.10.2",
-		"@node-cli/logger": ">=1.0.0",
-		"@node-cli/parser": ">=2.0.0",
-		"fastify": "4.18.0",
+		"@node-cli/logger": ">=1.2.0",
+		"@node-cli/parser": ">=2.2.1",
+		"fastify": "4.20.0",
 		"fastify-plugin": "4.5.0",
 		"fs-extra": "11.1.1",
 		"kleur": "4.1.5",
 		"open": "9.1.0",
-		"pino-pretty": "10.0.0",
+		"pino-pretty": "10.0.1",
 		"portfinder": "1.0.32"
 	},
 	"publishConfig": {
