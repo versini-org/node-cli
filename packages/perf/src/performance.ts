@@ -16,7 +16,7 @@ export class Performance {
 		this.perfObserver = new PerformanceObserver(
 			/* istanbul ignore next */ () => {
 				performance.clearMeasures();
-			}
+			},
 		);
 		this.perfObserver.observe({ type: "measure" });
 	}
@@ -40,12 +40,12 @@ export class Performance {
 			performance.measure(
 				this.measureName,
 				this.startMarkerName,
-				stopMarkerName
+				stopMarkerName,
 			);
 			this.startMarkerName = undefined;
 		} else {
 			logger.error(
-				"Performance.stop() can only be called once after Performance.start()"
+				"Performance.stop() can only be called once after Performance.start()",
 			);
 		}
 	}

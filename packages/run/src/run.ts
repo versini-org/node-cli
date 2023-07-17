@@ -18,7 +18,7 @@ export type RunResult = {
 };
 export const run = async (
 	command: string,
-	options?: { ignoreError?: boolean }
+	options?: { ignoreError?: boolean },
 ): Promise<RunResult> => {
 	const { ignoreError } = {
 		ignoreError: false,

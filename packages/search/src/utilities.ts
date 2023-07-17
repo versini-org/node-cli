@@ -88,7 +88,7 @@ export const convertDate = (mtime: Date): string => {
 };
 
 export const getOwnerNameFromId = async (
-	uid: string | number
+	uid: string | number,
 ): Promise<string | number> => {
 	let result: RunResult;
 
@@ -109,7 +109,7 @@ export const getOwnerNameFromId = async (
 
 export const formatLongListings = async (
 	stat: { mtime: Date; mode: number; uid: string | number; size: number },
-	type: string
+	type: string,
 ): Promise<{
 	mdate: string;
 	mode: string;
@@ -173,7 +173,7 @@ export const printStatistics = ({
 
 export const checkPattern = (
 	rePattern: RegExp | undefined,
-	string_: string
+	string_: string,
 ): boolean | RegExpExecArray => {
 	if (rePattern) {
 		rePattern.lastIndex = 0;
@@ -199,7 +199,7 @@ export type RunGrepOnNode = {
 };
 export const runGrepOnNode = async (
 	node?: string,
-	rePattern?: RegExp
+	rePattern?: RegExp,
 ): Promise<RunGrepOnNode> => {
 	try {
 		const lines = [];
@@ -218,10 +218,10 @@ export const runGrepOnNode = async (
 			}
 			lines.push(
 				`${lineNumber + 1}: ${kleur.grey(
-					line.replace(rePattern, kleur.black().bgYellow(result[0]))
+					line.replace(rePattern, kleur.black().bgYellow(result[0])),
 				)}`,
 				`${lineNumber + 2}: ${kleur.grey(buffer[lineNumber + 1])}`,
-				""
+				"",
 			);
 		}
 		return {

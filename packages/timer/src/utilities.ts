@@ -103,7 +103,7 @@ export class Timer {
 		} else {
 			const elapsed = (Date.now() - this.startTime) / 1000;
 			const duration = moment.duration(
-				(this.timerDurationSeconds - elapsed) * 1000
+				(this.timerDurationSeconds - elapsed) * 1000,
 			);
 			spinner.text = `${duration.hours()}h ${duration.minutes()}m ${duration.seconds()}s`;
 		}

@@ -159,7 +159,7 @@ export class Search {
 							.filter((element) => this.filterHidden(element))
 							.map(function (file) {
 								return join(node, file);
-							})
+							}),
 					);
 				} catch {
 					// nothing to declare
@@ -233,7 +233,7 @@ export class Search {
 				if (this.grep && node.type === STR_TYPE_FILE) {
 					const { totalMatchingLines, results } = await runGrepOnNode(
 						node.name,
-						this.grep
+						this.grep,
 					);
 					/* istanbul ignore else */
 					if (totalMatchingLines) {
@@ -246,7 +246,7 @@ export class Search {
 							list.size.trim(),
 							list.mdate,
 							name,
-							`(${kleur.white(totalMatchingLines)} ${occurrences})`
+							`(${kleur.white(totalMatchingLines)} ${occurrences})`,
 						);
 						logger.log(`${results.join("\n")}\n`);
 					}
@@ -259,7 +259,7 @@ export class Search {
 							list.owner.trim(),
 							list.size.trim(),
 							list.mdate,
-							name
+							name,
 						);
 						if (node.command) {
 							await runCommandOnNode(node.name, node.command);

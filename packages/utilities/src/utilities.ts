@@ -64,7 +64,7 @@ export const uniqueID = (prefix: string = ""): string => {
 export const fastMerge = (
 	objectA: any,
 	objectB: any,
-	customizer?: any
+	customizer?: any,
 ): object => {
 	return typeof customizer === "function"
 		? mergeWith(objectA, objectB, customizer)
