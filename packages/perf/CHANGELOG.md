@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/aversini/node-cli/compare/perf-v1.0.2...perf-v1.0.3) (2023-07-17)
+
+
+### Bug Fixes
+
+* bump prod dependencies to latest ([07f1a5e](https://github.com/aversini/node-cli/commit/07f1a5e098be2990e4cc2387b9ad5dfc0ae89b2a))
+
 ## [1.0.2](https://github.com/aversini/node-cli/compare/perf-v1.0.1...perf-v1.0.2) (2023-05-30)
 
 

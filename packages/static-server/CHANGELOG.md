@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/aversini/node-cli/compare/static-server-v2.1.0...static-server-v2.1.1) (2023-07-17)
+
+
+### Bug Fixes
+
+* bump prod dependencies to latest ([07f1a5e](https://github.com/aversini/node-cli/commit/07f1a5e098be2990e4cc2387b9ad5dfc0ae89b2a))
+
 ## [2.1.0](https://github.com/aversini/node-cli/compare/static-server-v2.0.2...static-server-v2.1.0) (2023-06-02)
 
 
