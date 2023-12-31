@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.0.0](https://github.com/aversini/node-cli/compare/static-server-v2.1.1...static-server-v3.0.0) (2023-12-31)
+
+
+### ⚠ BREAKING CHANGES
+
+* **static-server:** bump prod dependencies
+
+### Bug Fixes
+
+* **static-server:** 404 templates misaligned header ([ea03c62](https://github.com/aversini/node-cli/commit/ea03c62566b04a773429bfbbfa5238b6927b54e1))
+* **static-server:** bump prod dependencies ([6b80dd7](https://github.com/aversini/node-cli/commit/6b80dd73907a5f519e774eb409e474d274de06d5))
+
 ## [2.1.1](https://github.com/aversini/node-cli/compare/static-server-v2.1.0...static-server-v2.1.1) (2023-07-17)
 
 
