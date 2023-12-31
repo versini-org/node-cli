@@ -26,7 +26,7 @@ export const renderNotFound = (listDirectories: boolean) => {
         margin: 0;
         padding: 20px;
       }
-      main {
+      header, main {
         max-width: 900px;
       }
       h1 {
