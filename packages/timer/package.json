@@ -7,9 +7,7 @@
 	"type": "module",
 	"types": "./dist/index.d.ts",
 	"exports": "./dist/timer.js",
-	"bin": {
-		"timer": "dist/timer.js"
-	},
+	"bin": "dist/timer.js",
 	"files": [
 		"dist"
 	],

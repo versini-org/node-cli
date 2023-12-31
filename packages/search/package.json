@@ -7,9 +7,7 @@
 	"type": "module",
 	"types": "./dist/index.d.ts",
 	"exports": "./dist/search.js",
-	"bin": {
-		"search": "dist/search.js"
-	},
+	"bin": "dist/search.js",
 	"files": [
 		"dist"
 	],
