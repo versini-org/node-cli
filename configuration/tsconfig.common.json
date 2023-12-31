@@ -39,7 +39,7 @@
 		/**
 		 * Specify what module code is generated.
 		 */
-		"module": "ESNext",
+		"module": "NodeNext",
 		/**
 		 * Specify the module resolution strategy:
 		 * - 'node' for Node.js’ CommonJS implementation

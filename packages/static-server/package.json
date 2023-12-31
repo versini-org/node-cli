@@ -7,9 +7,7 @@
 	"type": "module",
 	"types": "./dist/index.d.ts",
 	"exports": "./dist/server.js",
-	"bin": {
-		"static-server": "dist/server.js"
-	},
+	"bin": "dist/server.js",
 	"files": [
 		"dist"
 	],
