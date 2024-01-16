@@ -1,5 +1,6 @@
 {
 	"packages": {
+		"packages/bundlesize": {},
 		"packages/logger": {},
 		"packages/parser": {},
 		"packages/perf": {},

@@ -1,0 +1,48 @@
+{
+  "0.0.0-beta.1": [
+    {
+      "path": "/Users/aversin/projects/perso/node-cli/packages/bundlesize/dist/bundlesize.js",
+      "fileSize": 1971,
+      "fileSizeGzip": 770,
+      "limit": "1.5 kB",
+      "passed": true
+    },
+    {
+      "path": "/Users/aversin/projects/perso/node-cli/packages/bundlesize/dist/defaults.js",
+      "fileSize": 101,
+      "fileSizeGzip": 109,
+      "limit": "1.5 kB",
+      "passed": true
+    },
+    {
+      "path": "/Users/aversin/projects/perso/node-cli/packages/bundlesize/dist/parse.js",
+      "fileSize": 1152,
+      "fileSizeGzip": 363,
+      "limit": "1.5 kB",
+      "passed": true
+    }
+  ],
+  "0.0.0": [
+    {
+      "path": "/Users/aversin/projects/perso/node-cli/packages/bundlesize/dist/bundlesize.js",
+      "fileSize": 1784,
+      "fileSizeGzip": 692,
+      "limit": "1.5 kB",
+      "passed": true
+    },
+    {
+      "path": "/Users/aversin/projects/perso/node-cli/packages/bundlesize/dist/defaults.js",
+      "fileSize": 101,
+      "fileSizeGzip": 109,
+      "limit": "1.5 kB",
+      "passed": true
+    },
+    {
+      "path": "/Users/aversin/projects/perso/node-cli/packages/bundlesize/dist/parse.js",
+      "fileSize": 1152,
+      "fileSizeGzip": 363,
+      "limit": "1.5 kB",
+      "passed": true
+    }
+  ]
+}

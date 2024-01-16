@@ -1214,6 +1214,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@node-cli/bundlesize@workspace:packages/bundlesize":
+  version: 0.0.0-use.local
+  resolution: "@node-cli/bundlesize@workspace:packages/bundlesize"
+  dependencies:
+    "@node-cli/logger": "npm:>=1.2.0"
+    "@node-cli/parser": "npm:>=2.2.1"
+    bytes: "npm:3.1.2"
+    fs-extra: "npm:11.2.0"
+    gzip-size: "npm:7.0.0"
+  bin:
+    bundlesize: dist/bundlesize.js
+  languageName: unknown
+  linkType: soft
+
 "@node-cli/logger@npm:1.2.1":
   version: 1.2.1
   resolution: "@node-cli/logger@npm:1.2.1"
@@ -3485,7 +3499,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bytes@npm:^3.1.0, bytes@npm:^3.1.2":
+"bytes@npm:3.1.2, bytes@npm:^3.1.0, bytes@npm:^3.1.2":
   version: 3.1.2
   resolution: "bytes@npm:3.1.2"
   checksum: 76d1c43cbd602794ad8ad2ae94095cddeb1de78c5dddaa7005c51af10b0176c69971a6d88e805a90c2b6550d76636e43c40d8427a808b8645ede885de4a0358e
@@ -6115,6 +6129,15 @@ __metadata:
   version: 1.3.0
   resolution: "growly@npm:1.3.0"
   checksum: 3043bd5c064e87f89e8c9b66894ed09fd882c7fa645621a543b45b72f040c7241e25061207a858ab191be2fbdac34795ff57c2a40962b154a6b2908a5e509252
+  languageName: node
+  linkType: hard
+
+"gzip-size@npm:7.0.0":
+  version: 7.0.0
+  resolution: "gzip-size@npm:7.0.0"
+  dependencies:
+    duplexer: "npm:^0.1.2"
+  checksum: 0bf63084d5fea0880f3607ecd361d4663aab26b9cb0d3e97ba77373a0246c8f8de57d8613ac4e57e1e6c28522dcee6f8682aae55c275b9262b66d2ffd698f72b
   languageName: node
   linkType: hard
 
