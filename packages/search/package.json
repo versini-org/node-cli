@@ -28,7 +28,7 @@
 		"@node-cli/parser": ">=2.2.1",
 		"@node-cli/perf": ">=1.0.2",
 		"@node-cli/run": ">=1.0.1",
-		"fs-extra": "11.1.1",
+		"fs-extra": "11.2.0",
 		"kleur": "4.1.5",
 		"plur": "5.1.0",
 		"pretty-ms": "8.0.0"
