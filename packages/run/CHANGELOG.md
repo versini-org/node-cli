@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/aversini/node-cli/compare/run-v1.0.1...run-v1.0.2) (2024-01-16)
+
+
+### Bug Fixes
+
+* **run:** bump prod dependencies ([7940737](https://github.com/aversini/node-cli/commit/79407376e8eb33b7d564c41c8ed0d651175dbc2c))
+
 ## [1.0.1](https://github.com/aversini/node-cli/compare/run-v1.0.0...run-v1.0.1) (2023-05-27)
 
 

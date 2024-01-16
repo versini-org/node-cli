@@ -1,11 +1,11 @@
 {
-	"packages/logger": "1.2.1",
-	"packages/parser": "2.2.2",
-	"packages/run": "1.0.1",
-	"packages/static-server": "3.0.0",
+	"packages/logger": "1.2.2",
+	"packages/parser": "2.2.3",
+	"packages/run": "1.0.2",
+	"packages/static-server": "3.0.1",
 	"packages/perf": "1.0.3",
-	"packages/search": "1.0.2",
-	"packages/timer": "1.0.1",
-	"packages/secret": "1.0.1",
+	"packages/search": "1.0.3",
+	"packages/timer": "1.0.2",
+	"packages/secret": "1.0.2",
 	"packages/utilities": "1.0.0"
 }
