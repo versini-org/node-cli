@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/aversini/node-cli/compare/timer-v1.0.1...timer-v1.0.2) (2024-01-16)
+
+
+### Bug Fixes
+
+* **timer:** bump prod dependencies ([32d727e](https://github.com/aversini/node-cli/commit/32d727e3fc593d7e401658acd9823f0582726b54))
+
 ## [1.0.1](https://github.com/aversini/node-cli/compare/timer-v1.0.0...timer-v1.0.1) (2023-07-17)
 
 

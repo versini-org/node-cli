@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.1](https://github.com/aversini/node-cli/compare/static-server-v3.0.0...static-server-v3.0.1) (2024-01-16)
+
+
+### Bug Fixes
+
+* **static-server:** bump prod dependencies ([39413f0](https://github.com/aversini/node-cli/commit/39413f07a7d76d8e4664ecdb90a6f78cec816c64))
+
 ## [3.0.0](https://github.com/aversini/node-cli/compare/static-server-v2.1.1...static-server-v3.0.0) (2023-12-31)
 
 

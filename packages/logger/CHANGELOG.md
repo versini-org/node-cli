@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/aversini/node-cli/compare/logger-v1.2.1...logger-v1.2.2) (2024-01-16)
+
+
+### Bug Fixes
+
+* **logger:** bump ora to latest ([19a1d37](https://github.com/aversini/node-cli/commit/19a1d3719b08f483a57b0df6c02f69282daf1ea5))
+
 ## [1.2.1](https://github.com/aversini/node-cli/compare/logger-v1.2.0...logger-v1.2.1) (2023-07-17)
 
 
