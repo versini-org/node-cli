@@ -5,6 +5,6 @@ reviews:
   auto_review:
     enabled: true
     ignore_title_keywords:
-      - I have created a release
+      - "chore: release main"
 chat:
   auto_reply: true
