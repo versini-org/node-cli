@@ -6,6 +6,7 @@
 	"author": "Arno Versini",
 	"description": "Examples",
 	"dependencies": {
+		"@node-cli/bundlesize": "*",
 		"@node-cli/logger": ">=1.0.0",
 		"@node-cli/perf": ">=1.0.0",
 		"@node-cli/run": ">=1.0.0"
@@ -13,5 +14,8 @@
 	"type": "module",
 	"publishConfig": {
 		"access": "restricted"
+	},
+	"scripts": {
+		"stats": "bundlesize -c bundlesize.config.js"
 	}
 }
