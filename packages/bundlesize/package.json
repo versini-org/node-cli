@@ -3,7 +3,7 @@
 	"version": "0.0.0",
 	"license": "MIT",
 	"author": "Arno Versini",
-	"description": "Simple CLI tool that checks file size and report if limits have been reached",
+	"description": "Simple CLI tool that checks file(s) size and report if limits have been reached",
 	"type": "module",
 	"types": "./dist/index.d.ts",
 	"exports": "./dist/bundlesize.js",
@@ -19,9 +19,7 @@
 		"build:types": "tsc",
 		"clean": "rimraf dist types coverage",
 		"lint": "prettier --write \"src/*.ts\" && eslint --fix \"src/*.ts\"",
-		"stats": "bundlesize -c bundlesize.config.js -n \"$npm_package_version\" -o \"stats.json\"",
-		"test": "cross-env-shell NODE_OPTIONS=--experimental-vm-modules TZ=UTC jest",
-		"test:coverage": "npm run test -- --coverage",
+		"stats": "bundlesize -c bundlesize.config.js",
 		"watch": "swc --watch --out-dir dist src"
 	},
 	"dependencies": {

@@ -7,7 +7,8 @@ export type Flags = {
 	version?: boolean;
 	configuration?: string;
 	output?: string;
-	outputName?: string;
+	prefix?: string;
+	silent?: boolean;
 };
 
 export type Configuration = {
@@ -31,10 +32,16 @@ export const config: Configuration = parser({
 			description: "Specify the output file",
 			type: "string",
 		},
-		outputName: {
-			shortFlag: "n",
-			description: "Specify the output name to use in the output file",
+		prefix: {
+			shortFlag: "p",
+			description: "Specify a prefix to use in the output file",
 			type: "string",
+		},
+		silent: {
+			shortFlag: "s",
+			default: defaultFlags.silent,
+			description: "Do not exit in error when a limit is exceeded",
+			type: "boolean",
 		},
 		boring: {
 			shortFlag: "b",
