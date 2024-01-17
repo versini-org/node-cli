@@ -18,7 +18,7 @@ const outputFile =
 		? STDOUT
 		: path.join(CWD, flags.output);
 const prefix = flags.prefix || Date.now().toString();
-const resultsMap = new Map();
+const currentResults = {};
 const log = new Logger({
 	boring: flags.boring,
 });
@@ -47,17 +47,14 @@ try {
 		if (passed === false) {
 			failed = true;
 		}
-
-		resultsMap.set(artifact.path, {
-			path: file,
+		currentResults[artifact.path] = {
 			fileSize,
 			fileSizeGzip,
 			limit: artifact.limit,
 			passed,
-		});
+		};
 	}
 
-	const results = [...resultsMap.values()];
 	let existingResults = {};
 	if (outputFile !== STDOUT) {
 		try {
@@ -66,7 +63,7 @@ try {
 			// nothing to declare officer
 		}
 	}
-	existingResults[prefix] = results;
+	existingResults[prefix] = currentResults;
 	if (outputFile !== STDOUT) {
 		fs.outputJsonSync(outputFile, existingResults, { spaces: 2 });
 	}
@@ -75,7 +72,7 @@ try {
 		log.info(`Configuration: ${flags.configuration}`);
 		log.info(`Output: ${outputFile}`);
 		log.info(`Output prefix: ${prefix}`);
-		log.log(`\n${JSON.stringify(results, undefined, 2)}`);
+		log.log(`\n${JSON.stringify(currentResults, undefined, 2)}`);
 	}
 } catch (error) {
 	log.error(error);
