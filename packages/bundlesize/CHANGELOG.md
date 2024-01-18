@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/aversini/node-cli/compare/bundlesize-v2.0.0...bundlesize-v2.1.0) (2024-01-18)
+
+
+### Features
+
+* **bundlesize:** adding support for glob in configuration ([6293514](https://github.com/aversini/node-cli/commit/629351438e70552d10723ac3b64836aba5b0cf77))
+
 ## [2.0.0](https://github.com/aversini/node-cli/compare/bundlesize-v1.0.0...bundlesize-v2.0.0) (2024-01-17)
 
 
