@@ -44,6 +44,7 @@ try {
 			? ""
 			: path.dirname(configurationFile);
 		const file = path.join(rootPath, artifact.path);
+		const artifactPath = path.dirname(artifact.path);
 		const files = glob.sync(file);
 
 		if (files.length === 0) {
@@ -59,10 +60,7 @@ try {
 			if (passed === false) {
 				failed = true;
 			}
-			let index = file.replace(rootPath, "");
-			if (!artifact.path.startsWith("/") && index.startsWith("/")) {
-				index = index.slice(1);
-			}
+			let index = path.join(artifactPath, path.basename(file));
 
 			currentResults[index] = {
 				fileSize,
