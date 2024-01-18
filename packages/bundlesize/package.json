@@ -27,6 +27,7 @@
 		"@node-cli/parser": ">=2.2.1",
 		"bytes": "3.1.2",
 		"fs-extra": "11.2.0",
+		"glob": "10.3.10",
 		"gzip-size": "7.0.0"
 	},
 	"publishConfig": {
