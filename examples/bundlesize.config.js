@@ -1,10 +1,10 @@
 export default [
 	{
-		path: "logger/logger-example.js",
+		path: "data/file*.txt",
 		limit: "1.5 kB",
 	},
 	{
-		path: "perf/perf.example.js",
-		limit: "1 kB",
+		path: "data/*file.txt",
+		limit: "1.5 kB",
 	},
 ];

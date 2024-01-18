@@ -4,6 +4,7 @@ import { Logger } from "@node-cli/logger";
 import bytes from "bytes";
 import { config } from "./parse.js";
 import fs from "fs-extra";
+import { glob } from "glob";
 import { gzipSizeFromFileSync } from "gzip-size";
 import path from "node:path";
 import { statSync } from "node:fs";
@@ -39,20 +40,37 @@ try {
 	const configuration = await import(configurationFile).then((m) => m.default);
 
 	for (const artifact of configuration) {
-		const file = path.join(path.dirname(configurationFile), artifact.path);
-		const fileSize = statSync(file).size;
-		const fileSizeGzip = gzipSizeFromFileSync(file);
-		const passed = fileSizeGzip < bytes(artifact.limit);
+		const rootPath = artifact.path.startsWith("/")
+			? ""
+			: path.dirname(configurationFile);
+		const file = path.join(rootPath, artifact.path);
+		const files = glob.sync(file);
 
-		if (passed === false) {
-			failed = true;
+		if (files.length === 0) {
+			log.error(`File not found: ${file}`);
+			process.exit(flags.silent === false ? 1 : 0);
 		}
-		currentResults[artifact.path] = {
-			fileSize,
-			fileSizeGzip,
-			limit: artifact.limit,
-			passed,
-		};
+
+		for (const file of files) {
+			const fileSize = statSync(file).size;
+			const fileSizeGzip = gzipSizeFromFileSync(file);
+			const passed = fileSizeGzip < bytes(artifact.limit);
+
+			if (passed === false) {
+				failed = true;
+			}
+			let index = file.replace(rootPath, "");
+			if (!artifact.path.startsWith("/") && index.startsWith("/")) {
+				index = index.slice(1);
+			}
+
+			currentResults[index] = {
+				fileSize,
+				fileSizeGzip,
+				limit: artifact.limit,
+				passed,
+			};
+		}
 	}
 
 	let existingResults = {};
