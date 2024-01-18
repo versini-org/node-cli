@@ -40,7 +40,9 @@ try {
 	const configuration = await import(configurationFile).then((m) => m.default);
 
 	for (const artifact of configuration) {
-		const rootPath = path.dirname(configurationFile);
+		const rootPath = artifact.path.startsWith("/")
+			? ""
+			: path.dirname(configurationFile);
 		const file = path.join(rootPath, artifact.path);
 		const files = glob.sync(file);
 
@@ -57,7 +59,12 @@ try {
 			if (passed === false) {
 				failed = true;
 			}
-			currentResults[file.replace(rootPath, "")] = {
+			let index = file.replace(rootPath, "");
+			if (!artifact.path.startsWith("/") && index.startsWith("/")) {
+				index = index.slice(1);
+			}
+
+			currentResults[index] = {
 				fileSize,
 				fileSizeGzip,
 				limit: artifact.limit,
