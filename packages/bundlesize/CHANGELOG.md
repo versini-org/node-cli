@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/aversini/node-cli/compare/bundlesize-v2.1.0...bundlesize-v2.1.1) (2024-01-18)
+
+
+### Bug Fixes
+
+* **bundlesize:** indexes should remain relative ([ff5c822](https://github.com/aversini/node-cli/commit/ff5c8225ff0481c27a5b74e6064dfb586a45f8ba))
+
 ## [2.1.0](https://github.com/aversini/node-cli/compare/bundlesize-v2.0.0...bundlesize-v2.1.0) (2024-01-18)
 
 
