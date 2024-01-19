@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.3](https://github.com/aversini/node-cli/compare/bundlesize-v2.1.2...bundlesize-v2.1.3) (2024-01-19)
+
+
+### Bug Fixes
+
+* **bundlesize:** hash could contain _ or - ([a2a9275](https://github.com/aversini/node-cli/commit/a2a9275493f921771985263634000b76e9eb7132))
+
 ## [2.1.2](https://github.com/aversini/node-cli/compare/bundlesize-v2.1.1...bundlesize-v2.1.2) (2024-01-19)
 
 
