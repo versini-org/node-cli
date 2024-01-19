@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.2](https://github.com/aversini/node-cli/compare/bundlesize-v2.1.1...bundlesize-v2.1.2) (2024-01-19)
+
+
+### Bug Fixes
+
+* **bundlesize:** if hash is used index should remain the same ([25265e0](https://github.com/aversini/node-cli/commit/25265e055852259a5ba039fc5e5003d279c20e7f))
+
 ## [2.1.1](https://github.com/aversini/node-cli/compare/bundlesize-v2.1.0...bundlesize-v2.1.1) (2024-01-18)
 
 
