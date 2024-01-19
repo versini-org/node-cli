@@ -1,5 +1,5 @@
 {
-	"packages/bundlesize": "2.1.1",
+	"packages/bundlesize": "2.1.2",
 	"packages/logger": "1.2.2",
 	"packages/parser": "2.2.3",
 	"packages/perf": "1.0.3",
