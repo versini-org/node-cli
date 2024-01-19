@@ -43,13 +43,41 @@ try {
 		const rootPath = artifact.path.startsWith("/")
 			? ""
 			: path.dirname(configurationFile);
-		const file = path.join(rootPath, artifact.path);
 		const artifactPath = path.dirname(artifact.path);
-		const files = glob.sync(file);
+		const globReplace = "+([a-zA-Z0-9])";
+		const hasHash = artifact.path.includes("<hash>");
+
+		/**
+		 * if the artifact.path has the string <hash> in it,
+		 * then we need to check for other characters:
+		 * - Double stars ** are allowed.
+		 * - Single stars * are not allowed.
+		 */
+		if (hasHash && /(?<!\*)\*(?!\*)/.test(artifact.path)) {
+			log.error(`Invalid path: ${artifact.path}.`);
+			log.error(
+				"Single stars (*) are not allowed when using the special keyword <hash>",
+			);
+			process.exit(1);
+		}
+
+		const fileGlob = path.join(
+			rootPath,
+			artifact.path.replace("<hash>", globReplace),
+		);
+		const files = glob.sync(fileGlob);
 
 		if (files.length === 0) {
-			log.error(`File not found: ${file}`);
-			process.exit(flags.silent === false ? 1 : 0);
+			log.error(`File not found: ${fileGlob}`);
+			process.exit(1);
+		}
+
+		if (files.length > 1 && hasHash) {
+			log.error(`Multiple files found for: ${artifact.path}.`);
+			log.error(
+				"Please use a more specific path when using the special keyword <hash>.",
+			);
+			process.exit(1);
 		}
 
 		for (const file of files) {
@@ -60,7 +88,9 @@ try {
 			if (passed === false) {
 				failed = true;
 			}
-			let index = path.join(artifactPath, path.basename(file));
+			let index = hasHash
+				? artifact.path
+				: path.join(artifactPath, path.basename(file));
 
 			currentResults[index] = {
 				fileSize,
