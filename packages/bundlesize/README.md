@@ -10,9 +10,16 @@
 > npm install --dev @node-cli/bundlesize
 ```
 
-## Examples
+## Configuration
 
-Assuming there is a `bundlesize.config.js` file in the root of the project with the following content:
+A configuration file must be provided via the `-c` parameter, it must export an array of objects with the following properties:
+
+- `path`: the path to the file to check
+- `limit`: the limit to check against
+
+### Examples
+
+#### Single file
 
 ```js
 export default [
@@ -22,6 +29,54 @@ export default [
 	},
 ];
 ```
+
+#### Multiple files
+
+```js
+export default [
+	{
+		path: "dist/some-bundle.js",
+		limit: "10 kB",
+	},
+	{
+		path: "dist/some-other-bundle.js",
+		limit: "100 kB",
+	},
+];
+```
+
+#### With glob patterns
+
+```js
+export default [
+	{
+		path: "dist/**/some-bundle.js",
+		limit: "10 kB",
+	},
+	{
+		path: "dist/**/some-other-bundle-*.js",
+		limit: "100 kB",
+	},
+	{
+		path: "dist/**/extra-+([a-zA-Z0-9]).js",
+		limit: "100 kB",
+	},
+];
+```
+
+#### With a hash
+
+The special keyword `<hash>` can be used to match a hash in the filename. It cannot be used in conjunction with the single star (\*) glob pattern, and it cannot be used if multiple files match the pattern.
+
+**NOTE**: Using `<hash>` is equivalent to using `+([a-zA-Z0-9])` in the glob pattern. However, the result will be indexed with the `hash` key instead of the `match` key, so that subsequent scripts can use the hash value.
+
+| Status | Pattern                         | Comment                              |
+| ------ | ------------------------------- | ------------------------------------ |
+| OK     | `dist/**/some-bundle-<hash>.js` | If only one file matches the pattern |
+| Not OK | `dist/**/some-bundle-<hash>.js` | If multiple files match the pattern  |
+| Not OK | `dist/**/some-bundle-<hash>.*`  | Cannot use `<hash>` with `*`         |
+
+## Usage
 
 ### Print the results at the command line
 

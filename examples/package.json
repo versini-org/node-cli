@@ -16,6 +16,6 @@
 		"access": "restricted"
 	},
 	"scripts": {
-		"stats": "bundlesize -c bundlesize.config.js"
+		"stats": "bundlesize -c bundlesize.config.js -p \"$npm_package_version\""
 	}
 }
