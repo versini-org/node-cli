@@ -44,7 +44,7 @@ try {
 			? ""
 			: path.dirname(configurationFile);
 		const artifactPath = path.dirname(artifact.path);
-		const globReplace = "+([a-zA-Z0-9])";
+		const globReplace = "+([a-zA-Z0-9_-])";
 		const hasHash = artifact.path.includes("<hash>");
 
 		/**
