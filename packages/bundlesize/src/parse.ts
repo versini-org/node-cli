@@ -9,6 +9,9 @@ export type Flags = {
 	output?: string;
 	prefix?: string;
 	silent?: boolean;
+	type?: "stats" | "diff";
+	currentStats?: string;
+	previousStats?: string;
 };
 
 export type Configuration = {
@@ -22,6 +25,22 @@ export const config: Configuration = parser({
 	meta: import.meta,
 	examples: [],
 	flags: {
+		currentStats: {
+			shortFlag: "c",
+			description: "Specify the current stats file. Required when using diff",
+			type: "string",
+		},
+		previousStats: {
+			shortFlag: "p",
+			description: "Specify the previous stats file. Required when using diff",
+			type: "string",
+		},
+		type: {
+			shortFlag: "t",
+			description: "Specify the type of report to generate",
+			type: "string",
+			default: defaultFlags.type,
+		},
 		configuration: {
 			shortFlag: "c",
 			description: "Specify a configuration file",
@@ -33,7 +52,7 @@ export const config: Configuration = parser({
 			type: "string",
 		},
 		prefix: {
-			shortFlag: "p",
+			shortFlag: "P",
 			description: "Specify a prefix to use in the output file",
 			type: "string",
 		},
