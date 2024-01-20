@@ -19,7 +19,7 @@
 		"build:types": "tsc",
 		"clean": "rimraf dist types coverage",
 		"lint": "prettier --write \"src/*.ts\" && eslint --fix \"src/*.ts\"",
-		"stats": "bundlesize -c bundlesize.config.js -P \"$npm_package_version\"",
+		"stats": "bundlesize -c bundlesize.config.js -p \"$npm_package_version\"",
 		"stats:diff": "bundlesize -t diff",
 		"test": "cross-env-shell NODE_OPTIONS=--experimental-vm-modules jest",
 		"test:coverage": "npm run test -- --coverage",
