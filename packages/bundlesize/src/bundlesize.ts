@@ -12,8 +12,6 @@ const log = new Logger({
 	boring: flags.boring,
 });
 
-const reportDiff = () => {};
-
 try {
 	if (flags.type === "stats") {
 		const result = await reportStats({ flags });
@@ -32,9 +30,6 @@ try {
 			fs.outputJsonSync(result.outputFile, result.data, { spaces: 2 });
 		}
 		process.exit(result.exitCode);
-	}
-	if (flags.type === "diff") {
-		reportDiff({ flags });
 	}
 } catch (error) {
 	log.error(error);

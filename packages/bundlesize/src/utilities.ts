@@ -10,10 +10,19 @@ type Artifact = {
 	limit: string;
 };
 
+type ReportStats = {
+	pass: boolean;
+	exitCode: number;
+	exitMessage: string;
+	outputFile: string;
+	prefix: string;
+	data: Record<string, unknown>;
+};
+
 export const STDOUT = "stdout";
 const CWD = process.cwd();
 
-export const reportStats = async ({ flags }) => {
+export const reportStats = async ({ flags }): Promise<ReportStats> => {
 	const result = {
 		pass: true,
 		exitCode: 0,
@@ -23,7 +32,10 @@ export const reportStats = async ({ flags }) => {
 		data: {},
 	};
 	let failed = false;
-	const configurationFile = path.join(CWD, flags.configuration);
+	const configurationFile = flags.configuration.startsWith("/")
+		? flags.configuration
+		: path.join(CWD, flags.configuration);
+
 	const outputFile =
 		flags.output === "" || flags.output === undefined
 			? STDOUT
@@ -125,5 +137,3 @@ export const reportStats = async ({ flags }) => {
 	result.data = existingResults;
 	return result;
 };
-
-export const reportDiff = ({ flags }) => {};
