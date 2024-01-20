@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.1.4](https://github.com/aversini/node-cli/compare/bundlesize-v2.1.3...bundlesize-v2.1.4) (2024-01-20)
+
+
+### Bug Fixes
+
+* **bundlesize:** refactor - wip ([5a9f8d4](https://github.com/aversini/node-cli/commit/5a9f8d41fbd73d5c5f606e2fabfc9808b5d3254e))
+* **bundlesize:** refactor and add unit tests ([87aee80](https://github.com/aversini/node-cli/commit/87aee80a802ab5a4beca0267f02400b20229218c))
+
 ## [2.1.3](https://github.com/aversini/node-cli/compare/bundlesize-v2.1.2...bundlesize-v2.1.3) (2024-01-19)
 
 
