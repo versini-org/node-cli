@@ -27,7 +27,12 @@ try {
 		log.info(`Output prefix: ${result.prefix}`);
 		log.log(result.data);
 	} else {
-		fs.outputJsonSync(result.outputFile, result.data, { spaces: 2 });
+		try {
+			fs.outputJsonSync(result.outputFile, result.data, { spaces: 2 });
+		} catch (error) {
+			log.error(`Failed to write to file: ${error.message}`);
+			process.exit(1);
+		}
 	}
 	process.exit(result.exitCode);
 } catch (error) {
