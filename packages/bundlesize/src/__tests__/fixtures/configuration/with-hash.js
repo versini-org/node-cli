@@ -1,6 +1,6 @@
 export default [
 	{
-		path: "../data/**/file*.txt",
+		path: "../data/index-<hash>.js",
 		limit: "1.5 kB",
 	},
 ];

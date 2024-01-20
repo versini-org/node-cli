@@ -23,6 +23,7 @@
 		"stats:diff": "bundlesize -t diff",
 		"test": "cross-env-shell NODE_OPTIONS=--experimental-vm-modules jest",
 		"test:coverage": "npm run test -- --coverage",
+		"test:watch": "npm run test -- --watch",
 		"watch": "swc --watch --out-dir dist src"
 	},
 	"dependencies": {
