@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* istanbul ignore file */
 
 import { STDOUT, reportStats } from "./utilities.js";
 
