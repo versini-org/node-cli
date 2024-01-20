@@ -37,5 +37,5 @@ try {
 	process.exit(result.exitCode);
 } catch (error) {
 	log.error(error);
-	process.exit(0);
+	process.exit(1);
 }
