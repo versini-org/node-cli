@@ -49,8 +49,7 @@ describe("when testing for reportStats with errors", () => {
 		expect(result).toEqual({
 			data: {},
 			exitCode: 1,
-			exitMessage:
-				"File not found: /Users/aversin/projects/perso/node-cli/packages/bundlesize/src/__tests__/fixtures/data/file-does-not-exist.txt",
+			exitMessage: `File not found: ${process.cwd()}/src/__tests__/fixtures/data/file-does-not-exist.txt`,
 			outputFile: "",
 			pass: true,
 			prefix: "",
