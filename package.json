@@ -14,7 +14,7 @@
 	"devDependencies": {
 		"@versini/dev-dependencies-common": "3.1.4",
 		"@versini/dev-dependencies-server": "3.0.4",
-		"@versini/dev-dependencies-types": "1.1.1"
+		"@versini/dev-dependencies-types": "1.1.2"
 	},
 	"packageManager": "yarn@4.0.2"
 }
