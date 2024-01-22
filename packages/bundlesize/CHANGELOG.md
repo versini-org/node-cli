@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.5](https://github.com/aversini/node-cli/compare/bundlesize-v2.1.4...bundlesize-v2.1.5) (2024-01-22)
+
+
+### Bug Fixes
+
+* **bundlesize:** remove gzip-size dependency ([75149bb](https://github.com/aversini/node-cli/commit/75149bbfbc88a5f510d8e467c651010f85d81967))
+
 ## [2.1.4](https://github.com/aversini/node-cli/compare/bundlesize-v2.1.3...bundlesize-v2.1.4) (2024-01-20)
 
 
