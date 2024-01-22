@@ -1223,7 +1223,6 @@ __metadata:
     bytes: "npm:3.1.2"
     fs-extra: "npm:11.2.0"
     glob: "npm:10.3.10"
-    gzip-size: "npm:7.0.0"
   bin:
     bundlesize: dist/bundlesize.js
   languageName: unknown
@@ -6130,15 +6129,6 @@ __metadata:
   version: 1.3.0
   resolution: "growly@npm:1.3.0"
   checksum: 3043bd5c064e87f89e8c9b66894ed09fd882c7fa645621a543b45b72f040c7241e25061207a858ab191be2fbdac34795ff57c2a40962b154a6b2908a5e509252
-  languageName: node
-  linkType: hard
-
-"gzip-size@npm:7.0.0":
-  version: 7.0.0
-  resolution: "gzip-size@npm:7.0.0"
-  dependencies:
-    duplexer: "npm:^0.1.2"
-  checksum: 0bf63084d5fea0880f3607ecd361d4663aab26b9cb0d3e97ba77373a0246c8f8de57d8613ac4e57e1e6c28522dcee6f8682aae55c275b9262b66d2ffd698f72b
   languageName: node
   linkType: hard
 

@@ -1,9 +1,9 @@
 import bytes from "bytes";
 import fs from "fs-extra";
 import { glob } from "glob";
-import { gzipSizeFromFileSync } from "gzip-size";
 import path from "node:path";
 import { statSync } from "node:fs";
+import zlib from "node:zlib";
 
 type Artifact = {
 	path: string;
@@ -21,6 +21,10 @@ type ReportStats = {
 
 export const STDOUT = "stdout";
 const CWD = process.cwd();
+
+const gzipSizeFromFileSync = (file: string): number => {
+	return zlib.gzipSync(fs.readFileSync(file)).length;
+};
 
 export const reportStats = async ({ flags }): Promise<ReportStats> => {
 	const result = {
