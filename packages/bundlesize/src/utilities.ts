@@ -5,7 +5,7 @@ import path from "node:path";
 import { statSync } from "node:fs";
 import zlib from "node:zlib";
 
-type Artifact = {
+type FileSizes = {
 	path: string;
 	limit: string;
 };
@@ -58,11 +58,18 @@ export const reportStats = async ({ flags }): Promise<ReportStats> => {
 		result.exitCode = 1;
 		return result;
 	}
-	const configuration: Artifact[] = await import(configurationFile).then(
-		(m) => m.default,
-	);
 
-	for (const artifact of configuration) {
+	const configuration: { sizes: FileSizes[] } = await import(
+		configurationFile
+	).then((m) => m.default);
+
+	if (configuration.sizes === undefined) {
+		result.exitMessage = "Invalid configuration file: missing sizes object!";
+		result.exitCode = 1;
+		return result;
+	}
+
+	for (const artifact of configuration.sizes) {
 		const rootPath = artifact.path.startsWith("/")
 			? ""
 			: path.dirname(configurationFile);
