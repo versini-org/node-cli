@@ -1,11 +1,11 @@
 export default {
 	report: {
-		previous: "../stats/previous.json",
+		previous: "../stats/current.json",
 		current: "../stats/current.json",
 	},
 	sizes: [
 		{
-			path: "../data/index-<hash>.js",
+			path: "../data/**/file*.txt",
 			limit: "1.5 kB",
 		},
 	],

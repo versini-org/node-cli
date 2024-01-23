@@ -9,6 +9,7 @@ export type Flags = {
 	output?: string;
 	prefix?: string;
 	silent?: boolean;
+	type?: "size" | "report";
 };
 
 export type Configuration = {
@@ -22,6 +23,12 @@ export const config: Configuration = parser({
 	meta: import.meta,
 	examples: [],
 	flags: {
+		type: {
+			shortFlag: "t",
+			description: "Specify the type of output: size or report",
+			type: "string",
+			default: defaultFlags.type,
+		},
 		configuration: {
 			shortFlag: "c",
 			description: "Specify a configuration file",

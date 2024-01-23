@@ -1,0 +1,10 @@
+{
+	"0.0.8": {
+		"data/file.txt": {
+			"fileSize": 281,
+			"fileSizeGzip": 19900,
+			"limit": "1.5 kB",
+			"passed": false
+		}
+	}
+}
