@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/aversini/node-cli/compare/bundlesize-v2.1.5...bundlesize-v3.0.0) (2024-01-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bundlesize:** the format of the configuration file has changed.
+
+### Features
+
+* **bundlesize:** adding compare capabilities ([d628709](https://github.com/aversini/node-cli/commit/d628709c9379fa1ab190dca0ecf71a7f8fd443f6))
+
 ## [2.1.5](https://github.com/aversini/node-cli/compare/bundlesize-v2.1.4...bundlesize-v2.1.5) (2024-01-22)
 
 
