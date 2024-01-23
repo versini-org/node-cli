@@ -1,143 +1,125 @@
 import bytes from "bytes";
 import fs from "fs-extra";
-import { glob } from "glob";
-import path from "node:path";
-import { statSync } from "node:fs";
+import { join } from "node:path";
+import semver from "semver";
 import zlib from "node:zlib";
-
-type Artifact = {
-	path: string;
-	limit: string;
-};
-
-type ReportStats = {
-	pass: boolean;
-	exitCode: number;
-	exitMessage: string;
-	outputFile: string;
-	prefix: string;
-	data: Record<string, unknown>;
-};
 
 export const STDOUT = "stdout";
 const CWD = process.cwd();
 
-const gzipSizeFromFileSync = (file: string): number => {
+export const gzipSizeFromFileSync = (file: string): number => {
 	return zlib.gzipSync(fs.readFileSync(file)).length;
 };
 
-export const reportStats = async ({ flags }): Promise<ReportStats> => {
+export const getOutputFile = (file: string): string => {
+	return file === "" || file === undefined ? STDOUT : join(CWD, file);
+};
+
+export const validateConfigurationFile = (file: string): any => {
 	const result = {
-		pass: true,
 		exitCode: 0,
 		exitMessage: "",
-		outputFile: "",
-		prefix: "",
 		data: {},
 	};
-	let failed = false;
-	const configurationFile = flags.configuration.startsWith("/")
-		? flags.configuration
-		: path.join(CWD, flags.configuration);
-
-	const outputFile =
-		flags.output === "" || flags.output === undefined
-			? STDOUT
-			: path.join(CWD, flags.output);
-	const prefix = flags.prefix || "0.0.0";
-	const currentResults = {};
-
-	if (flags.configuration === "") {
+	if (file === "") {
 		result.exitMessage = "Please provide a configuration file";
 		result.exitCode = 1;
 		return result;
 	}
 
+	const configurationFile = file.startsWith("/") ? file : join(CWD, file);
+
 	if (fs.existsSync(configurationFile) === false) {
-		result.exitMessage = "Invalid or missing configuration file!";
+		result.exitMessage = `Invalid or missing configuration file!\n${configurationFile}`;
 		result.exitCode = 1;
 		return result;
 	}
-	const configuration: Artifact[] = await import(configurationFile).then(
-		(m) => m.default,
-	);
 
-	for (const artifact of configuration) {
-		const rootPath = artifact.path.startsWith("/")
-			? ""
-			: path.dirname(configurationFile);
-		const artifactPath = path.dirname(artifact.path);
-		const globReplace = "+([a-zA-Z0-9_-])";
-		const hasHash = artifact.path.includes("<hash>");
+	return {
+		...result,
+		data: configurationFile,
+	};
+};
 
-		/**
-		 * if the artifact.path has the string <hash> in it,
-		 * then we need to check for other characters:
-		 * - Double stars ** are allowed.
-		 * - Single stars * are not allowed.
-		 */
-		if (hasHash && /(?<!\*)\*(?!\*)/.test(artifact.path)) {
-			result.exitCode = 1;
-			result.exitMessage = `Invalid path: ${artifact.path}.\nSingle stars (*) are not allowed when using the special keyword <hash>`;
-			return result;
-		}
+export const readJSONFile = (file: string): any => {
+	try {
+		return {
+			exitCode: 0,
+			exitMessage: "",
+			data: fs.readJsonSync(file),
+		};
+	} catch (error) {
+		return {
+			exitCode: 1,
+			exitMessage: `Failed to read JSON file: ${error.message}`,
+		};
+	}
+};
 
-		const fileGlob = path.join(
-			rootPath,
-			artifact.path.replace("<hash>", globReplace),
-		);
-		const files = glob.sync(fileGlob);
+export const getMostRecentVersion = (data: []) => {
+	const keys = [];
+	for (const key of Object.keys(data)) {
+		keys.push(key);
+	}
+	keys.sort(semver.rcompare);
+	return keys[0];
+};
 
-		if (files.length === 0) {
-			result.exitCode = 1;
-			result.exitMessage = `File not found: ${fileGlob}`;
-			return result;
-		}
+export const percentFormatter = new Intl.NumberFormat("en", {
+	style: "percent",
+	signDisplay: "exceptZero",
+	minimumFractionDigits: 2,
+	maximumFractionDigits: 2,
+});
 
-		if (files.length > 1 && hasHash) {
-			result.exitCode = 1;
-			result.exitMessage = `Multiple files found for: ${artifact.path}.\nPlease use a more specific path when using the special keyword <hash>.`;
-			return result;
-		}
+export const formatFooter = (limit: boolean, diff: number | string): string => {
+	return `Overall status: ${limit ? "🚫" : "✅"} ${diff}`;
+};
 
-		for (const file of files) {
-			const fileSize = statSync(file).size;
-			const fileSizeGzip = gzipSizeFromFileSync(file);
-			const passed = fileSizeGzip < bytes(artifact.limit);
+export const addMDrow = ({
+	type,
+	passed = true,
+	name = "",
+	size = 0,
+	diff = "",
+	limit = "",
+	columns,
+}: {
+	columns: any;
+	type: "header" | "row";
+	passed?: boolean;
+	name?: string;
+	size?: number;
+	diff?: string;
+	limit?: string;
+}) => {
+	const totalColumns = columns.length;
 
-			if (passed === false) {
-				result.pass = false;
-				failed = true;
+	if (type === "header") {
+		const separator = " --- |".repeat(totalColumns);
+		const header = columns.map((column) => column[Object.keys(column)[0]]);
+		return `| ${header.join(" | ")} |\n|${separator}`;
+	}
+	if (type === "row") {
+		const row = columns.map((column) => {
+			const key = Object.keys(column)[0];
+			if (key === "status") {
+				return passed ? "✅" : "🚫";
 			}
-			let index = hasHash
-				? artifact.path
-				: path.join(artifactPath, path.basename(file));
+			if (key === "file") {
+				return name.replaceAll("<", "[").replaceAll(">", "]");
+			}
+			if (key === "size") {
+				return `${bytes(size, {
+					unitSeparator: " ",
+				})}${diff}`;
+			}
+			if (key === "limits") {
+				return limit;
+			}
+			return "";
+		});
 
-			currentResults[index] = {
-				fileSize,
-				fileSizeGzip,
-				limit: artifact.limit,
-				passed,
-			};
-		}
+		return `| ${row.join(" | ")} |`;
 	}
-
-	let existingResults = {};
-	if (outputFile !== STDOUT) {
-		try {
-			existingResults = fs.readJsonSync(outputFile);
-		} catch {
-			/**
-			 * There are no existing results, so we can ignore this error,
-			 * and simply write the current results to the output file.
-			 */
-		}
-	}
-	existingResults[prefix] = currentResults;
-
-	result.prefix = prefix;
-	result.outputFile = outputFile;
-	result.exitCode = failed && flags.silent === false ? 1 : 0;
-	result.data = existingResults;
-	return result;
 };

@@ -1,164 +1,68 @@
-import { fileURLToPath } from "node:url";
-import kleur from "kleur";
-import path from "node:path";
-import { reportStats } from "../utilities.js";
+import {
+	addMDrow,
+	formatFooter,
+	getOutputFile,
+	readJSONFile,
+} from "../utilities.js";
 
-kleur.enabled = false;
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-describe("when testing for reportStats with errors", () => {
-	it("should report there is a missing configuration file", async () => {
-		expect(true).toBe(true);
-		const result = await reportStats({
-			flags: { configuration: "" },
-		});
-		expect(result).toEqual({
-			data: {},
-			exitCode: 1,
-			exitMessage: "Please provide a configuration file",
-			outputFile: "",
-			pass: true,
-			prefix: "",
-		});
+describe("when testing for utilities", () => {
+	it("should return the provided file prefixed with CWD", async () => {
+		const result = getOutputFile("file.txt");
+		expect(result).toEqual(`${process.cwd()}/file.txt`);
 	});
 
-	it("should report there is an invalid configuration file", async () => {
-		const result = await reportStats({
-			flags: { configuration: "invalid" },
-		});
+	it("should throw an error if readJsonSync fails", async () => {
+		const result = readJSONFile("file.txt");
 		expect(result).toEqual({
-			data: {},
-			exitCode: 1,
-			exitMessage: "Invalid or missing configuration file!",
-			outputFile: "",
-			pass: true,
-			prefix: "",
-		});
-	});
-
-	it("should report that file cannot be found", async () => {
-		const result = await reportStats({
-			flags: {
-				configuration: path.join(
-					__dirname,
-					"fixtures/configuration/not-found.js",
-				),
-			},
-		});
-		expect(result).toEqual({
-			data: {},
-			exitCode: 1,
-			exitMessage: `File not found: ${process.cwd()}/src/__tests__/fixtures/data/file-does-not-exist.txt`,
-			outputFile: "",
-			pass: true,
-			prefix: "",
-		});
-	});
-
-	it("should report that too many files were found", async () => {
-		const result = await reportStats({
-			flags: {
-				configuration: path.join(
-					__dirname,
-					"fixtures/configuration/hash-too-many.js",
-				),
-			},
-		});
-		expect(result).toEqual({
-			data: {},
-			exitCode: 1,
-			exitMessage: `Multiple files found for: ../data/file-<hash>.txt.\nPlease use a more specific path when using the special keyword <hash>.`,
-			outputFile: "",
-			pass: true,
-			prefix: "",
-		});
-	});
-
-	it("should report <hash> cannot be used with a single start (*)", async () => {
-		const result = await reportStats({
-			flags: {
-				configuration: path.join(
-					__dirname,
-					"fixtures/configuration/hash-and-star.js",
-				),
-			},
-		});
-		expect(result).toEqual({
-			data: {},
 			exitCode: 1,
 			exitMessage:
-				"Invalid path: ../data/index-<hash>*.js.\nSingle stars (*) are not allowed when using the special keyword <hash>",
-			outputFile: "",
-			pass: true,
-			prefix: "",
-		});
-	});
-});
-
-describe("when testing for reportStats with no errors", () => {
-	it("should report basic stats", async () => {
-		const result = await reportStats({
-			flags: {
-				configuration: path.join(__dirname, "fixtures/configuration/basic.js"),
-			},
-		});
-		expect(result).toEqual({
-			data: {
-				"0.0.0": {
-					"../data/**/file.txt": {
-						fileSize: 22,
-						fileSizeGzip: 42,
-						limit: "1.5 kB",
-						passed: true,
-					},
-					"../data/**/file-2.txt": {
-						fileSize: 22,
-						fileSizeGzip: 42,
-						limit: "1.5 kB",
-						passed: true,
-					},
-					"../data/**/file-3.txt": {
-						fileSize: 22,
-						fileSizeGzip: 42,
-						limit: "1.5 kB",
-						passed: true,
-					},
-				},
-			},
-			exitCode: 0,
-			exitMessage: "",
-			outputFile: "stdout",
-			pass: true,
-			prefix: "0.0.0",
+				"Failed to read JSON file: file.txt: ENOENT: no such file or directory, open 'file.txt'",
 		});
 	});
 
-	it("should report basic stats with <hash>", async () => {
-		const result = await reportStats({
-			flags: {
-				configuration: path.join(
-					__dirname,
-					"fixtures/configuration/with-hash.js",
-				),
-			},
+	it("should format the footer", async () => {
+		const result1 = formatFooter(false, 100);
+		const result2 = formatFooter(true, 100);
+		const result3 = formatFooter(false, "100");
+		const result4 = formatFooter(true, "100");
+
+		expect(result1).toEqual("Overall status: ✅ 100");
+		expect(result2).toEqual("Overall status: 🚫 100");
+		expect(result3).toEqual("Overall status: ✅ 100");
+		expect(result4).toEqual("Overall status: 🚫 100");
+	});
+
+	it("should add a 'passed' row to the markdown table", async () => {
+		const result = addMDrow({
+			type: "row",
+			name: "file.txt",
+			size: 666_666,
+			limit: "1.5 kB",
+			passed: true,
+			columns: [
+				{ status: "Status" },
+				{ file: "File" },
+				{ size: "Size" },
+				{ limits: "Limits" },
+			],
 		});
-		expect(result).toEqual({
-			data: {
-				"0.0.0": {
-					"../data/index-<hash>.js": {
-						fileSize: 160,
-						fileSizeGzip: 139,
-						limit: "1.5 kB",
-						passed: true,
-					},
-				},
-			},
-			exitCode: 0,
-			exitMessage: "",
-			outputFile: "stdout",
-			pass: true,
-			prefix: "0.0.0",
+		expect(result).toEqual("| ✅ | file.txt | 651.04 KB | 1.5 kB |");
+	});
+
+	it("should add a 'failed' row to the markdown table", async () => {
+		const result = addMDrow({
+			type: "row",
+			name: "file.txt",
+			size: 666_666,
+			limit: "1.5 kB",
+			passed: false,
+			columns: [
+				{ status: "Status" },
+				{ file: "File" },
+				{ size: "Size" },
+				{ limits: "Limits" },
+			],
 		});
+		expect(result).toEqual("| 🚫 | file.txt | 651.04 KB | 1.5 kB |");
 	});
 });

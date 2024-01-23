@@ -1,7 +1,7 @@
 export default {
 	report: {
-		previous: "../stats/previous.json",
-		current: "../stats/current.json",
+		current: "../stats/previous.json",
+		previous: "../stats/current.json",
 	},
 	sizes: [
 		{

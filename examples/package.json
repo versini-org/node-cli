@@ -16,6 +16,7 @@
 		"access": "restricted"
 	},
 	"scripts": {
-		"stats": "bundlesize -c bundlesize.config.js -p \"$npm_package_version\""
+		"stats": "bundlesize -c bundlesize.config.js -p \"$npm_package_version\" --type compare",
+		"stats:pr": "bundlesize -c bundlesize.config.js -p \"$npm_package_version\" -o tmp/stats.json"
 	}
 }
