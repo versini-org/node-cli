@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.1](https://github.com/aversini/node-cli/compare/bundlesize-v3.0.0...bundlesize-v3.0.1) (2024-01-24)
+
+
+### Bug Fixes
+
+* do not overwrite existing results unless --force is used ([451f061](https://github.com/aversini/node-cli/commit/451f0612cd725fbfd3e9c667e8cefc4bb7b5701c))
+
 ## [3.0.0](https://github.com/aversini/node-cli/compare/bundlesize-v2.1.5...bundlesize-v3.0.0) (2024-01-23)
 
 
