@@ -1,3 +1,4 @@
+import { IGNORE } from "../utilities.js";
 import { fileURLToPath } from "node:url";
 import { getRawStats } from "../getRawStats.js";
 import kleur from "kleur";
@@ -181,5 +182,17 @@ describe("when testing for getRawStats with no errors", () => {
 			pass: true,
 			prefix: "0.0.0",
 		});
+	});
+
+	it("should report report existing stats", async () => {
+		const result = await getRawStats({
+			flags: {
+				force: false,
+				prefix: "0.0.8",
+				output: "src/__tests__/fixtures/stats/current.json",
+				configuration: path.join(__dirname, "fixtures/configuration/basic.js"),
+			},
+		});
+		expect(result.outputFile).toBe(IGNORE);
 	});
 });

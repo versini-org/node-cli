@@ -5,6 +5,7 @@ import semver from "semver";
 import zlib from "node:zlib";
 
 export const STDOUT = "stdout";
+export const IGNORE = "ignore";
 const CWD = process.cwd();
 
 export const gzipSizeFromFileSync = (file: string): number => {
