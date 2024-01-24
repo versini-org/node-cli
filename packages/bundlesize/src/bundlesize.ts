@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 /* istanbul ignore file */
 
+import { IGNORE, STDOUT } from "./utilities.js";
+
 import { Logger } from "@node-cli/logger";
-import { STDOUT } from "./utilities.js";
 import { config } from "./parse.js";
 import fs from "fs-extra";
 import { getRawStats } from "./getRawStats.js";
@@ -17,6 +18,10 @@ const log = new Logger({
 if (flags.type === "size") {
 	try {
 		const result = await getRawStats({ flags });
+
+		if (result.outputFile === IGNORE) {
+			process.exit(result.exitCode);
+		}
 
 		if (result.exitMessage !== "") {
 			log.error(result.exitMessage);

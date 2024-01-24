@@ -10,6 +10,7 @@ export type Flags = {
 	prefix?: string;
 	silent?: boolean;
 	type?: "size" | "report";
+	force?: boolean;
 };
 
 export type Configuration = {
@@ -23,6 +24,12 @@ export const config: Configuration = parser({
 	meta: import.meta,
 	examples: [],
 	flags: {
+		force: {
+			shortFlag: "f",
+			description: "Overwrite existing results",
+			type: "boolean",
+			default: defaultFlags.force,
+		},
 		type: {
 			shortFlag: "t",
 			description: "Specify the type of output: size or report",

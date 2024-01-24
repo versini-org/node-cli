@@ -1,4 +1,5 @@
 import {
+	IGNORE,
 	STDOUT,
 	getOutputFile,
 	gzipSizeFromFileSync,
@@ -126,10 +127,22 @@ export const getRawStats = async ({ flags }): Promise<ReportStats> => {
 			 */
 		}
 	}
-	existingResults[prefix] = currentResults;
+
+	/**
+	 * If the prefix already exists in the output file,
+	 * - if --force flag is used, overwrite the existing results
+	 * - if --force flag is not used, ignore the new results and
+	 *   keep the existing ones.
+	 */
+	if (existingResults[prefix] !== undefined && flags.force === false) {
+		result.outputFile = IGNORE;
+	} else {
+		result.outputFile = outputFile;
+		existingResults[prefix] = currentResults;
+	}
 
 	result.prefix = prefix;
-	result.outputFile = outputFile;
+
 	result.exitCode = failed && flags.silent === false ? 1 : 0;
 	result.data = existingResults;
 	return result;

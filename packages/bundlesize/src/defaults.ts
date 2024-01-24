@@ -5,4 +5,5 @@ export const defaultFlags = {
 	configuration: "",
 	silent: false,
 	type: "size",
+	force: false,
 };
