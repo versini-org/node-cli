@@ -6,6 +6,8 @@ import zlib from "node:zlib";
 
 export const STDOUT = "stdout";
 export const IGNORE = "ignore";
+export const HASH_KEY = "<hash>";
+export const SEMVER_KEY = "<semver>";
 const CWD = process.cwd();
 
 export const gzipSizeFromFileSync = (file: string): number => {

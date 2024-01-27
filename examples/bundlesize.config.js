@@ -27,5 +27,9 @@ export default {
 			path: "data/index-<hash>.md",
 			limit: "1.5 kB",
 		},
+		{
+			path: "data/react-<semver>.js",
+			limit: "1.5 kB",
+		},
 	],
 };
