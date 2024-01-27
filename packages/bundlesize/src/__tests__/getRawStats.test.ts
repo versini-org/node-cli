@@ -97,6 +97,46 @@ describe("when testing for getRawStats with errors", () => {
 		});
 	});
 
+	it("should report <semver> cannot be used with a single start (*)", async () => {
+		const result = await getRawStats({
+			flags: {
+				configuration: path.join(
+					__dirname,
+					"fixtures/configuration/semver-and-star.js",
+				),
+			},
+		});
+		expect(result).toEqual({
+			data: {},
+			exitCode: 1,
+			exitMessage:
+				"Invalid path: ../data/index-<semver>*.js.\nSingle stars (*) are not allowed when using the special keyword <semver>",
+			outputFile: "",
+			pass: true,
+			prefix: "",
+		});
+	});
+
+	it("should report <hash> and <semver> cannot be used together", async () => {
+		const result = await getRawStats({
+			flags: {
+				configuration: path.join(
+					__dirname,
+					"fixtures/configuration/hash-and-semver.js",
+				),
+			},
+		});
+		expect(result).toEqual({
+			data: {},
+			exitCode: 1,
+			exitMessage:
+				"Invalid path: ../data/index-<hash>-<semver>.js.\nCannot use <hash> and <semver> in the same path.",
+			outputFile: "",
+			pass: true,
+			prefix: "",
+		});
+	});
+
 	it("should report there is a configuration file missing sizes entry", async () => {
 		const result = await getRawStats({
 			flags: {
@@ -171,6 +211,34 @@ describe("when testing for getRawStats with no errors", () => {
 					"../data/index-<hash>.js": {
 						fileSize: 160,
 						fileSizeGzip: 139,
+						limit: "1.5 kB",
+						passed: true,
+					},
+				},
+			},
+			exitCode: 0,
+			exitMessage: "",
+			outputFile: "stdout",
+			pass: true,
+			prefix: "0.0.0",
+		});
+	});
+
+	it("should report basic stats with <semver>", async () => {
+		const result = await getRawStats({
+			flags: {
+				configuration: path.join(
+					__dirname,
+					"fixtures/configuration/with-semver.js",
+				),
+			},
+		});
+		expect(result).toEqual({
+			data: {
+				"0.0.0": {
+					"../data/react-<semver>.js": {
+						fileSize: 47,
+						fileSizeGzip: 64,
 						limit: "1.5 kB",
 						passed: true,
 					},

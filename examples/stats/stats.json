@@ -1,54 +1,60 @@
 {
-  "0.0.7": {
-    "data/file.txt": {
-      "fileSize": 1281,
-      "fileSizeGzip": 1199,
-      "limit": "1.5 kB",
-      "passed": true
-    },
-    "data/file-with-extra.txt": {
-      "fileSize": 2264,
-      "fileSizeGzip": 2197,
-      "limit": "1.5 kB",
-      "passed": true
-    },
-    "data/other-file.txt": {
-      "fileSize": 3307,
-      "fileSizeGzip": 4217,
-      "limit": "1.5 kB",
-      "passed": true
-    },
-    "data/index-<hash>.md": {
-      "fileSize": 0,
-      "fileSizeGzip": 20,
-      "limit": "1.5 kB",
-      "passed": true
-    }
-  },
-  "0.0.8": {
-    "data/file.txt": {
-      "fileSize": 281,
-      "fileSizeGzip": 199,
-      "limit": "1.5 kB",
-      "passed": true
-    },
-    "data/file-with-extra.txt": {
-      "fileSize": 264,
-      "fileSizeGzip": 199,
-      "limit": "1.5 kB",
-      "passed": true
-    },
-    "data/other-file.txt": {
-      "fileSize": 307,
-      "fileSizeGzip": 219,
-      "limit": "1.5 kB",
-      "passed": true
-    },
-    "data/index-<hash>.md": {
-      "fileSize": 0,
-      "fileSizeGzip": 20,
-      "limit": "1.5 kB",
-      "passed": true
-    }
-  }
+	"0.0.7": {
+		"data/file.txt": {
+			"fileSize": 1281,
+			"fileSizeGzip": 1199,
+			"limit": "1.5 kB",
+			"passed": true
+		},
+		"data/file-with-extra.txt": {
+			"fileSize": 2264,
+			"fileSizeGzip": 2197,
+			"limit": "1.5 kB",
+			"passed": true
+		},
+		"data/other-file.txt": {
+			"fileSize": 3307,
+			"fileSizeGzip": 4217,
+			"limit": "1.5 kB",
+			"passed": true
+		},
+		"data/index-<hash>.md": {
+			"fileSize": 0,
+			"fileSizeGzip": 20,
+			"limit": "1.5 kB",
+			"passed": true
+		}
+	},
+	"0.0.8": {
+		"data/file.txt": {
+			"fileSize": 281,
+			"fileSizeGzip": 199,
+			"limit": "1.5 kB",
+			"passed": true
+		},
+		"data/file-with-extra.txt": {
+			"fileSize": 264,
+			"fileSizeGzip": 199,
+			"limit": "1.5 kB",
+			"passed": true
+		},
+		"data/other-file.txt": {
+			"fileSize": 307,
+			"fileSizeGzip": 219,
+			"limit": "1.5 kB",
+			"passed": true
+		},
+		"data/index-<hash>.md": {
+			"fileSize": 0,
+			"fileSizeGzip": 20,
+			"limit": "1.5 kB",
+			"passed": true
+		},
+		"data/react-<semver>.js": {
+			"fileSize": 400,
+			"fileSizeGzip": 200,
+			"limit": "1.5 kB",
+			"passed": true
+		}
+	}
 }

@@ -18,6 +18,7 @@
 	"scripts": {
 		"stats:pr": "bundlesize -c bundlesize.config.js -p \"$npm_package_version\" -o tmp/stats.json",
 		"stats:release": "bundlesize -c bundlesize.config.js -p \"$npm_package_version\" -o stats/stats.json",
-		"stats:report": "bundlesize -c bundlesize.config.js -p \"$npm_package_version\" --type report"
+		"stats:report": "bundlesize -c bundlesize.config.js -p \"$npm_package_version\" --type report",
+		"stats": "bundlesize -c bundlesize.config.js -p \"$npm_package_version\""
 	}
 }

@@ -1,5 +1,7 @@
 import {
+	HASH_KEY,
 	IGNORE,
+	SEMVER_KEY,
 	STDOUT,
 	getOutputFile,
 	gzipSizeFromFileSync,
@@ -63,24 +65,31 @@ export const getRawStats = async ({ flags }): Promise<ReportStats> => {
 			? ""
 			: dirname(configurationFile);
 		const artifactPath = dirname(artifact.path);
-		const globReplace = "+([a-zA-Z0-9_-])";
-		const hasHash = artifact.path.includes("<hash>");
+		const hasHash = artifact.path.includes(HASH_KEY);
+		const hasSemver = artifact.path.includes(SEMVER_KEY);
+		const globReplace = hasHash ? "+([a-zA-Z0-9_-])" : "*";
+
+		if (hasSemver && hasHash) {
+			result.exitCode = 1;
+			result.exitMessage = `Invalid path: ${artifact.path}.\nCannot use ${HASH_KEY} and ${SEMVER_KEY} in the same path.`;
+			return result;
+		}
 
 		/**
-		 * if the artifact.path has the string <hash> in it,
+		 * if the artifact.path has the string <hash> or <semver> in it,
 		 * then we need to check for other characters:
 		 * - Double stars ** are allowed.
 		 * - Single stars * are not allowed.
 		 */
-		if (hasHash && /(?<!\*)\*(?!\*)/.test(artifact.path)) {
+		if ((hasHash || hasSemver) && /(?<!\*)\*(?!\*)/.test(artifact.path)) {
 			result.exitCode = 1;
-			result.exitMessage = `Invalid path: ${artifact.path}.\nSingle stars (*) are not allowed when using the special keyword <hash>`;
+			result.exitMessage = `Invalid path: ${artifact.path}.\nSingle stars (*) are not allowed when using the special keyword ${hasHash ? HASH_KEY : SEMVER_KEY}`;
 			return result;
 		}
 
 		const fileGlob = join(
 			rootPath,
-			artifact.path.replace("<hash>", globReplace),
+			artifact.path.replace(hasHash ? HASH_KEY : SEMVER_KEY, globReplace),
 		);
 		const files = glob.sync(fileGlob);
 
@@ -92,7 +101,7 @@ export const getRawStats = async ({ flags }): Promise<ReportStats> => {
 
 		if (files.length > 1 && hasHash) {
 			result.exitCode = 1;
-			result.exitMessage = `Multiple files found for: ${artifact.path}.\nPlease use a more specific path when using the special keyword <hash>.`;
+			result.exitMessage = `Multiple files found for: ${artifact.path}.\nPlease use a more specific path when using the special keyword ${HASH_KEY}.`;
 			return result;
 		}
 
@@ -105,7 +114,10 @@ export const getRawStats = async ({ flags }): Promise<ReportStats> => {
 				result.pass = false;
 				failed = true;
 			}
-			let index = hasHash ? artifact.path : join(artifactPath, basename(file));
+			let index =
+				hasHash || hasSemver
+					? artifact.path
+					: join(artifactPath, basename(file));
 
 			currentResults[index] = {
 				fileSize,
