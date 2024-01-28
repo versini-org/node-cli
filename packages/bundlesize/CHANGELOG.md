@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.0.0](https://github.com/aversini/node-cli/compare/bundlesize-v3.1.1...bundlesize-v4.0.0) (2024-01-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bundlesize:** the footer custom function is now accepting an object instead of multiple arguments
+
+### Features
+
+* **bundlesize:** improved custom footer and 100% coverage ([7cc497b](https://github.com/aversini/node-cli/commit/7cc497baa7da16343939779cab994bf7b0935aaf))
+
 ## [3.1.1](https://github.com/aversini/node-cli/compare/bundlesize-v3.1.0...bundlesize-v3.1.1) (2024-01-28)
 
 
