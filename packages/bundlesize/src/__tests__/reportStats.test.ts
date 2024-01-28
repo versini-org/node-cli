@@ -182,4 +182,58 @@ Overall status: ✅ (+58.99 KB)
 			outputFile: STDOUT,
 		});
 	});
+
+	it("should report stats even if there are no previous stats", async () => {
+		const result = await reportStats({
+			flags: {
+				configuration: path.join(
+					__dirname,
+					"fixtures/configuration/no-previous.js",
+				),
+			},
+		});
+
+		expect(result).toEqual({
+			data: `
+## Bundle Size
+| Status | File | Size (Gzip) | Limits |
+| --- | --- | --- | --- |
+| ✅ | file.txt | 19.43 KB | 1.5 kB |
+| ✅ | file.zip | 19.53 KB | 1.5 kB |
+| ✅ | file-no-change | 19.53 KB | 1.5 kB |
+
+Overall status: ✅
+`,
+			exitCode: 0,
+			exitMessage: "",
+			outputFile: STDOUT,
+		});
+	});
+
+	it("should report stats even if previous stats are incomplete", async () => {
+		const result = await reportStats({
+			flags: {
+				configuration: path.join(
+					__dirname,
+					"fixtures/configuration/previous-incomplete.js",
+				),
+			},
+		});
+
+		expect(result).toEqual({
+			data: `
+## Bundle Size
+| Status | File | Size (Gzip) | Limits |
+| --- | --- | --- | --- |
+| ✅ | file.txt | 19.43 KB (-78.5 KB -80.16%) | 1.5 kB |
+| ✅ | file.zip | 19.53 KB | 1.5 kB |
+| ✅ | file-no-change | 19.53 KB | 1.5 kB |
+
+Overall status: ✅ (-58.97 KB)
+`,
+			exitCode: 0,
+			exitMessage: "",
+			outputFile: STDOUT,
+		});
+	});
 });

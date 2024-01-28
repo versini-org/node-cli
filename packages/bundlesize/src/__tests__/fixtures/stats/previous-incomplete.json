@@ -1,0 +1,43 @@
+{
+	"0.0.6": {
+		"data/file.txt": {
+			"fileSize": 1281,
+			"fileSizeGzip": 1199,
+			"limit": "1.5 kB",
+			"passed": true
+		},
+		"data/file-with-extra.txt": {
+			"fileSize": 2264,
+			"fileSizeGzip": 2197,
+			"limit": "1.5 kB",
+			"passed": true
+		},
+		"data/other-file.txt": {
+			"fileSize": 3307,
+			"fileSizeGzip": 4217,
+			"limit": "1.5 kB",
+			"passed": true
+		},
+		"data/index-<hash>.md": {
+			"fileSize": 0,
+			"fileSizeGzip": 20,
+			"limit": "1.5 kB",
+			"passed": true
+		}
+	},
+	"0.0.7": {
+		"data/file.txt": {
+			"fileSize": 100281,
+			"fileSizeGzip": 100281,
+			"limit": "1.5 kB",
+			"passed": true
+		},
+
+		"data/file-no-change": {
+			"fileSize": 281,
+			"fileSizeGzip": 19999,
+			"limit": "1.5 kB",
+			"passed": true
+		}
+	}
+}

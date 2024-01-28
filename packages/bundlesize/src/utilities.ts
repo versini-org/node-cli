@@ -71,12 +71,15 @@ export const getMostRecentVersion = (data: []) => {
 	return keys[0];
 };
 
-export const percentFormatter = new Intl.NumberFormat("en", {
-	style: "percent",
-	signDisplay: "exceptZero",
-	minimumFractionDigits: 2,
-	maximumFractionDigits: 2,
-});
+export const percentFormatter = (value: number) => {
+	const formatter = new Intl.NumberFormat("en", {
+		style: "percent",
+		signDisplay: "exceptZero",
+		minimumFractionDigits: 2,
+		maximumFractionDigits: 2,
+	});
+	return formatter.format(value);
+};
 
 export const formatFooter = (limit: boolean, diff: number | string): string => {
 	return `Overall status: ${limit ? "🚫" : "✅"} ${diff}`;
