@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.1](https://github.com/aversini/node-cli/compare/bundlesize-v3.1.0...bundlesize-v3.1.1) (2024-01-28)
+
+
+### Bug Fixes
+
+* **bundlesize:** do not crash if previous stats are incomplete ([8ff183a](https://github.com/aversini/node-cli/commit/8ff183a33994eadaa7d572108868b8a8d959a0f7))
+
 ## [3.1.0](https://github.com/aversini/node-cli/compare/bundlesize-v3.0.1...bundlesize-v3.1.0) (2024-01-28)
 
 
