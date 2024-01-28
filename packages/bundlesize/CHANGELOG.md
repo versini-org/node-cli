@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.1.0](https://github.com/aversini/node-cli/compare/bundlesize-v3.0.1...bundlesize-v3.1.0) (2024-01-28)
+
+
+### Features
+
+* **bundlesize:** adding support for special keyword "&lt;semver&gt;" ([0d231dc](https://github.com/aversini/node-cli/commit/0d231dc332e71ab23af5a41689e844bbc0facf62))
+
+
+### Bug Fixes
+
+* **bundlesize:** better glob pattern for semver ([5615a6f](https://github.com/aversini/node-cli/commit/5615a6f797a386bf36a35ad303daaa1ed58deea5))
+
 ## [3.0.1](https://github.com/aversini/node-cli/compare/bundlesize-v3.0.0...bundlesize-v3.0.1) (2024-01-24)
 
 
