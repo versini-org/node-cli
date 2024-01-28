@@ -8,6 +8,9 @@ export const STDOUT = "stdout";
 export const IGNORE = "ignore";
 export const HASH_KEY = "<hash>";
 export const SEMVER_KEY = "<semver>";
+export const GLOB_HASH = "+([a-zA-Z0-9_-])";
+export const GLOB_SEMVER = "+([0-9]).+([0-9]).+([0-9])*([.a-zA-Z0-9_-])";
+
 const CWD = process.cwd();
 
 export const gzipSizeFromFileSync = (file: string): number => {

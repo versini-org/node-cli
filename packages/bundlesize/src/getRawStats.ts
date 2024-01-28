@@ -1,4 +1,6 @@
 import {
+	GLOB_HASH,
+	GLOB_SEMVER,
 	HASH_KEY,
 	IGNORE,
 	SEMVER_KEY,
@@ -67,7 +69,6 @@ export const getRawStats = async ({ flags }): Promise<ReportStats> => {
 		const artifactPath = dirname(artifact.path);
 		const hasHash = artifact.path.includes(HASH_KEY);
 		const hasSemver = artifact.path.includes(SEMVER_KEY);
-		const globReplace = hasHash ? "+([a-zA-Z0-9_-])" : "*";
 
 		if (hasSemver && hasHash) {
 			result.exitCode = 1;
@@ -87,10 +88,14 @@ export const getRawStats = async ({ flags }): Promise<ReportStats> => {
 			return result;
 		}
 
-		const fileGlob = join(
-			rootPath,
-			artifact.path.replace(hasHash ? HASH_KEY : SEMVER_KEY, globReplace),
-		);
+		let location = artifact.path;
+		if (hasHash) {
+			location = artifact.path.replace(HASH_KEY, GLOB_HASH);
+		}
+		if (hasSemver) {
+			location = artifact.path.replace(SEMVER_KEY, GLOB_SEMVER);
+		}
+		const fileGlob = join(rootPath, location);
 		const files = glob.sync(fileGlob);
 
 		if (files.length === 0) {
