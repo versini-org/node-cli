@@ -102,16 +102,16 @@ export const reportStats = async ({ flags }): Promise<ReportCompare> => {
 			const previousFileStats =
 				previousStats.data[previousVersion] &&
 				previousStats.data[previousVersion][key];
-			const previousFileSizeGzip = previousFileStats.fileSizeGzip;
+			const previousFileSizeGzip = previousFileStats?.fileSizeGzip || 0;
 			const diff = item.fileSizeGzip - previousFileSizeGzip;
 
 			overallDiff += diff;
 			diffString =
-				diff === 0
+				diff === 0 || diff === item.fileSizeGzip
 					? ""
 					: ` (${diff > 0 ? "+" : "-"}${bytes(Math.abs(diff), {
 							unitSeparator: " ",
-						})} ${percentFormatter.format(diff / previousFileSizeGzip)})`;
+						})} ${percentFormatter(diff / previousFileSizeGzip)})`;
 		}
 
 		rowsMD.push(
