@@ -159,8 +159,7 @@ export const getRawStats = async ({ flags }): Promise<ReportStats> => {
 	}
 
 	result.prefix = prefix;
-
-	result.exitCode = failed && flags.silent === false ? 1 : 0;
+	result.exitCode = flags.silent === true ? 0 : Number(failed);
 	result.data = existingResults;
 	return result;
 };

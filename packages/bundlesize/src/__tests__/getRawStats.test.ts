@@ -51,7 +51,7 @@ describe("when testing for getRawStats with errors", () => {
 		expect(result).toEqual({
 			data: {},
 			exitCode: 1,
-			exitMessage: `File not found: ${process.cwd()}/src/__tests__/fixtures/data/file-does-not-exist.txt`,
+			exitMessage: `File not found: /tmp/data/file-does-not-exist.txt`,
 			outputFile: "",
 			pass: true,
 			prefix: "",
@@ -192,6 +192,87 @@ describe("when testing for getRawStats with no errors", () => {
 			exitMessage: "",
 			outputFile: "stdout",
 			pass: true,
+			prefix: "0.0.0",
+		});
+	});
+
+	it("should report basic stats that overall do not pass", async () => {
+		const result = await getRawStats({
+			flags: {
+				configuration: path.join(
+					__dirname,
+					"fixtures/configuration/basic-do-not-pass.js",
+				),
+			},
+		});
+		expect(result).toEqual({
+			data: {
+				"0.0.0": {
+					"../data/**/file.txt": {
+						fileSize: 22,
+						fileSizeGzip: 42,
+						limit: "1 B",
+						passed: false,
+					},
+					"../data/**/file-2.txt": {
+						fileSize: 22,
+						fileSizeGzip: 42,
+						limit: "1 B",
+						passed: false,
+					},
+					"../data/**/file-3.txt": {
+						fileSize: 22,
+						fileSizeGzip: 42,
+						limit: "1 B",
+						passed: false,
+					},
+				},
+			},
+			exitCode: 1,
+			exitMessage: "",
+			outputFile: "stdout",
+			pass: false,
+			prefix: "0.0.0",
+		});
+	});
+
+	it("should report stats that overall do not pass but no exit error", async () => {
+		const result = await getRawStats({
+			flags: {
+				silent: true,
+				configuration: path.join(
+					__dirname,
+					"fixtures/configuration/basic-do-not-pass.js",
+				),
+			},
+		});
+		expect(result).toEqual({
+			data: {
+				"0.0.0": {
+					"../data/**/file.txt": {
+						fileSize: 22,
+						fileSizeGzip: 42,
+						limit: "1 B",
+						passed: false,
+					},
+					"../data/**/file-2.txt": {
+						fileSize: 22,
+						fileSizeGzip: 42,
+						limit: "1 B",
+						passed: false,
+					},
+					"../data/**/file-3.txt": {
+						fileSize: 22,
+						fileSizeGzip: 42,
+						limit: "1 B",
+						passed: false,
+					},
+				},
+			},
+			exitCode: 0,
+			exitMessage: "",
+			outputFile: "stdout",
+			pass: false,
 			prefix: "0.0.0",
 		});
 	});
