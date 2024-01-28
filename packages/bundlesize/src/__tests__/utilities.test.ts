@@ -21,15 +21,70 @@ describe("when testing for utilities", () => {
 	});
 
 	it("should format the footer", async () => {
-		const result1 = formatFooter(false, 100);
-		const result2 = formatFooter(true, 100);
-		const result3 = formatFooter(false, "100");
-		const result4 = formatFooter(true, "100");
+		const result1 = formatFooter({
+			limitReached: false,
+			overallDiff: 100,
+			totalGzipSize: 200,
+		});
+		const result2 = formatFooter({
+			limitReached: true,
+			overallDiff: 100,
+			totalGzipSize: 200,
+		});
+		const result11 = formatFooter({
+			limitReached: false,
+			overallDiff: -100,
+			totalGzipSize: 200,
+		});
+		const result22 = formatFooter({
+			limitReached: true,
+			overallDiff: -100,
+			totalGzipSize: 200,
+		});
+		const result3 = formatFooter({
+			limitReached: true,
+			overallDiff: 0,
+			totalGzipSize: 200,
+		});
+		const result4 = formatFooter({
+			limitReached: false,
+			overallDiff: 0,
+			totalGzipSize: 200,
+		});
+		const result5 = formatFooter({
+			limitReached: false,
+			overallDiff: -10,
+			totalGzipSize: 0,
+		});
 
-		expect(result1).toEqual("Overall status: ✅ 100");
-		expect(result2).toEqual("Overall status: 🚫 100");
-		expect(result3).toEqual("Overall status: ✅ 100");
-		expect(result4).toEqual("Overall status: 🚫 100");
+		expect(result1).toEqual(
+			`Overall bundle size: 200 B (+100 B +100.00%)
+Overall status: ✅`,
+		);
+		expect(result2).toEqual(
+			`Overall bundle size: 200 B (+100 B +100.00%)
+Overall status: 🚫`,
+		);
+		expect(result11).toEqual(
+			`Overall bundle size: 200 B (-100 B -33.33%)
+Overall status: ✅`,
+		);
+		expect(result22).toEqual(
+			`Overall bundle size: 200 B (-100 B -33.33%)
+Overall status: 🚫`,
+		);
+		expect(result3).toEqual(
+			`Overall bundle size: 200 B
+Overall status: 🚫`,
+		);
+		expect(result4).toEqual(
+			`Overall bundle size: 200 B
+Overall status: ✅`,
+		);
+		expect(result5).toEqual(
+			`Overall bundle size: 0 B (-10 B -100.00%)
+Overall status: ✅`,
+		);
 	});
 
 	it("should add a 'passed' row to the markdown table", async () => {
@@ -44,6 +99,7 @@ describe("when testing for utilities", () => {
 				{ file: "File" },
 				{ size: "Size" },
 				{ limits: "Limits" },
+				{ notAValidKey: "Not a valid key" },
 			],
 		});
 		expect(result).toEqual("| ✅ | file.txt | 651.04 KB | 1.5 kB |");

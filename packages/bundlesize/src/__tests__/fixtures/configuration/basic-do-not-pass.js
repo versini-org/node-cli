@@ -5,12 +5,8 @@ export default {
 	},
 	sizes: [
 		{
-			path: "../data/file.txt",
-			limit: "1.5 kB",
-		},
-		{
-			path: "/tmp/data/file-does-not-exist.txt",
-			limit: "1.5 kB",
+			path: "../data/**/file*.txt",
+			limit: "1 B",
 		},
 	],
 };

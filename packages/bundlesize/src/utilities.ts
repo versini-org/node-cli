@@ -81,8 +81,39 @@ export const percentFormatter = (value: number) => {
 	return formatter.format(value);
 };
 
-export const formatFooter = (limit: boolean, diff: number | string): string => {
-	return `Overall status: ${limit ? "🚫" : "✅"} ${diff}`;
+export type FooterProperties = {
+	limitReached: boolean;
+	overallDiff: number;
+	totalGzipSize: number;
+};
+export const formatFooter = ({
+	limitReached,
+	overallDiff,
+	totalGzipSize,
+}: FooterProperties) => {
+	let percentageDiff = "";
+	const result = [];
+
+	const totalGzipSizeString = `${bytes(totalGzipSize || 0, {
+		unitSeparator: " ",
+	})}`;
+
+	percentageDiff = percentFormatter(
+		overallDiff / (totalGzipSize - overallDiff),
+	);
+	const overallDiffString =
+		!overallDiff || overallDiff === 0
+			? ""
+			: `(${overallDiff > 0 ? "+" : "-"}${bytes(Math.abs(overallDiff), {
+					unitSeparator: " ",
+				})} ${percentageDiff})`;
+
+	result.push(
+		`Overall bundle size: ${totalGzipSizeString} ${overallDiffString}`.trim(),
+		`Overall status: ${limitReached ? "🚫" : "✅"}`,
+	);
+
+	return `${result.join("\n")}`;
 };
 
 export const addMDrow = ({
@@ -110,24 +141,26 @@ export const addMDrow = ({
 		return `| ${header.join(" | ")} |\n|${separator}`;
 	}
 	if (type === "row") {
-		const row = columns.map((column) => {
-			const key = Object.keys(column)[0];
-			if (key === "status") {
-				return passed ? "✅" : "🚫";
-			}
-			if (key === "file") {
-				return name.replaceAll("<", "[").replaceAll(">", "]");
-			}
-			if (key === "size") {
-				return `${bytes(size, {
-					unitSeparator: " ",
-				})}${diff}`;
-			}
-			if (key === "limits") {
-				return limit;
-			}
-			return "";
-		});
+		const row = columns
+			.map((column: {}) => {
+				const key = Object.keys(column)[0];
+				if (key === "status") {
+					return passed ? "✅" : "🚫";
+				}
+				if (key === "file") {
+					return name.replaceAll("<", "[").replaceAll(">", "]");
+				}
+				if (key === "size") {
+					return `${bytes(size, {
+						unitSeparator: " ",
+					})}${diff}`;
+				}
+				if (key === "limits") {
+					return limit;
+				}
+				return "";
+			})
+			.filter((item: string) => item !== "");
 
 		return `| ${row.join(" | ")} |`;
 	}

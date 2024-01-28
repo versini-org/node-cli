@@ -9,6 +9,7 @@ import {
 } from "./utilities.js";
 import { basename, dirname, join } from "node:path";
 
+import type { FooterProperties } from "./utilities.js";
 import bytes from "bytes";
 
 type ReportConfiguration = {
@@ -16,7 +17,7 @@ type ReportConfiguration = {
 	previous: string;
 
 	header?: string;
-	footer?: (limit: boolean, diff: string | number) => string;
+	footer?: (arguments_: FooterProperties) => string;
 	columns?: { [key: string]: string }[];
 };
 
@@ -78,6 +79,8 @@ export const reportStats = async ({ flags }): Promise<ReportCompare> => {
 
 	let limitReached = false;
 	let overallDiff = 0;
+	let totalGzipSize = 0;
+
 	const headerString = configuration.report.header || "## Bundle Size";
 	const footerFormatter = configuration.report.footer || formatFooter;
 	const columns = configuration.report.columns || [
@@ -114,6 +117,8 @@ export const reportStats = async ({ flags }): Promise<ReportCompare> => {
 						})} ${percentFormatter(diff / previousFileSizeGzip)})`;
 		}
 
+		totalGzipSize += item.fileSizeGzip;
+
 		rowsMD.push(
 			addMDrow({
 				type: "row",
@@ -127,18 +132,15 @@ export const reportStats = async ({ flags }): Promise<ReportCompare> => {
 		);
 	}
 
-	const overallDiffString =
-		overallDiff === 0
-			? ""
-			: `(${overallDiff > 0 ? "+" : "-"}${bytes(Math.abs(overallDiff), {
-					unitSeparator: " ",
-				})})`;
-
 	const template = `
 ${headerString}
 ${rowsMD.join("\n")}
 
-${footerFormatter(limitReached, overallDiffString).trim()}
+${footerFormatter({
+	limitReached,
+	overallDiff,
+	totalGzipSize,
+})}
 `;
 
 	if (limitReached) {
