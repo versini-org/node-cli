@@ -679,13 +679,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fastify/cors@npm:8.5.0":
-  version: 8.5.0
-  resolution: "@fastify/cors@npm:8.5.0"
+"@fastify/cors@npm:9.0.0":
+  version: 9.0.0
+  resolution: "@fastify/cors@npm:9.0.0"
   dependencies:
     fastify-plugin: "npm:^4.0.0"
     mnemonist: "npm:0.39.6"
-  checksum: b415fa33c5d9f0f3f9538d1dc3efa5a763428b939de50a4326006a20e4c06bca25ee38f19df2d43ab8e1430f82d9f1e456b4f06acb22206d7847dc2668085134
+  checksum: 28751f1a4432a894712847a4821bbc7c0d62a990a4c6012cd596e38ce524b4f3216e6eb3b1a209de707ef4834488c002d0a92724f5d84f5d3af111358b38361f
   languageName: node
   linkType: hard
 
@@ -1343,7 +1343,7 @@ __metadata:
   dependencies:
     "@fastify/caching": "npm:8.3.0"
     "@fastify/compress": "npm:6.5.0"
-    "@fastify/cors": "npm:8.5.0"
+    "@fastify/cors": "npm:9.0.0"
     "@fastify/static": "npm:6.12.0"
     "@node-cli/logger": "npm:1.2.1"
     "@node-cli/parser": "npm:2.2.2"
