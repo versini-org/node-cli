@@ -54,10 +54,10 @@ importers:
   packages/parser:
     dependencies:
       '@node-cli/logger':
-        specifier: workspace:../logger
+        specifier: '>=1.2.0'
         version: link:../logger
       '@node-cli/utilities':
-        specifier: workspace:../utilities
+        specifier: '>=1.0.0'
         version: link:../utilities
       cli-table3:
         specifier: 0.6.3
