@@ -1,6 +1,6 @@
 {
 	"version": "0.0.8",
-	"npmClient": "yarn",
-	"workspaces": ["packages/*"],
-	"packages": ["packages/*"]
+	"npmClient": "pnpm",
+	"packages": ["packages/*"],
+	"$schema": "node_modules/lerna/schemas/lerna-schema.json"
 }

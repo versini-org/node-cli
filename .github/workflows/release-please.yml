@@ -1,3 +1,5 @@
+name: release-please
+
 on:
   push:
     branches:
@@ -7,7 +9,8 @@ permissions:
   contents: write
   pull-requests: write
 
-name: release-please
+env:
+  COREPACK_ENABLE_STRICT: 0
 
 jobs:
   release-please:
@@ -33,9 +36,7 @@ jobs:
         if: ${{ steps.release.outputs.releases_created }}
         run: |
           corepack enable
-          yarn set version berry
-          yarn install
-          git checkout yarn.lock
+          pnpm install
           npx lerna run build
 
       # Release Please has already incremented versions and published tags, so we just
