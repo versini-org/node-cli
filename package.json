@@ -13,7 +13,7 @@
 	},
 	"devDependencies": {
 		"@versini/dev-dependencies-common": "3.2.0",
-		"@versini/dev-dependencies-server": "3.0.11",
+		"@versini/dev-dependencies-server": "3.0.12",
 		"@versini/dev-dependencies-types": "1.1.3"
 	},
 	"packageManager": "yarn@4.1.0"
