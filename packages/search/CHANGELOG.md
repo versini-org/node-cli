@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4](https://github.com/aversini/node-cli/compare/search-v1.0.3...search-v1.0.4) (2024-02-07)
+
+
+### Bug Fixes
+
+* bump dependencies to latest ([6328f22](https://github.com/aversini/node-cli/commit/6328f22523f7760932d563f79cace26715b17d7d))
+
 ## [1.0.3](https://github.com/aversini/node-cli/compare/search-v1.0.2...search-v1.0.3) (2024-01-16)
 
 
