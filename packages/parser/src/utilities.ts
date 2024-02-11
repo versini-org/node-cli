@@ -151,8 +151,12 @@ export const meowParserHelper = (parameters: {
 
 	if (restrictions && restrictions.length > 0) {
 		for (const rule of restrictions) {
-			if (rule.test(cli.flags)) {
-				logger.error(rule.message(cli.flags));
+			if (rule.test(cli.flags, cli.input)) {
+				if (typeof rule.message === "function") {
+					logger.error(rule.message(cli.flags, cli.input));
+				} else {
+					logger.error(rule.message);
+				}
 				process.exit(rule.exit);
 			}
 		}
