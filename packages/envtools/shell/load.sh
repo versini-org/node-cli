@@ -25,7 +25,7 @@ EVTLS_SCRIPTPATH="$(
   cd -- "$(dirname "$0")" >/dev/null 2>&1
   pwd -P
 )"
-EVTLS_RUNTIME_DIR="${HOME}/.envtools"
+export EVTLS_RUNTIME_DIR="${HOME}/.envtools"
 if [ ! -d "${EVTLS_RUNTIME_DIR}" ]; then
   mkdir -p "${EVTLS_RUNTIME_DIR}"
   touch "${EVTLS_RUNTIME_DIR}/envtools-banner"
@@ -75,6 +75,6 @@ fi
 
 if [ -f "${EVTLS_RUNTIME_DIR}/envtools-timing" ]; then
   EVTLS_STOP_TIME=$(/usr/bin/python3 -c "import time; print(int(round(time.time() * 1000)))")
-  EVTLS_LOAD_TIME=$(($EVTLS_STOP_TIME - $EVTLS_START_TIME))
+  export EVTLS_LOAD_TIME=$(($EVTLS_STOP_TIME - $EVTLS_START_TIME))
   echo "Envtools loaded in ${EVTLS_LOAD_TIME}ms"
 fi
