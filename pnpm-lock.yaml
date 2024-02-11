@@ -150,7 +150,7 @@ importers:
         version: link:../logger
       '@node-cli/parser':
         specifier: 2.2.3
-        version: link:../parser
+        version: 2.2.3
       fastify:
         specifier: 4.26.0
         version: 4.26.0
@@ -1273,6 +1273,30 @@ packages:
       got: 11.8.6
       os-filter-obj: 2.0.0
     dev: true
+
+  /@node-cli/logger@1.2.2:
+    resolution: {integrity: sha512-WwGumUqAeMsWYDN0KSulsAIs2vDbfl78WkUhl9wTyuEhZZa6+Q63pylA0MkSn/DZqGgJ6IFjEzvpDgZrjxn79A==}
+    dependencies:
+      boxen: 7.1.1
+      kleur: 4.1.5
+      ora: 8.0.1
+    dev: false
+
+  /@node-cli/parser@2.2.3:
+    resolution: {integrity: sha512-GUDdrA/Tf/VmANpED/qLqE5MnFV3QdE0yWCUQgyXknsVMtR0482yRHCeGQWuqY8rHoVpJT+ob7ghainzVwYkoA==}
+    dependencies:
+      '@node-cli/logger': 1.2.2
+      '@node-cli/utilities': 1.0.0
+      cli-table3: 0.6.3
+      kleur: 4.1.5
+      meow: 13.1.0
+    dev: false
+
+  /@node-cli/utilities@1.0.0:
+    resolution: {integrity: sha512-8HcbycrGTf3K5a0TIxAtGjNQwWjU/RYzK8DC4msCTjxjSc80BycYp7ZP/M/tUbCS9ZaLPoGYKIrk72+R+Xsi0Q==}
+    dependencies:
+      lodash-es: 4.17.21
+    dev: false
 
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -6637,6 +6661,11 @@ packages:
     resolution: {integrity: sha512-S3UwM3yj5mtUSEfP41UZmt/0SCoVYUcU1rkXv+BQ5Ig8ndL4sPoJNBUJERafdPb5jjHJGuMgytgKvKIf58XNBw==}
     engines: {node: '>= 0.10.0'}
     dev: true
+
+  /meow@13.1.0:
+    resolution: {integrity: sha512-o5R/R3Tzxq0PJ3v3qcQJtSvSE9nKOLSAaDuuoMzDVuGTwHdccMWcYomh9Xolng2tjT6O/Y83d+0coVGof6tqmA==}
+    engines: {node: '>=18'}
+    dev: false
 
   /meow@13.2.0:
     resolution: {integrity: sha512-pxQJQzB6djGPXh08dacEloMFopsOqGVRKFPYvPOt9XDZ1HasbgDZA74CJGreSU4G3Ak7EFJGoiH2auq+yXISgA==}
