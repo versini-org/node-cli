@@ -53,6 +53,15 @@ importers:
         specifier: 8.0.1
         version: 8.0.1
 
+  packages/npmrc:
+    dependencies:
+      '@node-cli/logger':
+        specifier: '>=1.2.2'
+        version: link:../logger
+      '@node-cli/parser':
+        specifier: '>=2.2.3'
+        version: link:../parser
+
   packages/parser:
     dependencies:
       '@node-cli/logger':
