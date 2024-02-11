@@ -20,7 +20,7 @@ type Parameters = {
 type Restriction = {
 	exit: number;
 	message: string | (() => void);
-	test: (value: any) => boolean;
+	test: (flags: any, parameters: any) => boolean;
 };
 
 export type ParserConfiguration = {

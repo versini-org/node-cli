@@ -177,36 +177,36 @@ describe("when testing for meowHelpers with no logging side-effects", () => {
 		});
 		expect(helpText).toEqual(expect.stringContaining("  Usage:"));
 		expect(helpText).toEqual(
-			expect.stringContaining("> my-cli [options] <command> [path]")
+			expect.stringContaining("> my-cli [options] <command> [path]"),
 		);
 		expect(helpText).toEqual(
 			expect.stringContaining(
-				"  -b, --boring      Do not use color output                                       (default: false)"
-			)
+				"  -b, --boring      Do not use color output                                       (default: false)",
+			),
 		);
 		expect(helpText).toEqual(
 			expect.stringContaining(
-				"  -c, --command     Command to execute over each node (ex: chmod +x)"
-			)
+				"  -c, --command     Command to execute over each node (ex: chmod +x)",
+			),
 		);
 		expect(helpText).toEqual(
-			expect.stringContaining("  Folder:  some folder out of nowhere")
+			expect.stringContaining("  Folder:  some folder out of nowhere"),
 		);
 		expect(helpText).toEqual(
 			expect.stringContaining(
-				"  Path:    the path where to search for files or directories  (default: current folder)"
-			)
+				"  Path:    the path where to search for files or directories  (default: current folder)",
+			),
 		);
 		expect(helpText).toEqual(expect.stringContaining("  Examples:"));
 		expect(helpText).toEqual(
 			expect.stringContaining(
-				'   ## Find files with the extension ".jsx" in the "src" folder'
-			)
+				'   ## Find files with the extension ".jsx" in the "src" folder',
+			),
 		);
 		expect(helpText).toEqual(
 			expect.stringContaining(
-				'   > my-cli --type f --pattern=".sh$" --command "chmod +x"'
-			)
+				'   > my-cli --type f --pattern=".sh$" --command "chmod +x"',
+			),
 		);
 	});
 
@@ -249,7 +249,7 @@ describe("when testing for meowHelpers with no logging side-effects", () => {
 		});
 		expect(helpText).toEqual(expect.stringContaining("Usage:"));
 		expect(helpText).toEqual(
-			expect.stringContaining(`> ${mockProcessName} [options]`)
+			expect.stringContaining(`> ${mockProcessName} [options]`),
 		);
 		expect(helpText).not.toEqual(expect.stringContaining("[path]"));
 	});
@@ -265,7 +265,7 @@ describe("when testing for meowHelpers with no logging side-effects", () => {
 		});
 		expect(helpText).toEqual(expect.stringContaining("Usage:"));
 		expect(helpText).toEqual(
-			expect.stringContaining(`> ${mockProcessName} [path]`)
+			expect.stringContaining(`> ${mockProcessName} [path]`),
 		);
 		expect(helpText).not.toEqual(expect.stringContaining("[options]"));
 	});
@@ -288,8 +288,8 @@ describe("when testing for meowHelpers with no logging side-effects", () => {
 		expect(helpText).toEqual(expect.stringContaining("Usage:"));
 		expect(helpText).toEqual(
 			expect.stringContaining(
-				`> ${mockProcessName} [options] [pathOne] [pathTwo]`
-			)
+				`> ${mockProcessName} [options] [pathOne] [pathTwo]`,
+			),
 		);
 	});
 });
@@ -388,6 +388,26 @@ describe("when testing for utilities with logging side-effects", () => {
 			],
 		});
 		expect(mockLogError).toHaveBeenCalledWith("Error: option 's' is invalid");
+		// eslint-disable-next-line no-magic-numbers
+		expect(spyExit).toHaveBeenCalledWith(666);
+	});
+
+	it("should display the simple error message and exit with 666", async () => {
+		meowParserHelper({
+			cli: {
+				flags: {
+					type: "s",
+				},
+			},
+			restrictions: [
+				{
+					exit: 666,
+					message: "Error: option is invalid",
+					test: (flag: { type: string }) => flag.type !== "d",
+				},
+			],
+		});
+		expect(mockLogError).toHaveBeenCalledWith("Error: option is invalid");
 		// eslint-disable-next-line no-magic-numbers
 		expect(spyExit).toHaveBeenCalledWith(666);
 	});
