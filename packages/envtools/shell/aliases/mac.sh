@@ -9,4 +9,3 @@ alias top='top -s1 -o cpu -R -F'
 
 # Open file or current path in finder
 alias f=openInFinder
-

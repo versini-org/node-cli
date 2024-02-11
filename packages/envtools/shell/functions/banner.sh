@@ -2,16 +2,17 @@
 # Call this function to display a welcome banner
 #
 function printBanner {
-  if [ "$ATOM_TERMINAL" = "" ] || [ "$VSCODE_CLI" = "" ]; then
-    if [ "$EVTLS_INIT_PARAM" != "reload" ]; then
-      local HEADER="┌─────────────────────────────────────┐"
-      local MAX_STRING="$HEADER"
-      local MAX_SIZE=${#MAX_STRING}
-      # echo "MAX_SIZE: $MAX_SIZE"
+  if [ -f "${EVTLS_RUNTIME_DIR}/envtools-banner" ]; then
+    if [ "$ATOM_TERMINAL" = "" ] || [ "$VSCODE_CLI" = "" ]; then
+      if [ "$EVTLS_INIT_PARAM" != "reload" ]; then
+        local HEADER="┌─────────────────────────────────────┐"
+        local FOOTER="└─────────────────────────────────────┘"
+        local SEP="│"
+        local MAX_STRING="$HEADER"
+        local MAX_SIZE=${#MAX_STRING}
 
-      if [ -f "${EVTLS_RUNTIME_DIR}/envtools-banner" ]; then
         txtCyan "$HEADER" "nl"
-        txtCyan "│"
+        txtCyan "$SEP"
         if isMac; then
           txtDefault "       "
           txtRed "★"
@@ -21,25 +22,22 @@ function printBanner {
         else
           txtDefault "         Welcome to Envtools         "
         fi
-        txtCyan "│" "nl"
+        txtCyan "$SEP" "nl"
 
         if [ "$EVTLS_VERSION" != "" ]; then
           local VERSION_STRING="v${EVTLS_VERSION}"
           local VERSION_SIZE=${#VERSION_STRING}
           local PADDING=$(($MAX_SIZE - $VERSION_SIZE - 3))
-          # echo "VERSION_SIZE: $VERSION_SIZE"
-          # echo "PADDING: $PADDING"
 
-          txtCyan "│                                     │" "nl"
-          txtCyan "│"
-          printf %${PADDING}s |tr " " " "
+          txtCyan "$SEP                                     $SEP" "nl"
+          txtCyan "$SEP"
+          printf %${PADDING}s | tr " " " "
           txtDefault "$VERSION_STRING "
-          txtCyan "│" "nl"
+          txtCyan "$SEP" "nl"
         else
-          txtCyan "│                                     │" "nl"
+          txtCyan "$SEP                                     $SEP" "nl"
         fi
-
-        txtCyan "└─────────────────────────────────────┘" "nl"
+        txtCyan "$FOOTER" "nl"
       fi
     fi
   fi
