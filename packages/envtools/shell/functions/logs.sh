@@ -96,4 +96,3 @@ function txtColor {
     fi
   fi
 }
-
