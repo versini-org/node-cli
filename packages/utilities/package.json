@@ -15,7 +15,7 @@
 		"lodash-es": "4.17.21"
 	},
 	"scripts": {
-		"build": "yarn run clean && yarn run build:types && yarn run build:js && yarn run build:barrel",
+		"build": "npm-run-all --serial clean build:types build:js build:barrel",
 		"build:barrel": "barrelsby --delete --directory dist --pattern \"**/*.d.ts\" --name \"index.d\"",
 		"build:js": "swc --source-maps --out-dir dist src",
 		"build:types": "tsc",
