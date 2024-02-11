@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.3.0](https://github.com/aversini/node-cli/compare/parser-v2.2.3...parser-v2.3.0) (2024-02-11)
+
+
+### Features
+
+* migrate from yarn to pnpm ([6f752ae](https://github.com/aversini/node-cli/commit/6f752ae9d4d6fb0170ccd3cac99a236eb58130f5))
+
+
+### Bug Fixes
+
+* bump dependencies to latest ([6328f22](https://github.com/aversini/node-cli/commit/6328f22523f7760932d563f79cace26715b17d7d))
+
 ## [2.2.3](https://github.com/aversini/node-cli/compare/parser-v2.2.2...parser-v2.2.3) (2024-01-16)
 
 
