@@ -4,8 +4,17 @@ import { parser } from "@node-cli/parser";
 export type Parameters = {
 	["0"]?: string;
 };
+export type Flags = {
+	verbose?: boolean;
+	delete?: boolean;
+	create?: boolean;
+	list?: boolean;
+	boring?: boolean;
+	help?: boolean;
+	version?: boolean;
+};
 export type Configuration = {
-	flags?: any;
+	flags?: Flags;
 	parameters?: Parameters;
 	showHelp?: () => void;
 };
@@ -78,7 +87,7 @@ export const config: Configuration = parser({
 		{
 			exit: 1,
 			message: "To create a profile, you must provide a profile name",
-			test: (flags: any, parameters: any) => {
+			test: (flags?: Flags, parameters?: Parameters) => {
 				return flags.create && (!parameters || !parameters["0"]);
 			},
 		},
