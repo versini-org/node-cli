@@ -21,11 +21,14 @@
 		"lint": "prettier --write \"src/*.ts\" && eslint --fix \"src/*.ts\"",
 		"test": "cross-env-shell NODE_OPTIONS=--experimental-vm-modules TZ=UTC jest",
 		"test:coverage": "npm run test -- --coverage",
+		"test:watch": "npm run test -- --watch",
 		"watch": "swc --watch --out-dir dist src"
 	},
 	"dependencies": {
 		"@node-cli/logger": ">=1.2.2",
-		"@node-cli/parser": ">=2.2.3"
+		"@node-cli/parser": ">=2.2.3",
+		"fs-extra": "11.2.0",
+		"kleur": "4.1.5"
 	},
 	"publishConfig": {
 		"access": "public"

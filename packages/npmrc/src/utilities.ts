@@ -3,12 +3,13 @@ import fs from "fs-extra";
 import kleur from "kleur";
 
 export const logger = new Logger();
+logger.boring = process.env.NODE_ENV === "test";
 
 export const listProfiles = async ({ flags, storeConfig }) => {
 	try {
 		const profiles = await fs.readJson(storeConfig);
 
-		if (profiles.available.length > 0) {
+		if (profiles?.available?.length > 0) {
 			const activeProfile = profiles.enabled;
 			const messages =
 				activeProfile === undefined
@@ -31,7 +32,7 @@ export const listProfiles = async ({ flags, storeConfig }) => {
 		}
 		return 0;
 	} catch (error) {
-		if (flags.debug) {
+		if (flags.verbose) {
 			logger.log(error);
 		}
 		logger.error("Unable to read the profile configuration file");
@@ -78,7 +79,7 @@ export const createProfile = async ({
 		});
 		return 0;
 	} catch (error) {
-		if (flags.debug) {
+		if (flags.verbose) {
 			logger.log(error);
 		}
 		logger.error("Could not create profile");
@@ -100,7 +101,7 @@ export const switchProfile = async ({
 		}
 		// if profile is already enabled, do nothing
 		if (profiles.enabled === profileName) {
-			logger.warn(`Profile '${profileName}' already active`);
+			logger.warn(`Profile '${profileName}' is already active`);
 			return 0;
 		}
 		// if profile exists and is not enabled, switch to it by copying
@@ -137,7 +138,7 @@ export const switchProfile = async ({
 		});
 		return 0;
 	} catch (error) {
-		if (flags.debug) {
+		if (flags.verbose) {
 			logger.log(error);
 		}
 		logger.error("Could not switch profile");
@@ -169,7 +170,7 @@ export const deleteProfile = async ({
 			available: profiles.available.filter(
 				(profile: any) => profile !== profileName,
 			),
-			enabled: profiles.enabled === profileName ? undefined : profiles.enabled,
+			enabled: profiles.enabled,
 		};
 		await fs.writeJson(storeConfig, newProfiles, { spaces: 2 });
 		logger.printBox(`Profile '${profileName}' deleted`, {
@@ -179,7 +180,7 @@ export const deleteProfile = async ({
 		});
 		return 0;
 	} catch (error) {
-		if (flags.debug) {
+		if (flags.verbose) {
 			logger.log(error);
 		}
 		logger.error("Could not delete profile");
