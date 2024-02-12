@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.1](https://github.com/aversini/node-cli/compare/parser-v2.3.0...parser-v2.3.1) (2024-02-12)
+
+
+### Bug Fixes
+
+* **parser:** restriction message can be a function or a string ([66383df](https://github.com/aversini/node-cli/commit/66383df76ec044f8179bb7a705058e08f9f55650))
+
 ## [2.3.0](https://github.com/aversini/node-cli/compare/parser-v2.2.3...parser-v2.3.0) (2024-02-11)
 
 
