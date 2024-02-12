@@ -158,8 +158,8 @@ importers:
         specifier: 9.0.1
         version: 9.0.1
       '@fastify/static':
-        specifier: 7.0.0
-        version: 7.0.0
+        specifier: 7.0.1
+        version: 7.0.1
       '@node-cli/logger':
         specifier: 1.2.2
         version: link:../logger
@@ -871,15 +871,15 @@ packages:
       mime: 3.0.0
     dev: false
 
-  /@fastify/static@7.0.0:
-    resolution: {integrity: sha512-JCuzYMgbIY1Ws5e3dmPFWAZ0MwkKNn4Pmd/gk3RlCOCLDtA6eUq7WZyBz/TpnCi6ae8FOY1s33POo4rioYgWTg==}
+  /@fastify/static@7.0.1:
+    resolution: {integrity: sha512-i1p/nELMknAisNfnjo7yhfoUOdKzA+n92QaMirv2NkZrJ1Wl12v2nyTYlDwPN8XoStMBAnRK/Kx6zKmfrXUPXw==}
     dependencies:
       '@fastify/accept-negotiator': 1.1.0
       '@fastify/send': 2.1.0
       content-disposition: 0.5.4
       fastify-plugin: 4.5.1
+      fastq: 1.17.1
       glob: 10.3.10
-      p-limit: 3.1.0
     dev: false
 
   /@humanwhocodes/config-array@0.11.14:
@@ -7729,6 +7729,7 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       yocto-queue: 0.1.0
+    dev: true
 
   /p-locate@2.0.0:
     resolution: {integrity: sha512-nQja7m7gSKuewoVRen45CtVfODR3crN3goVQ0DDZ9N3yHxgpkuBhZqsaiotSQRrADUrne346peY7kT3TSACykg==}
@@ -9949,3 +9950,4 @@ packages:
   /yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
+    dev: true
