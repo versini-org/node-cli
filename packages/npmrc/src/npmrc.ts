@@ -9,9 +9,13 @@ import {
 } from "./utilities.js";
 
 import { config } from "./parse.js";
+import path from "node:path";
 
-const NPMRC_STORE = process.env.HOME + "/.envtools/npmrcs";
-const NPMRC_STORE_CONFIG = process.env.HOME + "/.envtools/npmrcs.json";
+const NPMRC_STORE = path.join(process.env.HOME, ".envtools/npmrcs");
+const NPMRC_STORE_CONFIG = path.join(
+	process.env.HOME,
+	"/.envtools/npmrcs.json",
+);
 
 const { parameters, flags, showHelp } = config;
 
