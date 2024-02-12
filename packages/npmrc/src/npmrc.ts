@@ -11,11 +11,9 @@ import {
 import { config } from "./parse.js";
 import path from "node:path";
 
-const NPMRC_STORE = path.join(process.env.HOME, ".envtools/npmrcs");
-const NPMRC_STORE_CONFIG = path.join(
-	process.env.HOME,
-	"/.envtools/npmrcs.json",
-);
+const HOME = process.env.HOME;
+const NPMRC_STORE = path.join(HOME, ".envtools/npmrcs");
+const NPMRC_STORE_CONFIG = path.join(HOME, "/.envtools/npmrcs.json");
 
 const { parameters, flags, showHelp } = config;
 
@@ -25,6 +23,7 @@ if (flags.create && parameters !== undefined) {
 		storeConfig: NPMRC_STORE_CONFIG,
 		storeLocation: NPMRC_STORE,
 		profileName: parameters["0"],
+		homeLocation: HOME,
 	});
 	process.exit(exitFlag);
 }
@@ -45,6 +44,7 @@ if (parameters !== undefined && parameters["0"] !== undefined) {
 		storeConfig: NPMRC_STORE_CONFIG,
 		storeLocation: NPMRC_STORE,
 		profileName: parameters["0"],
+		homeLocation: HOME,
 	});
 	process.exit(exitFlag);
 }

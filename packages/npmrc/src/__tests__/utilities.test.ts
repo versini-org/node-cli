@@ -31,10 +31,7 @@ let mock = {
 	spyError: any;
 
 describe("when testing with logging side-effects", () => {
-	const environment = process.env;
 	beforeEach(() => {
-		jest.resetModules();
-		process.env = { ...environment };
 		kleur.enabled = false;
 		mock.info = jest.fn();
 		mock.log = jest.fn();
@@ -55,7 +52,6 @@ describe("when testing with logging side-effects", () => {
 			.mockImplementation(() => "5:00:00 PM");
 	});
 	afterEach(() => {
-		process.env = environment;
 		spyDate.mockRestore();
 		spyInfo.mockRestore();
 		spyLocaleTime.mockRestore();
@@ -135,6 +131,7 @@ describe("when testing with logging side-effects", () => {
 
 	describe("createProfile with errors", () => {
 		it("should return 0 if profile already exists", async () => {
+			const homeLocation = path.join(os.tmpdir(), "home");
 			const result = await createProfile({
 				flags: { verbose: true },
 				profileName: "perso",
@@ -143,6 +140,7 @@ describe("when testing with logging side-effects", () => {
 					__dirname,
 					"fixtures/configuration/one-profile.json",
 				),
+				homeLocation,
 			});
 			expect(result).toEqual(0);
 			expect(mock.warn).toHaveBeenCalledWith(
@@ -151,6 +149,7 @@ describe("when testing with logging side-effects", () => {
 		});
 
 		it("should return 1 if the profile configuration is corrupted", async () => {
+			const homeLocation = path.join(os.tmpdir(), "home");
 			const result = await createProfile({
 				flags: { verbose: true },
 				profileName: "perso",
@@ -159,6 +158,7 @@ describe("when testing with logging side-effects", () => {
 					__dirname,
 					"fixtures/configuration/does-not-exist.json",
 				),
+				homeLocation,
 			});
 			expect(result).toEqual(1);
 			expect(mock.error).toHaveBeenCalledWith(
@@ -169,7 +169,7 @@ describe("when testing with logging side-effects", () => {
 
 	describe("createProfile with no errors", () => {
 		it("should return 0 when a new profile is created", async () => {
-			process.env.HOME = path.join(os.tmpdir(), "home");
+			const homeLocation = path.join(os.tmpdir(), "home");
 			const temporaryConfig = path.join(os.tmpdir(), "tmp-config.json");
 			const temporaryStoreLocation = path.join(os.tmpdir(), "npmrcs");
 			await fs.writeJson(temporaryConfig, {
@@ -180,6 +180,7 @@ describe("when testing with logging side-effects", () => {
 				profileName: "work",
 				storeLocation: temporaryStoreLocation,
 				storeConfig: temporaryConfig,
+				homeLocation,
 			});
 			await fs.writeJson(temporaryConfig, {});
 			expect(result).toEqual(0);
@@ -194,6 +195,7 @@ describe("when testing with logging side-effects", () => {
 
 	describe("switchProfile with errors", () => {
 		it("should return 1 if profile does not exist", async () => {
+			const homeLocation = path.join(os.tmpdir(), "home");
 			const result = await switchProfile({
 				flags: { verbose: true },
 				profileName: "does-not-exist",
@@ -202,6 +204,7 @@ describe("when testing with logging side-effects", () => {
 					__dirname,
 					"fixtures/configuration/one-profile.json",
 				),
+				homeLocation,
 			});
 			expect(result).toEqual(1);
 			expect(mock.error).toHaveBeenCalledWith(
@@ -210,6 +213,7 @@ describe("when testing with logging side-effects", () => {
 		});
 
 		it("should return 0 if profile is already active", async () => {
+			const homeLocation = path.join(os.tmpdir(), "home");
 			const result = await switchProfile({
 				flags: { verbose: true },
 				profileName: "perso",
@@ -218,6 +222,7 @@ describe("when testing with logging side-effects", () => {
 					__dirname,
 					"fixtures/configuration/two-profiles.json",
 				),
+				homeLocation,
 			});
 			expect(result).toEqual(0);
 			expect(mock.warn).toHaveBeenCalledWith(
@@ -226,6 +231,7 @@ describe("when testing with logging side-effects", () => {
 		});
 
 		it("should return 1 if the profile configuration is corrupted", async () => {
+			const homeLocation = path.join(os.tmpdir(), "home");
 			const result = await switchProfile({
 				flags: { verbose: true },
 				profileName: "perso",
@@ -234,6 +240,7 @@ describe("when testing with logging side-effects", () => {
 					__dirname,
 					"fixtures/configuration/does-not-exist.json",
 				),
+				homeLocation,
 			});
 			expect(result).toEqual(1);
 			expect(mock.error).toHaveBeenCalledWith(
@@ -244,7 +251,7 @@ describe("when testing with logging side-effects", () => {
 
 	describe("switchProfile with no errors", () => {
 		it("should return 0 when a new profile is switched", async () => {
-			process.env.HOME = path.join(os.tmpdir(), "home");
+			const homeLocation = path.join(os.tmpdir(), "home");
 			const temporaryConfig = path.join(os.tmpdir(), "tmp-config.json");
 			await fs.writeJson(temporaryConfig, {
 				available: ["perso"],
@@ -254,6 +261,7 @@ describe("when testing with logging side-effects", () => {
 				profileName: "perso",
 				storeLocation: path.join(__dirname, "fixtures/npmrcs"),
 				storeConfig: temporaryConfig,
+				homeLocation,
 			});
 			await fs.writeJson(temporaryConfig, {});
 			expect(result).toEqual(0);
@@ -263,7 +271,7 @@ describe("when testing with logging side-effects", () => {
 		});
 
 		it("should return 0 when a new profile is switched + warning for npmrc", async () => {
-			process.env.HOME = path.join(os.tmpdir(), "home");
+			const homeLocation = path.join(os.tmpdir(), "home");
 			const temporaryConfig = path.join(os.tmpdir(), "tmp-config.json");
 			await fs.writeJson(temporaryConfig, {
 				available: ["perso-no-npmrc"],
@@ -273,6 +281,7 @@ describe("when testing with logging side-effects", () => {
 				profileName: "perso-no-npmrc",
 				storeLocation: path.join(__dirname, "fixtures/npmrcs"),
 				storeConfig: temporaryConfig,
+				homeLocation,
 			});
 			await fs.writeJson(temporaryConfig, {});
 			expect(result).toEqual(0);
@@ -287,7 +296,7 @@ describe("when testing with logging side-effects", () => {
 		});
 
 		it("should return 0 when a new profile is switched + warning for yarnrc", async () => {
-			process.env.HOME = path.join(os.tmpdir(), "home");
+			const homeLocation = path.join(os.tmpdir(), "home");
 			const temporaryConfig = path.join(os.tmpdir(), "tmp-config.json");
 			await fs.writeJson(temporaryConfig, {
 				available: ["perso-no-yarnrc"],
@@ -297,6 +306,7 @@ describe("when testing with logging side-effects", () => {
 				profileName: "perso-no-yarnrc",
 				storeLocation: path.join(__dirname, "fixtures/npmrcs"),
 				storeConfig: temporaryConfig,
+				homeLocation,
 			});
 			await fs.writeJson(temporaryConfig, {});
 			expect(result).toEqual(0);
@@ -363,7 +373,6 @@ describe("when testing with logging side-effects", () => {
 
 	describe("deleteProfile with no errors", () => {
 		it("should return 0 when profile is deleted", async () => {
-			process.env.HOME = path.join(os.tmpdir(), "home");
 			const temporaryConfig = path.join(os.tmpdir(), "tmp-config.json");
 			await fs.writeJson(temporaryConfig, {
 				available: ["perso", "work"],

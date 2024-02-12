@@ -45,6 +45,7 @@ export const createProfile = async ({
 	storeConfig,
 	storeLocation,
 	profileName,
+	homeLocation,
 }) => {
 	try {
 		const profiles = await fs.readJson(storeConfig);
@@ -58,8 +59,8 @@ export const createProfile = async ({
 		// with the existing npmrc / yarnrc files
 		await fs.ensureDir(`${storeLocation}/${profileName}`);
 		// copy the existing npmrc / yarnrc files to the new folder
-		const NPMRC = `${process.env.HOME}/.npmrc`;
-		const YARNRC = `${process.env.HOME}/.yarnrc`;
+		const NPMRC = `${homeLocation}/.npmrc`;
+		const YARNRC = `${homeLocation}/.yarnrc`;
 		if (await fs.pathExists(YARNRC)) {
 			await fs.copy(YARNRC, `${storeLocation}/${profileName}/yarnrc`);
 		}
@@ -92,6 +93,7 @@ export const switchProfile = async ({
 	storeConfig,
 	storeLocation,
 	profileName,
+	homeLocation,
 }) => {
 	try {
 		const profiles = await fs.readJson(storeConfig);
@@ -106,9 +108,9 @@ export const switchProfile = async ({
 		}
 		// if profile exists and is not enabled, switch to it by copying
 		// the npmrc and yarnrc files from the profile folder to the home folder
-		const NPMRC = `${process.env.HOME}/.npmrc`;
+		const NPMRC = `${homeLocation}/.npmrc`;
 		const PROFILE_NPMRC = `${storeLocation}/${profileName}/npmrc`;
-		const YARNRC = `${process.env.HOME}/.yarnrc`;
+		const YARNRC = `${homeLocation}/.yarnrc`;
 		const PROFILE_YARNRC = `${storeLocation}/${profileName}/yarnrc`;
 
 		if (await fs.pathExists(PROFILE_NPMRC)) {

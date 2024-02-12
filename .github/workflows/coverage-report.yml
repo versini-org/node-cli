@@ -52,7 +52,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           # Upload the coverage directory from the repository
-          path: "."
+          path: "./packages/npmrc/coverage/lcov-report"
       - name: Deploy to GitHub Pages
         if: ${{ always() }}
         id: deployment
