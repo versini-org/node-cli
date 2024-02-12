@@ -175,6 +175,8 @@ describe("when testing with logging side-effects", () => {
 			await fs.writeJson(temporaryConfig, {
 				available: ["perso"],
 			});
+			await fs.ensureFile(path.join(homeLocation, ".npmrc"));
+			await fs.ensureFile(path.join(homeLocation, ".yarnrc"));
 			const result = await createProfile({
 				flags: { verbose: true },
 				profileName: "work",
