@@ -53,6 +53,21 @@ importers:
         specifier: 8.0.1
         version: 8.0.1
 
+  packages/npmrc:
+    dependencies:
+      '@node-cli/logger':
+        specifier: '>=1.2.2'
+        version: link:../logger
+      '@node-cli/parser':
+        specifier: '>=2.2.3'
+        version: link:../parser
+      fs-extra:
+        specifier: 11.2.0
+        version: 11.2.0
+      kleur:
+        specifier: 4.1.5
+        version: 4.1.5
+
   packages/parser:
     dependencies:
       '@node-cli/logger':

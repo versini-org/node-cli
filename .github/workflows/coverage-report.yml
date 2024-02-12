@@ -1,0 +1,57 @@
+name: Coverage Report
+
+# Controls when the workflow will run
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  COREPACK_ENABLE_STRICT: 0
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between
+# the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these
+# production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: |
+          corepack enable
+          pnpm install
+          npx lerna run build
+          npx lerna run test:coverage --scope=@node-cli/npmrc
+      - name: Setup Pages
+        if: ${{ always() }}
+        uses: actions/configure-pages@v4
+      - name: Upload artifact
+        if: ${{ always() }}
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload the coverage directory from the repository
+          path: "./packages/npmrc/coverage/lcov-report"
+      - name: Deploy to GitHub Pages
+        if: ${{ always() }}
+        id: deployment
+        uses: actions/deploy-pages@v4

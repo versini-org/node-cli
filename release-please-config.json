@@ -10,6 +10,7 @@
 		"packages/secret": {},
 		"packages/static-server": {},
 		"packages/timer": {},
-		"packages/utilities": {}
+		"packages/utilities": {},
+		"packages/npmrc": {}
 	}
 }

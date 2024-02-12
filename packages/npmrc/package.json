@@ -1,0 +1,36 @@
+{
+	"name": "@node-cli/npmrc",
+	"version": "0.0.0",
+	"license": "MIT",
+	"author": "Arno Versini",
+	"description": "Toggle different npmrc configuration files on the fly",
+	"type": "module",
+	"types": "./dist/index.d.ts",
+	"exports": "./dist/npmrc.js",
+	"bin": "dist/npmrc.js",
+	"files": [
+		"dist"
+	],
+	"node": ">=18",
+	"scripts": {
+		"build": "npm-run-all --serial clean build:types build:js build:barrel",
+		"build:barrel": "barrelsby --delete --directory dist --pattern \"**/*.d.ts\" --name \"index.d\"",
+		"build:js": "swc --source-maps --out-dir dist src",
+		"build:types": "tsc",
+		"clean": "rimraf dist types coverage",
+		"lint": "prettier --write \"src/*.ts\" && eslint --fix \"src/*.ts\"",
+		"test": "cross-env-shell NODE_OPTIONS=--experimental-vm-modules TZ=UTC jest",
+		"test:coverage": "npm run test -- --coverage",
+		"test:watch": "npm run test -- --watch",
+		"watch": "swc --watch --out-dir dist src"
+	},
+	"dependencies": {
+		"@node-cli/logger": ">=1.2.2",
+		"@node-cli/parser": ">=2.2.3",
+		"fs-extra": "11.2.0",
+		"kleur": "4.1.5"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
+}

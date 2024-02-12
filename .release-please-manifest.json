@@ -9,5 +9,6 @@
 	"packages/secret": "1.0.3",
 	"packages/static-server": "3.0.2",
 	"packages/timer": "1.0.3",
-	"packages/utilities": "1.0.0"
+	"packages/utilities": "1.0.0",
+	"packages/npmrc": "0.0.0"
 }
