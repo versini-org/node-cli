@@ -2,7 +2,7 @@
 	"packages/bundlesize": "4.0.1",
 	"packages/envtools": "4.1.2",
 	"packages/logger": "1.2.2",
-	"packages/parser": "2.3.0",
+	"packages/parser": "2.3.1",
 	"packages/perf": "1.0.4",
 	"packages/run": "1.0.2",
 	"packages/search": "1.0.4",
@@ -10,5 +10,5 @@
 	"packages/static-server": "3.0.2",
 	"packages/timer": "1.0.3",
 	"packages/utilities": "1.0.0",
-	"packages/npmrc": "0.0.0"
+	"packages/npmrc": "1.0.0"
 }
