@@ -42,7 +42,8 @@ jobs:
       - run: |
           corepack enable
           pnpm install
-          npx lerna run test:coverage
+          npx lerna run build
+          npx lerna run test:coverage --scope=@node-cli/npmrc
       - name: Setup Pages
         if: ${{ always() }}
         uses: actions/configure-pages@v4
