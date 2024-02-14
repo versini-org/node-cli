@@ -28,7 +28,10 @@ let mock = {
 	spyLog: any,
 	spyDebug: any,
 	spyWarn: any,
-	spyError: any;
+	spyError: any,
+	homeLocation: string,
+	temporaryConfig: string,
+	temporaryStoreLocation: string;
 
 describe("when testing with logging side-effects", () => {
 	beforeEach(() => {
@@ -51,7 +54,7 @@ describe("when testing with logging side-effects", () => {
 			.spyOn(Date.prototype, "toLocaleTimeString")
 			.mockImplementation(() => "5:00:00 PM");
 	});
-	afterEach(() => {
+	afterEach(async () => {
 		spyDate.mockRestore();
 		spyInfo.mockRestore();
 		spyLocaleTime.mockRestore();
@@ -59,6 +62,15 @@ describe("when testing with logging side-effects", () => {
 		spyDebug.mockRestore();
 		spyWarn.mockRestore();
 		spyError.mockRestore();
+		if (homeLocation) {
+			await fs.remove(homeLocation);
+		}
+		if (temporaryConfig) {
+			await fs.remove(temporaryConfig);
+		}
+		if (temporaryStoreLocation) {
+			await fs.remove(temporaryStoreLocation);
+		}
 	});
 	describe("listProfiles with errors", () => {
 		it("should return 0 if no profiles are found", async () => {
@@ -131,7 +143,7 @@ describe("when testing with logging side-effects", () => {
 
 	describe("createProfile with errors", () => {
 		it("should return 0 if profile already exists", async () => {
-			const homeLocation = path.join(os.tmpdir(), "home");
+			homeLocation = path.join(os.tmpdir(), "home");
 			const result = await createProfile({
 				profileName: "perso",
 				storeLocation: path.join(__dirname, "fixtures/npmrcs"),
@@ -141,10 +153,6 @@ describe("when testing with logging side-effects", () => {
 				),
 				homeLocation,
 			});
-			// cleanup on aisle 5
-			await fs.remove(homeLocation);
-
-			// assertions
 			expect(result).toEqual(0);
 			expect(mock.warn).toHaveBeenCalledWith(
 				expect.stringContaining("Profile 'perso' already exists..."),
@@ -154,9 +162,9 @@ describe("when testing with logging side-effects", () => {
 
 	describe("createProfile with no errors", () => {
 		it("should return 0 when a new profile is created", async () => {
-			const homeLocation = path.join(os.tmpdir(), "home");
-			const temporaryConfig = path.join(os.tmpdir(), "tmp-config.json");
-			const temporaryStoreLocation = path.join(os.tmpdir(), "npmrcs");
+			homeLocation = path.join(os.tmpdir(), "home");
+			temporaryConfig = path.join(os.tmpdir(), "tmp-config.json");
+			temporaryStoreLocation = path.join(os.tmpdir(), "npmrcs");
 			await fs.writeJson(temporaryConfig, {
 				available: ["perso"],
 				enabled: "perso",
@@ -170,13 +178,6 @@ describe("when testing with logging side-effects", () => {
 				homeLocation,
 			});
 			const config = await fs.readJSON(temporaryConfig);
-
-			// cleanup on aisle 5
-			await fs.remove(homeLocation);
-			await fs.remove(temporaryConfig);
-			await fs.remove(temporaryStoreLocation);
-
-			// assertions
 			expect(result).toEqual(0);
 			expect(config).toStrictEqual({
 				available: ["perso", "work"],
@@ -191,8 +192,8 @@ describe("when testing with logging side-effects", () => {
 		});
 
 		it("should return 0, even if the profile configuration is corrupted", async () => {
-			const homeLocation = path.join(os.tmpdir(), "home");
-			const temporaryConfig = path.join(os.tmpdir(), "corrupted-config.json");
+			homeLocation = path.join(os.tmpdir(), "home");
+			temporaryConfig = path.join(os.tmpdir(), "corrupted-config.json");
 			await fs.outputFile(temporaryConfig, "corrupted");
 
 			const result = await createProfile({
@@ -201,11 +202,6 @@ describe("when testing with logging side-effects", () => {
 				storeConfig: temporaryConfig,
 				homeLocation,
 			});
-
-			// cleanup on aisle 5
-			await fs.remove(temporaryConfig);
-			await fs.remove(homeLocation);
-			// assertions
 			expect(result).toEqual(0);
 			expect(mock.log).toHaveBeenCalledWith(
 				expect.stringContaining("Profile 'perso' created"),
@@ -213,9 +209,9 @@ describe("when testing with logging side-effects", () => {
 		});
 
 		it("should return 0, even if the profile configuration does not exist", async () => {
-			const homeLocation = path.join(os.tmpdir(), "home");
-			const temporaryConfig = path.join(os.tmpdir(), "does-not-exist.json");
-			const temporaryStoreLocation = path.join(os.tmpdir(), "npmrcs");
+			homeLocation = path.join(os.tmpdir(), "home");
+			temporaryConfig = path.join(os.tmpdir(), "does-not-exist.json");
+			temporaryStoreLocation = path.join(os.tmpdir(), "npmrcs");
 			await fs.ensureFile(path.join(homeLocation, ".npmrc"));
 			await fs.ensureFile(path.join(homeLocation, ".yarnrc"));
 			const result = await createProfile({
@@ -225,13 +221,6 @@ describe("when testing with logging side-effects", () => {
 				homeLocation,
 			});
 			const config = await fs.readJSON(temporaryConfig);
-
-			// cleanup on aisle 5
-			await fs.remove(homeLocation);
-			await fs.remove(temporaryConfig);
-			await fs.remove(temporaryStoreLocation);
-
-			// assertions
 			expect(result).toEqual(0);
 			expect(config).toStrictEqual({
 				available: ["work"],
@@ -248,7 +237,7 @@ describe("when testing with logging side-effects", () => {
 
 	describe("switchProfile with errors", () => {
 		it("should return 1 if profile does not exist", async () => {
-			const homeLocation = path.join(os.tmpdir(), "home");
+			homeLocation = path.join(os.tmpdir(), "home");
 			const result = await switchProfile({
 				flags: { verbose: true },
 				profileName: "does-not-exist",
@@ -259,10 +248,6 @@ describe("when testing with logging side-effects", () => {
 				),
 				homeLocation,
 			});
-			// cleanup on aisle 5
-			await fs.remove(homeLocation);
-
-			// assertions
 			expect(result).toEqual(1);
 			expect(mock.error).toHaveBeenCalledWith(
 				expect.stringContaining("Profile 'does-not-exist' does not exist"),
@@ -270,7 +255,7 @@ describe("when testing with logging side-effects", () => {
 		});
 
 		it("should return 0 if profile is already active", async () => {
-			const homeLocation = path.join(os.tmpdir(), "home");
+			homeLocation = path.join(os.tmpdir(), "home");
 			const result = await switchProfile({
 				flags: { verbose: true },
 				profileName: "perso",
@@ -281,10 +266,6 @@ describe("when testing with logging side-effects", () => {
 				),
 				homeLocation,
 			});
-			// cleanup on aisle 5
-			await fs.remove(homeLocation);
-
-			// assertions
 			expect(result).toEqual(0);
 			expect(mock.warn).toHaveBeenCalledWith(
 				expect.stringContaining("Profile 'perso' is already active"),
@@ -292,7 +273,7 @@ describe("when testing with logging side-effects", () => {
 		});
 
 		it("should return 1 if the profile configuration is corrupted", async () => {
-			const homeLocation = path.join(os.tmpdir(), "home");
+			homeLocation = path.join(os.tmpdir(), "home");
 			const result = await switchProfile({
 				flags: { verbose: true },
 				profileName: "perso",
@@ -303,10 +284,6 @@ describe("when testing with logging side-effects", () => {
 				),
 				homeLocation,
 			});
-			// cleanup on aisle 5
-			await fs.remove(homeLocation);
-
-			// assertions
 			expect(result).toEqual(1);
 			expect(mock.error).toHaveBeenCalledWith(
 				expect.stringContaining("Could not switch profile"),
@@ -316,8 +293,8 @@ describe("when testing with logging side-effects", () => {
 
 	describe("switchProfile with no errors", () => {
 		it("should return 0 when a new profile is switched", async () => {
-			const homeLocation = path.join(os.tmpdir(), "home");
-			const temporaryConfig = path.join(os.tmpdir(), "tmp-config.json");
+			homeLocation = path.join(os.tmpdir(), "home");
+			temporaryConfig = path.join(os.tmpdir(), "tmp-config.json");
 			await fs.writeJson(temporaryConfig, {
 				available: ["perso"],
 			});
@@ -328,11 +305,6 @@ describe("when testing with logging side-effects", () => {
 				storeConfig: temporaryConfig,
 				homeLocation,
 			});
-			// cleanup on aisle 5
-			await fs.remove(homeLocation);
-			await fs.remove(temporaryConfig);
-
-			// assertions
 			expect(result).toEqual(0);
 			expect(mock.log).toHaveBeenCalledWith(
 				expect.stringContaining("Profile switched to 'perso'"),
@@ -340,8 +312,8 @@ describe("when testing with logging side-effects", () => {
 		});
 
 		it("should return 0 when a new profile is switched + warning for npmrc", async () => {
-			const homeLocation = path.join(os.tmpdir(), "home");
-			const temporaryConfig = path.join(os.tmpdir(), "tmp-config.json");
+			homeLocation = path.join(os.tmpdir(), "home");
+			temporaryConfig = path.join(os.tmpdir(), "tmp-config.json");
 			await fs.writeJson(temporaryConfig, {
 				available: ["perso-no-npmrc"],
 			});
@@ -352,11 +324,6 @@ describe("when testing with logging side-effects", () => {
 				storeConfig: temporaryConfig,
 				homeLocation,
 			});
-			// cleanup on aisle 5
-			await fs.remove(homeLocation);
-			await fs.remove(temporaryConfig);
-
-			// assertions
 			expect(result).toEqual(0);
 			expect(mock.warn).toHaveBeenCalledWith(
 				expect.stringContaining(
@@ -369,8 +336,8 @@ describe("when testing with logging side-effects", () => {
 		});
 
 		it("should return 0 when a new profile is switched + warning for yarnrc", async () => {
-			const homeLocation = path.join(os.tmpdir(), "home");
-			const temporaryConfig = path.join(os.tmpdir(), "tmp-config.json");
+			homeLocation = path.join(os.tmpdir(), "home");
+			temporaryConfig = path.join(os.tmpdir(), "tmp-config.json");
 			await fs.writeJson(temporaryConfig, {
 				available: ["perso-no-yarnrc"],
 			});
@@ -381,11 +348,6 @@ describe("when testing with logging side-effects", () => {
 				storeConfig: temporaryConfig,
 				homeLocation,
 			});
-			// cleanup on aisle 5
-			await fs.remove(homeLocation);
-			await fs.remove(temporaryConfig);
-
-			// assertions
 			expect(result).toEqual(0);
 			expect(mock.warn).toHaveBeenCalledWith(
 				expect.stringContaining(
@@ -450,7 +412,7 @@ describe("when testing with logging side-effects", () => {
 
 	describe("deleteProfile with no errors", () => {
 		it("should return 0 when profile is deleted", async () => {
-			const temporaryConfig = path.join(os.tmpdir(), "tmp-config.json");
+			temporaryConfig = path.join(os.tmpdir(), "tmp-config.json");
 			await fs.writeJson(temporaryConfig, {
 				available: ["perso", "work"],
 				enabled: "work",
@@ -461,10 +423,6 @@ describe("when testing with logging side-effects", () => {
 				storeLocation: path.join(os.tmpdir(), "fixtures/npmrcs"),
 				storeConfig: temporaryConfig,
 			});
-			// cleanup on aisle 5
-			await fs.remove(temporaryConfig);
-
-			// assertions
 			expect(result).toEqual(0);
 			expect(mock.log).toHaveBeenCalledWith(
 				expect.stringContaining("Profile 'perso' deleted"),
