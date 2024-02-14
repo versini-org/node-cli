@@ -142,27 +142,13 @@ describe("when testing with logging side-effects", () => {
 				),
 				homeLocation,
 			});
+			// cleanup on aisle 5
+			await fs.remove(homeLocation);
+
+			// assertions
 			expect(result).toEqual(0);
 			expect(mock.warn).toHaveBeenCalledWith(
 				expect.stringContaining("Profile 'perso' already exists..."),
-			);
-		});
-
-		it("should return 1 if the profile configuration is corrupted", async () => {
-			const homeLocation = path.join(os.tmpdir(), "home");
-			const result = await createProfile({
-				flags: { verbose: true },
-				profileName: "perso",
-				storeLocation: path.join(__dirname, "fixtures/npmrcs"),
-				storeConfig: path.join(
-					__dirname,
-					"fixtures/configuration/does-not-exist.json",
-				),
-				homeLocation,
-			});
-			expect(result).toEqual(1);
-			expect(mock.error).toHaveBeenCalledWith(
-				expect.stringContaining("Could not create profile"),
 			);
 		});
 	});
@@ -184,7 +170,63 @@ describe("when testing with logging side-effects", () => {
 				storeConfig: temporaryConfig,
 				homeLocation,
 			});
-			await fs.writeJson(temporaryConfig, {});
+			// cleanup on aisle 5
+			await fs.remove(homeLocation);
+			await fs.remove(temporaryConfig);
+			await fs.remove(temporaryStoreLocation);
+
+			// assertions
+			expect(result).toEqual(0);
+			expect(mock.log).toHaveBeenCalledWith(
+				expect.stringContaining("┌ Profiles ──────────────────┐"),
+			);
+			expect(mock.log).toHaveBeenCalledWith(
+				expect.stringContaining("Profile 'work' created"),
+			);
+		});
+
+		it("should return 0, even if the profile configuration is corrupted", async () => {
+			const homeLocation = path.join(os.tmpdir(), "home");
+			const temporaryConfig = path.join(os.tmpdir(), "corrupted-config.json");
+			await fs.outputFile(temporaryConfig, "corrupted");
+
+			const result = await createProfile({
+				flags: { verbose: true },
+				profileName: "perso",
+				storeLocation: path.join(__dirname, "fixtures/npmrcs"),
+				storeConfig: temporaryConfig,
+				homeLocation,
+			});
+
+			// cleanup on aisle 5
+			await fs.remove(temporaryConfig);
+			await fs.remove(homeLocation);
+			// assertions
+			expect(result).toEqual(0);
+			expect(mock.log).toHaveBeenCalledWith(
+				expect.stringContaining("Profile 'perso' created"),
+			);
+		});
+
+		it("should return 0, even if the profile configuration does not exist", async () => {
+			const homeLocation = path.join(os.tmpdir(), "home");
+			const temporaryConfig = path.join(os.tmpdir(), "does-not-exist.json");
+			const temporaryStoreLocation = path.join(os.tmpdir(), "npmrcs");
+			await fs.ensureFile(path.join(homeLocation, ".npmrc"));
+			await fs.ensureFile(path.join(homeLocation, ".yarnrc"));
+			const result = await createProfile({
+				flags: { verbose: true },
+				profileName: "work",
+				storeLocation: temporaryStoreLocation,
+				storeConfig: temporaryConfig,
+				homeLocation,
+			});
+			// cleanup on aisle 5
+			await fs.remove(homeLocation);
+			await fs.remove(temporaryConfig);
+			await fs.remove(temporaryStoreLocation);
+
+			// assertions
 			expect(result).toEqual(0);
 			expect(mock.log).toHaveBeenCalledWith(
 				expect.stringContaining("┌ Profiles ──────────────────┐"),
@@ -208,6 +250,10 @@ describe("when testing with logging side-effects", () => {
 				),
 				homeLocation,
 			});
+			// cleanup on aisle 5
+			await fs.remove(homeLocation);
+
+			// assertions
 			expect(result).toEqual(1);
 			expect(mock.error).toHaveBeenCalledWith(
 				expect.stringContaining("Profile 'does-not-exist' does not exist"),
@@ -226,6 +272,10 @@ describe("when testing with logging side-effects", () => {
 				),
 				homeLocation,
 			});
+			// cleanup on aisle 5
+			await fs.remove(homeLocation);
+
+			// assertions
 			expect(result).toEqual(0);
 			expect(mock.warn).toHaveBeenCalledWith(
 				expect.stringContaining("Profile 'perso' is already active"),
@@ -244,6 +294,10 @@ describe("when testing with logging side-effects", () => {
 				),
 				homeLocation,
 			});
+			// cleanup on aisle 5
+			await fs.remove(homeLocation);
+
+			// assertions
 			expect(result).toEqual(1);
 			expect(mock.error).toHaveBeenCalledWith(
 				expect.stringContaining("Could not switch profile"),
@@ -265,7 +319,11 @@ describe("when testing with logging side-effects", () => {
 				storeConfig: temporaryConfig,
 				homeLocation,
 			});
-			await fs.writeJson(temporaryConfig, {});
+			// cleanup on aisle 5
+			await fs.remove(homeLocation);
+			await fs.remove(temporaryConfig);
+
+			// assertions
 			expect(result).toEqual(0);
 			expect(mock.log).toHaveBeenCalledWith(
 				expect.stringContaining("Profile switched to 'perso'"),
@@ -285,7 +343,11 @@ describe("when testing with logging side-effects", () => {
 				storeConfig: temporaryConfig,
 				homeLocation,
 			});
-			await fs.writeJson(temporaryConfig, {});
+			// cleanup on aisle 5
+			await fs.remove(homeLocation);
+			await fs.remove(temporaryConfig);
+
+			// assertions
 			expect(result).toEqual(0);
 			expect(mock.warn).toHaveBeenCalledWith(
 				expect.stringContaining(
@@ -310,7 +372,11 @@ describe("when testing with logging side-effects", () => {
 				storeConfig: temporaryConfig,
 				homeLocation,
 			});
-			await fs.writeJson(temporaryConfig, {});
+			// cleanup on aisle 5
+			await fs.remove(homeLocation);
+			await fs.remove(temporaryConfig);
+
+			// assertions
 			expect(result).toEqual(0);
 			expect(mock.warn).toHaveBeenCalledWith(
 				expect.stringContaining(
@@ -386,7 +452,10 @@ describe("when testing with logging side-effects", () => {
 				storeLocation: path.join(os.tmpdir(), "fixtures/npmrcs"),
 				storeConfig: temporaryConfig,
 			});
-			await fs.writeJson(temporaryConfig, {});
+			// cleanup on aisle 5
+			await fs.remove(temporaryConfig);
+
+			// assertions
 			expect(result).toEqual(0);
 			expect(mock.log).toHaveBeenCalledWith(
 				expect.stringContaining("Profile 'perso' deleted"),

@@ -48,12 +48,19 @@ export const createProfile = async ({
 	homeLocation,
 }) => {
 	try {
-		const profiles = await fs.readJson(storeConfig);
-		// if the profile already exists, do nothing
-		if (profiles.available.includes(profileName)) {
-			logger.warn(`Profile '${profileName}' already exists...`);
-			return 0;
+		let profiles = { available: [], enabled: undefined };
+		await fs.ensureFile(storeConfig);
+		try {
+			// if the profile already exists, do nothing
+			profiles = await fs.readJson(storeConfig);
+			if (profiles.available.includes(profileName)) {
+				logger.warn(`Profile '${profileName}' already exists...`);
+				return 0;
+			}
+		} catch {
+			// ignoring error since we are creating the file
 		}
+
 		// if the profile does not exist, create
 		// a folder named as the profile under the storeLocation folder,
 		// with the existing npmrc / yarnrc files
