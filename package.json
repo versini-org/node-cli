@@ -9,7 +9,8 @@
 		"lint": "lerna run lint",
 		"lint-staged": "lint-staged --config \"./configuration/lint-staged.config.cjs\"",
 		"prepare": "husky",
-		"test": "lerna run test"
+		"test": "lerna run test",
+		"test:coverage": "lerna run test:coverage"
 	},
 	"devDependencies": {
 		"@versini/dev-dependencies-common": "3.2.2",

@@ -19,7 +19,6 @@ const { parameters, flags, showHelp } = config;
 
 if (flags.create && parameters !== undefined) {
 	const exitFlag = await createProfile({
-		flags,
 		storeConfig: NPMRC_STORE_CONFIG,
 		storeLocation: NPMRC_STORE,
 		profileName: parameters["0"],
