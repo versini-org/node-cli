@@ -133,7 +133,6 @@ describe("when testing with logging side-effects", () => {
 		it("should return 0 if profile already exists", async () => {
 			const homeLocation = path.join(os.tmpdir(), "home");
 			const result = await createProfile({
-				flags: { verbose: true },
 				profileName: "perso",
 				storeLocation: path.join(__dirname, "fixtures/npmrcs"),
 				storeConfig: path.join(
@@ -160,16 +159,18 @@ describe("when testing with logging side-effects", () => {
 			const temporaryStoreLocation = path.join(os.tmpdir(), "npmrcs");
 			await fs.writeJson(temporaryConfig, {
 				available: ["perso"],
+				enabled: "perso",
 			});
 			await fs.ensureFile(path.join(homeLocation, ".npmrc"));
 			await fs.ensureFile(path.join(homeLocation, ".yarnrc"));
 			const result = await createProfile({
-				flags: { verbose: true },
 				profileName: "work",
 				storeLocation: temporaryStoreLocation,
 				storeConfig: temporaryConfig,
 				homeLocation,
 			});
+			const config = await fs.readJSON(temporaryConfig);
+
 			// cleanup on aisle 5
 			await fs.remove(homeLocation);
 			await fs.remove(temporaryConfig);
@@ -177,6 +178,10 @@ describe("when testing with logging side-effects", () => {
 
 			// assertions
 			expect(result).toEqual(0);
+			expect(config).toStrictEqual({
+				available: ["perso", "work"],
+				enabled: "perso",
+			});
 			expect(mock.log).toHaveBeenCalledWith(
 				expect.stringContaining("┌ Profiles ──────────────────┐"),
 			);
@@ -191,7 +196,6 @@ describe("when testing with logging side-effects", () => {
 			await fs.outputFile(temporaryConfig, "corrupted");
 
 			const result = await createProfile({
-				flags: { verbose: true },
 				profileName: "perso",
 				storeLocation: path.join(__dirname, "fixtures/npmrcs"),
 				storeConfig: temporaryConfig,
@@ -215,12 +219,13 @@ describe("when testing with logging side-effects", () => {
 			await fs.ensureFile(path.join(homeLocation, ".npmrc"));
 			await fs.ensureFile(path.join(homeLocation, ".yarnrc"));
 			const result = await createProfile({
-				flags: { verbose: true },
 				profileName: "work",
 				storeLocation: temporaryStoreLocation,
 				storeConfig: temporaryConfig,
 				homeLocation,
 			});
+			const config = await fs.readJSON(temporaryConfig);
+
 			// cleanup on aisle 5
 			await fs.remove(homeLocation);
 			await fs.remove(temporaryConfig);
@@ -228,6 +233,10 @@ describe("when testing with logging side-effects", () => {
 
 			// assertions
 			expect(result).toEqual(0);
+			expect(config).toStrictEqual({
+				available: ["work"],
+				enabled: "work",
+			});
 			expect(mock.log).toHaveBeenCalledWith(
 				expect.stringContaining("┌ Profiles ──────────────────┐"),
 			);
