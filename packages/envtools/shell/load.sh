@@ -46,6 +46,7 @@ if isWindows || isLinux || isMac; then
   source "${EVTLS_DIST_DIR}/version.sh"
   source "${EVTLS_SCRIPTPATH}/functions/base.sh"
   source "${EVTLS_SCRIPTPATH}/functions/logs.sh"
+  source "${EVTLS_SCRIPTPATH}/functions/misc.sh"
   source "${EVTLS_SCRIPTPATH}/functions/banner.sh"
 
   # Load default aliases
