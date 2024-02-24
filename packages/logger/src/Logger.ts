@@ -63,7 +63,7 @@ export class Logger {
 						this.#printOptions.colors
 							? `${kleur.grey(
 									`[ ${now.toDateString()} ${now.toLocaleTimeString()} ]`,
-							  )}`
+								)}`
 							: `[ ${now.toDateString()} ${now.toLocaleTimeString()} ]`,
 					);
 				}
