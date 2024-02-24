@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.0](https://github.com/aversini/node-cli/compare/envtools-v4.1.2...envtools-v4.2.0) (2024-02-24)
+
+
+### Features
+
+* **envtools:** adding "confirm" function ([bdd6fc5](https://github.com/aversini/node-cli/commit/bdd6fc58a2742ca4a5a7b19a182acd15f6c62fb8))
+
 ## [4.1.2](https://github.com/aversini/node-cli/compare/envtools-v4.1.1...envtools-v4.1.2) (2024-02-11)
 
 
