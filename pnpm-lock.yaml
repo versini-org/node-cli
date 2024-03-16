@@ -18,6 +18,30 @@ importers:
         specifier: 1.1.7
         version: 1.1.7
 
+  examples/bundlesize:
+    dependencies:
+      '@node-cli/bundlesize':
+        specifier: workspace:../../packages/bundlesize
+        version: link:../../packages/bundlesize
+
+  examples/logger:
+    dependencies:
+      '@node-cli/logger':
+        specifier: workspace:../../packages/logger
+        version: link:../../packages/logger
+
+  examples/perf:
+    dependencies:
+      '@node-cli/perf':
+        specifier: workspace:../../packages/perf
+        version: link:../../packages/perf
+
+  examples/run:
+    dependencies:
+      '@node-cli/run':
+        specifier: workspace:../../packages/run
+        version: link:../../packages/run
+
   packages/bundlesize:
     dependencies:
       '@node-cli/logger':

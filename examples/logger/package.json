@@ -1,0 +1,18 @@
+{
+	"name": "@node-cli/example-logger",
+	"version": "0.0.0",
+	"private": true,
+	"license": "MIT",
+	"author": "Arno Versini",
+	"description": "Examples",
+	"dependencies": {
+		"@node-cli/logger": "workspace:../../packages/logger"
+	},
+	"type": "module",
+	"publishConfig": {
+		"access": "restricted"
+	},
+	"scripts": {
+		"dev": "node ./logger-example.js"
+	}
+}
