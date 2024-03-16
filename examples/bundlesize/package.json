@@ -1,15 +1,12 @@
 {
-	"name": "@node-cli/examples",
-	"version": "0.0.8",
+	"name": "@node-cli/example-bundlesize",
+	"version": "0.0.0",
 	"private": true,
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "Examples",
 	"dependencies": {
-		"@node-cli/bundlesize": "*",
-		"@node-cli/logger": ">=1.0.0",
-		"@node-cli/perf": ">=1.0.0",
-		"@node-cli/run": ">=1.0.0"
+		"@node-cli/bundlesize": "workspace:../../packages/bundlesize"
 	},
 	"type": "module",
 	"publishConfig": {
