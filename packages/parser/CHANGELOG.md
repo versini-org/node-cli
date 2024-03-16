@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.2](https://github.com/aversini/node-cli/compare/parser-v2.3.1...parser-v2.3.2) (2024-03-16)
+
+
+### Bug Fixes
+
+* bump dependencies to latest ([4c91938](https://github.com/aversini/node-cli/commit/4c9193837c89d3aa9b4f82afa22e3f0668fdea6e))
+
 ## [2.3.1](https://github.com/aversini/node-cli/compare/parser-v2.3.0...parser-v2.3.1) (2024-02-12)
 
 

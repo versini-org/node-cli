@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/aversini/node-cli/compare/run-v1.0.2...run-v1.0.3) (2024-03-16)
+
+
+### Bug Fixes
+
+* bump dependencies to latest ([4c91938](https://github.com/aversini/node-cli/commit/4c9193837c89d3aa9b4f82afa22e3f0668fdea6e))
+
 ## [1.0.2](https://github.com/aversini/node-cli/compare/run-v1.0.1...run-v1.0.2) (2024-01-16)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/aversini/node-cli/compare/utilities-v1.0.0...utilities-v1.0.1) (2024-03-16)
+
+
+### Bug Fixes
+
+* bump dependencies to latest ([4c91938](https://github.com/aversini/node-cli/commit/4c9193837c89d3aa9b4f82afa22e3f0668fdea6e))
+
 ## 1.0.0 (2023-05-30)
 
 
