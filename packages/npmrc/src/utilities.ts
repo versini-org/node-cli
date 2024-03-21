@@ -11,7 +11,6 @@ export const listProfiles = async ({ flags, storeConfig }) => {
 		const profiles = await fs.readJson(storeConfig);
 
 		if (profiles?.available?.length > 0) {
-			//
 			const activeProfile = profiles.enabled;
 			const messages =
 				activeProfile === undefined
