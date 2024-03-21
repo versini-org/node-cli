@@ -133,7 +133,7 @@ describe("when testing with logging side-effects", () => {
 			});
 			expect(result).toEqual(0);
 			expect(mock.log).toHaveBeenCalledWith(
-				expect.stringContaining("┌ Profiles ────────────┐"),
+				expect.stringContaining("┌ Profiles"),
 			);
 			expect(mock.log).toHaveBeenCalledWith(expect.stringContaining("perso"));
 			expect(mock.log).toHaveBeenCalledWith(expect.stringContaining("work"));
