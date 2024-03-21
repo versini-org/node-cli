@@ -1,6 +1,7 @@
 import { Logger } from "@node-cli/logger";
 import fs from "fs-extra";
 import kleur from "kleur";
+import { run } from "@node-cli/run";
 
 export const logger = new Logger();
 logger.boring = process.env.NODE_ENV === "test";
@@ -15,6 +16,25 @@ export const listProfiles = async ({ flags, storeConfig }) => {
 				activeProfile === undefined
 					? []
 					: [kleur.green(`★ ${activeProfile} (active)`)];
+
+			/**
+			 * Since there is an active profile, we can check the
+			 * global registry and list it, alongside the active profile.
+			 */
+			if (activeProfile) {
+				const { stdout, stderr } = await run(
+					'npm config list -l -g | grep "registry ="',
+					{
+						ignoreError: true,
+					},
+				);
+				if (!stderr) {
+					const stdoutArray = (stdout as string)
+						.split("\n")
+						.map((line) => kleur.grey(`   • ${line}`));
+					messages.push(...stdoutArray);
+				}
+			}
 
 			for (const profile of profiles.available) {
 				if (profile !== activeProfile) {
@@ -56,7 +76,7 @@ export const createProfile = async ({
 			return 0;
 		}
 	} catch {
-		// ignoring error since we are creating the file
+		// ignoring error since we are going to create the file
 	}
 
 	// if the profile does not exist, create

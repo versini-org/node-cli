@@ -12,25 +12,25 @@
 
 ## Examples
 
-List existing profiles
-
-```sh
-> npmrc -l
-```
-
-Create a profile
+Create a profile from the current .npmrc file
 
 ```sh
 > npmrc -c my-profile
 ```
 
-Switch to an existing profile
+List profiles handled by npmrc
+
+```sh
+> npmrc -l
+```
+
+Switch to an existing profile handled by npmrc
 
 ```sh
 > npmrc my-profile
 ```
 
-Delete a profile
+Delete a profile handled by npmrc
 
 ```sh
 > npmrc -d my-profile

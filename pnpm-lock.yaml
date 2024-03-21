@@ -85,6 +85,9 @@ importers:
       '@node-cli/parser':
         specifier: workspace:../parser
         version: link:../parser
+      '@node-cli/run':
+        specifier: workspace:../run
+        version: link:../run
       fs-extra:
         specifier: 11.2.0
         version: 11.2.0
