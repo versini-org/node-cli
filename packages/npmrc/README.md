@@ -24,6 +24,12 @@ List profiles handled by npmrc
 > npmrc -l
 ```
 
+Update an existing profile with the current .npmrc file
+
+```sh
+> npmrc -u
+```
+
 Switch to an existing profile handled by npmrc
 
 ```sh
