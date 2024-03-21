@@ -1,16 +1,14 @@
-import {
-	createProfile,
-	deleteProfile,
-	listProfiles,
-	switchProfile,
-} from "../utilities.js";
-
+import { createProfile } from "../utilities/createProfile.js";
+import { deleteProfile } from "../utilities/deleteProfile.js";
 import { fileURLToPath } from "node:url";
 import fs from "fs-extra";
 import { jest } from "@jest/globals";
 import kleur from "kleur";
+import { listProfiles } from "../utilities/listProfiles.js";
 import os from "node:os";
 import path from "node:path";
+import { switchProfile } from "../utilities/switchProfile.js";
+import { updateProfile } from "../utilities/updateProfile.js";
 
 kleur.enabled = false;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -427,6 +425,70 @@ describe("when testing with logging side-effects", () => {
 			expect(mock.log).toHaveBeenCalledWith(
 				expect.stringContaining("Profile 'perso' deleted"),
 			);
+		});
+	});
+
+	describe("updateProfile with errors", () => {
+		it("should return 0 if profile does not exist", async () => {
+			homeLocation = path.join(os.tmpdir(), "home");
+			const result = await updateProfile({
+				storeLocation: path.join(__dirname, "fixtures/npmrcs"),
+				storeConfig: path.join(
+					__dirname,
+					"fixtures/configuration/one-profile.json",
+				),
+				homeLocation,
+			});
+			expect(result).toEqual(0);
+			expect(mock.warn).toHaveBeenCalledWith(
+				expect.stringContaining(
+					"Only active profiles can be updated. Please switch to the profile you want to update.",
+				),
+			);
+		});
+	});
+
+	describe("updateProfile with no errors", () => {
+		it("should return 0 when a profile is updated", async () => {
+			homeLocation = path.join(os.tmpdir(), "home");
+			temporaryConfig = path.join(os.tmpdir(), "tmp-config.json");
+			temporaryStoreLocation = path.join(os.tmpdir(), "npmrcs");
+			await fs.writeJson(temporaryConfig, {
+				available: ["perso"],
+				enabled: "perso",
+			});
+			await fs.ensureFile(path.join(homeLocation, ".npmrc"));
+			await fs.ensureFile(path.join(homeLocation, ".yarnrc"));
+			const result = await updateProfile({
+				storeLocation: temporaryStoreLocation,
+				storeConfig: temporaryConfig,
+				homeLocation,
+			});
+			const config = await fs.readJSON(temporaryConfig);
+			expect(result).toEqual(0);
+			expect(config).toStrictEqual({
+				available: ["perso"],
+				enabled: "perso",
+			});
+			expect(mock.log).toHaveBeenCalledWith(
+				expect.stringContaining("┌ Profiles"),
+			);
+			expect(mock.log).toHaveBeenCalledWith(
+				expect.stringContaining("Profile 'perso' updated"),
+			);
+		});
+
+		it("should return 0, even if the profile configuration is corrupted", async () => {
+			homeLocation = path.join(os.tmpdir(), "home");
+			temporaryConfig = path.join(os.tmpdir(), "corrupted-config.json");
+			await fs.outputFile(temporaryConfig, "corrupted");
+
+			const result = await updateProfile({
+				storeLocation: path.join(__dirname, "fixtures/npmrcs"),
+				storeConfig: temporaryConfig,
+				homeLocation,
+			});
+			expect(result).toEqual(0);
 		});
 	});
 });

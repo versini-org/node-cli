@@ -9,6 +9,7 @@ export type Flags = {
 	delete?: boolean;
 	create?: boolean;
 	list?: boolean;
+	update?: boolean;
 	boring?: boolean;
 	help?: boolean;
 	version?: boolean;
@@ -59,6 +60,11 @@ export const config: Configuration = parser({
 		list: {
 			shortFlag: "l",
 			description: "List all profiles",
+			type: "boolean",
+		},
+		update: {
+			shortFlag: "u",
+			description: "Update the current profile",
 			type: "boolean",
 		},
 		boring: {
