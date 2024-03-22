@@ -10,5 +10,5 @@
 	"packages/static-server": "3.0.3",
 	"packages/timer": "1.0.4",
 	"packages/utilities": "1.0.1",
-	"packages/npmrc": "1.1.1"
+	"packages/npmrc": "1.2.0"
 }
