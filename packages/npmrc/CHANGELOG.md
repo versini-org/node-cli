@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0](https://github.com/aversini/node-cli/compare/npmrc-v1.0.2...npmrc-v1.1.0) (2024-03-21)
+
+
+### Features
+
+* **npmrc:** adding "update" option to update existing profiles ([#290](https://github.com/aversini/node-cli/issues/290)) ([85b66bc](https://github.com/aversini/node-cli/commit/85b66bc0b40fc47596c5e297abc9deedc8e63436))
+* **npmrc:** listing registries associated with the current profile ([#288](https://github.com/aversini/node-cli/issues/288)) ([4a65a31](https://github.com/aversini/node-cli/commit/4a65a31519555da22b50a33a4365782ee48dbbcd))
+
 ## [1.0.2](https://github.com/aversini/node-cli/compare/npmrc-v1.0.1...npmrc-v1.0.2) (2024-03-16)
 
 
