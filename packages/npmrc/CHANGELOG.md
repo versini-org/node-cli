@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/aversini/node-cli/compare/npmrc-v1.1.0...npmrc-v1.1.1) (2024-03-22)
+
+
+### Bug Fixes
+
+* **npmrc:** better registry listing formatting ([#291](https://github.com/aversini/node-cli/issues/291)) ([dbce2e3](https://github.com/aversini/node-cli/commit/dbce2e3ab8f0efe775dff56bfa62863030f58749))
+
 ## [1.1.0](https://github.com/aversini/node-cli/compare/npmrc-v1.0.2...npmrc-v1.1.0) (2024-03-21)
 
 
