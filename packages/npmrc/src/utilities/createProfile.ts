@@ -1,15 +1,17 @@
 import { Logger } from "@node-cli/logger";
 import fs from "fs-extra";
 
-export const logger = new Logger();
-logger.boring = process.env.NODE_ENV === "test";
-
 export const createProfile = async ({
+	flags,
 	storeConfig,
 	storeLocation,
 	profileName,
 	homeLocation,
 }) => {
+	const logger = new Logger({
+		boring: process.env.NODE_ENV === "test" || flags.boring,
+	});
+
 	let profiles = { available: [], enabled: undefined };
 	await fs.ensureFile(storeConfig);
 	try {

@@ -1,15 +1,16 @@
 import { Logger } from "@node-cli/logger";
 import fs from "fs-extra";
 
-export const logger = new Logger();
-logger.boring = process.env.NODE_ENV === "test";
-
 export const deleteProfile = async ({
 	flags,
 	profileName,
 	storeConfig,
 	storeLocation,
 }) => {
+	const logger = new Logger({
+		boring: process.env.NODE_ENV === "test" || flags.boring,
+	});
+
 	try {
 		const profiles = await fs.readJson(storeConfig);
 		if (!profiles.available.includes(profileName)) {
