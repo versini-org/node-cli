@@ -5,10 +5,14 @@ import fs from "fs-extra";
 import kleur from "kleur";
 import { run } from "@node-cli/run";
 
-export const logger = new Logger();
-logger.boring = process.env.NODE_ENV === "test";
-
 export const listProfiles = async ({ flags, storeConfig }) => {
+	const logger = new Logger({
+		boring: process.env.NODE_ENV === "test" || flags.boring,
+	});
+
+	logger.warn("==> logger: ", logger);
+	logger.warn("==> flags: ", flags);
+
 	try {
 		const profiles = await fs.readJson(storeConfig);
 

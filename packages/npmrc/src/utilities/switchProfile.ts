@@ -1,8 +1,9 @@
+import { GET_REGISTRY_CMD, formatRegistries } from "./common.js";
+
 import { Logger } from "@node-cli/logger";
 import fs from "fs-extra";
-
-export const logger = new Logger();
-logger.boring = process.env.NODE_ENV === "test";
+import kleur from "kleur";
+import { run } from "@node-cli/run";
 
 export const switchProfile = async ({
 	flags,
@@ -11,6 +12,10 @@ export const switchProfile = async ({
 	profileName,
 	homeLocation,
 }) => {
+	const logger = new Logger({
+		boring: process.env.NODE_ENV === "test" || flags.boring,
+	});
+
 	try {
 		const profiles = await fs.readJson(storeConfig);
 		if (!profiles.available.includes(profileName)) {
@@ -49,7 +54,14 @@ export const switchProfile = async ({
 			enabled: profileName,
 		};
 		await fs.writeJson(storeConfig, newProfiles, { spaces: 2 });
-		logger.printBox(`Profile switched to '${profileName}'`, {
+		const messages = [kleur.green(`Profile switched to '${profileName}'`)];
+		const { stdout, stderr } = await run(GET_REGISTRY_CMD, {
+			ignoreError: true,
+		});
+		if (!stderr) {
+			messages.push(...formatRegistries(stdout as string));
+		}
+		logger.printBox(messages.join("\n"), {
 			textAlignment: "left",
 			title: "Profiles",
 			borderColor: "blue",

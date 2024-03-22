@@ -5,14 +5,16 @@ import fs from "fs-extra";
 import kleur from "kleur";
 import { run } from "@node-cli/run";
 
-export const logger = new Logger();
-logger.boring = process.env.NODE_ENV === "test";
-
 export const updateProfile = async ({
+	flags,
 	storeConfig,
 	storeLocation,
 	homeLocation,
 }) => {
+	const logger = new Logger({
+		boring: process.env.NODE_ENV === "test" || flags.boring,
+	});
+
 	let profiles: { available: string | any[]; enabled: any };
 
 	// Step 1: check if there is an active profile
@@ -30,7 +32,6 @@ export const updateProfile = async ({
 			 * Step2: since there is an active profile, we can check the
 			 * global registries and list them, alongside the updated profile.
 			 */
-
 			const { stdout, stderr } = await run(GET_REGISTRY_CMD, {
 				ignoreError: true,
 			});

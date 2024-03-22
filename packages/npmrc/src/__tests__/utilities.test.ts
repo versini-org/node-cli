@@ -143,6 +143,7 @@ describe("when testing with logging side-effects", () => {
 		it("should return 0 if profile already exists", async () => {
 			homeLocation = path.join(os.tmpdir(), "home");
 			const result = await createProfile({
+				flags: { verbose: true },
 				profileName: "perso",
 				storeLocation: path.join(__dirname, "fixtures/npmrcs"),
 				storeConfig: path.join(
@@ -170,6 +171,7 @@ describe("when testing with logging side-effects", () => {
 			await fs.ensureFile(path.join(homeLocation, ".npmrc"));
 			await fs.ensureFile(path.join(homeLocation, ".yarnrc"));
 			const result = await createProfile({
+				flags: { verbose: true },
 				profileName: "work",
 				storeLocation: temporaryStoreLocation,
 				storeConfig: temporaryConfig,
@@ -195,6 +197,7 @@ describe("when testing with logging side-effects", () => {
 			await fs.outputFile(temporaryConfig, "corrupted");
 
 			const result = await createProfile({
+				flags: { verbose: true },
 				profileName: "perso",
 				storeLocation: path.join(__dirname, "fixtures/npmrcs"),
 				storeConfig: temporaryConfig,
@@ -213,6 +216,7 @@ describe("when testing with logging side-effects", () => {
 			await fs.ensureFile(path.join(homeLocation, ".npmrc"));
 			await fs.ensureFile(path.join(homeLocation, ".yarnrc"));
 			const result = await createProfile({
+				flags: { verbose: true },
 				profileName: "work",
 				storeLocation: temporaryStoreLocation,
 				storeConfig: temporaryConfig,
@@ -432,6 +436,7 @@ describe("when testing with logging side-effects", () => {
 		it("should return 0 if profile does not exist", async () => {
 			homeLocation = path.join(os.tmpdir(), "home");
 			const result = await updateProfile({
+				flags: { verbose: true },
 				storeLocation: path.join(__dirname, "fixtures/npmrcs"),
 				storeConfig: path.join(
 					__dirname,
@@ -460,6 +465,7 @@ describe("when testing with logging side-effects", () => {
 			await fs.ensureFile(path.join(homeLocation, ".npmrc"));
 			await fs.ensureFile(path.join(homeLocation, ".yarnrc"));
 			const result = await updateProfile({
+				flags: { verbose: true },
 				storeLocation: temporaryStoreLocation,
 				storeConfig: temporaryConfig,
 				homeLocation,
@@ -484,6 +490,7 @@ describe("when testing with logging side-effects", () => {
 			await fs.outputFile(temporaryConfig, "corrupted");
 
 			const result = await updateProfile({
+				flags: { verbose: true },
 				storeLocation: path.join(__dirname, "fixtures/npmrcs"),
 				storeConfig: temporaryConfig,
 				homeLocation,
