@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.4](https://github.com/aversini/node-cli/compare/logger-v1.2.3...logger-v1.2.4) (2024-03-22)
+
+
+### Bug Fixes
+
+* **logger:** printBox does not respect the boring option ([#295](https://github.com/aversini/node-cli/issues/295)) ([9c0876b](https://github.com/aversini/node-cli/commit/9c0876b144e9841eb3dd0ee8f5ebe15c8425e45f))
+
 ## [1.2.3](https://github.com/aversini/node-cli/compare/logger-v1.2.2...logger-v1.2.3) (2024-03-16)
 
 
