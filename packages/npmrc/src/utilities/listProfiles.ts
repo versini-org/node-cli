@@ -10,9 +10,6 @@ export const listProfiles = async ({ flags, storeConfig }) => {
 		boring: process.env.NODE_ENV === "test" || flags.boring,
 	});
 
-	logger.warn("==> logger: ", logger);
-	logger.warn("==> flags: ", flags);
-
 	try {
 		const profiles = await fs.readJson(storeConfig);
 
