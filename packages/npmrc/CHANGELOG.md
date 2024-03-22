@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/aversini/node-cli/compare/npmrc-v1.1.1...npmrc-v1.2.0) (2024-03-22)
+
+
+### Features
+
+* **npmrc:** adding registry list when switching profiles ([#293](https://github.com/aversini/node-cli/issues/293)) ([26a9b5a](https://github.com/aversini/node-cli/commit/26a9b5a091ab0bfd5447d725bb10e29a57455731))
+
 ## [1.1.1](https://github.com/aversini/node-cli/compare/npmrc-v1.1.0...npmrc-v1.1.1) (2024-03-22)
 
 
