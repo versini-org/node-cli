@@ -137,10 +137,10 @@ export class Logger {
 		 * Setting some sensible Boxen options if
 		 * not provided by the user.
 		 */
+		const borderColor = options.borderColor || "yellow";
 		const boxenOptions: BoxenOptions = {
 			...options,
-			borderColor:
-				options.borderColor || (this.#printOptions.colors ? "yellow" : "white"),
+			borderColor: this.#printOptions.colors ? borderColor : "white",
 			padding: typeof options.padding === "number" ? options.padding : 1,
 			textAlignment: options.textAlignment || "center",
 		};
