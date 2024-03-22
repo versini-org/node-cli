@@ -1,3 +1,5 @@
+import { GET_REGISTRY_CMD, formatRegistries } from "./common.js";
+
 import { Logger } from "@node-cli/logger";
 import fs from "fs-extra";
 import kleur from "kleur";
@@ -19,20 +21,15 @@ export const listProfiles = async ({ flags, storeConfig }) => {
 
 			/**
 			 * Since there is an active profile, we can check the
-			 * global registry and list it, alongside the active profile.
+			 * global registries and list them, alongside the active profile.
 			 */
 			if (activeProfile) {
-				const { stdout, stderr } = await run(
-					'npm config list -l -g | grep "registry ="',
-					{
-						ignoreError: true,
-					},
-				);
+				const { stdout, stderr } = await run(GET_REGISTRY_CMD, {
+					ignoreError: true,
+				});
+
 				if (!stderr) {
-					const stdoutArray = (stdout as string)
-						.split("\n")
-						.map((line) => kleur.grey(`   • ${line}`));
-					messages.push(...stdoutArray);
+					messages.push(...formatRegistries(stdout as string));
 				}
 			}
 
