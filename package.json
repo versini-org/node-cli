@@ -13,7 +13,7 @@
 		"test:coverage": "lerna run test:coverage"
 	},
 	"devDependencies": {
-		"@versini/dev-dependencies-common": "3.2.4",
+		"@versini/dev-dependencies-common": "3.2.6",
 		"@versini/dev-dependencies-server": "4.0.0",
 		"@versini/dev-dependencies-types": "1.1.7"
 	},
