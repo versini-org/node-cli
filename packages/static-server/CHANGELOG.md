@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.4](https://github.com/aversini/node-cli/compare/static-server-v3.0.3...static-server-v3.0.4) (2024-04-21)
+
+
+### Bug Fixes
+
+* bump to latest deps + replace ESLint/Prettier with Biome ([#308](https://github.com/aversini/node-cli/issues/308)) ([e33aa66](https://github.com/aversini/node-cli/commit/e33aa66c0a1b95cc7fb9e10cdac2a60eefd309de))
+
 ## [3.0.3](https://github.com/aversini/node-cli/compare/static-server-v3.0.2...static-server-v3.0.3) (2024-03-16)
 
 

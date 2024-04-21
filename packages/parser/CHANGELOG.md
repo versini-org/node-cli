@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.3](https://github.com/aversini/node-cli/compare/parser-v2.3.2...parser-v2.3.3) (2024-04-21)
+
+
+### Bug Fixes
+
+* bump to latest deps + replace ESLint/Prettier with Biome ([#308](https://github.com/aversini/node-cli/issues/308)) ([e33aa66](https://github.com/aversini/node-cli/commit/e33aa66c0a1b95cc7fb9e10cdac2a60eefd309de))
+
 ## [2.3.2](https://github.com/aversini/node-cli/compare/parser-v2.3.1...parser-v2.3.2) (2024-03-16)
 
 

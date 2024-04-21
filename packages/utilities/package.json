@@ -1,13 +1,15 @@
 {
 	"name": "@node-cli/utilities",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "A few utilities for Node CLI applications",
 	"type": "module",
 	"types": "./dist/index.d.ts",
 	"exports": "./dist/utilities.js",
-	"files": ["dist"],
+	"files": [
+		"dist"
+	],
 	"node": ">=16",
 	"dependencies": {
 		"lodash-es": "4.17.21"

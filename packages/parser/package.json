@@ -1,13 +1,15 @@
 {
 	"name": "@node-cli/parser",
-	"version": "2.3.2",
+	"version": "2.3.3",
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "A simple CLI parser helper",
 	"type": "module",
 	"types": "./dist/index.d.ts",
 	"exports": "./dist/parser.js",
-	"files": ["dist"],
+	"files": [
+		"dist"
+	],
 	"node": ">=16",
 	"dependencies": {
 		"@node-cli/logger": "workspace:../logger",
