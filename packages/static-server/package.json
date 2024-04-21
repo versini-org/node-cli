@@ -8,9 +8,7 @@
 	"types": "./dist/index.d.ts",
 	"exports": "./dist/server.js",
 	"bin": "dist/server.js",
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"node": ">=18",
 	"scripts": {
 		"build": "npm-run-all clean build:types build:js build:barrel",
@@ -18,14 +16,14 @@
 		"build:js": "swc --strip-leading-paths --source-maps --out-dir dist src --copy-files",
 		"build:types": "tsc",
 		"clean": "rimraf dist types coverage",
-		"lint": "prettier --write \"src/*.ts\" && eslint --fix \"src/*.ts\"",
+		"lint": "biome lint src",
 		"watch": "swc --strip-leading-paths --watch --out-dir dist src"
 	},
 	"dependencies": {
 		"@fastify/caching": "8.3.0",
-		"@fastify/compress": "7.0.0",
+		"@fastify/compress": "7.0.3",
 		"@fastify/cors": "9.0.1",
-		"@fastify/static": "7.0.1",
+		"@fastify/static": "7.0.3",
 		"@node-cli/logger": "workspace:../logger",
 		"@node-cli/parser": "workspace:../parser",
 		"fastify": "4.26.2",
@@ -33,7 +31,7 @@
 		"fs-extra": "11.2.0",
 		"kleur": "4.1.5",
 		"open": "10.1.0",
-		"pino-pretty": "10.3.1",
+		"pino-pretty": "11.0.0",
 		"portfinder": "1.0.32"
 	},
 	"publishConfig": {

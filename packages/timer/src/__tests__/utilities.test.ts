@@ -1,9 +1,9 @@
-import { extractDuration, timeToMicroseconds } from "../utilities.js";
 import moment, { Duration } from "moment";
+import { extractDuration, timeToMicroseconds } from "../utilities.js";
 
+import path from "node:path";
 import { jest } from "@jest/globals";
 import kleur from "kleur";
-import path from "node:path";
 
 kleur.enabled = false;
 
@@ -22,7 +22,7 @@ describe("when testing for individual utilities with no logging side-effects", (
 					months: 0,
 					years: 0,
 				},
-			})
+			}),
 		);
 	});
 

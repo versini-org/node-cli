@@ -1,7 +1,7 @@
 import { Mock, UnknownFunction } from "jest-mock";
 
-import { Performance } from "../performance";
 import { jest } from "@jest/globals";
+import { Performance } from "../performance";
 
 let mockLogError: Mock<UnknownFunction>, spyLogError: any;
 
@@ -20,9 +20,9 @@ describe("when testing for Performance with no logging side-effects", () => {
 						resolve();
 						perf.stop();
 						expect(perf.results.duration).toBeGreaterThanOrEqual(999);
-					}, 1000)
+					}, 1000),
 				);
-			}, 500)
+			}, 500),
 		);
 	});
 });
@@ -58,7 +58,7 @@ describe("when testing for utilities with logging side-effects", () => {
 		perf.start();
 		perf.start();
 		expect(mockLogError).toHaveBeenCalledWith(
-			"Performance.start() can only be called once"
+			"Performance.start() can only be called once",
 		);
 		expect(perf.results).toStrictEqual({ duration: undefined });
 	});
@@ -67,7 +67,7 @@ describe("when testing for utilities with logging side-effects", () => {
 		const perf = new Performance();
 		perf.stop();
 		expect(mockLogError).toHaveBeenCalledWith(
-			"Performance.stop() can only be called once after Performance.start()"
+			"Performance.stop() can only be called once after Performance.start()",
 		);
 		expect(perf.results).toStrictEqual({ duration: undefined });
 	});

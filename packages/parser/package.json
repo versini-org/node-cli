@@ -7,14 +7,12 @@
 	"type": "module",
 	"types": "./dist/index.d.ts",
 	"exports": "./dist/parser.js",
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"node": ">=16",
 	"dependencies": {
 		"@node-cli/logger": "workspace:../logger",
 		"@node-cli/utilities": "workspace:../utilities",
-		"cli-table3": "0.6.3",
+		"cli-table3": "0.6.4",
 		"kleur": "4.1.5",
 		"meow": "13.2.0"
 	},
@@ -24,7 +22,7 @@
 		"build:js": "swc --strip-leading-paths --source-maps --out-dir dist src",
 		"build:types": "tsc",
 		"clean": "rimraf dist types coverage",
-		"lint": "prettier --write \"src/*.ts\" && eslint --fix \"src/*.ts\"",
+		"lint": "biome lint src",
 		"test": "cross-env-shell NODE_OPTIONS=--experimental-vm-modules jest",
 		"test:coverage": "npm run test -- --coverage",
 		"watch": "swc --strip-leading-paths --watch --out-dir dist src"

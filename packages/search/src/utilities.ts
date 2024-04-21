@@ -1,7 +1,7 @@
 import { RunResult, run } from "@node-cli/run";
 
-import { Logger } from "@node-cli/logger";
 import fs from "node:fs";
+import { Logger } from "@node-cli/logger";
 import kleur from "kleur";
 import prettyMilliseconds from "pretty-ms";
 
@@ -207,9 +207,9 @@ export const runGrepOnNode = async (
 		const buffer = fs.readFileSync(node, "utf8").split("\n");
 
 		for (const [lineNumber, line] of buffer.entries()) {
-			let result: (string | number)[];
 			rePattern.lastIndex = 0;
-			if (!(result = rePattern.exec(line))) {
+			const result: (string | number)[] = rePattern.exec(line);
+			if (!result) {
 				continue;
 			}
 			totalMatchingLines++;

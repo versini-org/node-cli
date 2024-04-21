@@ -1,20 +1,20 @@
 #!/usr/bin/env node
 
-import { cert, key } from "./certs.js";
 import fastifyStatic, { FastifyStaticOptions } from "@fastify/static";
+import { cert, key } from "./certs.js";
 
-import Fastify from "fastify";
-import { Logger } from "@node-cli/logger";
-import { config } from "./parse.js";
+import path from "node:path";
 import fastifyCache from "@fastify/caching";
 import fastifyCompress from "@fastify/compress";
 import fastifyCors from "@fastify/cors";
-import fastifyLogs from "./logs.js";
+import { Logger } from "@node-cli/logger";
+import Fastify from "fastify";
 import fs from "fs-extra";
 import kleur from "kleur";
 import open from "open";
-import path from "node:path";
 import portfinder from "portfinder";
+import fastifyLogs from "./logs.js";
+import { config } from "./parse.js";
 import { renderDirectories } from "./templates/directories.js";
 import { renderNotFound } from "./templates/not-found.js";
 
@@ -101,7 +101,7 @@ if (config.flags.dirs) {
 }
 fastify.register(fastifyStatic, staticOptions);
 
-fastify.setNotFoundHandler((request, reply) => {
+fastify.setNotFoundHandler((_request, reply) => {
 	reply.code(404).type("text/html").send(renderNotFound(config.flags.dirs));
 });
 

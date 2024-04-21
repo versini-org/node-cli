@@ -2,18 +2,18 @@ type DirectoriesAndFiles = { href: string; name: string }[];
 
 export const renderDirectories = (
 	directories: DirectoriesAndFiles,
-	files: DirectoriesAndFiles
+	files: DirectoriesAndFiles,
 ) => {
 	const directoriesList = `${directories
 		.map(
 			(directory) =>
-				`<li><a class="folder" href="${directory.href}">${directory.name}/</a></li>`
+				`<li><a class="folder" href="${directory.href}">${directory.name}/</a></li>`,
 		)
 		.join("\n  ")}`;
 
 	const filesList = `${files
 		.map(
-			(file) => `<li><a class="file" href="${file.href}">${file.name}</a></li>`
+			(file) => `<li><a class="file" href="${file.href}">${file.name}</a></li>`,
 		)
 		.join("\n  ")}`;
 

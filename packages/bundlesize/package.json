@@ -8,9 +8,7 @@
 	"types": "./dist/index.d.ts",
 	"exports": "./dist/bundlesize.js",
 	"bin": "dist/bundlesize.js",
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"node": ">=18",
 	"scripts": {
 		"build": "npm-run-all --serial clean build:types build:js build:barrel",
@@ -18,7 +16,7 @@
 		"build:js": "swc --strip-leading-paths --source-maps --out-dir dist src",
 		"build:types": "tsc",
 		"clean": "rimraf dist types coverage",
-		"lint": "prettier --write \"src/*.ts\" && eslint --fix \"src/*.ts\"",
+		"lint": "biome lint src",
 		"stats": "bundlesize -c bundlesize.config.js -p \"$npm_package_version\"",
 		"stats:diff": "bundlesize -t diff",
 		"test": "cross-env-shell NODE_OPTIONS=--experimental-vm-modules jest",
@@ -31,7 +29,7 @@
 		"@node-cli/parser": "workspace:../parser",
 		"bytes": "3.1.2",
 		"fs-extra": "11.2.0",
-		"glob": "10.3.10",
+		"glob": "10.3.12",
 		"semver": "7.6.0"
 	},
 	"publishConfig": {

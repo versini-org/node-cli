@@ -1,6 +1,6 @@
-import { Logger } from "../Logger";
 import { jest } from "@jest/globals";
 import kleur from "kleur";
+import { Logger } from "../Logger";
 
 let mock = {
 		info: jest.fn(),
@@ -69,7 +69,7 @@ describe("when testing with logging side-effects", () => {
 			toto: 1,
 		});
 		expect(mock.log).toHaveBeenCalledWith(
-			"{\n  titi: {\n    tata: 3\n  },\n  toto: 1\n}"
+			"{\n  titi: {\n    tata: 3\n  },\n  toto: 1\n}",
 		);
 		log.info();
 		expect(mock.info).toHaveBeenCalledWith("");
@@ -93,7 +93,7 @@ describe("when testing with logging side-effects", () => {
 		log.timestamp = true;
 		log.info("Hello World");
 		expect(mock.info).toHaveBeenCalledWith(
-			"[ Sat Oct 31 2020 5:00:00 PM ] Hello World"
+			"[ Sat Oct 31 2020 5:00:00 PM ] Hello World",
 		);
 	});
 
@@ -106,7 +106,7 @@ describe("when testing with logging side-effects", () => {
 		log.prefix = "==>";
 		log.info("Hello World");
 		expect(mock.info).toHaveBeenCalledWith(
-			"==> [ Sat Oct 31 2020 5:00:00 PM ] Hello World"
+			"==> [ Sat Oct 31 2020 5:00:00 PM ] Hello World",
 		);
 	});
 
@@ -150,7 +150,7 @@ describe("when testing with logging side-effects", () => {
 		log.boring = true;
 		log.info("Hello World");
 		expect(mock.info).toHaveBeenCalledWith(
-			"[ Sat Oct 31 2020 5:00:00 PM ] Hello World"
+			"[ Sat Oct 31 2020 5:00:00 PM ] Hello World",
 		);
 		log.timestamp = false;
 		log.info("Hello Hell");
@@ -164,7 +164,7 @@ describe("when testing with logging side-effects", () => {
 		${"debug"} | ${"grey"}
 		${"warn"}  | ${"yellow"}
 		${"error"} | ${"red"}
-	`("should respect the color for type $type", ({ type, color }) => {
+	`("should respect the color for type $type", ({ type, _color }) => {
 		const log = new Logger({ timestamp: true });
 		const message = "Hello Technicolor";
 		const messagePrefix = "[ Sat Oct 31 2020 5:00:00 PM ]";
@@ -172,7 +172,7 @@ describe("when testing with logging side-effects", () => {
 		log[type](message);
 		expect(mock[type]).toHaveBeenCalledWith(expect.stringContaining(message));
 		expect(mock[type]).toHaveBeenCalledWith(
-			expect.stringContaining(messagePrefix)
+			expect.stringContaining(messagePrefix),
 		);
 	});
 });
@@ -259,11 +259,11 @@ describe("when testing for printInABox with logging side-effects", () => {
 		log.boring = true;
 		log.printBox(message);
 		expect(mock.log).toHaveBeenCalledWith(
-			expect.stringContaining("┌─────────────────┐")
+			expect.stringContaining("┌─────────────────┐"),
 		);
 		expect(mock.log).toHaveBeenCalledWith(expect.stringContaining(message));
 		expect(mock.log).toHaveBeenCalledWith(
-			expect.stringContaining("└─────────────────┘")
+			expect.stringContaining("└─────────────────┘"),
 		);
 	});
 
@@ -273,12 +273,12 @@ describe("when testing for printInABox with logging side-effects", () => {
 		log.boring = true;
 		log.printBox(messages);
 		expect(mock.log).toHaveBeenCalledWith(
-			expect.stringContaining("┌─────────────────┐")
+			expect.stringContaining("┌─────────────────┐"),
 		);
 		expect(mock.log).toHaveBeenCalledWith(expect.stringContaining(messages[0]));
 		expect(mock.log).toHaveBeenCalledWith(expect.stringContaining(messages[1]));
 		expect(mock.log).toHaveBeenCalledWith(
-			expect.stringContaining("└─────────────────┘")
+			expect.stringContaining("└─────────────────┘"),
 		);
 	});
 
@@ -288,12 +288,12 @@ describe("when testing for printInABox with logging side-effects", () => {
 		log.boring = true;
 		log.printBox(messages, { padding: 2 });
 		expect(mock.log).toHaveBeenCalledWith(
-			expect.stringContaining("┌───────────────────────┐")
+			expect.stringContaining("┌───────────────────────┐"),
 		);
 		expect(mock.log).toHaveBeenCalledWith(expect.stringContaining(messages[0]));
 		expect(mock.log).toHaveBeenCalledWith(expect.stringContaining(messages[1]));
 		expect(mock.log).toHaveBeenCalledWith(
-			expect.stringContaining("└───────────────────────┘")
+			expect.stringContaining("└───────────────────────┘"),
 		);
 	});
 });

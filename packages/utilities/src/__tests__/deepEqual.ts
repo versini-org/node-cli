@@ -30,7 +30,7 @@ function eq(a: any, b: any, aStack: any[], bStack: any[]) {
 		// a or b can be `null` or `undefined`
 		return false;
 	}
-	if (typeof a != "object" || typeof b != "object") {
+	if (typeof a !== "object" || typeof b !== "object") {
 		return false;
 	}
 	const objectToString = Object.prototype.toString;
@@ -81,10 +81,10 @@ function eq(a: any, b: any, aStack: any[], bStack: any[]) {
 			}
 		}
 	} else {
-		if (a.constructor !== b.constructor) {
-			return false;
-		}
-		if (a.hasOwnProperty("valueOf") && b.hasOwnProperty("valueOf")) {
+		if (
+			Object.prototype.hasOwnProperty.call(a, "valueOf") &&
+			Object.prototype.hasOwnProperty.call(b, "valueOf")
+		) {
 			return a.valueOf() === b.valueOf();
 		}
 		const keys = Object.keys(a);

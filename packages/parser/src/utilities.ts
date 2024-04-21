@@ -1,10 +1,10 @@
 /* eslint-disable unicorn/no-process-exit */
 
+import path from "node:path";
 import { Logger } from "@node-cli/logger";
+import { upperFirst } from "@node-cli/utilities";
 import Table from "cli-table3";
 import kleur from "kleur";
-import path from "node:path";
-import { upperFirst } from "@node-cli/utilities";
 
 const logger = new Logger();
 
