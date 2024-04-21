@@ -1,6 +1,6 @@
 {
 	"name": "@node-cli/search",
-	"version": "1.0.5",
+	"version": "1.0.6",
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "Search for files in a directory",
@@ -8,7 +8,9 @@
 	"types": "./dist/index.d.ts",
 	"exports": "./dist/search.js",
 	"bin": "dist/search.js",
-	"files": ["dist"],
+	"files": [
+		"dist"
+	],
 	"node": ">=16",
 	"scripts": {
 		"build": "npm-run-all --serial clean build:types build:js build:barrel",

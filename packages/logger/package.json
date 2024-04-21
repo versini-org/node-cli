@@ -1,12 +1,14 @@
 {
 	"name": "@node-cli/logger",
-	"version": "1.2.4",
+	"version": "1.2.5",
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "A tiny console logger for nodejs CLI apps",
 	"type": "module",
 	"exports": "./dist/Logger.js",
-	"files": ["dist"],
+	"files": [
+		"dist"
+	],
 	"node": ">=16",
 	"dependencies": {
 		"boxen": "7.1.1",
