@@ -37,7 +37,7 @@ describe("when testing for run utilities with no logging side-effects", () => {
 		});
 		expect(result.exitCode).toBeGreaterThan(0);
 		expect(result.shortMessage).toBe(
-			`Command failed with exit code ${result.exitCode}: ls /no-existing-folder`
+			`Command failed with exit code ${result.exitCode}: ls /no-existing-folder`,
 		);
 	});
 });

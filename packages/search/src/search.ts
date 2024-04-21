@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 /* istanbul ignore file */
 
+import path from "node:path";
 import { Logger } from "@node-cli/logger";
-import { STR_TYPE_FILE } from "./utilities.js";
+import fs from "fs-extra";
 import { Search } from "./core.js";
 import { config } from "./parse.js";
-import fs from "fs-extra";
-import path from "node:path";
+import { STR_TYPE_FILE } from "./utilities.js";
 
 const logger = new Logger({
 	boring: process.env.NODE_ENV === "test",

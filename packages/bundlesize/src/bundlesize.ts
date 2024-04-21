@@ -4,9 +4,9 @@
 import { IGNORE, STDOUT } from "./utilities.js";
 
 import { Logger } from "@node-cli/logger";
-import { config } from "./parse.js";
 import fs from "fs-extra";
 import { getRawStats } from "./getRawStats.js";
+import { config } from "./parse.js";
 import { reportStats } from "./reportStats.js";
 
 const flags = config.flags;

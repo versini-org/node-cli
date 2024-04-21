@@ -9,9 +9,9 @@ import {
 	shouldContinue,
 } from "./utilities.js";
 
-import { config } from "./parse.js";
-import fs from "fs-extra";
 import path from "node:path";
+import fs from "fs-extra";
+import { config } from "./parse.js";
 
 const ENCRYPT = "encrypt";
 const DECRYPT = "decrypt";

@@ -1,3 +1,4 @@
+import { basename, dirname, join } from "node:path";
 import {
 	addMDrow,
 	formatFooter,
@@ -7,10 +8,9 @@ import {
 	readJSONFile,
 	validateConfigurationFile,
 } from "./utilities.js";
-import { basename, dirname, join } from "node:path";
 
-import type { FooterProperties } from "./utilities.js";
 import bytes from "bytes";
+import type { FooterProperties } from "./utilities.js";
 
 type ReportConfiguration = {
 	current: string;

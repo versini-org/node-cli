@@ -1,8 +1,8 @@
-import { STDOUT } from "../utilities.js";
+import path from "node:path";
 import { fileURLToPath } from "node:url";
 import kleur from "kleur";
-import path from "node:path";
 import { reportStats } from "../reportStats.js";
+import { STDOUT } from "../utilities.js";
 
 kleur.enabled = false;
 

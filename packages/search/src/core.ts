@@ -1,3 +1,4 @@
+import { basename, join, relative } from "node:path";
 import {
 	STR_TYPE_BOTH,
 	STR_TYPE_DIRECTORY,
@@ -8,14 +9,13 @@ import {
 	runCommandOnNode,
 	runGrepOnNode,
 } from "./utilities.js";
-import { basename, join, relative } from "node:path";
 
+import { promisify } from "node:util";
 import { Logger } from "@node-cli/logger";
 import { Performance } from "@node-cli/perf";
 import fs from "fs-extra";
 import kleur from "kleur";
 import plur from "plur";
-import { promisify } from "node:util";
 
 const lstatAsync = promisify(fs.lstat);
 const readdirAsync = promisify(fs.readdir);
@@ -141,7 +141,8 @@ export class Search {
 			if (stat && stat.isDirectory() && !this.ignoreFolders(node)) {
 				this.totalDirScanned++;
 
-				if ((result = checkPattern(this.rePattern, node))) {
+				result = checkPattern(this.rePattern, node);
+				if (result) {
 					this.totalDirFound++;
 					this.nodesList.push({
 						command: this.command,
@@ -167,11 +168,12 @@ export class Search {
 			} else if (stat && stat.isFile()) {
 				this.totalFileScanned++;
 				shortname = basename(node);
-				if ((result = checkPattern(this.rePattern, shortname))) {
+				const patternResult = checkPattern(this.rePattern, shortname);
+				if (patternResult) {
 					this.totalFileFound++;
 					this.nodesList.push({
 						command: this.command,
-						match: result[0],
+						match: patternResult[0],
 						name: node,
 						stat,
 						type: STR_TYPE_FILE,

@@ -13,9 +13,9 @@ import {
 	runGrepOnNode,
 } from "../utilities.js";
 
+import path from "node:path";
 import { jest } from "@jest/globals";
 import kleur from "kleur";
-import path from "node:path";
 
 kleur.enabled = false;
 
@@ -50,14 +50,14 @@ describe("when testing for individual utilities with no logging side-effects", (
 					size: 1024 * 1000,
 					uid: 0,
 				},
-				"f"
-			)
+				"f",
+			),
 		).toStrictEqual(
 			expect.objectContaining({
 				mode: "-rw-r--r--",
 				owner: "root",
 				size: "   1M",
-			})
+			}),
 		);
 	});
 
@@ -70,14 +70,14 @@ describe("when testing for individual utilities with no logging side-effects", (
 					size: 1024 * 1000,
 					uid: 0,
 				},
-				"d"
-			)
+				"d",
+			),
 		).toStrictEqual(
 			expect.objectContaining({
 				mode: "drw-r--r--",
 				owner: "root",
 				size: "   1M",
-			})
+			}),
 		);
 	});
 
@@ -158,19 +158,19 @@ describe("when testing for utilities with logging side-effects", () => {
 		});
 
 		expect(mockLog).toHaveBeenCalledWith(
-			expect.stringContaining("Total folders scanned: 222")
+			expect.stringContaining("Total folders scanned: 222"),
 		);
 		expect(mockLog).toHaveBeenCalledWith(
-			expect.stringContaining("Total files scanned: 44")
+			expect.stringContaining("Total files scanned: 44"),
 		);
 		expect(mockLog).toHaveBeenCalledWith(
-			expect.stringContaining("Total files matching: 33")
+			expect.stringContaining("Total files matching: 33"),
 		);
 		expect(mockLog).not.toHaveBeenCalledWith(
-			expect.stringContaining("Total folders matching: 111")
+			expect.stringContaining("Total folders matching: 111"),
 		);
 		expect(mockLog).toHaveBeenCalledWith(
-			expect.stringContaining("Duration: 42ms")
+			expect.stringContaining("Duration: 42ms"),
 		);
 	});
 
@@ -186,19 +186,19 @@ describe("when testing for utilities with logging side-effects", () => {
 		});
 
 		expect(mockLog).toHaveBeenCalledWith(
-			expect.stringContaining("Total folders scanned: 222")
+			expect.stringContaining("Total folders scanned: 222"),
 		);
 		expect(mockLog).toHaveBeenCalledWith(
-			expect.stringContaining("Total files scanned: 44")
+			expect.stringContaining("Total files scanned: 44"),
 		);
 		expect(mockLog).not.toHaveBeenCalledWith(
-			expect.stringContaining("Total files matching: 33")
+			expect.stringContaining("Total files matching: 33"),
 		);
 		expect(mockLog).toHaveBeenCalledWith(
-			expect.stringContaining("Total folders matching: 111")
+			expect.stringContaining("Total folders matching: 111"),
 		);
 		expect(mockLog).toHaveBeenCalledWith(
-			expect.stringContaining("Duration: 42ms")
+			expect.stringContaining("Duration: 42ms"),
 		);
 	});
 
@@ -214,19 +214,19 @@ describe("when testing for utilities with logging side-effects", () => {
 		});
 
 		expect(mockLog).toHaveBeenCalledWith(
-			expect.stringContaining("Total folders scanned: 222")
+			expect.stringContaining("Total folders scanned: 222"),
 		);
 		expect(mockLog).toHaveBeenCalledWith(
-			expect.stringContaining("Total files scanned: 44")
+			expect.stringContaining("Total files scanned: 44"),
 		);
 		expect(mockLog).toHaveBeenCalledWith(
-			expect.stringContaining("Total files matching: 33")
+			expect.stringContaining("Total files matching: 33"),
 		);
 		expect(mockLog).toHaveBeenCalledWith(
-			expect.stringContaining("Total folders matching: 111")
+			expect.stringContaining("Total folders matching: 111"),
 		);
 		expect(mockLog).toHaveBeenCalledWith(
-			expect.stringContaining("Duration: 42ms")
+			expect.stringContaining("Duration: 42ms"),
 		);
 	});
 
@@ -242,19 +242,19 @@ describe("when testing for utilities with logging side-effects", () => {
 		});
 
 		expect(mockLog).toHaveBeenCalledWith(
-			expect.stringContaining("Total folders scanned: 222")
+			expect.stringContaining("Total folders scanned: 222"),
 		);
 		expect(mockLog).toHaveBeenCalledWith(
-			expect.stringContaining("Total files scanned: 44")
+			expect.stringContaining("Total files scanned: 44"),
 		);
 		expect(mockLog).not.toHaveBeenCalledWith(
-			expect.stringContaining("Total files matching: 33")
+			expect.stringContaining("Total files matching: 33"),
 		);
 		expect(mockLog).not.toHaveBeenCalledWith(
-			expect.stringContaining("Total folders matching: 111")
+			expect.stringContaining("Total folders matching: 111"),
 		);
 		expect(mockLog).toHaveBeenCalledWith(
-			expect.stringContaining("Duration: 42ms")
+			expect.stringContaining("Duration: 42ms"),
 		);
 	});
 });

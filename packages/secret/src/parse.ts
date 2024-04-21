@@ -1,5 +1,5 @@
-import kleur from "kleur";
 import { parser } from "@node-cli/parser";
+import kleur from "kleur";
 
 export type Flags = {
 	decrypt?: boolean;

@@ -1,5 +1,5 @@
-import { Logger } from "@node-cli/logger";
 import crypto from "node:crypto";
+import { Logger } from "@node-cli/logger";
 import fs from "fs-extra";
 import inquirer from "inquirer";
 

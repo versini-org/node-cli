@@ -1,8 +1,8 @@
 import { Logger, Spinner } from "@node-cli/logger";
 import moment, { Duration } from "moment";
 
-import { Configuration } from "./parse.js";
 import notifier from "node-notifier";
+import { Configuration } from "./parse.js";
 
 const logger = new Logger();
 const spinner = new Spinner();

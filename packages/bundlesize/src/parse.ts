@@ -1,5 +1,5 @@
-import { defaultFlags } from "./defaults.js";
 import { parser } from "@node-cli/parser";
+import { defaultFlags } from "./defaults.js";
 
 export type Flags = {
 	boring?: boolean;

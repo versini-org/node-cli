@@ -6,10 +6,10 @@ import {
 	processFileWithPassword,
 } from "../utilities";
 
-import fs from "fs-extra";
-import { jest } from "@jest/globals";
 import os from "node:os";
 import path from "node:path";
+import { jest } from "@jest/globals";
+import fs from "fs-extra";
 
 let mockLog: Mock<UnknownFunction>,
 	spyLog: SpiedFunction<{
@@ -30,7 +30,7 @@ describe("when testing for individual utilities with no logging side-effects", (
 	it("should create an hexadecimal hash from a given string with sha256.", async () => {
 		const result = createHash(password, "sha256");
 		expect(result).toEqual(
-			"c19952f971ab236afcb825e387e64c2194cf8cfbb814f0ac0cd85702a9d15696"
+			"c19952f971ab236afcb825e387e64c2194cf8cfbb814f0ac0cd85702a9d15696",
 		);
 	});
 

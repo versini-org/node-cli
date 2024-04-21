@@ -1,3 +1,4 @@
+import { basename, dirname, join } from "node:path";
 import {
 	GLOB_HASH,
 	GLOB_SEMVER,
@@ -9,12 +10,11 @@ import {
 	gzipSizeFromFileSync,
 	validateConfigurationFile,
 } from "./utilities.js";
-import { basename, dirname, join } from "node:path";
 
+import { statSync } from "node:fs";
 import bytes from "bytes";
 import fs from "fs-extra";
 import { glob } from "glob";
-import { statSync } from "node:fs";
 
 type SizesConfiguration = {
 	limit: string;
@@ -84,7 +84,11 @@ export const getRawStats = async ({ flags }): Promise<ReportStats> => {
 		 */
 		if ((hasHash || hasSemver) && /(?<!\*)\*(?!\*)/.test(artifact.path)) {
 			result.exitCode = 1;
-			result.exitMessage = `Invalid path: ${artifact.path}.\nSingle stars (*) are not allowed when using the special keyword ${hasHash ? HASH_KEY : SEMVER_KEY}`;
+			result.exitMessage = `Invalid path: ${
+				artifact.path
+			}.\nSingle stars (*) are not allowed when using the special keyword ${
+				hasHash ? HASH_KEY : SEMVER_KEY
+			}`;
 			return result;
 		}
 
@@ -119,7 +123,7 @@ export const getRawStats = async ({ flags }): Promise<ReportStats> => {
 				result.pass = false;
 				failed = true;
 			}
-			let index =
+			const index =
 				hasHash || hasSemver
 					? artifact.path
 					: join(artifactPath, basename(file));

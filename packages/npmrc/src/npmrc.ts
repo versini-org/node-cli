@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /* istanbul ignore file */
 
+import path from "node:path";
 import { config } from "./parse.js";
 import { createProfile } from "./utilities/createProfile.js";
 import { deleteProfile } from "./utilities/deleteProfile.js";
 import { listProfiles } from "./utilities/listProfiles.js";
-import path from "node:path";
 import { switchProfile } from "./utilities/switchProfile.js";
 import { updateProfile } from "./utilities/updateProfile.js";
 

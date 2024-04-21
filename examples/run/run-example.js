@@ -5,9 +5,9 @@ import { run } from "@node-cli/run";
 
 const { stdout, stderr, exitCode, shortMessage } = await run(
 	"ls /not-a-folder",
-	{ ignoreError: true }
+	{ ignoreError: true },
 );
-console.log(stdout);
-console.log(stderr);
-console.log("==> exitCode: ", exitCode);
-console.log("==> shortMessage: ", shortMessage);
+console.info(stdout);
+console.info(stderr);
+console.info("==> exitCode: ", exitCode);
+console.info("==> shortMessage: ", shortMessage);

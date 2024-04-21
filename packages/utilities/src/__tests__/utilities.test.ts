@@ -1,5 +1,5 @@
-import { fastMerge, lowerFirst, uniqueID, upperFirst } from "../utilities.js";
 import { isArray, keyBy, merge, orderBy, values } from "lodash-es";
+import { fastMerge, lowerFirst, uniqueID, upperFirst } from "../utilities.js";
 
 import { deepEqual } from "./deepEqual.js";
 
@@ -96,7 +96,7 @@ describe("when testing for utilities with no logging side-effects", () => {
 		expect(result.path).toBe(process.cwd());
 
 		expect(
-			deepEqual(result.headers, [{ key1: "newValue1" }, { key2: "value2" }])
+			deepEqual(result.headers, [{ key1: "newValue1" }, { key2: "value2" }]),
 		).toBe(true);
 	});
 
@@ -114,7 +114,7 @@ describe("when testing for utilities with no logging side-effects", () => {
 					{ b: 2, c: 3 },
 					{ d: 4, e: 5 },
 				],
-			})
+			}),
 		).toBe(true);
 	});
 
@@ -152,10 +152,10 @@ describe("when testing for utilities with no logging side-effects", () => {
 				if (key === "nextPossible") {
 					return orderBy(
 						values(merge(keyBy(defined, "type"), keyBy(custom, "type"))),
-						["pos"]
+						["pos"],
 					);
 				}
-			}
+			},
 		);
 
 		expect(
@@ -164,7 +164,7 @@ describe("when testing for utilities with no logging side-effects", () => {
 					default: true,
 					type: "minor",
 				},
-			])
+			]),
 		).toBe(true);
 	});
 
@@ -179,7 +179,7 @@ describe("when testing for utilities with no logging side-effects", () => {
 					// eslint-disable-next-line unicorn/prefer-spread
 					return objectValue.concat(sourceValue);
 				}
-			}
+			},
 		);
 		expect(deepEqual(result, { a: [1, 3], b: [2, 4] })).toBe(true);
 	});

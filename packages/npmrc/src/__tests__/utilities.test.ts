@@ -1,12 +1,12 @@
-import { createProfile } from "../utilities/createProfile.js";
-import { deleteProfile } from "../utilities/deleteProfile.js";
-import { fileURLToPath } from "node:url";
-import fs from "fs-extra";
-import { jest } from "@jest/globals";
-import kleur from "kleur";
-import { listProfiles } from "../utilities/listProfiles.js";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { jest } from "@jest/globals";
+import fs from "fs-extra";
+import kleur from "kleur";
+import { createProfile } from "../utilities/createProfile.js";
+import { deleteProfile } from "../utilities/deleteProfile.js";
+import { listProfiles } from "../utilities/listProfiles.js";
 import { switchProfile } from "../utilities/switchProfile.js";
 import { updateProfile } from "../utilities/updateProfile.js";
 

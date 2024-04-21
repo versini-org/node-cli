@@ -1,8 +1,8 @@
+import { join } from "node:path";
+import zlib from "node:zlib";
 import bytes from "bytes";
 import fs from "fs-extra";
-import { join } from "node:path";
 import semver from "semver";
-import zlib from "node:zlib";
 
 export const STDOUT = "stdout";
 export const IGNORE = "ignore";
@@ -142,7 +142,7 @@ export const addMDrow = ({
 	}
 	if (type === "row") {
 		const row = columns
-			.map((column: {}) => {
+			.map((column: Record<string, any>) => {
 				const key = Object.keys(column)[0];
 				if (key === "status") {
 					return passed ? "✅" : "🚫";

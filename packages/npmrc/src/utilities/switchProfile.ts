@@ -1,9 +1,9 @@
 import { GET_REGISTRY_CMD, formatRegistries } from "./common.js";
 
 import { Logger } from "@node-cli/logger";
+import { run } from "@node-cli/run";
 import fs from "fs-extra";
 import kleur from "kleur";
-import { run } from "@node-cli/run";
 
 export const switchProfile = async ({
 	flags,

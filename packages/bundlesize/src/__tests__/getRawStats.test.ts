@@ -1,8 +1,8 @@
-import { IGNORE } from "../utilities.js";
-import { fileURLToPath } from "node:url";
-import { getRawStats } from "../getRawStats.js";
-import kleur from "kleur";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
+import kleur from "kleur";
+import { getRawStats } from "../getRawStats.js";
+import { IGNORE } from "../utilities.js";
 
 kleur.enabled = false;
 
@@ -290,8 +290,8 @@ describe("when testing for getRawStats with no errors", () => {
 			data: {
 				"0.0.0": {
 					"../data/index-<hash>.js": {
-						fileSize: 160,
-						fileSizeGzip: 139,
+						fileSize: 85,
+						fileSizeGzip: 96,
 						limit: "1.5 kB",
 						passed: true,
 					},

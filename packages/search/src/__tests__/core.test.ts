@@ -1,9 +1,9 @@
 import { Mock, SpiedFunction, UnknownFunction } from "jest-mock";
 
-import { Search } from "../core";
-import { defaultFlags } from "../defaults";
 import { jest } from "@jest/globals";
 import kleur from "kleur";
+import { Search } from "../core";
+import { defaultFlags } from "../defaults";
 
 kleur.enabled = false;
 
@@ -88,7 +88,7 @@ describe("when testing for utilities with logging side-effects", () => {
 		await search.start();
 		expect(mockLog).toHaveBeenCalledWith(expect.stringContaining("drwxr-xr-x"));
 		expect(mockLog).toHaveBeenCalledWith(
-			expect.stringContaining("src/__tests__")
+			expect.stringContaining("src/__tests__"),
 		);
 	});
 
@@ -107,7 +107,7 @@ describe("when testing for utilities with logging side-effects", () => {
 		expect(mockLog).toHaveBeenCalledWith(" README.md");
 		expect(mockLog).toHaveBeenCalledWith(expect.stringContaining("Duration: "));
 		expect(mockLog).toHaveBeenCalledWith(
-			expect.stringContaining("Total files matching: 1")
+			expect.stringContaining("Total files matching: 1"),
 		);
 	});
 
@@ -178,7 +178,7 @@ describe("when testing for utilities with logging side-effects", () => {
 		await search.start();
 		expect(mockLog).toHaveBeenCalledWith(" package.json");
 		expect(mockLog).toHaveBeenCalledWith(
-			expect.stringContaining("@node-cli/search")
+			expect.stringContaining("@node-cli/search"),
 		);
 	});
 
@@ -198,7 +198,7 @@ describe("when testing for utilities with logging side-effects", () => {
 		await search.start();
 		expect(mockLog).toHaveBeenCalledWith(" package.json");
 		expect(mockLog).not.toHaveBeenCalledWith(
-			expect.stringContaining("@node-cli/search")
+			expect.stringContaining("@node-cli/search"),
 		);
 	});
 
@@ -218,10 +218,10 @@ describe("when testing for utilities with logging side-effects", () => {
 		await search.start();
 		expect(mockLog).toHaveBeenCalledWith(" README.md (1 occurrence)");
 		expect(mockLog).toHaveBeenCalledWith(
-			expect.stringContaining("# Node CLI search package")
+			expect.stringContaining("# Node CLI search package"),
 		);
 		expect(mockLog).toHaveBeenCalledWith(
-			expect.stringContaining("Total files matching: 1")
+			expect.stringContaining("Total files matching: 1"),
 		);
 	});
 

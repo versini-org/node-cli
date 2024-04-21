@@ -8,9 +8,7 @@
 	"types": "./dist/index.d.ts",
 	"exports": "./dist/timer.js",
 	"bin": "dist/timer.js",
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"node": ">=16",
 	"scripts": {
 		"build": "npm-run-all --serial clean build:types build:js build:barrel",
@@ -18,7 +16,7 @@
 		"build:js": "swc --strip-leading-paths --source-maps --out-dir dist src",
 		"build:types": "tsc",
 		"clean": "rimraf dist types coverage",
-		"lint": "prettier --write \"src/*.ts\" && eslint --fix \"src/*.ts\"",
+		"lint": "biome lint src",
 		"test": "cross-env-shell NODE_OPTIONS=--experimental-vm-modules TZ=UTC jest",
 		"test:coverage": "npm run test -- --coverage",
 		"watch": "swc --strip-leading-paths --watch --out-dir dist src"
