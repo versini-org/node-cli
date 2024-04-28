@@ -13,9 +13,9 @@
 		"test:coverage": "lerna run test:coverage"
 	},
 	"devDependencies": {
-		"@versini/dev-dependencies-common": "3.2.9",
-		"@versini/dev-dependencies-server": "4.0.5",
-		"@versini/dev-dependencies-types": "1.1.11"
+		"@versini/dev-dependencies-common": "3.2.10",
+		"@versini/dev-dependencies-server": "4.0.7",
+		"@versini/dev-dependencies-types": "1.1.12"
 	},
-	"packageManager": "pnpm@8.15.1+sha256.245fe901f8e7fa8782d7f17d32b6a83995e2ae03984cb5b62b8949bfdc27c7b5"
+	"packageManager": "pnpm@9.0.6+sha256.0624e30eff866cdeb363b15061bdb7fd9425b17bc1bb42c22f5f4efdea21f6b3"
 }
