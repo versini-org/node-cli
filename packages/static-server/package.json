@@ -8,9 +8,7 @@
 	"types": "./dist/index.d.ts",
 	"exports": "./dist/server.js",
 	"bin": "dist/server.js",
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"node": ">=18",
 	"scripts": {
 		"build": "npm-run-all clean build:types build:js build:barrel",
@@ -25,7 +23,7 @@
 		"@fastify/caching": "8.3.0",
 		"@fastify/compress": "7.0.3",
 		"@fastify/cors": "9.0.1",
-		"@fastify/static": "7.0.3",
+		"@fastify/static": "7.0.4",
 		"@node-cli/logger": "workspace:../logger",
 		"@node-cli/parser": "workspace:../parser",
 		"fastify": "4.27.0",
