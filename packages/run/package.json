@@ -1,13 +1,15 @@
 {
 	"name": "@node-cli/run",
-	"version": "1.0.4",
+	"version": "1.0.5",
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "A wrapper for child_process for nodejs CLI apps",
 	"type": "module",
 	"types": "./dist/index.d.ts",
 	"exports": "./dist/run.js",
-	"files": ["dist"],
+	"files": [
+		"dist"
+	],
 	"node": ">=16",
 	"dependencies": {
 		"execa": "9.1.0",
