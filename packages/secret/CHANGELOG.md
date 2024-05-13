@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.7](https://github.com/aversini/node-cli/compare/secret-v1.0.6...secret-v1.0.7) (2024-05-13)
+
+
+### Bug Fixes
+
+* bump dependencies to latest ([#319](https://github.com/aversini/node-cli/issues/319)) ([0000388](https://github.com/aversini/node-cli/commit/0000388cfa973a86239e5b2e7976d3381286dd59))
+
 ## [1.0.6](https://github.com/aversini/node-cli/compare/secret-v1.0.5...secret-v1.0.6) (2024-04-28)
 
 
