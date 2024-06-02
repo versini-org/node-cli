@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/aversini/node-cli/compare/run-v1.0.5...run-v1.1.0) (2024-06-02)
+
+
+### Features
+
+* **run:** adding option to stream output while the command runs ([#321](https://github.com/aversini/node-cli/issues/321)) ([0580e25](https://github.com/aversini/node-cli/commit/0580e25d4c6f5caa3cab12173c547525b17a3fd6))
+
 ## [1.0.5](https://github.com/aversini/node-cli/compare/run-v1.0.4...run-v1.0.5) (2024-05-13)
 
 

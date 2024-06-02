@@ -4,7 +4,7 @@
 	"packages/logger": "1.2.5",
 	"packages/parser": "2.3.4",
 	"packages/perf": "1.0.6",
-	"packages/run": "1.0.5",
+	"packages/run": "1.1.0",
 	"packages/search": "1.0.6",
 	"packages/secret": "1.0.7",
 	"packages/static-server": "3.0.6",
