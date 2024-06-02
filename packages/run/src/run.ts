@@ -1,5 +1,6 @@
-import { execaCommand } from "execa";
+import { execa, execaCommand } from "execa";
 import kleur from "kleur";
+import { parseCommandString } from "./utilities.js";
 
 /**
  * Runs a shell command asynchronously and
@@ -16,33 +17,56 @@ export type RunResult = {
 	exitCode?: number;
 	shortMessage?: string;
 };
+export type RunOptions = {
+	ignoreError?: boolean;
+	streamOutput?: boolean;
+};
+type ExecaOptions = {
+	preferLocal: boolean;
+	shell: boolean;
+	stdout?: ["pipe", "inherit"];
+};
+
 export const run = async (
 	command: string,
-	options?: { ignoreError?: boolean },
+	options?: RunOptions,
 ): Promise<RunResult> => {
 	const { ignoreError } = {
 		ignoreError: false,
 		...options,
 	};
-	try {
-		const { stdout, stderr } = await execaCommand(command, {
-			/**
-			 * For some reason, a command with a " or ' in execa.command() will
-			 * fail, but it works if shell is set to true... It would work if
-			 * the execaCommand() API is not used:
-			 * execa("ls", ["-l", "|", "wc"]);
-			 * Same problems with &, &&, | and ||.
-			 */
-			shell:
-				command.includes('"') ||
-				command.includes("'") ||
-				command.includes("&&") ||
-				command.includes("&") ||
-				command.includes("||") ||
-				command.includes("|"),
-		});
+	const execaOptions: ExecaOptions = {
+		shell: false,
+		preferLocal: true,
+	};
 
-		return { stderr, stdout };
+	if (
+		command.includes("&&") ||
+		command.includes("&") ||
+		command.includes("||") ||
+		command.includes("|")
+	) {
+		execaOptions.shell = true;
+	}
+
+	/* istanbul ignore next */
+	if (options?.streamOutput) {
+		execaOptions.stdout = ["pipe", "inherit"];
+	}
+
+	try {
+		if (execaOptions.shell) {
+			const { stdout, stderr } = await execaCommand(command, execaOptions);
+			return { stderr, stdout };
+		} else {
+			const commandArray = parseCommandString(command);
+			const { stdout, stderr } = await execa(
+				commandArray[0],
+				commandArray.slice(1),
+				execaOptions,
+			);
+			return { stderr, stdout };
+		}
 	} catch (error) {
 		if (ignoreError) {
 			return {

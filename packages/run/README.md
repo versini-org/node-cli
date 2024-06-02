@@ -26,11 +26,12 @@ Runs a shell command asynchronously and returns both `stdout` and `stderr`. If t
 
 ### Arguments
 
-| Argument            | Type    | Default |
-| ------------------- | ------- | ------- |
-| command             | String  | ""      |
-| options             | Object  | { }     |
-| options.ignoreError | Boolean | false   |
+| Argument             | Type    | Default |
+| -------------------- | ------- | ------- |
+| command              | String  | ""      |
+| options              | Object  | { }     |
+| options.ignoreError  | Boolean | false   |
+| options.streamOutput | Boolean | false   |
 
 ### Note
 
@@ -38,18 +39,37 @@ If `ignoreError` is used, the method will not throw but will instead return an o
 
 #### Examples
 
+##### Basic usage
+
 ```js
 import { run } from "@node-cli/run";
-const { stdout, stderr } = await run("npm config ls");
+const { stdout, stderr } = await run("npm run build");
+```
+
+##### Multiple commands
+
+```js
+import { run } from "@node-cli/run";
 const { stdout, stderr } = await run(
-	"git add -A && git commit -a -m 'First commit'"
+  "git add -A && git commit -a -m 'First commit'"
 );
 ```
+
+##### Stream output
+
+```js
+import { run } from "@node-cli/run";
+await run("npm run build", {
+  streamOutput: true
+});
+```
+
+##### Ignore error
 
 ```js
 import { run } from "@node-cli/run";
 const { exitCode, shortMessage } = await runCommand("ls /not-a-folder", {
-	ignoreError: true,
+  ignoreError: true
 });
 // -> exitCode is 1 and shortMessage is "Command failed with exit code 1: ls /not-a-folder"
 ```
