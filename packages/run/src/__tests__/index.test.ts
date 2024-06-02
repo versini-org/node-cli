@@ -1,4 +1,5 @@
 import { run } from "../run";
+import { parseCommandString } from "../utilities";
 
 describe("when testing for run utilities with no logging side-effects", () => {
 	it("should return the command output via stdout", async () => {
@@ -15,18 +16,12 @@ describe("when testing for run utilities with no logging side-effects", () => {
 
 	it("should throw an error if the command fails", async () => {
 		await expect(run("not-a-command")).rejects.toBeTruthy();
-	});
-
-	it("should throw an error if the command fails", async () => {
 		await expect(run("")).rejects.toBeTruthy();
-	});
-
-	it("should throw an error if the command fails", async () => {
 		// @ts-expect-error
 		await expect(run(666)).rejects.toBeTruthy();
 	});
 
-	it("should not throw an error even if the command does not exist", async () => {
+	it("should not throw an error, even if the command does not exist", async () => {
 		expect.assertions(1);
 		const result = await run("not-a-command", {
 			ignoreError: true,
@@ -66,5 +61,44 @@ describe("when testing for run utilities with no logging side-effects", () => {
 		const { stdout, stderr } = await run('echo "hello world"');
 		expect(stdout).toBe('"hello world"');
 		expect(stderr).toBe("");
+	});
+});
+
+describe("parseCommandString", () => {
+	it("should return an empty array for an empty command", () => {
+		expect(parseCommandString("")).toEqual([]);
+	});
+
+	it("should handle commands with only spaces", () => {
+		expect(parseCommandString("   ")).toEqual([]);
+	});
+
+	it("should split normal commands by spaces", () => {
+		expect(parseCommandString("echo hello world")).toEqual([
+			"echo",
+			"hello",
+			"world",
+		]);
+	});
+
+	it("should not split on escaped spaces", () => {
+		expect(parseCommandString("echo hello\\ world")).toEqual([
+			"echo",
+			"hello world",
+		]);
+	});
+
+	it("should handle multiple escaped spaces", () => {
+		expect(parseCommandString("path\\ to\\ some\\ file")).toEqual([
+			"path to some file",
+		]);
+	});
+
+	it("should handle mixed escaped and unescaped spaces", () => {
+		expect(parseCommandString("echo this\\ is\\ a test")).toEqual([
+			"echo",
+			"this is a",
+			"test",
+		]);
 	});
 });
