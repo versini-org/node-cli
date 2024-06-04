@@ -35,12 +35,12 @@ For the report option, it must export an object named "report" which is an objec
 
 ```js
 export default {
-	sizes: [
-		{
-			path: "dist/some-bundle.js",
-			limit: "10 kB",
-		},
-	],
+  sizes: [
+    {
+      path: "dist/some-bundle.js",
+      limit: "10 kB"
+    }
+  ]
 };
 ```
 
@@ -48,16 +48,16 @@ export default {
 
 ```js
 export default {
-	sizes: [
-		{
-			path: "dist/some-bundle.js",
-			limit: "10 kB",
-		},
-		{
-			path: "dist/some-other-bundle.js",
-			limit: "100 kB",
-		},
-	],
+  sizes: [
+    {
+      path: "dist/some-bundle.js",
+      limit: "10 kB"
+    },
+    {
+      path: "dist/some-other-bundle.js",
+      limit: "100 kB"
+    }
+  ]
 };
 ```
 
@@ -65,46 +65,44 @@ export default {
 
 ```js
 export default {
-	sizes: [
-		{
-			path: "dist/**/some-bundle.js",
-			limit: "10 kB",
-		},
-		{
-			path: "dist/**/some-other-bundle-*.js",
-			limit: "100 kB",
-		},
-		{
-			path: "dist/**/extra-+([a-zA-Z0-9]).js",
-			limit: "100 kB",
-		},
-	],
+  sizes: [
+    {
+      path: "dist/**/some-bundle.js",
+      limit: "10 kB"
+    },
+    {
+      path: "dist/**/some-other-bundle-*.js",
+      limit: "100 kB"
+    },
+    {
+      path: "dist/**/extra-+([a-zA-Z0-9]).js",
+      limit: "100 kB"
+    }
+  ]
 };
 ```
 
 #### With a hash
 
-The special keyword `<hash>` can be used to match a hash in the filename. It cannot be used in conjunction with the single star (\*) glob pattern, and it cannot be used if multiple files match the pattern.
+The special keyword `<hash>` can be used to match a hash in the filename. It cannot used if multiple files match the pattern.
 
 **NOTE**: Using `<hash>` is equivalent to using `+([a-zA-Z0-9])` in the glob pattern. However, the result will be indexed with the `hash` key instead of the `match` key, so that subsequent scripts can use the hash value.
 
 | Status | Pattern                         | Comment                              |
 | ------ | ------------------------------- | ------------------------------------ |
 | OK     | `dist/**/some-bundle-<hash>.js` | If only one file matches the pattern |
-| Not OK | `dist/**/some-bundle-<hash>.js` | If multiple files match the pattern  |
-| Not OK | `dist/**/some-bundle-<hash>.*`  | Cannot use `<hash>` with `*`         |
+| Not OK | `dist/**/same-prefix-<hash>.js` | If multiple files match the pattern  |
 
 #### With a version
 
-The special keyword `<semver>` can be used to match a version in the filename. It cannot be used in conjunction with the single star (\*) glob pattern, and it cannot be used if multiple files match the pattern.
+The special keyword `<semver>` can be used to match a version in the filename. It cannot be used if multiple files match the pattern.
 
 **NOTE**: Using `<semver>` is equivalent to using `*` in the glob pattern. However, the result will be indexed with the `semver` key instead of the `match` key, so that subsequent scripts can use the semver value.
 
 | Status | Pattern                           | Comment                              |
 | ------ | --------------------------------- | ------------------------------------ |
 | OK     | `dist/**/some-bundle-<semver>.js` | If only one file matches the pattern |
-| Not OK | `dist/**/some-bundle-<semver>.js` | If multiple files match the pattern  |
-| Not OK | `dist/**/some-bundle-<semver>.*`  | Cannot use `<semver>` with `*`       |
+| Not OK | `dist/**/same-prefix-<semver>.js` | If multiple files match the pattern  |
 
 ### Printing reports from stats
 
@@ -112,10 +110,10 @@ The special keyword `<semver>` can be used to match a version in the filename. I
 
 ```js
 export default {
-	report: {
-		prev: "stats/previous.json",
-		current: "stats/current.json",
-	},
+  report: {
+    prev: "stats/previous.json",
+    current: "stats/current.json"
+  }
 };
 ```
 
@@ -123,11 +121,11 @@ export default {
 
 ```js
 export default {
-	report: {
-		header: "## My custom header",
-		prev: "stats/previous.json",
-		current: "stats/current.json",
-	},
+  report: {
+    header: "## My custom header",
+    prev: "stats/previous.json",
+    current: "stats/current.json"
+  }
 };
 ```
 
@@ -135,13 +133,13 @@ export default {
 
 ```js
 export default {
-	report: {
-		footer: (limitReached, diff) => {
-			return `## My custom footer: ${limitReached} ${diff}`;
-		},
-		prev: "stats/previous.json",
-		current: "stats/current.json",
-	},
+  report: {
+    footer: (limitReached, diff) => {
+      return `## My custom footer: ${limitReached} ${diff}`;
+    },
+    prev: "stats/previous.json",
+    current: "stats/current.json"
+  }
 };
 ```
 
@@ -149,16 +147,16 @@ export default {
 
 ```js
 export default {
-	report: {
-		columns: [
-			{ status: "Status" },
-			{ file: "File" },
-			{ size: "Size" },
-			{ limits: "Limits" },
-		],
-		prev: "stats/previous.json",
-		current: "stats/current.json",
-	},
+  report: {
+    columns: [
+      { status: "Status" },
+      { file: "File" },
+      { size: "Size" },
+      { limits: "Limits" }
+    ],
+    prev: "stats/previous.json",
+    current: "stats/current.json"
+  }
 };
 ```
 
