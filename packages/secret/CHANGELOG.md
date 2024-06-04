@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/aversini/node-cli/compare/secret-v1.0.7...secret-v1.1.0) (2024-06-04)
+
+
+### Features
+
+* **secret:** expose internal methods as a library ([#325](https://github.com/aversini/node-cli/issues/325)) ([c6edf88](https://github.com/aversini/node-cli/commit/c6edf882fbf518ea40391d45422a125ceecf05e1))
+
 ## [1.0.7](https://github.com/aversini/node-cli/compare/secret-v1.0.6...secret-v1.0.7) (2024-05-13)
 
 
