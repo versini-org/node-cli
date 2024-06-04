@@ -5,7 +5,7 @@ export default {
 	},
 	sizes: [
 		{
-			path: "../data/**/file*.txt",
+			path: "../data/**/file.txt",
 			limit: "1 B",
 		},
 	],

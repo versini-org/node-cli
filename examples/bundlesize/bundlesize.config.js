@@ -16,7 +16,7 @@ export default {
 	},
 	sizes: [
 		{
-			path: "data/file*.txt",
+			path: "data/file-*.txt",
 			limit: "1.5 kB",
 		},
 		{
@@ -29,6 +29,14 @@ export default {
 		},
 		{
 			path: "data/react-<semver>.js",
+			limit: "1.5 kB",
+		},
+		{
+			path: "data/*versini_ui-components*.<hash>.js",
+			limit: "1.5 kB",
+		},
+		{
+			path: "data/*react-use*.<hash>.js",
 			limit: "1.5 kB",
 		},
 	],

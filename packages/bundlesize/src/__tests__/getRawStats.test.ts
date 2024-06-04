@@ -70,47 +70,7 @@ describe("when testing for getRawStats with errors", () => {
 		expect(result).toEqual({
 			data: {},
 			exitCode: 1,
-			exitMessage: `Multiple files found for: ../data/file-<hash>.txt.\nPlease use a more specific path when using the special keyword <hash>.`,
-			outputFile: "",
-			pass: true,
-			prefix: "",
-		});
-	});
-
-	it("should report <hash> cannot be used with a single start (*)", async () => {
-		const result = await getRawStats({
-			flags: {
-				configuration: path.join(
-					__dirname,
-					"fixtures/configuration/hash-and-star.js",
-				),
-			},
-		});
-		expect(result).toEqual({
-			data: {},
-			exitCode: 1,
-			exitMessage:
-				"Invalid path: ../data/index-<hash>*.js.\nSingle stars (*) are not allowed when using the special keyword <hash>",
-			outputFile: "",
-			pass: true,
-			prefix: "",
-		});
-	});
-
-	it("should report <semver> cannot be used with a single start (*)", async () => {
-		const result = await getRawStats({
-			flags: {
-				configuration: path.join(
-					__dirname,
-					"fixtures/configuration/semver-and-star.js",
-				),
-			},
-		});
-		expect(result).toEqual({
-			data: {},
-			exitCode: 1,
-			exitMessage:
-				"Invalid path: ../data/index-<semver>*.js.\nSingle stars (*) are not allowed when using the special keyword <semver>",
+			exitMessage: `Multiple files found for: ../data/file-<hash>.txt.\nPlease use a more specific path.`,
 			outputFile: "",
 			pass: true,
 			prefix: "",
@@ -174,18 +134,6 @@ describe("when testing for getRawStats with no errors", () => {
 						limit: "1.5 kB",
 						passed: true,
 					},
-					"../data/**/file-2.txt": {
-						fileSize: 22,
-						fileSizeGzip: 42,
-						limit: "1.5 kB",
-						passed: true,
-					},
-					"../data/**/file-3.txt": {
-						fileSize: 22,
-						fileSizeGzip: 42,
-						limit: "1.5 kB",
-						passed: true,
-					},
 				},
 			},
 			exitCode: 0,
@@ -209,18 +157,6 @@ describe("when testing for getRawStats with no errors", () => {
 			data: {
 				"0.0.0": {
 					"../data/**/file.txt": {
-						fileSize: 22,
-						fileSizeGzip: 42,
-						limit: "1 B",
-						passed: false,
-					},
-					"../data/**/file-2.txt": {
-						fileSize: 22,
-						fileSizeGzip: 42,
-						limit: "1 B",
-						passed: false,
-					},
-					"../data/**/file-3.txt": {
 						fileSize: 22,
 						fileSizeGzip: 42,
 						limit: "1 B",
@@ -250,18 +186,6 @@ describe("when testing for getRawStats with no errors", () => {
 			data: {
 				"0.0.0": {
 					"../data/**/file.txt": {
-						fileSize: 22,
-						fileSizeGzip: 42,
-						limit: "1 B",
-						passed: false,
-					},
-					"../data/**/file-2.txt": {
-						fileSize: 22,
-						fileSizeGzip: 42,
-						limit: "1 B",
-						passed: false,
-					},
-					"../data/**/file-3.txt": {
 						fileSize: 22,
 						fileSizeGzip: 42,
 						limit: "1 B",

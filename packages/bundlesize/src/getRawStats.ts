@@ -76,22 +76,6 @@ export const getRawStats = async ({ flags }): Promise<ReportStats> => {
 			return result;
 		}
 
-		/**
-		 * if the artifact.path has the string <hash> or <semver> in it,
-		 * then we need to check for other characters:
-		 * - Double stars ** are allowed.
-		 * - Single stars * are not allowed.
-		 */
-		if ((hasHash || hasSemver) && /(?<!\*)\*(?!\*)/.test(artifact.path)) {
-			result.exitCode = 1;
-			result.exitMessage = `Invalid path: ${
-				artifact.path
-			}.\nSingle stars (*) are not allowed when using the special keyword ${
-				hasHash ? HASH_KEY : SEMVER_KEY
-			}`;
-			return result;
-		}
-
 		let location = artifact.path;
 		if (hasHash) {
 			location = artifact.path.replace(HASH_KEY, GLOB_HASH);
@@ -108,9 +92,9 @@ export const getRawStats = async ({ flags }): Promise<ReportStats> => {
 			return result;
 		}
 
-		if (files.length > 1 && hasHash) {
+		if (files.length > 1) {
 			result.exitCode = 1;
-			result.exitMessage = `Multiple files found for: ${artifact.path}.\nPlease use a more specific path when using the special keyword ${HASH_KEY}.`;
+			result.exitMessage = `Multiple files found for: ${artifact.path}.\nPlease use a more specific path.`;
 			return result;
 		}
 
