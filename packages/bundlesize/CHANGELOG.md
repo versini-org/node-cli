@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.0](https://github.com/aversini/node-cli/compare/bundlesize-v4.0.4...bundlesize-v4.1.0) (2024-06-04)
+
+
+### Features
+
+* **bundlesize:** allowing stars (*) alongside hash and semver ([#323](https://github.com/aversini/node-cli/issues/323)) ([db1a4cb](https://github.com/aversini/node-cli/commit/db1a4cb8d7abcb001c846cfcafdcb1452760fbc5))
+
 ## [4.0.4](https://github.com/aversini/node-cli/compare/bundlesize-v4.0.3...bundlesize-v4.0.4) (2024-05-13)
 
 
