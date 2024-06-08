@@ -11,6 +11,7 @@ const UTF8 = "utf8";
 const DEFAULT_CRYPTO_ALGO = "aes-256-ctr";
 const DEFAULT_HASH_ALGO = "md5";
 const DEFAULT_BYTES_FOR_IV = 16;
+const DEFAULT_BYTES_FOR_SALT = 256;
 
 /**
  * Create an hexadecimal hash from a given string. The default
@@ -25,6 +26,16 @@ export const createHash = (
 	algorithm: string = DEFAULT_HASH_ALGO,
 ): string => {
 	return crypto.createHash(algorithm).update(string, UTF8).digest(HEX);
+};
+
+/**
+ * Creates a random SALT value using the crypto library.
+ * @param  {Number} [bytes=16] the number of bytes to generate
+ * @return {String}            the generated salt in hexa format
+ */
+export const createSalt = (bytes?: number): string => {
+	bytes = bytes || DEFAULT_BYTES_FOR_SALT;
+	return crypto.randomBytes(bytes).toString(HEX);
 };
 
 /**

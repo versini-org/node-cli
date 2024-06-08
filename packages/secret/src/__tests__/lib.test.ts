@@ -1,4 +1,4 @@
-import { createHash, decrypt, encrypt } from "../lib";
+import { createHash, createSalt, decrypt, encrypt } from "../lib";
 
 const password = "this is a skrt";
 const contentToEncrypt = "Hello World";
@@ -27,5 +27,16 @@ describe("when testing for individual utilities with no logging side-effects", (
 		const encrypted = encrypt(password, contentToEncryptUTF8);
 		const decrypted = decrypt(password, encrypted);
 		expect(decrypted).toBe(contentToEncryptUTF8);
+	});
+
+	it("should generate a random salt with the specified number of bytes", () => {
+		const bytes = 32;
+		const salt = createSalt(bytes);
+		expect(salt.length).toBe(bytes * 2); // Each byte is represented by 2 characters in hexadecimal format
+	});
+
+	it("should generate a random salt with the default number of bytes if not specified", () => {
+		const salt = createSalt();
+		expect(salt.length).toBe(256 * 2); // Each byte is represented by 2 characters in hexadecimal format
 	});
 });
