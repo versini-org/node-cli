@@ -30,7 +30,7 @@ export const createHash = (
 
 /**
  * Creates a random SALT value using the crypto library.
- * @param  {Number} [bytes=16] the number of bytes to generate
+ * @param  {Number} [bytes=256] the number of bytes to generate
  * @return {String}            the generated salt in hexa format
  */
 export const createSalt = (bytes?: number): string => {
