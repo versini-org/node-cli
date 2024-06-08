@@ -33,6 +33,32 @@ import { decrypt } from "@node-cli/secret";
 const decrypted = decrypt("password", encrypted);
 ```
 
+### Hash a password with a default salt
+
+```js
+import { hashPassword } from "@node-cli/secret";
+const hashed = hashPassword("password");
+// hashed === "some-default-salt:some-hex-string
+```
+
+### Hash a password with a custom salt
+
+```js
+import { createSalt, hashPassword } from "@node-cli/secret";
+const salt = createSalt(42);
+const hashed = hashPassword("password", salt);
+// hashed === "some-salt:some-hex-string
+```
+
+### Verify a password against a hash
+
+```js
+import { hashPassword, verifyPassword } from "@node-cli/secret";
+const hashed = hashPassword("password");
+const isVerified = verifyPassword("password", hashed);
+// isVerified === true
+```
+
 ## Usage as a CLI
 
 NOTE: The password is not stored anywhere, it is only used to encrypt or decrypt the file and will be prompted each time.

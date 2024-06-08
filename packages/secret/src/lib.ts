@@ -12,6 +12,7 @@ const DEFAULT_CRYPTO_ALGO = "aes-256-ctr";
 const DEFAULT_HASH_ALGO = "md5";
 const DEFAULT_BYTES_FOR_IV = 16;
 const DEFAULT_BYTES_FOR_SALT = 256;
+const DEFAULT_SALT_SIZE_FOR_HASH = 16;
 
 /**
  * Create an hexadecimal hash from a given string. The default
@@ -86,4 +87,70 @@ export const decrypt = (password: string, data: string): string => {
 	const decipher = crypto.createDecipheriv(DEFAULT_CRYPTO_ALGO, hash, iv);
 	// Return the decrypted data using the newly created cipher.
 	return decipher.update(encrypted, HEX, UTF8) + decipher.final("utf8");
+};
+
+/**
+ * Function using the scrypt Password-Based Key Derivation method.
+ * It generates a derived key of a given length from the given data
+ * and salt.
+ *
+ * @param {String} data  the data to derive the key from
+ * @param {String} salt  the salt to use
+ * @returns {String} the derived key in hex format
+ */
+function generateScryptKey(data: string, salt: string): string {
+	const encodedData = new TextEncoder().encode(data);
+	const encodedSalt = new TextEncoder().encode(salt);
+	/**
+	 * The scryptSync parameters are based on the following recommendations:
+	 * - The cost parameter should be set as high as possible without causing
+	 *     significant performance degradation. OWASP recommends a cost of 2^17,
+	 *     but this fails on some systems due to the high memory requirements.
+	 * - The blockSize parameter should be set to 8 at a minimum.
+	 * - The parallelization parameter should be set to 1.
+	 * - The size parameter should be set to 64.
+	 *
+	 * Reference:
+	 * https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
+	 */
+	const derivedKey = crypto.scryptSync(encodedData, encodedSalt, 64, {
+		cost: Math.pow(2, 14),
+		blockSize: 8,
+		parallelization: 1,
+	});
+	return (derivedKey as Buffer).toString(HEX);
+}
+
+/**
+ * Method to hash a password using the scrypt algorithm.
+ *
+ * @param {String} password  the password to hash
+ * @param {String} salt      the salt to use
+ * @returns {String} the hashed password
+ */
+export const hashPassword = (password: string, salt?: string): string => {
+	const pepper = salt || createSalt(DEFAULT_SALT_SIZE_FOR_HASH);
+	const key = generateScryptKey(password.normalize("NFKC"), pepper);
+	return `${pepper}:${key}`;
+};
+
+/**
+ * Method to verify a password against a hash using the scrypt algorithm.
+ *
+ * @param {String} password  the password to verify
+ * @param {String} hash      the hash to verify against
+ * @returns {Boolean} true if the password is correct, false otherwise
+ */
+export const verifyPassword = (password: string, hash: string): boolean => {
+	const [salt, key] = hash.split(":");
+	const keyBuffer = Buffer.from(key, HEX);
+
+	const derivedKey = generateScryptKey(password.normalize("NFKC"), salt);
+	const derivedKeyBuffer = Buffer.from(derivedKey, HEX);
+
+	try {
+		return crypto.timingSafeEqual(keyBuffer, derivedKeyBuffer);
+	} catch (_error) {
+		return false;
+	}
 };
