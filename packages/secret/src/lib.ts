@@ -101,7 +101,23 @@ export const decrypt = (password: string, data: string): string => {
 function generateScryptKey(data: string, salt: string): string {
 	const encodedData = new TextEncoder().encode(data);
 	const encodedSalt = new TextEncoder().encode(salt);
-	const derivedKey = crypto.scryptSync(encodedData, encodedSalt, 64);
+	/**
+	 * The scryptSync parameters are based on the following recommendations:
+	 * - The cost parameter should be set as high as possible without causing
+	 *     significant performance degradation. OWASP recommends a cost of 2^17,
+	 *     but this fails on some systems due to the high memory requirements.
+	 * - The blockSize parameter should be set to 8 at a minimum.
+	 * - The parallelization parameter should be set to 1.
+	 * - The size parameter should be set to 64.
+	 *
+	 * Reference:
+	 * https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
+	 */
+	const derivedKey = crypto.scryptSync(encodedData, encodedSalt, 64, {
+		cost: Math.pow(2, 14),
+		blockSize: 8,
+		parallelization: 1,
+	});
 	return (derivedKey as Buffer).toString(HEX);
 }
 
