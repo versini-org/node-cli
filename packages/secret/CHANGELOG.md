@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.0](https://github.com/aversini/node-cli/compare/secret-v1.1.0...secret-v1.2.0) (2024-06-08)
+
+
+### Features
+
+* **secret:** adding createSalt as a new exported API ([#327](https://github.com/aversini/node-cli/issues/327)) ([56ef974](https://github.com/aversini/node-cli/commit/56ef97450d1229ffa5cfb5541ecf795ab8a2248c))
+* **secret:** adding hashPassword and verifyPassword ([#329](https://github.com/aversini/node-cli/issues/329)) ([5a0e54a](https://github.com/aversini/node-cli/commit/5a0e54af717cbb68b8c281ec6012141d102eed10))
+
 ## [1.1.0](https://github.com/aversini/node-cli/compare/secret-v1.0.7...secret-v1.1.0) (2024-06-04)
 
 
