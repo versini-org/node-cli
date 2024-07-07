@@ -268,4 +268,32 @@ describe("when testing for getRawStats with no errors", () => {
 		});
 		expect(result.outputFile).toBe(IGNORE);
 	});
+
+	it("should report basic stats with aliases", async () => {
+		const result = await getRawStats({
+			flags: {
+				configuration: path.join(
+					__dirname,
+					"fixtures/configuration/basic-with-alias.js",
+				),
+			},
+		});
+		expect(result).toEqual({
+			data: {
+				"0.0.0": {
+					"some alias": {
+						fileSize: 22,
+						fileSizeGzip: 42,
+						limit: "1.5 kB",
+						passed: true,
+					},
+				},
+			},
+			exitCode: 0,
+			exitMessage: "",
+			outputFile: "stdout",
+			pass: true,
+			prefix: "0.0.0",
+		});
+	});
 });

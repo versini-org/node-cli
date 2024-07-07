@@ -82,6 +82,30 @@ export default {
 };
 ```
 
+#### With aliases
+
+```js
+export default {
+  sizes: [
+    {
+      path: "dist/**/some-bundle.js",
+      limit: "10 kB",
+      alias: "Some bundle"
+    },
+    {
+      path: "dist/**/some-other-bundle-*.js",
+      limit: "100 kB",
+      alias: "Some other bundle"
+    },
+    {
+      path: "dist/**/extra-+([a-zA-Z0-9]).js",
+      limit: "100 kB",
+      alias: "Extra bundle"
+    }
+  ]
+};
+```
+
 #### With a hash
 
 The special keyword `<hash>` can be used to match a hash in the filename. It cannot used if multiple files match the pattern.
