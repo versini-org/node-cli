@@ -19,6 +19,7 @@ import { glob } from "glob";
 type SizesConfiguration = {
 	limit: string;
 	path: string;
+	alias?: string;
 };
 
 type ReportStats = {
@@ -107,10 +108,14 @@ export const getRawStats = async ({ flags }): Promise<ReportStats> => {
 				result.pass = false;
 				failed = true;
 			}
-			const index =
+
+			let index =
 				hasHash || hasSemver
 					? artifact.path
 					: join(artifactPath, basename(file));
+			if (artifact.alias) {
+				index = artifact.alias;
+			}
 
 			currentResults[index] = {
 				fileSize,
