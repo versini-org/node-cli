@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.1](https://github.com/aversini/node-cli/compare/bundlesize-v4.1.0...bundlesize-v4.1.1) (2024-07-07)
+
+
+### Bug Fixes
+
+* bump dependencies to latest ([#330](https://github.com/aversini/node-cli/issues/330)) ([0042fcc](https://github.com/aversini/node-cli/commit/0042fcc5ae686390b4425ca2282ac03844efb7ec))
+
 ## [4.1.0](https://github.com/aversini/node-cli/compare/bundlesize-v4.0.4...bundlesize-v4.1.0) (2024-06-04)
 
 
