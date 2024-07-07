@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.7](https://github.com/aversini/node-cli/compare/static-server-v3.0.6...static-server-v3.0.7) (2024-07-07)
+
+
+### Bug Fixes
+
+* bump dependencies to latest ([#330](https://github.com/aversini/node-cli/issues/330)) ([0042fcc](https://github.com/aversini/node-cli/commit/0042fcc5ae686390b4425ca2282ac03844efb7ec))
+
 ## [3.0.6](https://github.com/aversini/node-cli/compare/static-server-v3.0.5...static-server-v3.0.6) (2024-05-13)
 
 
