@@ -1,6 +1,6 @@
 {
 	"name": "@node-cli/bundlesize",
-	"version": "4.1.1",
+	"version": "4.2.0",
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "Simple CLI tool that checks file(s) size and report if limits have been reached",

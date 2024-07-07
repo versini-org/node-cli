@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.0](https://github.com/aversini/node-cli/compare/bundlesize-v4.1.1...bundlesize-v4.2.0) (2024-07-07)
+
+
+### Features
+
+* **bundlesize:** adding support for aliases ([#332](https://github.com/aversini/node-cli/issues/332)) ([94815c4](https://github.com/aversini/node-cli/commit/94815c448fa932ab107a4b639952ad66de9fc78d))
+
 ## [4.1.1](https://github.com/aversini/node-cli/compare/bundlesize-v4.1.0...bundlesize-v4.1.1) (2024-07-07)
 
 
