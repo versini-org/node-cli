@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.0](https://github.com/aversini/node-cli/compare/static-server-v3.0.7...static-server-v3.1.0) (2024-07-31)
+
+
+### Features
+
+* **static-server:** allowing to use local SSL certificates ([#334](https://github.com/aversini/node-cli/issues/334)) ([2fb77d7](https://github.com/aversini/node-cli/commit/2fb77d706c19a192c8987b90179f0a8ad542b6dd))
+
 ## [3.0.7](https://github.com/aversini/node-cli/compare/static-server-v3.0.6...static-server-v3.0.7) (2024-07-07)
 
 
