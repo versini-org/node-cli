@@ -7,6 +7,7 @@ export const defaultFlags = {
 	logs: false,
 	open: false,
 	port: 8080,
+	host: "localhost",
 };
 
 export const defaultParameters = {
