@@ -29,6 +29,7 @@ export const config: Configuration = parser({
 	meta: import.meta,
 	flags: {
 		host: {
+			default: defaultFlags.host,
 			description: "Host to listen on",
 			type: "string",
 		},

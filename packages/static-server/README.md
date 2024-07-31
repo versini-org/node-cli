@@ -30,7 +30,7 @@ At that point, you should be able to visit `http://localhost:8080` and see the f
 | `-C` or `--cors`           | false     | Set CORS headers to \* to allow requests from any origin    |
 | `-d` or `--dirs`           | true      | List the directory's contents                               |
 | `-h` or `--help`           |           | Display help instructions                                   |
-| `--host`                   | 127.0.0.1 | Change the default host address to bind to                  |
+| `--host`                   | localhost | Change the default host address to bind to                  |
 | `-H` or `--http2`          | false     | Enable HTTP/2 and SSL (https)                               |
 | `-l` or `--logs`           | false     | Log HTTP requests at the prompt                             |
 | `-o` or `--open`           | false     | Open in your default browser                                |
@@ -38,6 +38,17 @@ At that point, you should be able to visit `http://localhost:8080` and see the f
 | `-g` or `--gzip`           | true      | Enable GZIP compression                                     |
 | `-v` or `--version`        |           | Output the current version                                  |
 
+### SSL support
+
+SSL support is available by using the `--http2` option. This will enable HTTP/2 and SSL (https). The server will use a self-signed certificate to serve the files. You will be prompted to accept the certificate when you visit the server in your browser.
+
+If you have your own local certificates, for example by using [mkcert](https://github.com/FiloSottile/mkcert), simply set the `STATIC_SERVER_CERT` and `STATIC_SERVER_KEY` environment variables to the path of your certificate and key files. In this case, you won't be prompted to accept the certificate.
+
+```sh
+
+
+
 ## License
 
 MIT © Arno Versini
+```

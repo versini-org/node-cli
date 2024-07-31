@@ -8,9 +8,7 @@
 	"types": "./dist/index.d.ts",
 	"exports": "./dist/server.js",
 	"bin": "dist/server.js",
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"node": ">=18",
 	"scripts": {
 		"build": "npm-run-all clean build:types build:js build:barrel",
@@ -33,7 +31,7 @@
 		"fs-extra": "11.2.0",
 		"kleur": "4.1.5",
 		"open": "10.1.0",
-		"pino-pretty": "11.2.1",
+		"pino-pretty": "11.2.2",
 		"portfinder": "1.0.32"
 	},
 	"publishConfig": {
