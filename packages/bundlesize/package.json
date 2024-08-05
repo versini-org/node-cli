@@ -8,9 +8,7 @@
 	"types": "./dist/index.d.ts",
 	"exports": "./dist/bundlesize.js",
 	"bin": "dist/bundlesize.js",
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"node": ">=18",
 	"scripts": {
 		"build": "npm-run-all --serial clean build:types build:js build:barrel",
@@ -31,8 +29,8 @@
 		"@node-cli/parser": "workspace:../parser",
 		"bytes": "3.1.2",
 		"fs-extra": "11.2.0",
-		"glob": "10.4.3",
-		"semver": "7.6.2"
+		"glob": "10.4.5",
+		"semver": "7.6.3"
 	},
 	"publishConfig": {
 		"access": "public"
