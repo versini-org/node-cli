@@ -13,7 +13,7 @@
 	"dependencies": {
 		"boxen": "7.1.1",
 		"kleur": "4.1.5",
-		"ora": "8.0.1"
+		"ora": "8.1.0"
 	},
 	"scripts": {
 		"build": "npm-run-all --serial clean build:types build:js build:barrel",
