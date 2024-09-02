@@ -2,9 +2,15 @@
 
 reviews:
   poem: false
+  sequence_diagrams: false
   auto_review:
+    labels: ["enhancement", "Enhancement", "bug", "Bug fix"]
     enabled: true
     ignore_title_keywords:
+      - "chore(main): release client"
+      - "chore(main): release server"
+      - "chore(main): release"
       - "chore: release main"
+      - WIP
 chat:
   auto_reply: true
