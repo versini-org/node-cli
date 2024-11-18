@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.1](https://github.com/versini-org/node-cli/compare/static-server-v3.1.0...static-server-v3.1.1) (2024-11-18)
+
+
+### Bug Fixes
+
+* bump non-breaking dependencies to latest ([#366](https://github.com/versini-org/node-cli/issues/366)) ([748cbab](https://github.com/versini-org/node-cli/commit/748cbab716d61c7a69746e99c99b754322c96b2c))
+
 ## [3.1.0](https://github.com/aversini/node-cli/compare/static-server-v3.0.7...static-server-v3.1.0) (2024-07-31)
 
 

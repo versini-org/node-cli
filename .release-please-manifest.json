@@ -1,13 +1,13 @@
 {
 	"packages/bundlesize": "4.2.1",
 	"packages/envtools": "4.2.1",
-	"packages/logger": "1.2.5",
+	"packages/logger": "1.2.6",
 	"packages/parser": "2.3.4",
 	"packages/perf": "1.0.6",
-	"packages/run": "1.1.1",
-	"packages/search": "1.0.7",
-	"packages/secret": "1.2.2",
-	"packages/static-server": "3.1.0",
+	"packages/run": "1.1.2",
+	"packages/search": "1.0.8",
+	"packages/secret": "1.2.3",
+	"packages/static-server": "3.1.1",
 	"packages/timer": "1.0.5",
 	"packages/utilities": "1.0.2",
 	"packages/npmrc": "1.2.1"
