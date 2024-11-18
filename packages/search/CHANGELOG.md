@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.8](https://github.com/versini-org/node-cli/compare/search-v1.0.7...search-v1.0.8) (2024-11-18)
+
+
+### Bug Fixes
+
+* bump non-breaking dependencies to latest ([#366](https://github.com/versini-org/node-cli/issues/366)) ([748cbab](https://github.com/versini-org/node-cli/commit/748cbab716d61c7a69746e99c99b754322c96b2c))
+
 ## [1.0.7](https://github.com/aversini/node-cli/compare/search-v1.0.6...search-v1.0.7) (2024-08-05)
 
 
