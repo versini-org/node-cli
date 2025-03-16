@@ -59,7 +59,7 @@ export class Search {
 		pattern,
 		stats,
 		type,
-		ignore,
+		ignoreExtension,
 		printMode,
 		ignoreGitIgnore,
 	}: {
@@ -74,7 +74,7 @@ export class Search {
 		pattern?: string;
 		stats?: boolean;
 		type?: string;
-		ignore?: string[];
+		ignoreExtension?: string[];
 		printMode?: string;
 		ignoreGitIgnore?: boolean;
 	}) {
@@ -95,7 +95,7 @@ export class Search {
 		this.totalDirFound = 0;
 		this.totalFileFound = 0;
 		this.command = command ? command.trim() : undefined;
-		this.ignoreExtensions = ignore.map((ext) => ext.toLowerCase());
+		this.ignoreExtensions = ignoreExtension.map((ext) => ext.toLowerCase());
 		this.printMode = printMode;
 		this.ignoreGitIgnore = ignoreGitIgnore;
 		this.gitIgnoreHandler = new GitIgnoreHandler();

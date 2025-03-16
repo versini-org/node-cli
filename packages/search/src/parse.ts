@@ -102,7 +102,7 @@ export const config: Configuration = parser({
 			description: "Output the current version",
 			type: "boolean",
 		},
-		ignore: {
+		ignoreExtension: {
 			shortFlag: "I",
 			description: "Ignore files extensions",
 			type: "string",
