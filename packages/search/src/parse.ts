@@ -10,6 +10,7 @@ export type Flags = {
 	stats?: boolean;
 	grep?: string;
 	type?: string;
+	ignore?: string[];
 };
 
 export type Parameters = {
@@ -98,6 +99,12 @@ export const config: Configuration = parser({
 			shortFlag: "v",
 			description: "Output the current version",
 			type: "boolean",
+		},
+		ignore: {
+			shortFlag: "I",
+			description: "Ignore files extensions",
+			type: "string",
+			isMultiple: true,
 		},
 	},
 	parameters: {
