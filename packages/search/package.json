@@ -6,7 +6,7 @@
 	"description": "Search for files in a directory",
 	"type": "module",
 	"types": "./dist/index.d.ts",
-	"exports": "./dist/search.js",
+	"exports": "./dist/core.js",
 	"bin": "dist/search.js",
 	"files": [
 		"dist"
