@@ -60,7 +60,7 @@ export class Search {
 		pattern,
 		stats,
 		type,
-		ignoreExtension = [],
+		ignoreExtension,
 		printMode,
 		ignoreGitIgnore,
 	}: {
