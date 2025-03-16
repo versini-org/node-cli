@@ -355,3 +355,38 @@ describe("when testing for utilities with logging side-effects", () => {
 		expect(mockExit).toHaveBeenCalledWith(1);
 	});
 });
+
+describe("when testing for utilities with NO logging side-effects", () => {
+	it("should find and print specific files based on the arguments (md, simple)", async () => {
+		const search = new Search({
+			...defaultFlags,
+			foldersBlacklist: /node_modules/gi,
+			boring: true,
+			path: `${process.cwd()}`,
+			pattern: ".md",
+			short: true,
+			stats: false,
+			type: "f",
+			printMode: "simple",
+		});
+		const res = await search.start(true);
+		expect(res).toContain("README.md\n---");
+		expect(res).toContain("CHANGELOG.md\n---");
+	});
+
+	it("should find and print a specific file based on the arguments (xml)", async () => {
+		const search = new Search({
+			...defaultFlags,
+			foldersBlacklist: /node_modules/gi,
+			boring: true,
+			path: `${process.cwd()}`,
+			pattern: "README.md",
+			short: true,
+			stats: false,
+			type: "f",
+			printMode: "xml",
+		});
+		const res = await search.start(true);
+		expect(res).toContain("<source>./README.md</source>");
+	});
+});
