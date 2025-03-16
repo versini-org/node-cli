@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/versini-org/node-cli/compare/search-v1.2.0...search-v1.2.1) (2025-03-16)
+
+
+### Bug Fixes
+
+* **Search:** relative path for file/dir name is invalid ([#377](https://github.com/versini-org/node-cli/issues/377)) ([5174826](https://github.com/versini-org/node-cli/commit/5174826f8dec8195de8d22b8a225fa88b42a681f))
+
 ## [1.2.0](https://github.com/versini-org/node-cli/compare/search-v1.1.1...search-v1.2.0) (2025-03-16)
 
 
