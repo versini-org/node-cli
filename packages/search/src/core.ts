@@ -129,6 +129,75 @@ export class Search {
 		return value[0] !== ".";
 	}
 
+	isBinaryFileExtension(filePath: string): boolean {
+		const ext = extname(filePath).toLowerCase().replace(/^\./, "");
+
+		// If there's no extension, assume it's binary
+		/* istanbul ignore if */
+		if (!ext) {
+			return true;
+		}
+
+		const binaryExtensions = [
+			// Executables and compiled code
+			"exe",
+			"dll",
+			"so",
+			"dylib",
+			"bin",
+			"obj",
+			"o",
+			// Compressed files
+			"zip",
+			"tar",
+			"gz",
+			"rar",
+			"7z",
+			"jar",
+			"war",
+			// Media files
+			"jpg",
+			"jpeg",
+			"png",
+			"gif",
+			"bmp",
+			"ico",
+			"tif",
+			"tiff",
+			"mp3",
+			"mp4",
+			"avi",
+			"mov",
+			"wmv",
+			"flv",
+			"wav",
+			"ogg",
+			// Document formats
+			"pdf",
+			"doc",
+			"docx",
+			"xls",
+			"xlsx",
+			"ppt",
+			"pptx",
+			// Database files
+			"db",
+			"sqlite",
+			"mdb",
+			// Other binary formats
+			"class",
+			"pyc",
+			"pyd",
+			"pyo",
+			"woff",
+			"woff2",
+			"ttf",
+			"otf",
+		];
+
+		return binaryExtensions.includes(ext);
+	}
+
 	async start(returnResults = false) {
 		if (this.displayStats) {
 			perf.start();
@@ -224,6 +293,11 @@ export class Search {
 
 	async readFileContent(filePath: string): Promise<string> {
 		try {
+			// Check if it's a known binary extension
+			/* istanbul ignore if */
+			if (this.isBinaryFileExtension(filePath)) {
+				return "[Binary file]";
+			}
 			const content = await readFileAsync(filePath, "utf8");
 			return content;
 		} catch (error) {
