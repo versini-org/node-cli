@@ -1,4 +1,5 @@
 import { basename, extname, join, relative } from "node:path";
+
 import { GitIgnoreHandler } from "./gitIgnoreHandler.js";
 import {
 	STR_TYPE_BOTH,
