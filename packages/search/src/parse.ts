@@ -113,6 +113,11 @@ export const config: Configuration = parser({
 			description: "Print mode (simple or xml)",
 			type: "string",
 		},
+		ignoreGitIgnore: {
+			description: "Ignore .gitignore files",
+			default: defaultFlags.ignoreGitIgnore,
+			type: "boolean",
+		},
 	},
 	parameters: {
 		path: {
