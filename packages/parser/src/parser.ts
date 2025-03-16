@@ -9,6 +9,7 @@ type Flags = {
 		default?: string | number | boolean;
 		description: string;
 		type: string;
+		isMultiple?: boolean;
 	};
 };
 type Parameters = {

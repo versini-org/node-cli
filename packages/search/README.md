@@ -23,6 +23,12 @@ Find all files with the extension ".jsx" in the "src" folder
 > search --type f --pattern ".jsx$" src/
 ```
 
+Find all files without the extension "jsx" or "md" in the "src" folder
+
+```sh
+> search --type f --ignore "jsx" --ignore "md" src/
+```
+
 Change the permissions to executable for all the files with the extension ".sh" found under the "bin" folder
 
 ```sh

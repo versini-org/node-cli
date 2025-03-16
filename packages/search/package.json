@@ -19,6 +19,7 @@
 		"lint": "biome lint src",
 		"test": "cross-env-shell NODE_OPTIONS=--experimental-vm-modules TZ=UTC jest",
 		"test:coverage": "npm run test -- --coverage",
+		"test:watch": "npm run test -- --watch",
 		"watch": "swc --strip-leading-paths --watch --out-dir dist src"
 	},
 	"dependencies": {

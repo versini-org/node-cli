@@ -4,6 +4,7 @@ export const defaultFlags = {
 	ignoreCase: false,
 	short: false,
 	stats: false,
+	ignore: [],
 };
 
 export const defaultParameters = {

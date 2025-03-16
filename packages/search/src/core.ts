@@ -1,4 +1,4 @@
-import { basename, join, relative } from "node:path";
+import { basename, extname, join, relative } from "node:path";
 import {
 	STR_TYPE_BOTH,
 	STR_TYPE_DIRECTORY,
@@ -40,6 +40,7 @@ export class Search {
 	totalFileFound?: number;
 	totalFileScanned?: number;
 	type?: string;
+	ignoreExtensions?: string[];
 
 	constructor({
 		boring,
@@ -53,6 +54,7 @@ export class Search {
 		pattern,
 		stats,
 		type,
+		ignore,
 	}: {
 		boring?: boolean;
 		command?: string;
@@ -65,6 +67,7 @@ export class Search {
 		pattern?: string;
 		stats?: boolean;
 		type?: string;
+		ignore?: string[];
 	}) {
 		this.path = path;
 		this.rePattern = pattern
@@ -83,6 +86,7 @@ export class Search {
 		this.totalDirFound = 0;
 		this.totalFileFound = 0;
 		this.command = command ? command.trim() : undefined;
+		this.ignoreExtensions = ignore.map((ext) => ext.toLowerCase());
 		try {
 			this.grep = grep ? new RegExp(grep, ignoreCase ? "gi" : "g") : undefined;
 		} catch (error) {
@@ -95,6 +99,15 @@ export class Search {
 	ignoreFolders(directory: string) {
 		this.foldersBlacklist.lastIndex = 0;
 		return this.foldersBlacklist.test(basename(directory));
+	}
+
+	shouldIgnoreFile(filePath: string) {
+		if (!this.ignoreExtensions || this.ignoreExtensions.length === 0) {
+			return false;
+		}
+
+		const extension = extname(filePath).toLowerCase().replace(/^\./, "");
+		return this.ignoreExtensions.includes(extension);
 	}
 
 	filterHidden(value: string[] | string) {
@@ -166,6 +179,11 @@ export class Search {
 					// nothing to declare
 				}
 			} else if (stat && stat.isFile()) {
+				// Skip files with ignored extensions
+				if (this.shouldIgnoreFile(node)) {
+					continue;
+				}
+
 				this.totalFileScanned++;
 				shortname = basename(node);
 				const patternResult = checkPattern(this.rePattern, shortname);
