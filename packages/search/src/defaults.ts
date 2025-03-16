@@ -5,6 +5,7 @@ export const defaultFlags = {
 	short: false,
 	stats: false,
 	ignore: [],
+	ignoreGitIgnore: false,
 };
 
 export const defaultParameters = {

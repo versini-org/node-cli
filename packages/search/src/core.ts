@@ -1,4 +1,5 @@
 import { basename, extname, join, relative } from "node:path";
+import { GitIgnoreHandler } from "./gitIgnoreHandler.js";
 import {
 	STR_TYPE_BOTH,
 	STR_TYPE_DIRECTORY,
@@ -43,6 +44,8 @@ export class Search {
 	type?: string;
 	ignoreExtensions?: string[];
 	printMode?: string;
+	gitIgnoreHandler: GitIgnoreHandler;
+	ignoreGitIgnore?: boolean;
 
 	constructor({
 		boring,
@@ -58,6 +61,7 @@ export class Search {
 		type,
 		ignore,
 		printMode,
+		ignoreGitIgnore,
 	}: {
 		boring?: boolean;
 		command?: string;
@@ -72,6 +76,7 @@ export class Search {
 		type?: string;
 		ignore?: string[];
 		printMode?: string;
+		ignoreGitIgnore?: boolean;
 	}) {
 		this.path = path;
 		this.rePattern = pattern
@@ -92,6 +97,8 @@ export class Search {
 		this.command = command ? command.trim() : undefined;
 		this.ignoreExtensions = ignore.map((ext) => ext.toLowerCase());
 		this.printMode = printMode;
+		this.ignoreGitIgnore = ignoreGitIgnore;
+		this.gitIgnoreHandler = new GitIgnoreHandler();
 		try {
 			this.grep = grep ? new RegExp(grep, ignoreCase ? "gi" : "g") : undefined;
 		} catch (error) {
@@ -156,7 +163,15 @@ export class Search {
 				// ignore read permission denied errors silently...
 			}
 
-			if (stat && stat.isDirectory() && !this.ignoreFolders(node)) {
+			const isDirectory = stat && stat.isDirectory();
+			const isFile = stat && stat.isFile();
+
+			// Add this check to respect .gitignore patterns
+			if (await this.shouldIgnoreByGitIgnore(node, isDirectory)) {
+				continue;
+			}
+
+			if (isDirectory && !this.ignoreFolders(node)) {
 				this.totalDirScanned++;
 
 				result = checkPattern(this.rePattern, node);
@@ -183,7 +198,7 @@ export class Search {
 				} catch {
 					// nothing to declare
 				}
-			} else if (stat && stat.isFile()) {
+			} else if (isFile) {
 				// Skip files with ignored extensions
 				if (this.shouldIgnoreFile(node)) {
 					continue;
@@ -250,6 +265,17 @@ export class Search {
 
 			logger.log("</documents>");
 		}
+	}
+
+	async shouldIgnoreByGitIgnore(
+		nodePath: string,
+		isDirectory: boolean,
+	): Promise<boolean> {
+		/* istanbul ignore if */
+		if (this.ignoreGitIgnore) {
+			return false;
+		}
+		return this.gitIgnoreHandler.isIgnored(nodePath, isDirectory);
 	}
 
 	async postProcessResults() {
