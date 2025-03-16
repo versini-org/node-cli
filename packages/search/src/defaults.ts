@@ -4,7 +4,7 @@ export const defaultFlags = {
 	ignoreCase: false,
 	short: false,
 	stats: false,
-	ignore: [],
+	ignoreExtension: [],
 	ignoreGitIgnore: false,
 };
 

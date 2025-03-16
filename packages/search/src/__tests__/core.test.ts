@@ -192,7 +192,7 @@ describe("when testing for utilities with logging side-effects", () => {
 			short: true,
 			stats: true,
 			type: "f",
-			ignore: ["json"],
+			ignoreExtension: ["json"],
 		});
 		await search.start();
 		expect(mockLog).toHaveBeenCalledWith(expect.stringContaining("Duration: "));
