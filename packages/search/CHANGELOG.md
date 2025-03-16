@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.0](https://github.com/versini-org/node-cli/compare/search-v1.0.8...search-v1.1.0) (2025-03-16)
+
+
+### Features
+
+* **search:** adding ignore flag allowing ignoring some files ([#370](https://github.com/versini-org/node-cli/issues/370)) ([637f4c5](https://github.com/versini-org/node-cli/commit/637f4c568d22634aeba2e7a878abbdab0c1a0973))
+* **Search:** adding print modes ([#371](https://github.com/versini-org/node-cli/issues/371)) ([b9bab3e](https://github.com/versini-org/node-cli/commit/b9bab3e09f07aba3935424f917b00dec7cec54c1))
+* **Search:** adding support for taking gitignore files into account ([#372](https://github.com/versini-org/node-cli/issues/372)) ([cd2b745](https://github.com/versini-org/node-cli/commit/cd2b745064da58175e2c3cc03c37df3393ae8a42))
+
+
+### Bug Fixes
+
+* **search:** if a file contains "undefined" in its name search breaks ([#368](https://github.com/versini-org/node-cli/issues/368)) ([4220020](https://github.com/versini-org/node-cli/commit/4220020a4ae693f8d6f61b182add4e8b3dbedd8e))
+
 ## [1.0.8](https://github.com/versini-org/node-cli/compare/search-v1.0.7...search-v1.0.8) (2024-11-18)
 
 
