@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/versini-org/node-cli/compare/search-v1.1.0...search-v1.1.1) (2025-03-16)
+
+
+### Bug Fixes
+
+* **Search:** allowing search to be called programmatically ([#373](https://github.com/versini-org/node-cli/issues/373)) ([9d09ab6](https://github.com/versini-org/node-cli/commit/9d09ab618660d00b13bd75ff509265741ffc6c0d))
+
 ## [1.1.0](https://github.com/versini-org/node-cli/compare/search-v1.0.8...search-v1.1.0) (2025-03-16)
 
 
