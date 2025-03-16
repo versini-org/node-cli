@@ -49,16 +49,16 @@ export class Search {
 	ignoreGitIgnore?: boolean;
 
 	constructor({
-		boring = false,
+		boring,
 		command,
-		dot = false,
+		dot,
 		foldersBlacklist,
 		grep,
-		ignoreCase = false,
-		short = false,
+		ignoreCase,
+		short,
 		path,
 		pattern,
-		stats = false,
+		stats,
 		type,
 		ignoreExtension = [],
 		printMode,
