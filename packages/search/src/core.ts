@@ -240,7 +240,7 @@ export class Search {
 		let results = "";
 		if (this.printMode === "simple") {
 			for (const node of fileNodes) {
-				const relativePath = relative(process.cwd(), node.name);
+				const relativePath = relative(this.path, node.name);
 				if (returnResults) {
 					results += `---\n./${relativePath}\n---\n`;
 				} else {
@@ -270,7 +270,7 @@ export class Search {
 
 			for (let i = 0; i < fileNodes.length; i++) {
 				const node = fileNodes[i];
-				const relativePath = relative(process.cwd(), node.name);
+				const relativePath = relative(this.path, node.name);
 				const content = await this.readFileContent(node.name);
 
 				if (returnResults) {
@@ -360,7 +360,7 @@ export class Search {
 				}
 
 				const color = node.type === STR_TYPE_FILE ? kleur.gray : kleur.blue;
-				name = relative(process.cwd(), node.name);
+				name = relative(this.path, node.name);
 
 				if (node.match) {
 					const matchStr = String(node.match); // Ensure match is a string
