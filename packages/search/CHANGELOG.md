@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/versini-org/node-cli/compare/search-v1.1.1...search-v1.2.0) (2025-03-16)
+
+
+### Features
+
+* allowing to return data instead of print to stdio ([#375](https://github.com/versini-org/node-cli/issues/375)) ([ef2dc9a](https://github.com/versini-org/node-cli/commit/ef2dc9a6cd7048b88e59da018b6976b523307cc3))
+
 ## [1.1.1](https://github.com/versini-org/node-cli/compare/search-v1.1.0...search-v1.1.1) (2025-03-16)
 
 
