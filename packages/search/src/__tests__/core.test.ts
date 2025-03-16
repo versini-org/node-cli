@@ -111,6 +111,57 @@ describe("when testing for utilities with logging side-effects", () => {
 		);
 	});
 
+	it("should find and print specific files based on the arguments (md, simple)", async () => {
+		const search = new Search({
+			...defaultFlags,
+			foldersBlacklist: /node_modules/gi,
+			boring: true,
+			path: `${process.cwd()}`,
+			pattern: ".md",
+			short: true,
+			stats: true,
+			type: "f",
+			printMode: "simple",
+		});
+		await search.start();
+		expect(mockLog).toHaveBeenCalledWith(
+			expect.stringContaining("---\n./README.md\n---"),
+		);
+		expect(mockLog).toHaveBeenCalledWith(
+			expect.stringContaining("Search is a command line tool that can"),
+		);
+	});
+
+	it("should find and print a specific file based on the arguments (xml)", async () => {
+		const search = new Search({
+			...defaultFlags,
+			foldersBlacklist: /node_modules/gi,
+			boring: true,
+			path: `${process.cwd()}`,
+			pattern: "README.md",
+			short: true,
+			stats: true,
+			type: "f",
+			printMode: "xml",
+		});
+		await search.start();
+		expect(mockLog).toHaveBeenCalledWith(
+			expect.stringContaining("<documents>"),
+		);
+		expect(mockLog).toHaveBeenCalledWith(
+			expect.stringContaining('<document index="1">'),
+		);
+		expect(mockLog).toHaveBeenCalledWith(
+			expect.stringContaining("<source>./README.md</source>"),
+		);
+		expect(mockLog).toHaveBeenCalledWith(
+			expect.stringContaining("<document_content>"),
+		);
+		expect(mockLog).toHaveBeenCalledWith(
+			expect.stringContaining("</documents>"),
+		);
+	});
+
 	it("should find and list all files based on the arguments", async () => {
 		const search = new Search({
 			...defaultFlags,
