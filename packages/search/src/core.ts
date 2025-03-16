@@ -129,12 +129,12 @@ export class Search {
 		return value[0] !== ".";
 	}
 
-	async start() {
+	async start(returnResults = false) {
 		if (this.displayStats) {
 			perf.start();
 		}
 		await this.scanFileSystem([this.path]);
-		await this.postProcessResults();
+		const results = await this.postProcessResults(returnResults);
 
 		if (this.displayStats) {
 			perf.stop();
@@ -149,6 +149,7 @@ export class Search {
 				type: this.type,
 			});
 		}
+		return returnResults ? results : undefined;
 	}
 
 	async scanFileSystem(nodes: string[]) {
@@ -231,40 +232,71 @@ export class Search {
 		}
 	}
 
-	async printFilesContent() {
+	async printFilesContent(returnResults: boolean) {
 		const fileNodes = this.nodesList.filter(
 			(node) => node.type === STR_TYPE_FILE,
 		);
 
+		let results = "";
 		if (this.printMode === "simple") {
 			for (const node of fileNodes) {
 				const relativePath = relative(process.cwd(), node.name);
-				logger.log(`---\n./${relativePath}\n---`);
+				if (returnResults) {
+					results += `---\n./${relativePath}\n---\n`;
+				} else {
+					logger.log(`---\n./${relativePath}\n---`);
+				}
 				const content = await this.readFileContent(node.name);
-				logger.log(content);
+				if (returnResults) {
+					results += `${content}\n`;
+				} else {
+					logger.log(content);
+				}
 				// adding a new line after each file content except the last one
 				if (node !== fileNodes[fileNodes.length - 1]) {
-					logger.log("");
+					if (returnResults) {
+						results += "\n";
+					} else {
+						logger.log("");
+					}
 				}
 			}
 		} else if (this.printMode === "xml") {
-			logger.log("<documents>");
+			if (returnResults) {
+				results += "<documents>\n";
+			} else {
+				logger.log("<documents>");
+			}
 
 			for (let i = 0; i < fileNodes.length; i++) {
 				const node = fileNodes[i];
 				const relativePath = relative(process.cwd(), node.name);
 				const content = await this.readFileContent(node.name);
 
-				logger.log(`<document index="${i + 1}">`);
-				logger.log(`<source>./${relativePath}</source>`);
-				logger.log("<document_content>");
-				logger.log(content);
-				logger.log("</document_content>");
-				logger.log("</document>");
+				if (returnResults) {
+					results += `<document index="${i + 1}">\n`;
+					results += `<source>./${relativePath}</source>\n`;
+					results += "<document_content>\n";
+					results += `${content}\n`;
+					results += "</document_content>\n";
+					results += "</document>\n";
+				} else {
+					logger.log(`<document index="${i + 1}">`);
+					logger.log(`<source>./${relativePath}</source>`);
+					logger.log("<document_content>");
+					logger.log(content);
+					logger.log("</document_content>");
+					logger.log("</document>");
+				}
 			}
 
-			logger.log("</documents>");
+			if (returnResults) {
+				results += "</documents>";
+			} else {
+				logger.log("</documents>");
+			}
 		}
+		return results;
 	}
 
 	async shouldIgnoreByGitIgnore(
@@ -278,7 +310,7 @@ export class Search {
 		return this.gitIgnoreHandler.isIgnored(nodePath, isDirectory);
 	}
 
-	async postProcessResults() {
+	async postProcessResults(returnResults: boolean) {
 		/* istanbul ignore if */
 		if (!this.boring) {
 			logger.log();
@@ -295,8 +327,7 @@ export class Search {
 
 		// If printMode is enabled, handle file content printing and return
 		if (this.printMode && ["simple", "xml"].includes(this.printMode)) {
-			await this.printFilesContent();
-			return;
+			return await this.printFilesContent(returnResults);
 		}
 
 		for (const node of this.nodesList) {
@@ -349,6 +380,7 @@ export class Search {
 					if (totalMatchingLines) {
 						this.totalFileFound++;
 						const occurrences = plur("occurrence", totalMatchingLines);
+
 						logger.log(
 							` %s${separator}%s${separator}%s${separator}%s${separator}%s`,
 							list.mode.trim(),
