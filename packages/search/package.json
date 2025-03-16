@@ -8,9 +8,7 @@
 	"types": "./dist/index.d.ts",
 	"exports": "./dist/search.js",
 	"bin": "dist/search.js",
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"node": ">=16",
 	"scripts": {
 		"build": "npm-run-all --serial clean build:types build:js build:barrel",
@@ -28,7 +26,7 @@
 		"@node-cli/parser": "workspace:../parser",
 		"@node-cli/perf": "workspace:../perf",
 		"@node-cli/run": "workspace:../run",
-		"fs-extra": "11.2.0",
+		"fs-extra": "11.3.0",
 		"kleur": "4.1.5",
 		"plur": "5.1.0",
 		"pretty-ms": "9.2.0"

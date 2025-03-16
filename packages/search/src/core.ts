@@ -229,8 +229,15 @@ export class Search {
 
 				const color = node.type === STR_TYPE_FILE ? kleur.gray : kleur.blue;
 				name = relative(process.cwd(), node.name);
-				const match = node.match ? new RegExp(node.match, "g") : node.match;
-				name = color(name.replace(match, kleur.black().bgYellow(node.match)));
+
+				if (node.match) {
+					const matchStr = String(node.match); // Ensure match is a string
+					const match = new RegExp(matchStr, "g");
+					const highlightedMatch = kleur.black().bgYellow(matchStr);
+					name = color(name.replace(match, highlightedMatch));
+				} else {
+					name = color(name);
+				}
 
 				if (this.grep && node.type === STR_TYPE_FILE) {
 					const { totalMatchingLines, results } = await runGrepOnNode(
