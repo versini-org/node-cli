@@ -19,6 +19,7 @@ import plur from "plur";
 
 const lstatAsync = promisify(fs.lstat);
 const readdirAsync = promisify(fs.readdir);
+const readFileAsync = promisify(fs.readFile);
 const perf = new Performance();
 const logger = new Logger({
 	boring: process.env.NODE_ENV === "test",
@@ -41,6 +42,7 @@ export class Search {
 	totalFileScanned?: number;
 	type?: string;
 	ignoreExtensions?: string[];
+	printMode?: string;
 
 	constructor({
 		boring,
@@ -55,6 +57,7 @@ export class Search {
 		stats,
 		type,
 		ignore,
+		printMode,
 	}: {
 		boring?: boolean;
 		command?: string;
@@ -68,6 +71,7 @@ export class Search {
 		stats?: boolean;
 		type?: string;
 		ignore?: string[];
+		printMode?: string;
 	}) {
 		this.path = path;
 		this.rePattern = pattern
@@ -87,6 +91,7 @@ export class Search {
 		this.totalFileFound = 0;
 		this.command = command ? command.trim() : undefined;
 		this.ignoreExtensions = ignore.map((ext) => ext.toLowerCase());
+		this.printMode = printMode;
 		try {
 			this.grep = grep ? new RegExp(grep, ignoreCase ? "gi" : "g") : undefined;
 		} catch (error) {
@@ -201,6 +206,52 @@ export class Search {
 		}
 	}
 
+	async readFileContent(filePath: string): Promise<string> {
+		try {
+			const content = await readFileAsync(filePath, "utf8");
+			return content;
+		} catch (error) {
+			/* istanbul ignore next */
+			return `Error reading file: ${error.message}`;
+		}
+	}
+
+	async printFilesContent() {
+		const fileNodes = this.nodesList.filter(
+			(node) => node.type === STR_TYPE_FILE,
+		);
+
+		if (this.printMode === "simple") {
+			for (const node of fileNodes) {
+				const relativePath = relative(process.cwd(), node.name);
+				logger.log(`---\n./${relativePath}\n---`);
+				const content = await this.readFileContent(node.name);
+				logger.log(content);
+				// adding a new line after each file content except the last one
+				if (node !== fileNodes[fileNodes.length - 1]) {
+					logger.log("");
+				}
+			}
+		} else if (this.printMode === "xml") {
+			logger.log("<documents>");
+
+			for (let i = 0; i < fileNodes.length; i++) {
+				const node = fileNodes[i];
+				const relativePath = relative(process.cwd(), node.name);
+				const content = await this.readFileContent(node.name);
+
+				logger.log(`<document index="${i + 1}">`);
+				logger.log(`<source>./${relativePath}</source>`);
+				logger.log("<document_content>");
+				logger.log(content);
+				logger.log("</document_content>");
+				logger.log("</document>");
+			}
+
+			logger.log("</documents>");
+		}
+	}
+
 	async postProcessResults() {
 		/* istanbul ignore if */
 		if (!this.boring) {
@@ -214,6 +265,12 @@ export class Search {
 			 * pattern (in the file name).
 			 */
 			this.totalFileFound = 0;
+		}
+
+		// If printMode is enabled, handle file content printing and return
+		if (this.printMode && ["simple", "xml"].includes(this.printMode)) {
+			await this.printFilesContent();
+			return;
 		}
 
 		for (const node of this.nodesList) {

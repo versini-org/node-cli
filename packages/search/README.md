@@ -41,6 +41,18 @@ Search in all the markdown files under the "src" folder for the keywords "Table 
 > search --type f --pattern ".md$" --grep "Table of Content"
 ```
 
+Find all files with the extension ".jsx" in the "src" folder and print their content
+
+```sh
+> search --type f --pattern ".jsx$" --printMode simple src/
+```
+
+Find all files with the extension ".jsx" in the "src" folder and print their content in a Claude XML format
+
+```sh
+> search --type f --pattern ".jsx$" --printMode xml src/
+```
+
 Get help
 
 ```sh

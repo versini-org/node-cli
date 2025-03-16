@@ -1,3 +1,4 @@
+import { print } from "kleur/colors";
 import { defaultFlags, defaultParameters } from "./defaults.js";
 
 import { parser } from "@node-cli/parser";
@@ -11,6 +12,7 @@ export type Flags = {
 	grep?: string;
 	type?: string;
 	ignore?: string[];
+	printMode?: string;
 };
 
 export type Parameters = {
@@ -105,6 +107,11 @@ export const config: Configuration = parser({
 			description: "Ignore files extensions",
 			type: "string",
 			isMultiple: true,
+		},
+		printMode: {
+			shortFlag: "P",
+			description: "Print mode (simple or xml)",
+			type: "string",
 		},
 	},
 	parameters: {
