@@ -6,6 +6,7 @@ on:
 
 env:
   COREPACK_ENABLE_STRICT: 0
+  COREPACK_INTEGRITY_KEYS: 0
 
 jobs:
   inspect:
