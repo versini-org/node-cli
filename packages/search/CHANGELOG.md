@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/versini-org/node-cli/compare/search-v1.2.1...search-v1.2.2) (2025-03-16)
+
+
+### Bug Fixes
+
+* **Search:** in printMode binary files content should not be displayed ([#379](https://github.com/versini-org/node-cli/issues/379)) ([ac289aa](https://github.com/versini-org/node-cli/commit/ac289aa76b7c4daf2b872b3c5aaf21a62fb1b760))
+
 ## [1.2.1](https://github.com/versini-org/node-cli/compare/search-v1.2.0...search-v1.2.1) (2025-03-16)
 
 
