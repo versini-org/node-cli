@@ -1,4 +1,5 @@
 import { basename, extname, join, relative } from "node:path";
+
 import { GitIgnoreHandler } from "./gitIgnoreHandler.js";
 import {
 	STR_TYPE_BOTH,
@@ -48,18 +49,18 @@ export class Search {
 	ignoreGitIgnore?: boolean;
 
 	constructor({
-		boring,
+		boring = false,
 		command,
-		dot,
+		dot = false,
 		foldersBlacklist,
 		grep,
-		ignoreCase,
-		short,
+		ignoreCase = false,
+		short = false,
 		path,
 		pattern,
-		stats,
+		stats = false,
 		type,
-		ignoreExtension,
+		ignoreExtension = [],
 		printMode,
 		ignoreGitIgnore,
 	}: {

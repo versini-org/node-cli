@@ -1,4 +1,3 @@
-import { print } from "kleur/colors";
 import { defaultFlags, defaultParameters } from "./defaults.js";
 
 import { parser } from "@node-cli/parser";
