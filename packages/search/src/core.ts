@@ -280,18 +280,6 @@ export class Search {
 					node.type === STR_TYPE_DIRECTORY) ||
 				this.type === STR_TYPE_BOTH
 			) {
-				// // If printMode is enabled and this is a file, print its content
-				// if (this.printMode && node.type === STR_TYPE_FILE) {
-				// 	const relativePath = relative(process.cwd(), node.name);
-				// 	logger.log(`---\n./${relativePath}\n---`);
-				// 	const content = await this.readFileContent(node.name);
-				// 	logger.log(content);
-				// 	if (node !== this.nodesList[this.nodesList.length - 1]) {
-				// 		logger.log("");
-				// 	}
-				// 	continue;
-				// }
-
 				let list: {
 						group?: string;
 						mdate?: string;
