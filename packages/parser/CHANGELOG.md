@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.0](https://github.com/versini-org/node-cli/compare/parser-v2.3.4...parser-v2.4.0) (2025-03-16)
+
+
+### Features
+
+* **search:** adding ignore flag allowing ignoring some files ([#370](https://github.com/versini-org/node-cli/issues/370)) ([637f4c5](https://github.com/versini-org/node-cli/commit/637f4c568d22634aeba2e7a878abbdab0c1a0973))
+
 ## [2.3.4](https://github.com/aversini/node-cli/compare/parser-v2.3.3...parser-v2.3.4) (2024-05-13)
 
 
