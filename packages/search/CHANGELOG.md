@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/versini-org/node-cli/compare/search-v2.0.1...search-v3.0.0) (2025-03-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* **Search:** foldersBlacklist is not available anymore
+
+### Features
+
+* **Search:** replacing hidden option foldersBlacklist with ignoreFolder ([#387](https://github.com/versini-org/node-cli/issues/387)) ([87b4e72](https://github.com/versini-org/node-cli/commit/87b4e725a9dadea1ab9e2aefcfca55ff0ed6d4f0))
+
 ## [2.0.1](https://github.com/versini-org/node-cli/compare/search-v2.0.0...search-v2.0.1) (2025-03-17)
 
 
