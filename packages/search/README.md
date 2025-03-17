@@ -24,6 +24,14 @@ npm install --global @node-cli/search
 
 ## Command Line Usage
 
+### Help
+
+To get help about available options and usage, run:
+
+```sh
+search --help
+```
+
 ### Basic Examples
 
 **Find all files with the extension ".jsx" in the "src" folder:**
