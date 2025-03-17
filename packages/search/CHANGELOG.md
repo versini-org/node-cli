@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/versini-org/node-cli/compare/search-v2.0.0...search-v2.0.1) (2025-03-17)
+
+
+### Bug Fixes
+
+* **Search:** better ignoreExtension option allowing "min.js" pattern ([#385](https://github.com/versini-org/node-cli/issues/385)) ([929b674](https://github.com/versini-org/node-cli/commit/929b67447a57051c30c57a5c858f3650660433db))
+
 ## [2.0.0](https://github.com/versini-org/node-cli/compare/search-v1.2.2...search-v2.0.0) (2025-03-17)
 
 
