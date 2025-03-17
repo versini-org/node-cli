@@ -44,6 +44,7 @@ export class Search {
 	totalFileScanned?: number;
 	type?: string;
 	ignoreExtensions?: string[];
+	ignoreFiles?: string[];
 	printMode?: string;
 	gitIgnoreHandler: GitIgnoreHandler;
 	ignoreGitIgnore?: boolean;
@@ -61,6 +62,7 @@ export class Search {
 		stats,
 		type,
 		ignoreExtension,
+		ignoreFile,
 		printMode,
 		ignoreGitIgnore,
 	}: {
@@ -76,6 +78,7 @@ export class Search {
 		stats?: boolean;
 		type?: string;
 		ignoreExtension?: string[];
+		ignoreFile?: string[];
 		printMode?: string;
 		ignoreGitIgnore?: boolean;
 	}) {
@@ -97,6 +100,7 @@ export class Search {
 		this.totalFileFound = 0;
 		this.command = command ? command.trim() : undefined;
 		this.ignoreExtensions = ignoreExtension.map((ext) => ext.toLowerCase());
+		this.ignoreFiles = ignoreFile || [];
 		this.printMode = printMode;
 		this.ignoreGitIgnore = ignoreGitIgnore;
 		this.gitIgnoreHandler = new GitIgnoreHandler();
@@ -115,6 +119,13 @@ export class Search {
 	}
 
 	shouldIgnoreFile(filePath: string) {
+		// First check if the file is in the ignoreFiles list
+		const filename = basename(filePath);
+		if (this.ignoreFiles && this.ignoreFiles.includes(filename)) {
+			return true;
+		}
+
+		// Then check if the extension should be ignored
 		if (!this.ignoreExtensions || this.ignoreExtensions.length === 0) {
 			return false;
 		}

@@ -183,6 +183,30 @@ describe("when testing for utilities with logging side-effects", () => {
 		);
 	});
 
+	it("should find and list all files based on the arguments including ignoreFile", async () => {
+		const search = new Search({
+			...defaultFlags,
+			foldersBlacklist: /node_modules/gi,
+			boring: true,
+			path: `${process.cwd()}`,
+			short: true,
+			stats: true,
+			type: "f",
+			ignoreFile: ["README.md"],
+		});
+		await search.start();
+		expect(mockLog).toHaveBeenCalledWith(expect.stringContaining("Duration: "));
+		expect(mockLog).not.toHaveBeenCalledWith(
+			expect.stringContaining("README.md"),
+		);
+		expect(mockLog).toHaveBeenCalledWith(
+			expect.stringContaining("CHANGELOG.md"),
+		);
+		expect(mockLog).toHaveBeenCalledWith(
+			expect.stringContaining("package.json"),
+		);
+	});
+
 	it("should find and list all files expect json ones", async () => {
 		const search = new Search({
 			...defaultFlags,
