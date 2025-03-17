@@ -157,7 +157,9 @@ describe("when testing for utilities with logging side-effects", () => {
 			expect.stringContaining("---\n./README.md\n---"),
 		);
 		expect(mockLog).toHaveBeenCalledWith(
-			expect.stringContaining("Search is a command line tool that can"),
+			expect.stringContaining(
+				"A powerful and flexible command line tool for searching files and directories with advanced filtering capabilities",
+			),
 		);
 	});
 
@@ -366,14 +368,14 @@ describe("when testing for utilities with logging side-effects", () => {
 			pattern: "README.md",
 			short: true,
 			stats: true,
-			grep: "^# Node CLI",
+			grep: "^# @node-cli/search",
 		};
 
 		const search = new Search(config);
 		await search.start();
 		expect(mockLog).toHaveBeenCalledWith(" README.md (1 occurrence)");
 		expect(mockLog).toHaveBeenCalledWith(
-			expect.stringContaining("# Node CLI search package"),
+			expect.stringContaining("# @node-cli/search"),
 		);
 		expect(mockLog).toHaveBeenCalledWith(
 			expect.stringContaining("Total files matching: 1"),
