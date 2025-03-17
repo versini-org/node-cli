@@ -33,7 +33,6 @@ export class Search {
 	displayHiddenFilesAndFolders?: boolean;
 	displayLongListing?: boolean;
 	displayStats?: boolean;
-	foldersBlacklist?: RegExp;
 	grep?: RegExp;
 	nodesList?: any[];
 	path?: string;
@@ -45,6 +44,7 @@ export class Search {
 	type?: string;
 	ignoreExtensions?: string[];
 	ignoreFiles?: string[];
+	ignoreFolders?: string[];
 	printMode?: string;
 	gitIgnoreHandler: GitIgnoreHandler;
 	ignoreGitIgnore?: boolean;
@@ -53,7 +53,6 @@ export class Search {
 		boring,
 		command,
 		dot,
-		foldersBlacklist,
 		grep,
 		ignoreCase,
 		short,
@@ -63,13 +62,13 @@ export class Search {
 		type,
 		ignoreExtension,
 		ignoreFile,
+		ignoreFolder,
 		printMode,
 		ignoreGitIgnore,
 	}: {
 		boring?: boolean;
 		command?: string;
 		dot?: boolean;
-		foldersBlacklist?: RegExp;
 		grep?: string | RegExp;
 		ignoreCase?: boolean;
 		short?: boolean;
@@ -79,6 +78,7 @@ export class Search {
 		type?: string;
 		ignoreExtension?: string[];
 		ignoreFile?: string[];
+		ignoreFolder?: string[];
 		printMode?: string;
 		ignoreGitIgnore?: boolean;
 	}) {
@@ -93,14 +93,16 @@ export class Search {
 		this.displayStats = stats;
 		this.displayHiddenFilesAndFolders = dot;
 		this.nodesList = [];
-		this.foldersBlacklist = foldersBlacklist;
 		this.totalDirScanned = 0;
 		this.totalFileScanned = 0;
 		this.totalDirFound = 0;
 		this.totalFileFound = 0;
 		this.command = command ? command.trim() : undefined;
-		this.ignoreExtensions = ignoreExtension.map((ext) => ext.toLowerCase());
+		this.ignoreExtensions =
+			(ignoreExtension && ignoreExtension.map((ext) => ext.toLowerCase())) ||
+			[];
 		this.ignoreFiles = ignoreFile || [];
+		this.ignoreFolders = ignoreFolder || [];
 		this.printMode = printMode;
 		this.ignoreGitIgnore = ignoreGitIgnore;
 		this.gitIgnoreHandler = new GitIgnoreHandler();
@@ -108,14 +110,17 @@ export class Search {
 			this.grep = grep ? new RegExp(grep, ignoreCase ? "gi" : "g") : undefined;
 		} catch (error) {
 			logger.error(error);
-			// eslint-disable-next-line unicorn/no-process-exit
 			process.exit(1);
 		}
 	}
 
-	ignoreFolders(directory: string) {
-		this.foldersBlacklist.lastIndex = 0;
-		return this.foldersBlacklist.test(basename(directory));
+	shouldIgnoreFolder(directory: string) {
+		const folderName = basename(directory);
+		// Check for exact folder name match
+		if (this.ignoreFolders && this.ignoreFolders.includes(folderName)) {
+			return true;
+		}
+		return false;
 	}
 
 	shouldIgnoreFile(filePath: string) {
@@ -272,7 +277,7 @@ export class Search {
 				continue;
 			}
 
-			if (isDirectory && !this.ignoreFolders(node)) {
+			if (isDirectory && !this.shouldIgnoreFolder(node)) {
 				this.totalDirScanned++;
 
 				result = checkPattern(this.rePattern, node);

@@ -103,13 +103,19 @@ export const config: Configuration = parser({
 		},
 		ignoreExtension: {
 			shortFlag: "I",
-			description: "Ignore files extensions",
+			description: "Ignore files extension, can be used multiple times",
 			type: "string",
 			isMultiple: true,
 		},
 		ignoreFile: {
 			shortFlag: "F",
-			description: "Ignore files names",
+			description: "Ignore files name, can be used multiple times",
+			type: "string",
+			isMultiple: true,
+		},
+		ignoreFolder: {
+			shortFlag: "D",
+			description: "Ignore folders name, can be used multiple times",
 			type: "string",
 			isMultiple: true,
 		},

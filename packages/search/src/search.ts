@@ -29,7 +29,6 @@ if (config.flags.grep) {
 const search = new Search({
 	...config.flags,
 	path: customPath,
-	foldersBlacklist: /node_modules/gi,
 });
 
 await search.start();

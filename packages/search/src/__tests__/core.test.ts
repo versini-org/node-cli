@@ -62,7 +62,6 @@ describe("when testing for utilities with logging side-effects", () => {
 	it("should find and list a specific folder based on the arguments", async () => {
 		const search = new Search({
 			...defaultFlags,
-			foldersBlacklist: /node_modules/gi,
 			boring: true,
 			path: `${process.cwd()}`,
 			pattern: "__tests__$",
@@ -77,7 +76,6 @@ describe("when testing for utilities with logging side-effects", () => {
 	it("should find and list details for a folder based on the arguments", async () => {
 		const search = new Search({
 			...defaultFlags,
-			foldersBlacklist: /node_modules/gi,
 			boring: true,
 			path: `${process.cwd()}`,
 			pattern: "__tests__$",
@@ -92,10 +90,42 @@ describe("when testing for utilities with logging side-effects", () => {
 		);
 	});
 
+	it("should find and list all folders based on the arguments", async () => {
+		const search = new Search({
+			...defaultFlags,
+			boring: true,
+			path: `${process.cwd()}`,
+			short: true,
+			stats: true,
+			type: "d",
+		});
+		await search.start();
+		expect(mockLog).toHaveBeenCalledWith(expect.stringContaining("src"));
+		expect(mockLog).not.toHaveBeenCalledWith(
+			expect.stringContaining("node_modules"),
+		);
+	});
+
+	it("should find and list all folders based on the arguments (ignore src)", async () => {
+		const search = new Search({
+			...defaultFlags,
+			boring: true,
+			path: `${process.cwd()}`,
+			short: true,
+			stats: true,
+			type: "d",
+			ignoreFolder: ["src"],
+		});
+		await search.start();
+		expect(mockLog).not.toHaveBeenCalledWith(expect.stringContaining("src"));
+		expect(mockLog).not.toHaveBeenCalledWith(
+			expect.stringContaining("node_modules"),
+		);
+	});
+
 	it("should find and list a specific file based on the arguments", async () => {
 		const search = new Search({
 			...defaultFlags,
-			foldersBlacklist: /node_modules/gi,
 			boring: true,
 			path: `${process.cwd()}`,
 			pattern: "README.md",
@@ -114,7 +144,6 @@ describe("when testing for utilities with logging side-effects", () => {
 	it("should find and print specific files based on the arguments (md, simple)", async () => {
 		const search = new Search({
 			...defaultFlags,
-			foldersBlacklist: /node_modules/gi,
 			boring: true,
 			path: `${process.cwd()}`,
 			pattern: ".md",
@@ -135,7 +164,6 @@ describe("when testing for utilities with logging side-effects", () => {
 	it("should find and print a specific file based on the arguments (xml)", async () => {
 		const search = new Search({
 			...defaultFlags,
-			foldersBlacklist: /node_modules/gi,
 			boring: true,
 			path: `${process.cwd()}`,
 			pattern: "README.md",
@@ -165,7 +193,6 @@ describe("when testing for utilities with logging side-effects", () => {
 	it("should find and list all files based on the arguments", async () => {
 		const search = new Search({
 			...defaultFlags,
-			foldersBlacklist: /node_modules/gi,
 			boring: true,
 			path: `${process.cwd()}`,
 			short: true,
@@ -186,7 +213,6 @@ describe("when testing for utilities with logging side-effects", () => {
 	it("should find and list all files based on the arguments including ignoreFile", async () => {
 		const search = new Search({
 			...defaultFlags,
-			foldersBlacklist: /node_modules/gi,
 			boring: true,
 			path: `${process.cwd()}`,
 			short: true,
@@ -210,7 +236,6 @@ describe("when testing for utilities with logging side-effects", () => {
 	it("should find and list all files expect json ones", async () => {
 		const search = new Search({
 			...defaultFlags,
-			foldersBlacklist: /node_modules/gi,
 			boring: true,
 			path: `${process.cwd()}`,
 			short: true,
@@ -232,7 +257,6 @@ describe("when testing for utilities with logging side-effects", () => {
 	it("should find and list all js files expect test ones", async () => {
 		const search = new Search({
 			...defaultFlags,
-			foldersBlacklist: /node_modules/gi,
 			boring: true,
 			path: `${process.cwd()}`,
 			short: true,
@@ -251,7 +275,6 @@ describe("when testing for utilities with logging side-effects", () => {
 	it("should find and list a hidden file based on the arguments", async () => {
 		const search = new Search({
 			...defaultFlags,
-			foldersBlacklist: /node_modules/gi,
 			boring: true,
 			dot: true,
 			path: `${process.cwd()}`,
@@ -268,7 +291,6 @@ describe("when testing for utilities with logging side-effects", () => {
 	it("should find and list files while ignoring the case based on the arguments", async () => {
 		const search = new Search({
 			...defaultFlags,
-			foldersBlacklist: /node_modules/gi,
 			boring: true,
 			ignoreCase: true,
 			path: `${process.cwd()}`,
@@ -286,7 +308,6 @@ describe("when testing for utilities with logging side-effects", () => {
 	it("should find and list all files and directories when there is no patterns or types provided", async () => {
 		const search = new Search({
 			...defaultFlags,
-			foldersBlacklist: /node_modules/gi,
 			boring: true,
 			path: `${process.cwd()}`,
 			short: true,
@@ -302,7 +323,6 @@ describe("when testing for utilities with logging side-effects", () => {
 	it("should run a command on the file that matches the pattern", async () => {
 		const config = {
 			...defaultFlags,
-			foldersBlacklist: /node_modules/gi,
 			boring: true,
 			path: `${process.cwd()}`,
 			pattern: "package.json",
@@ -322,7 +342,6 @@ describe("when testing for utilities with logging side-effects", () => {
 	it("should run a command on the file that matches the pattern but does not return anything", async () => {
 		const config = {
 			...defaultFlags,
-			foldersBlacklist: /node_modules/gi,
 			boring: true,
 			path: `${process.cwd()}`,
 			pattern: "package.json",
@@ -342,7 +361,6 @@ describe("when testing for utilities with logging side-effects", () => {
 	it("should grep some text on the file that matches the pattern", async () => {
 		const config = {
 			...defaultFlags,
-			foldersBlacklist: /node_modules/gi,
 			boring: true,
 			path: `${process.cwd()}`,
 			pattern: "README.md",
@@ -365,7 +383,6 @@ describe("when testing for utilities with logging side-effects", () => {
 	it("should grep some text on the file that matches the pattern", async () => {
 		const config = {
 			...defaultFlags,
-			foldersBlacklist: /node_modules/gi,
 			boring: true,
 			ignoreCase: true,
 			path: `${process.cwd()}`,
@@ -383,7 +400,6 @@ describe("when testing for utilities with logging side-effects", () => {
 	it("should exit in error if the grep pattern is invalid", async () => {
 		const config = {
 			...defaultFlags,
-			foldersBlacklist: /node_modules/gi,
 			boring: true,
 			path: `${process.cwd()}`,
 			pattern: "package.json",
@@ -403,7 +419,6 @@ describe("when testing for utilities with NO logging side-effects", () => {
 	it("should find and print specific files based on the arguments (md, simple)", async () => {
 		const search = new Search({
 			...defaultFlags,
-			foldersBlacklist: /node_modules/gi,
 			boring: true,
 			path: `${process.cwd()}`,
 			pattern: ".md",
@@ -420,7 +435,6 @@ describe("when testing for utilities with NO logging side-effects", () => {
 	it("should find and print a specific file based on the arguments (xml)", async () => {
 		const search = new Search({
 			...defaultFlags,
-			foldersBlacklist: /node_modules/gi,
 			boring: true,
 			path: `${process.cwd()}`,
 			pattern: "README.md",
