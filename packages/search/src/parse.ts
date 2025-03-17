@@ -107,6 +107,12 @@ export const config: Configuration = parser({
 			type: "string",
 			isMultiple: true,
 		},
+		ignoreFile: {
+			shortFlag: "F",
+			description: "Ignore files names",
+			type: "string",
+			isMultiple: true,
+		},
 		printMode: {
 			shortFlag: "P",
 			description: "Print mode (simple or xml)",
