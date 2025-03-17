@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.0.0](https://github.com/versini-org/node-cli/compare/search-v1.2.2...search-v2.0.0) (2025-03-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* **Search:** breaking change ([#383](https://github.com/versini-org/node-cli/issues/383))
+
+### Features
+
+* **Search:** adding ignoreFile option ([#384](https://github.com/versini-org/node-cli/issues/384)) ([74fa371](https://github.com/versini-org/node-cli/commit/74fa371d67c6048f378866e3b6f904a94d4ef43a))
+
+
+### Bug Fixes
+
+* **Search:** ! renamed ignore into ignoreExtension ([#381](https://github.com/versini-org/node-cli/issues/381)) ([6cbc75f](https://github.com/versini-org/node-cli/commit/6cbc75f33a6132f24bae790937484fba1c6437d2))
+* **Search:** breaking change ([#383](https://github.com/versini-org/node-cli/issues/383)) ([1069bc3](https://github.com/versini-org/node-cli/commit/1069bc3a7b03580cb4edd1bb4c4b3f2e20387070))
+
 ## [1.2.2](https://github.com/versini-org/node-cli/compare/search-v1.2.1...search-v1.2.2) (2025-03-16)
 
 
