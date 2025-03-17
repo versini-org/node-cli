@@ -229,6 +229,25 @@ describe("when testing for utilities with logging side-effects", () => {
 		);
 	});
 
+	it("should find and list all js files expect test ones", async () => {
+		const search = new Search({
+			...defaultFlags,
+			foldersBlacklist: /node_modules/gi,
+			boring: true,
+			path: `${process.cwd()}`,
+			short: true,
+			stats: true,
+			type: "f",
+			ignoreExtension: ["test.ts"],
+		});
+		await search.start();
+		expect(mockLog).toHaveBeenCalledWith(expect.stringContaining("Duration: "));
+		expect(mockLog).toHaveBeenCalledWith(expect.stringContaining("core.ts"));
+		expect(mockLog).not.toHaveBeenCalledWith(
+			expect.stringContaining("core.test.js"),
+		);
+	});
+
 	it("should find and list a hidden file based on the arguments", async () => {
 		const search = new Search({
 			...defaultFlags,
