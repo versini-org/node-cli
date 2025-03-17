@@ -131,7 +131,26 @@ export class Search {
 		}
 
 		const extension = extname(filePath).toLowerCase().replace(/^\./, "");
-		return this.ignoreExtensions.includes(extension);
+
+		// Check for exact extension match
+		if (this.ignoreExtensions.includes(extension)) {
+			return true;
+		}
+
+		// Check for complex patterns like "min.js"
+		for (const pattern of this.ignoreExtensions) {
+			// Skip patterns that don't contain a dot
+			if (!pattern.includes(".")) {
+				continue;
+			}
+
+			// Check if the filename ends with the pattern
+			if (filename.toLowerCase().endsWith(`.${pattern}`)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	filterHidden(value: string[] | string) {
