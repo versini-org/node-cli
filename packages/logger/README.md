@@ -122,21 +122,21 @@ log.info("Logging resumed");
 log.printBox("Important Message");
 /*
 ┌─────────────────────┐
-│                       │
-│  Important Message    │
-│                       │
+│                     │
+│  Important Message  │
+│                     │
 └─────────────────────┘
 */
 
 // Multiple messages in a box
 log.printBox(["Welcome to MyApp v1.2.3", "Copyright © 2025"]);
 /*
-┌─────────────────────────┐
-│                           │
-│  Welcome to MyApp v1.2.3  │
-│    Copyright © 2025       │
-│                           │
-└─────────────────────────┘
+┌──────────────────────────┐
+│                          │
+│  Welcome to MyApp v1.2.3 │
+│    Copyright © 2025      │
+│                          │
+└──────────────────────────┘
 */
 
 // Customized box
@@ -149,13 +149,13 @@ log.printBox("WARNING: Disk space low", {
   newLineBefore: true
 });
 /*
-┌─ System Alert ─────────────┐
+┌─ System Alert ───────────────┐
 │                              │
 │                              │
 │    WARNING: Disk space low   │
 │                              │
 │                              │
-└───────────────────────────┘
+└──────────────────────────────┘
 */
 ```
 
