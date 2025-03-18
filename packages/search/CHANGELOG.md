@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.1](https://github.com/versini-org/node-cli/compare/search-v3.0.0...search-v3.0.1) (2025-03-18)
+
+
+### Bug Fixes
+
+* **Search:** using logger in memory capabilities ([#394](https://github.com/versini-org/node-cli/issues/394)) ([0854711](https://github.com/versini-org/node-cli/commit/0854711058324def6e97b684c4df4bc0955f6710))
+
 ## [3.0.0](https://github.com/versini-org/node-cli/compare/search-v2.0.1...search-v3.0.0) (2025-03-17)
 
 

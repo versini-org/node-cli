@@ -5,7 +5,7 @@
 	"packages/parser": "2.4.0",
 	"packages/perf": "1.0.6",
 	"packages/run": "1.1.2",
-	"packages/search": "3.0.0",
+	"packages/search": "3.0.1",
 	"packages/secret": "1.2.3",
 	"packages/static-server": "3.1.1",
 	"packages/timer": "1.0.5",
