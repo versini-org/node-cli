@@ -297,3 +297,152 @@ describe("when testing for printInABox with logging side-effects", () => {
 		);
 	});
 });
+
+describe("when testing in-memory logging functionality", () => {
+	beforeEach(() => {
+		kleur.enabled = false;
+		mock.info = jest.fn();
+		mock.log = jest.fn();
+		mock.debug = jest.fn();
+		mock.warn = jest.fn();
+		mock.error = jest.fn();
+		spyInfo = jest.spyOn(console, "info").mockImplementation(mock.info);
+		spyLog = jest.spyOn(console, "log").mockImplementation(mock.log);
+		spyDebug = jest.spyOn(console, "debug").mockImplementation(mock.debug);
+		spyWarn = jest.spyOn(console, "warn").mockImplementation(mock.warn);
+		spyError = jest.spyOn(console, "error").mockImplementation(mock.error);
+
+		spyDate = jest
+			.spyOn(Date.prototype, "toDateString")
+			.mockImplementation(() => "Sat Oct 31 2020");
+		spyLocaleTime = jest
+			.spyOn(Date.prototype, "toLocaleTimeString")
+			.mockImplementation(() => "5:00:00 PM");
+	});
+
+	afterEach(() => {
+		spyDate.mockRestore();
+		spyInfo.mockRestore();
+		spyLocaleTime.mockRestore();
+		spyLog.mockRestore();
+		spyDebug.mockRestore();
+		spyWarn.mockRestore();
+		spyError.mockRestore();
+	});
+
+	it("should store logs in memory when inMemory is enabled", () => {
+		const log = new Logger({ inMemory: true });
+		log.info("Memory log 1");
+		log.error("Memory log 2");
+
+		const logs = log.getMemoryLogs();
+		expect(logs).toBe("Memory log 1\nMemory log 2");
+
+		// Verify no console output when inMemory is enabled
+		expect(mock.info).not.toHaveBeenCalled();
+		expect(mock.error).not.toHaveBeenCalled();
+	});
+
+	it("should clear memory logs when clearMemoryLogs is called", () => {
+		const log = new Logger({ inMemory: true });
+		log.info("Memory log 1");
+		log.error("Memory log 2");
+
+		// Verify logs are stored
+		expect(log.getMemoryLogs()).toBe("Memory log 1\nMemory log 2");
+
+		// Clear logs
+		log.clearMemoryLogs();
+
+		// Verify logs are cleared
+		expect(log.getMemoryLogs()).toBe("");
+	});
+
+	it("should preserve timestamps in memory logs when timestamp is enabled", () => {
+		const log = new Logger({ inMemory: true, timestamp: true });
+		log.info("Memory log with timestamp");
+
+		expect(log.getMemoryLogs()).toBe(
+			"[ Sat Oct 31 2020 5:00:00 PM ] Memory log with timestamp",
+		);
+	});
+
+	it("should preserve prefix in memory logs when prefix is set", () => {
+		const log = new Logger({ inMemory: true, prefix: "TEST" });
+		log.info("Memory log with prefix");
+
+		expect(log.getMemoryLogs()).toBe("TEST Memory log with prefix");
+	});
+
+	it("should preserve both timestamp and prefix in memory logs", () => {
+		const log = new Logger({ inMemory: true, timestamp: true, prefix: "TEST" });
+		log.info("Memory log with timestamp and prefix");
+
+		expect(log.getMemoryLogs()).toBe(
+			"TEST [ Sat Oct 31 2020 5:00:00 PM ] Memory log with timestamp and prefix",
+		);
+	});
+
+	it("should not affect previously retrieved logs when clearing memory", () => {
+		const log = new Logger({ inMemory: true });
+		log.info("Memory log 1");
+		log.error("Memory log 2");
+
+		const logs = log.getMemoryLogs();
+		log.clearMemoryLogs();
+
+		// Original variable should still contain the logs
+		expect(logs).toBe("Memory log 1\nMemory log 2");
+		// But new retrieval should be empty
+		expect(log.getMemoryLogs()).toBe("");
+	});
+
+	it("should disable colors when inMemory is enabled via constructor", () => {
+		const log = new Logger({ inMemory: true });
+
+		// Try to enable colors, which should be ignored in memory mode
+		log.boring = false;
+
+		log.info("Memory log with colors disabled");
+		expect(log.getMemoryLogs()).toBe("Memory log with colors disabled");
+	});
+
+	it("should disable colors when inMemory is enabled via setter", () => {
+		const log = new Logger();
+		log.boring = false; // Enable colors
+
+		// Then enable in-memory mode, which should disable colors
+		log.inMemory = true;
+
+		log.info("Memory log with colors disabled");
+		expect(log.getMemoryLogs()).toBe("Memory log with colors disabled");
+	});
+
+	it("should handle multiple log types in memory", () => {
+		const log = new Logger({ inMemory: true });
+
+		log.info("Info message");
+		log.log("Log message");
+		log.debug("Debug message");
+		log.warn("Warning message");
+		log.error("Error message");
+
+		expect(log.getMemoryLogs()).toBe(
+			"Info message\n" +
+				"Log message\n" +
+				"Debug message\n" +
+				"Warning message\n" +
+				"Error message",
+		);
+	});
+
+	it("should handle complex objects in memory logs", () => {
+		const log = new Logger({ inMemory: true });
+
+		log.info({ test: "object", nested: { value: 123 } });
+
+		expect(log.getMemoryLogs()).toContain("test: 'object'");
+		expect(log.getMemoryLogs()).toContain("nested: {");
+		expect(log.getMemoryLogs()).toContain("value: 123");
+	});
+});
