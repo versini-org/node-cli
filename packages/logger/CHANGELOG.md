@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.0](https://github.com/versini-org/node-cli/compare/logger-v1.2.6...logger-v1.3.0) (2025-03-18)
+
+
+### Features
+
+* **Logger:** adding inMemory option to log in memory instead of stdio ([#392](https://github.com/versini-org/node-cli/issues/392)) ([96e4f3c](https://github.com/versini-org/node-cli/commit/96e4f3c3f63cbadc28cea31552638af40b90e434))
+
+
+### Bug Fixes
+
+* **logger:** bump non-breaking dependencies to latest ([#389](https://github.com/versini-org/node-cli/issues/389)) ([004fe98](https://github.com/versini-org/node-cli/commit/004fe98829b8e42458c7c7c14c9ba2390b3799c7))
+
 ## [1.2.6](https://github.com/versini-org/node-cli/compare/logger-v1.2.5...logger-v1.2.6) (2024-11-18)
 
 
