@@ -26,6 +26,9 @@ const perf = new Performance();
 const logger = new Logger({
 	boring: process.env.NODE_ENV === "test",
 });
+const loggerInMemory = new Logger({
+	inMemory: true,
+});
 
 export class Search {
 	boring?: boolean;
@@ -347,25 +350,24 @@ export class Search {
 			(node) => node.type === STR_TYPE_FILE,
 		);
 
-		let results = "";
 		if (this.printMode === "simple") {
 			for (const node of fileNodes) {
 				const relativePath = relative(this.path, node.name);
 				if (returnResults) {
-					results += `---\n./${relativePath}\n---\n`;
+					loggerInMemory.log(`---\n./${relativePath}\n---`);
 				} else {
 					logger.log(`---\n./${relativePath}\n---`);
 				}
 				const content = await this.readFileContent(node.name);
 				if (returnResults) {
-					results += `${content}\n`;
+					loggerInMemory.log(content);
 				} else {
 					logger.log(content);
 				}
 				// adding a new line after each file content except the last one
 				if (node !== fileNodes[fileNodes.length - 1]) {
 					if (returnResults) {
-						results += "\n";
+						loggerInMemory.log("");
 					} else {
 						logger.log("");
 					}
@@ -373,7 +375,7 @@ export class Search {
 			}
 		} else if (this.printMode === "xml") {
 			if (returnResults) {
-				results += "<documents>\n";
+				loggerInMemory.log("<documents>");
 			} else {
 				logger.log("<documents>");
 			}
@@ -384,12 +386,12 @@ export class Search {
 				const content = await this.readFileContent(node.name);
 
 				if (returnResults) {
-					results += `<document index="${i + 1}">\n`;
-					results += `<source>./${relativePath}</source>\n`;
-					results += "<document_content>\n";
-					results += `${content}\n`;
-					results += "</document_content>\n";
-					results += "</document>\n";
+					loggerInMemory.log(`<document index="${i + 1}">`);
+					loggerInMemory.log(`<source>./${relativePath}</source>`);
+					loggerInMemory.log("<document_content>");
+					loggerInMemory.log(content);
+					loggerInMemory.log("</document_content>");
+					loggerInMemory.log("</document>");
 				} else {
 					logger.log(`<document index="${i + 1}">`);
 					logger.log(`<source>./${relativePath}</source>`);
@@ -401,12 +403,12 @@ export class Search {
 			}
 
 			if (returnResults) {
-				results += "</documents>";
+				loggerInMemory.log("</documents>");
 			} else {
 				logger.log("</documents>");
 			}
 		}
-		return results;
+		return loggerInMemory.getMemoryLogs();
 	}
 
 	async shouldIgnoreByGitIgnore(
@@ -421,11 +423,6 @@ export class Search {
 	}
 
 	async postProcessResults(returnResults: boolean) {
-		/* istanbul ignore if */
-		if (!this.boring) {
-			logger.log();
-		}
-
 		if (this.grep) {
 			/**
 			 * Resetting the number of files found, since we want to
@@ -438,6 +435,11 @@ export class Search {
 		// If printMode is enabled, handle file content printing and return
 		if (this.printMode && ["simple", "xml"].includes(this.printMode)) {
 			return await this.printFilesContent(returnResults);
+		}
+
+		/* istanbul ignore if */
+		if (!this.boring) {
+			logger.log();
 		}
 
 		for (const node of this.nodesList) {
