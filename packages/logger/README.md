@@ -1,249 +1,384 @@
-# Node CLI Logger
+# @node-cli/logger
 
 ![npm](https://img.shields.io/npm/v/@node-cli/logger?label=version&logo=npm)
 
-> Logger is a dead-simple console logger for nodejs command-line applications.
+> A powerful, flexible console logger for Node.js command-line applications with rich formatting options and in-memory logging capabilities.
 
 ## Installation
 
 ```sh
-> cd your-project
-> npm install --save-dev @node-cli/logger
+npm install --save-dev @node-cli/logger
 ```
 
-2 classes are available:
+## Overview
 
-- `Logger` which is a facade for `console` and with added methods, such as `printBox()`
-- `Spinner` is an "elegant terminal spinner", relying behind the scenes on the excellent [ora](https://github.com/sindresorhus/ora)
+`@node-cli/logger` provides two main classes:
 
-## Usage
+- **`Logger`**: A versatile console logger with enhanced formatting, colors, and utility methods
+- **`Spinner`**: An elegant terminal spinner for displaying progress, based on [ora](https://github.com/sindresorhus/ora)
+
+## Basic Usage
+
+### Logger
 
 ```js
 import { Logger } from "@node-cli/logger";
+
+// Create a new logger instance
 const log = new Logger();
 
-log.info("this is an informational log");
-log.warn("this is a warning log");
-log.error("this is an error log");
+// Basic logging methods
+log.info("This is an informational message");
+log.warn("This is a warning message");
+log.error("This is an error message");
+log.debug("This is a debug message");
+log.log("This is a standard log message");
 ```
+
+### Spinner
 
 ```js
 import { Spinner } from "@node-cli/logger";
-const spinner = new Spinner("Updating package.json...");
 
-// assuming a long running process here...
-spinner.text = "Git stage and commit, please wait...";
-// assuming a long running process here...
-spinner.text = "Almost there...";
-// assuming a long running process here... returning some result
-if (result === "success") {
-	spinner.stop("Process completed successfully!");
-} else {
-	spinner.stop("Process failed miserably...", Spinner.ERROR);
+// Create a new spinner with initial text
+const spinner = new Spinner("Processing files...");
+
+// Start the spinner
+spinner.start();
+
+// Update the spinner text during a long-running process
+spinner.text = "Analyzing data...";
+
+// Complete the spinner with different statuses
+spinner.stop("Process completed successfully!"); // Success (default)
+// or
+spinner.stop("Process failed!", Spinner.ERROR); // Error
+// or
+spinner.stop("Process needs attention", Spinner.WARNING); // Warning
+// or
+spinner.stop("Process information", Spinner.INFO); // Info
+```
+
+## Advanced Logger Examples
+
+### Customizing Logger Output
+
+```js
+// Initialize with options
+const log = new Logger({
+  boring: false, // Enable colors (default)
+  silent: false, // Enable logging (default)
+  prefix: "MyApp:", // Add a prefix to all logs
+  timestamp: true, // Add timestamps to logs
+  inMemory: false // Log to console (default)
+});
+
+// Log with different levels
+log.info("Starting application...");
+log.debug("Debug information");
+log.warn("Warning: configuration file not found");
+log.error("Error: failed to connect to database");
+
+// Output:
+// MyApp: [ Tue Mar 18 2025 10:30:00 AM ] Starting application...
+// MyApp: [ Tue Mar 18 2025 10:30:01 AM ] Debug information
+// MyApp: [ Tue Mar 18 2025 10:30:02 AM ] Warning: configuration file not found
+// MyApp: [ Tue Mar 18 2025 10:30:03 AM ] Error: failed to connect to database
+```
+
+### Dynamic Configuration
+
+```js
+const log = new Logger();
+
+// Change configuration at runtime
+log.info("Normal colored output");
+
+// Disable colors for test environments
+log.boring = process.env.NODE_ENV === "test";
+log.info("No colors in test environment");
+
+// Add a prefix for specific sections
+log.prefix = "[CONFIG]";
+log.info("Loading configuration..."); // Output: [CONFIG] Loading configuration...
+
+// Add timestamps for debugging
+log.timestamp = true;
+log.debug("Detailed timing information"); // Output: [CONFIG] [ Tue Mar 18 2025 10:30:00 AM ] Detailed timing information
+
+// Silence logs temporarily
+log.silent = true;
+log.info("This won't be displayed");
+
+// Re-enable logs
+log.silent = false;
+log.info("Logging resumed");
+```
+
+### Printing Messages in a Box
+
+```js
+// Simple box with default options
+log.printBox("Important Message");
+/*
+┌─────────────────────┐
+│                       │
+│  Important Message    │
+│                       │
+└─────────────────────┘
+*/
+
+// Multiple messages in a box
+log.printBox(["Welcome to MyApp v1.2.3", "Copyright © 2025"]);
+/*
+┌─────────────────────────┐
+│                           │
+│  Welcome to MyApp v1.2.3  │
+│    Copyright © 2025       │
+│                           │
+└─────────────────────────┘
+*/
+
+// Customized box
+log.printBox("WARNING: Disk space low", {
+  borderColor: "red",
+  padding: 2,
+  textAlignment: "center",
+  title: "System Alert",
+  newLineAfter: true,
+  newLineBefore: true
+});
+/*
+┌─ System Alert ─────────────┐
+│                              │
+│                              │
+│    WARNING: Disk space low   │
+│                              │
+│                              │
+└───────────────────────────┘
+*/
+```
+
+### Error Handling and Process Exit
+
+```js
+// Display multiple errors and exit the process
+const errors = [
+  "Failed to connect to database",
+  "Configuration file is invalid",
+  "Required environment variables missing"
+];
+
+// Display errors and exit with code 1
+log.printErrorsAndExit(errors, 1);
+
+// Or just display errors without exiting
+log.printErrorsAndExit(errors);
+```
+
+### In-Memory Logging
+
+```js
+// Create a logger that stores logs in memory instead of console
+const memoryLogger = new Logger({ inMemory: true });
+
+// Log messages that are stored in memory
+memoryLogger.info("Starting process");
+memoryLogger.warn("Resource usage high");
+memoryLogger.error("Process failed");
+
+// Retrieve all logs as a string
+const logs = memoryLogger.getMemoryLogs();
+console.log(logs);
+// Output:
+// Starting process
+// Resource usage high
+// Process failed
+
+// Clear memory logs when no longer needed
+memoryLogger.clearMemoryLogs();
+
+// Toggle between console and memory logging
+const log = new Logger();
+log.info("This goes to console");
+
+log.inMemory = true;
+log.info("This goes to memory only");
+
+// Get only the in-memory logs
+const memLogs = log.getMemoryLogs(); // Contains only "This goes to memory only"
+
+log.inMemory = false;
+log.info("Back to console logging");
+```
+
+## Advanced Spinner Examples
+
+### Spinner with Custom Options
+
+```js
+// Create a spinner with custom options
+const spinner = new Spinner({
+  text: "Processing...",
+  color: "blue",
+  spinner: "dots" // Use the 'dots' spinner pattern
+});
+
+spinner.start();
+```
+
+### Spinner in Async Functions
+
+```js
+import { Spinner } from "@node-cli/logger";
+
+async function deployApplication() {
+  const spinner = new Spinner("Preparing deployment...");
+  spinner.start();
+
+  try {
+    // Building phase
+    spinner.text = "Building application...";
+    await buildApp();
+
+    // Testing phase
+    spinner.text = "Running tests...";
+    await runTests();
+
+    // Deployment phase
+    spinner.text = "Deploying to production...";
+    await deploy();
+
+    // Success
+    spinner.stop("Deployment completed successfully!");
+    return true;
+  } catch (error) {
+    // Handle failure
+    spinner.stop(`Deployment failed: ${error.message}`, Spinner.ERROR);
+    return false;
+  }
 }
 ```
 
-## API
-
-### Spinner methods
-
-| Method      | Arguments    | Description                                                                                                                                                                                                                        |
-| ----------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| constructor | options      | Initialize a Spinner instance with [ora](https://github.com/sindresorhus/ora) options                                                                                                                                              |
-| start       | text         | Starts the spinner on the terminal and append a string to it                                                                                                                                                                       |
-| stop        | text, status | Stop the spinner, change it to a green, red, yellow or blue marker, and persist the current text, or text if provided. The argument `status` can be one of `Spinner.SUCCESS`, `Spinner.ERROR`, `Spinner.WARNING` or `Spinner.INFO` |
-
-| Setter | Description                                                                         |
-| ------ | ----------------------------------------------------------------------------------- |
-| text   | Set the text of the spinner. If the spinner is stopped, the text will be persisted. |
-
-### Logger methods
-
-Logger relies on `console` behind the scenes, and therefore supports the same [string substitution](https://developer.mozilla.org/en-US/docs/Web/API/console#Using_string_substitutions) capabilities and uses the following methods:
-
-| Method             | Description                                               | Output color |
-| ------------------ | --------------------------------------------------------- | ------------ |
-| debug              | Outputs a message to the console with the log level debug | grey         |
-| log                | For general output of logging information.                | white        |
-| info               | Informative logging of information.                       | blue         |
-| warn               | Outputs a message to the console with the log level debug | yellow       |
-| error              | Outputs an error message.                                 | red          |
-| printBox           | Output message(s) in a box                                | custom       |
-| printErrorsAndExit | Output error message(s) and exit                          | red          |
-
-### Options
-
-#### Disabling logging
-
-You can disable logging with `silent`:
+### Chaining Multiple Spinners
 
 ```js
-import { Logger } from "@node-cli/logger";
-const log = new Logger();
+import { Spinner } from "@node-cli/logger";
 
-log.info("this will be logged");
-// disabling logs in production for example
-log.silent = process.env.NODE_ENV === "production";
-log.info("but this will not");
-log.silent = false;
-log.info("this will be logged again!");
+async function processWorkflow() {
+  // Step 1
+  const step1 = new Spinner("Step 1: Data validation");
+  step1.start();
+  await validateData();
+  step1.stop("Data validation complete", Spinner.SUCCESS);
+
+  // Step 2
+  const step2 = new Spinner("Step 2: Processing records");
+  step2.start();
+  await processRecords();
+  step2.stop("Records processed", Spinner.SUCCESS);
+
+  // Step 3
+  const step3 = new Spinner("Step 3: Generating report");
+  step3.start();
+  await generateReport();
+  step3.stop("Report generated", Spinner.SUCCESS);
+
+  console.log("Workflow completed successfully!");
+}
 ```
 
-This option can also be passed to the constructor:
+## API Reference
 
-```js
-import { Logger } from "@node-cli/logger";
-const log = new Logger({ silent: true });
+### Logger Class
 
-log.info("this will not be logged");
-log.silent = false;
-log.info("this will be logged again!");
-```
+#### Constructor Options
 
-### Disabling colors
+| Option      | Type    | Default | Description                             |
+| ----------- | ------- | ------- | --------------------------------------- |
+| `boring`    | boolean | `false` | Disable colors in output                |
+| `silent`    | boolean | `false` | Disable all logging                     |
+| `prefix`    | string  | `""`    | Add a prefix to all log messages        |
+| `timestamp` | boolean | `false` | Add timestamps to all log messages      |
+| `inMemory`  | boolean | `false` | Store logs in memory instead of console |
 
-You can disable colors with `boring`:
+#### Methods
 
-```js
-import { Logger } from "@node-cli/logger";
-const log = new Logger();
+| Method               | Arguments                                                   | Description                                            |
+| -------------------- | ----------------------------------------------------------- | ------------------------------------------------------ |
+| `log`                | `...args`                                                   | Standard log output (white)                            |
+| `info`               | `...args`                                                   | Informational log output (blue)                        |
+| `debug`              | `...args`                                                   | Debug log output (grey)                                |
+| `warn`               | `...args`                                                   | Warning log output (yellow)                            |
+| `error`              | `...args`                                                   | Error log output (red)                                 |
+| `printBox`           | `messages: string \| string[]`, `options?: PrintBoxOptions` | Display message(s) in a formatted box                  |
+| `printErrorsAndExit` | `errorMessages: string[]`, `exitStatus?: number`            | Display error messages and optionally exit the process |
+| `getMemoryLogs`      | none                                                        | Get all logs stored in memory as a string              |
+| `clearMemoryLogs`    | none                                                        | Clear all logs stored in memory                        |
 
-log.info("this will be logged in the default [info] color");
-// disabling colors in test mode for example
-log.boring = process.env.NODE_ENV === "test";
-log.info("but this will not have any colors :/");
-log.boring = false;
-log.info("colors are back!");
-```
+#### Properties (Setters)
 
-This option can also be passed to the constructor:
+| Property    | Type    | Description                      |
+| ----------- | ------- | -------------------------------- |
+| `silent`    | boolean | Enable/disable logging           |
+| `boring`    | boolean | Enable/disable colors            |
+| `prefix`    | string  | Set prefix for log messages      |
+| `timestamp` | boolean | Enable/disable timestamps        |
+| `inMemory`  | boolean | Enable/disable in-memory logging |
 
-```js
-import { Logger } from "@node-cli/logger";
-const log = new Logger({ boring: true });
+#### PrintBox Options
 
-log.info("this will not be logged in color");
-log.boring = false;
-log.info("this will be logged again!");
-```
+| Option          | Type    | Default     | Description                                      |
+| --------------- | ------- | ----------- | ------------------------------------------------ |
+| `newLineAfter`  | boolean | `true`      | Print a new line after the box                   |
+| `newLineBefore` | boolean | `true`      | Print a new line before the box                  |
+| `borderColor`   | string  | `"yellow"`  | Color of the box border                          |
+| `padding`       | number  | `1`         | Padding inside the box                           |
+| `textAlignment` | string  | `"center"`  | Text alignment (`"left"`, `"center"`, `"right"`) |
+| `title`         | string  | `undefined` | Optional title for the box                       |
 
-### Adding a prefix
+Plus all options from [Boxen](https://github.com/sindresorhus/boxen).
 
-You can add a prefix to the logs with `prefix`:
+### Spinner Class
 
-```js
-import { Logger } from "@node-cli/logger";
-const log = new Logger();
+#### Constructor Options
 
-log.info("this will be logged with no prefix");
-log.prefix = "[INFO]";
-log.info("this will have a prefix!");
-```
+Accepts all options from [ora](https://github.com/sindresorhus/ora).
 
-The output of that last line would be:
+| Option    | Type             | Description                       |
+| --------- | ---------------- | --------------------------------- |
+| `text`    | string           | Text to display after the spinner |
+| `color`   | string           | Color of the spinner              |
+| `spinner` | string \| object | Spinner pattern to use            |
+| ...       | ...              | All other ora options             |
 
-```sh
-> [INFO] this will have a prefix!
-```
+#### Methods
 
-This option can also be passed to the constructor:
+| Method  | Arguments                          | Description                                    |
+| ------- | ---------------------------------- | ---------------------------------------------- |
+| `start` | `text?: string`                    | Start the spinner with optional text           |
+| `stop`  | `text?: string`, `status?: string` | Stop the spinner with optional text and status |
 
-```js
-import { Logger } from "@node-cli/logger";
-const log = new Logger({ prefix: "Log:" });
+#### Properties
 
-log.info("this will be logged with a prefix");
-log.prefix = false;
-log.info("this will be NOT be logged with a prefix");
-```
+| Property | Type   | Description          |
+| -------- | ------ | -------------------- |
+| `text`   | string | Set the spinner text |
 
-### Adding a local timestamp
+#### Status Constants
 
-You can add a timestamp to the logs with `timestamp`:
+| Constant          | Value       | Description                         |
+| ----------------- | ----------- | ----------------------------------- |
+| `Spinner.SUCCESS` | `"success"` | Success status (green checkmark)    |
+| `Spinner.ERROR`   | `"fail"`    | Error status (red X)                |
+| `Spinner.WARNING` | `"warn"`    | Warning status (yellow exclamation) |
+| `Spinner.INFO`    | `"info"`    | Info status (blue i)                |
 
-```js
-import { Logger } from "@node-cli/logger";
-const log = new Logger();
+## Environment Compatibility
 
-log.info("this will be logged with no timestamp");
-log.timestamp = true;
-log.info("this will have a timestamp!");
-```
-
-The output of that last line would look like:
-
-```sh
-> [ Tue Feb 02 2021 8:32:58 PM ] this will have a timestamp!
-```
-
-This option can also be passed to the constructor:
-
-```js
-import { Logger } from "@node-cli/logger";
-const log = new Logger({ timestamp: true });
-
-log.info("this will be logged with a timestamp");
-log.timestamp = false;
-log.info("this will be NOT be logged with a timestamp");
-```
-
-### Log one or more messages in a box
-
-The `printBox` method is a wrapper around the excellent [Boxen](https://github.com/sindresorhus/boxen), with sensible defaults.
-
-```js
-import { Logger } from "@node-cli/logger";
-const log = new Logger();
-
-log.printBox(["Message One!", "Message Two!"]);
-
-┌──────────────────┐
-│                  │
-│   Message One!   │
-│   Message Two!   │
-│                  │
-└──────────────────┘
-
-```
-
-`printBox` accepts the following options as a second argument:
-
-- `printLineAfter` (default to `true`)
-- `printLineBefore` (default to `true`)
-- As well as all the options available with [Boxen](https://github.com/sindresorhus/boxen)
-
-Here is a custom example with:
-
-- a red border color
-- no extra line after the box
-- no padding (no space between the border and the text)
-- text is justified to the right
-- there is a title injected at the top of the box
-
-```js
-import { Logger } from "@node-cli/logger";
-const log = new Logger();
-
-log.printBox(["Message One!", "Message Two!"], {
-	borderColor: "red",
-	newLineAfter: false,
-	padding: 0,
-	textAlignment: "right",
-	title: "Hello World Box Title",
-});
-```
-
-### Log multiple errors and optionally exit the main program
-
-The following will print 2 error messages and exit with error code 666.
-If the second parameter (a number) is not provided, the process does not exit.
-
-```js
-import { Logger } from "@node-cli/logger";
-const log = new Logger();
-
-log.printErrorsAndExit(["Error One!", "Error Two!"], 666);
-```
+- Works with Node.js >=16
+- ESM module format
+- TypeScript definitions included
 
 ## License
 
