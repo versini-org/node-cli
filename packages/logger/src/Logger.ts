@@ -9,23 +9,38 @@ export type PrintBoxOptions = {
 	newLineBefore?: boolean;
 } & BoxenOptions;
 
+export type LoggerOptions = {
+	boring?: boolean;
+	silent?: boolean;
+	prefix?: string;
+	timestamp?: boolean;
+	inMemory?: boolean;
+};
+
 export class Logger {
 	#shouldLog: boolean;
 	#globalPrefix: string;
 	#showTimestamp: boolean;
 	#printOptions: { colors: boolean; compact: boolean; depth: number };
+	#inMemory: boolean;
+	#memoryLogs: string[];
 
 	constructor({
 		boring = false,
 		silent = false,
 		prefix = "",
 		timestamp = false,
+		inMemory = false,
 	} = {}) {
 		this.#shouldLog = !silent;
 		this.#globalPrefix = prefix;
 		this.#showTimestamp = timestamp;
+		this.#inMemory = inMemory;
+		this.#memoryLogs = [];
+
+		// When in memory mode, we disable colors
 		this.#printOptions = {
-			colors: !boring,
+			colors: !boring && !inMemory,
 			compact: false,
 			depth: 5,
 		};
@@ -36,7 +51,10 @@ export class Logger {
 	}
 
 	set boring(flag: boolean) {
-		this.#printOptions.colors = !flag;
+		// Only set colors if not in memory mode
+		if (!this.#inMemory) {
+			this.#printOptions.colors = !flag;
+		}
 	}
 
 	set prefix(prefix: string) {
@@ -45,6 +63,29 @@ export class Logger {
 
 	set timestamp(flag: boolean) {
 		this.#showTimestamp = flag;
+	}
+
+	set inMemory(flag: boolean) {
+		this.#inMemory = flag;
+		// When enabling in-memory mode, disable colors
+		if (flag) {
+			this.#printOptions.colors = false;
+		}
+	}
+
+	/**
+	 * Get the accumulated logs as a string
+	 * @returns {string} All logs joined by the separator
+	 */
+	getMemoryLogs(): string {
+		return this.#memoryLogs.join("\n");
+	}
+
+	/**
+	 * Clear all accumulated logs from memory
+	 */
+	clearMemoryLogs(): void {
+		this.#memoryLogs = [];
 	}
 
 	#_log(
@@ -74,10 +115,18 @@ export class Logger {
 					...arguments_,
 				);
 			}
-			// eslint-disable-next-line no-console
-			console[type.method](
-				this.#printOptions.colors ? `${type.color(message)}` : message,
-			);
+
+			// Store in memory if enabled
+			if (this.#inMemory) {
+				this.#memoryLogs.push(message);
+			}
+
+			// Still output to console if not in memory-only mode
+			if (!this.#inMemory) {
+				console[type.method](
+					this.#printOptions.colors ? `${type.color(message)}` : message,
+				);
+			}
 		}
 	}
 
