@@ -408,7 +408,9 @@ export class Search {
 				logger.log("</documents>");
 			}
 		}
-		return loggerInMemory.getMemoryLogs();
+		const results = returnResults ? loggerInMemory.getMemoryLogs() : undefined;
+		loggerInMemory.clearMemoryLogs();
+		return results;
 	}
 
 	async shouldIgnoreByGitIgnore(
