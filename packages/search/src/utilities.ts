@@ -1,7 +1,7 @@
-import { RunResult, run } from "@node-cli/run";
-
 import fs from "node:fs";
+import { extname } from "node:path";
 import { Logger } from "@node-cli/logger";
+import { RunResult, run } from "@node-cli/run";
 import kleur from "kleur";
 import prettyMilliseconds from "pretty-ms";
 
@@ -19,6 +19,62 @@ const PERMISSIONS_PREFIX = {
 	[STR_TYPE_DIRECTORY]: "d",
 	[STR_TYPE_FILE]: "-",
 };
+const BINARY_EXTENSIONS = [
+	// Executables and compiled code
+	"exe",
+	"dll",
+	"so",
+	"dylib",
+	"bin",
+	"obj",
+	"o",
+	// Compressed files
+	"zip",
+	"tar",
+	"gz",
+	"rar",
+	"7z",
+	"jar",
+	"war",
+	// Media files
+	"jpg",
+	"jpeg",
+	"png",
+	"gif",
+	"bmp",
+	"ico",
+	"tif",
+	"tiff",
+	"mp3",
+	"mp4",
+	"avi",
+	"mov",
+	"wmv",
+	"flv",
+	"wav",
+	"ogg",
+	// Document formats
+	"pdf",
+	"doc",
+	"docx",
+	"xls",
+	"xlsx",
+	"ppt",
+	"pptx",
+	// Database files
+	"db",
+	"sqlite",
+	"mdb",
+	// Other binary formats
+	"class",
+	"pyc",
+	"pyd",
+	"pyo",
+	"woff",
+	"woff2",
+	"ttf",
+	"otf",
+];
 
 const ownerNames = {
 	0: "root",
@@ -233,3 +289,12 @@ export const runGrepOnNode = async (
 		logger.error(error);
 	}
 };
+
+export function isBinaryFileExtension(filePath: string): boolean {
+	const ext = extname(filePath).toLowerCase().replace(/^\./, "");
+	// If there's no extension, assume it's binary
+	if (!ext) {
+		return true;
+	}
+	return BINARY_EXTENSIONS.includes(ext);
+}

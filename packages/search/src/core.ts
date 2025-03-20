@@ -1,23 +1,24 @@
 import { basename, extname, join, relative } from "node:path";
-
-import { GitIgnoreHandler } from "./gitIgnoreHandler.js";
-import {
-	STR_TYPE_BOTH,
-	STR_TYPE_DIRECTORY,
-	STR_TYPE_FILE,
-	checkPattern,
-	formatLongListings,
-	printStatistics,
-	runCommandOnNode,
-	runGrepOnNode,
-} from "./utilities.js";
-
 import { promisify } from "node:util";
 import { Logger } from "@node-cli/logger";
 import { Performance } from "@node-cli/perf";
 import fs from "fs-extra";
 import kleur from "kleur";
 import plur from "plur";
+
+import { GitIgnoreHandler } from "./gitIgnoreHandler.js";
+import { minifyCss, minifyJs } from "./minifiers.js";
+import {
+	STR_TYPE_BOTH,
+	STR_TYPE_DIRECTORY,
+	STR_TYPE_FILE,
+	checkPattern,
+	formatLongListings,
+	isBinaryFileExtension,
+	printStatistics,
+	runCommandOnNode,
+	runGrepOnNode,
+} from "./utilities.js";
 
 const lstatAsync = promisify(fs.lstat);
 const readdirAsync = promisify(fs.readdir);
@@ -51,6 +52,7 @@ export class Search {
 	printMode?: string;
 	gitIgnoreHandler: GitIgnoreHandler;
 	ignoreGitIgnore?: boolean;
+	minifyForLLM?: boolean;
 
 	constructor({
 		boring,
@@ -68,6 +70,7 @@ export class Search {
 		ignoreFolder,
 		printMode,
 		ignoreGitIgnore,
+		minifyForLLM,
 	}: {
 		boring?: boolean;
 		command?: string;
@@ -84,6 +87,7 @@ export class Search {
 		ignoreFolder?: string[];
 		printMode?: string;
 		ignoreGitIgnore?: boolean;
+		minifyForLLM?: boolean;
 	}) {
 		this.path = path;
 		this.rePattern = pattern
@@ -108,6 +112,7 @@ export class Search {
 		this.ignoreFolders = ignoreFolder || [];
 		this.printMode = printMode;
 		this.ignoreGitIgnore = ignoreGitIgnore;
+		this.minifyForLLM = minifyForLLM;
 		this.gitIgnoreHandler = new GitIgnoreHandler();
 		try {
 			this.grep = grep ? new RegExp(grep, ignoreCase ? "gi" : "g") : undefined;
@@ -166,75 +171,6 @@ export class Search {
 			return true;
 		}
 		return value[0] !== ".";
-	}
-
-	isBinaryFileExtension(filePath: string): boolean {
-		const ext = extname(filePath).toLowerCase().replace(/^\./, "");
-
-		// If there's no extension, assume it's binary
-		/* istanbul ignore if */
-		if (!ext) {
-			return true;
-		}
-
-		const binaryExtensions = [
-			// Executables and compiled code
-			"exe",
-			"dll",
-			"so",
-			"dylib",
-			"bin",
-			"obj",
-			"o",
-			// Compressed files
-			"zip",
-			"tar",
-			"gz",
-			"rar",
-			"7z",
-			"jar",
-			"war",
-			// Media files
-			"jpg",
-			"jpeg",
-			"png",
-			"gif",
-			"bmp",
-			"ico",
-			"tif",
-			"tiff",
-			"mp3",
-			"mp4",
-			"avi",
-			"mov",
-			"wmv",
-			"flv",
-			"wav",
-			"ogg",
-			// Document formats
-			"pdf",
-			"doc",
-			"docx",
-			"xls",
-			"xlsx",
-			"ppt",
-			"pptx",
-			// Database files
-			"db",
-			"sqlite",
-			"mdb",
-			// Other binary formats
-			"class",
-			"pyc",
-			"pyd",
-			"pyo",
-			"woff",
-			"woff2",
-			"ttf",
-			"otf",
-		];
-
-		return binaryExtensions.includes(ext);
 	}
 
 	async start(returnResults = false) {
@@ -330,18 +266,53 @@ export class Search {
 		}
 	}
 
+	async minifyFileContent(filePath: string, content: string): Promise<string> {
+		/* istanbul ignore if */
+		if (!this.minifyForLLM || !content || content.length < 100) {
+			return content;
+		}
+
+		const fileExtension = extname(filePath).toLowerCase().replace(/^\./, "");
+
+		if (
+			content &&
+			content.length > 0 &&
+			this.minifyForLLM &&
+			(fileExtension.endsWith("js") ||
+				fileExtension.endsWith("ts") ||
+				/* istanbul ignore next */
+				fileExtension.endsWith("jsx") ||
+				/* istanbul ignore next */
+				fileExtension.endsWith("tsx"))
+		) {
+			return minifyJs(content);
+		}
+
+		/* istanbul ignore next */
+		if (
+			content &&
+			content.length > 0 &&
+			this.minifyForLLM &&
+			fileExtension.endsWith("css")
+		) {
+			return minifyCss(content);
+		}
+
+		return content;
+	}
+
 	async readFileContent(filePath: string): Promise<string> {
 		try {
 			// Check if it's a known binary extension
 			/* istanbul ignore if */
-			if (this.isBinaryFileExtension(filePath)) {
-				return "[Binary file]";
+			if (isBinaryFileExtension(filePath)) {
+				return null;
 			}
 			const content = await readFileAsync(filePath, "utf8");
-			return content;
-		} catch (error) {
+			return await this.minifyFileContent(filePath, content);
+		} catch (_error) {
 			/* istanbul ignore next */
-			return `Error reading file: ${error.message}`;
+			return null;
 		}
 	}
 
@@ -386,13 +357,15 @@ export class Search {
 				const content = await this.readFileContent(node.name);
 
 				if (returnResults) {
-					loggerInMemory.log(`<document index="${i + 1}">`);
-					loggerInMemory.log(`<source>./${relativePath}</source>`);
-					loggerInMemory.log("<document_content>");
-					loggerInMemory.log(content);
-					loggerInMemory.log("</document_content>");
-					loggerInMemory.log("</document>");
-				} else {
+					if (content) {
+						loggerInMemory.log(`<document index="${i + 1}">`);
+						loggerInMemory.log(`<source>./${relativePath}</source>`);
+						loggerInMemory.log("<document_content>");
+						loggerInMemory.log(content);
+						loggerInMemory.log("</document_content>");
+						loggerInMemory.log("</document>");
+					}
+				} else if (content) {
 					logger.log(`<document index="${i + 1}">`);
 					logger.log(`<source>./${relativePath}</source>`);
 					logger.log("<document_content>");
@@ -417,7 +390,6 @@ export class Search {
 		nodePath: string,
 		isDirectory: boolean,
 	): Promise<boolean> {
-		/* istanbul ignore if */
 		if (this.ignoreGitIgnore) {
 			return false;
 		}

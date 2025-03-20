@@ -8,9 +8,7 @@
 	"types": "./dist/index.d.ts",
 	"exports": "./dist/core.js",
 	"bin": "dist/search.js",
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"node": ">=16",
 	"scripts": {
 		"build": "npm-run-all --serial clean build:types build:js build:barrel",
