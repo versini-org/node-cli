@@ -7,13 +7,14 @@ import kleur from "kleur";
 import plur from "plur";
 
 import { GitIgnoreHandler } from "./gitIgnoreHandler.js";
-import { minifyCss, minifyJs } from "./minifiers.js";
+import { minifyCss, minifyFileContent, minifyJs } from "./minifiers.js";
 import {
 	STR_TYPE_BOTH,
 	STR_TYPE_DIRECTORY,
 	STR_TYPE_FILE,
 	checkPattern,
 	formatLongListings,
+	getFileExtension,
 	isBinaryFileExtension,
 	printStatistics,
 	runCommandOnNode,
@@ -143,7 +144,7 @@ export class Search {
 			return false;
 		}
 
-		const extension = extname(filePath).toLowerCase().replace(/^\./, "");
+		const extension = getFileExtension(filePath);
 
 		// Check for exact extension match
 		if (this.ignoreExtensions.includes(extension)) {
@@ -266,41 +267,6 @@ export class Search {
 		}
 	}
 
-	async minifyFileContent(filePath: string, content: string): Promise<string> {
-		/* istanbul ignore if */
-		if (!this.minifyForLLM || !content || content.length < 100) {
-			return content;
-		}
-
-		const fileExtension = extname(filePath).toLowerCase().replace(/^\./, "");
-
-		if (
-			content &&
-			content.length > 0 &&
-			this.minifyForLLM &&
-			(fileExtension.endsWith("js") ||
-				fileExtension.endsWith("ts") ||
-				/* istanbul ignore next */
-				fileExtension.endsWith("jsx") ||
-				/* istanbul ignore next */
-				fileExtension.endsWith("tsx"))
-		) {
-			return minifyJs(content);
-		}
-
-		/* istanbul ignore next */
-		if (
-			content &&
-			content.length > 0 &&
-			this.minifyForLLM &&
-			fileExtension.endsWith("css")
-		) {
-			return minifyCss(content);
-		}
-
-		return content;
-	}
-
 	async readFileContent(filePath: string): Promise<string> {
 		try {
 			// Check if it's a known binary extension
@@ -309,7 +275,9 @@ export class Search {
 				return null;
 			}
 			const content = await readFileAsync(filePath, "utf8");
-			return await this.minifyFileContent(filePath, content);
+			return this.minifyForLLM
+				? await minifyFileContent(filePath, content)
+				: content;
 		} catch (_error) {
 			/* istanbul ignore next */
 			return null;

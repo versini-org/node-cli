@@ -99,6 +99,10 @@ const logger = new Logger({
 	boring: process.env.NODE_ENV === "test",
 });
 
+export const getFileExtension = (filename: string): string => {
+	return extname(filename).toLowerCase().replace(/^\./, "");
+};
+
 export const extractMode = (mode: number): string => {
 	const modeDec = Number.parseInt(mode.toString(OCTAL), DECIMAL)
 		.toString()
@@ -291,7 +295,7 @@ export const runGrepOnNode = async (
 };
 
 export function isBinaryFileExtension(filePath: string): boolean {
-	const ext = extname(filePath).toLowerCase().replace(/^\./, "");
+	const ext = getFileExtension(filePath);
 	// If there's no extension, assume it's binary
 	if (!ext) {
 		return true;

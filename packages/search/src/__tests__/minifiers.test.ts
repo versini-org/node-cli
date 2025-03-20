@@ -1,4 +1,9 @@
-import { minifyCss, minifyImports, minifyJs } from "../minifiers.js";
+import {
+	minifyCss,
+	minifyFileContent,
+	minifyImports,
+	minifyJs,
+} from "../minifiers.js";
 
 describe("when testing for minifiers utilities with no logging side-effects", () => {
 	describe("minifyCss", () => {
@@ -408,6 +413,26 @@ describe("when testing for minifiers utilities with no logging side-effects", ()
 
 			// Check that export is preserved
 			expect(result).toContain("export default useFetch;");
+		});
+	});
+
+	describe("minifyFileContent", () => {
+		it("should not run minification on empty content", async () => {
+			const content = "";
+			const result = await minifyFileContent("test.js", content);
+			expect(result).toBe(content);
+		});
+
+		it("should not run minification on small content", async () => {
+			const content = "const sum = a + b;".repeat(1);
+			const result = await minifyFileContent("test.js", content);
+			expect(result).not.toContain("const sum=a+b;");
+		});
+
+		it("should run minification on content big enough", async () => {
+			const content = "const sum = a + b;".repeat(10);
+			const result = await minifyFileContent("test.js", content);
+			expect(result).toContain("const sum=a+b;");
 		});
 	});
 });

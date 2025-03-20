@@ -1,3 +1,5 @@
+import { getFileExtension } from "./utilities.js";
+
 export function minifyImports(content: string): string {
 	return content.replace(
 		/(import\s*\{)([^}]*?)(\}\s*from)/g,
@@ -124,6 +126,37 @@ export function minifyCss(content: string): string {
 	content = content.replace(/\s*:\s*/g, ":");
 	content = content.replace(/\s*;\s*/g, ";");
 	content = content.replace(/\s*,\s*/g, ",");
+
+	return content;
+}
+
+export async function minifyFileContent(
+	filePath: string,
+	content: string,
+): Promise<string> {
+	if (!content || content.length < 100) {
+		return content;
+	}
+
+	const fileExtension = getFileExtension(filePath);
+
+	if (
+		content &&
+		content.length > 0 &&
+		(fileExtension.endsWith("js") ||
+			fileExtension.endsWith("ts") ||
+			/* istanbul ignore next */
+			fileExtension.endsWith("jsx") ||
+			/* istanbul ignore next */
+			fileExtension.endsWith("tsx"))
+	) {
+		return minifyJs(content);
+	}
+
+	/* istanbul ignore next */
+	if (content && content.length > 0 && fileExtension.endsWith("css")) {
+		return minifyCss(content);
+	}
 
 	return content;
 }
