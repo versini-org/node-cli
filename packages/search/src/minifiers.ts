@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import { getFileExtension } from "./utilities.js";
 
 export function minifyImports(content: string): string {
@@ -20,7 +21,7 @@ export function minifyImports(content: string): string {
 
 export function minifyJs(content: string): string {
 	// Store template literals and regular expressions to protect them from minification
-	const tokenPrefix = `__PROTECTED_${Date.now()}_`;
+	const tokenPrefix = `__PROTECTED_${uuidv4()}_`;
 	const protectedSegments: string[] = [];
 
 	// Function to create a unique token for each protected segment
