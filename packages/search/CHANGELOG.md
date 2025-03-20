@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.0](https://github.com/versini-org/node-cli/compare/search-v3.0.1...search-v3.1.0) (2025-03-20)
+
+
+### Features
+
+* **Search:** adding minifyForLLM option ([#396](https://github.com/versini-org/node-cli/issues/396)) ([94878d5](https://github.com/versini-org/node-cli/commit/94878d5f9bd97cf9e741865607c9a4b895db9fc0))
+
 ## [3.0.1](https://github.com/versini-org/node-cli/compare/search-v3.0.0...search-v3.0.1) (2025-03-18)
 
 
