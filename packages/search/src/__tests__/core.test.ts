@@ -106,6 +106,23 @@ describe("when testing for utilities with logging side-effects", () => {
 		);
 	});
 
+	it("should find and list a git ignored folder when ignoreGitIgnore is true", async () => {
+		const search = new Search({
+			...defaultFlags,
+			boring: true,
+			path: `${process.cwd()}`,
+			short: true,
+			stats: true,
+			type: "d",
+			ignoreGitIgnore: true,
+		});
+		await search.start();
+		expect(mockLog).toHaveBeenCalledWith(expect.stringContaining("src"));
+		expect(mockLog).toHaveBeenCalledWith(
+			expect.stringContaining("node_modules"),
+		);
+	});
+
 	it("should find and list all folders based on the arguments (ignore src)", async () => {
 		const search = new Search({
 			...defaultFlags,
@@ -447,5 +464,60 @@ describe("when testing for utilities with NO logging side-effects", () => {
 		});
 		const res = await search.start(true);
 		expect(res).toContain("<source>./README.md</source>");
+	});
+
+	it("should find and print a minified content of a specific file based on the arguments (xml, cjs)", async () => {
+		const search = new Search({
+			...defaultFlags,
+			boring: true,
+			path: `${process.cwd()}`,
+			pattern: ".cjs",
+			short: true,
+			stats: false,
+			type: "f",
+			printMode: "xml",
+			minifyForLLM: true,
+		});
+		const res = await search.start(true);
+		expect(res).toContain("<source>./jest.config.cjs</source>");
+		expect(res).toContain(
+			'const commonJest=require("../../configuration/jest.config.common.cjs");module.exports={...commonJest,};',
+		);
+	});
+
+	it("should find and print a minified content of a specific file based on the arguments (xml, ts)", async () => {
+		const search = new Search({
+			...defaultFlags,
+			boring: true,
+			path: `${process.cwd()}`,
+			pattern: ".ts",
+			short: true,
+			stats: false,
+			type: "f",
+			printMode: "xml",
+			minifyForLLM: true,
+		});
+		const res = await search.start(true);
+		expect(res).toContain("<source>./src/__tests__/core.test.ts</source>");
+		expect(res).toContain(
+			'import {Mock,SpiedFunction,UnknownFunction} from "jest-mock";import {jest} from "@jest/globals";',
+		);
+	});
+
+	it("should find and print a NON minified content of a specific file based on the arguments (xml, md)", async () => {
+		const search = new Search({
+			...defaultFlags,
+			boring: true,
+			path: `${process.cwd()}`,
+			pattern: ".md",
+			short: true,
+			stats: false,
+			type: "f",
+			printMode: "xml",
+			minifyForLLM: true,
+		});
+		const res = await search.start(true);
+		expect(res).toContain("<source>./CHANGELOG.md</source>");
+		expect(res).toContain("# Changelog\n\n");
 	});
 });

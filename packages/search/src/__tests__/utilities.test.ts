@@ -1,4 +1,5 @@
 import { Mock, UnknownFunction } from "jest-mock";
+
 import {
 	STR_TYPE_BOTH,
 	STR_TYPE_DIRECTORY,
@@ -9,6 +10,7 @@ import {
 	extractMode,
 	formatLongListings,
 	getOwnerNameFromId,
+	isBinaryFileExtension,
 	printStatistics,
 	runGrepOnNode,
 } from "../utilities.js";
@@ -106,6 +108,12 @@ describe("when testing for individual utilities with no logging side-effects", (
 
 		const { totalMatchingLines } = await runGrepOnNode(file, rePattern);
 		expect(totalMatchingLines).toBe(0);
+	});
+
+	it("should tell if a file is considered as binary", async () => {
+		expect(isBinaryFileExtension("file.zip")).toBe(true);
+		expect(isBinaryFileExtension("file.txt")).toBe(false);
+		expect(isBinaryFileExtension("file")).toBe(true);
 	});
 });
 
