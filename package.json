@@ -12,9 +12,9 @@
 		"test:coverage": "lerna run test:coverage"
 	},
 	"devDependencies": {
-		"@versini/dev-dependencies-common": "5.1.1",
-		"@versini/dev-dependencies-server": "7.0.3",
-		"@versini/dev-dependencies-types": "3.0.7"
+		"@versini/dev-dependencies-common": "5.1.3",
+		"@versini/dev-dependencies-server": "7.0.5",
+		"@versini/dev-dependencies-types": "3.0.8"
 	},
 	"packageManager": "pnpm@10.12.1"
 }
