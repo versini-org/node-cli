@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.4](https://github.com/versini-org/node-cli/compare/secret-v1.2.3...secret-v1.2.4) (2025-06-20)
+
+
+### Bug Fixes
+
+* convert tests from Jest to Vitest ([#399](https://github.com/versini-org/node-cli/issues/399)) ([cca4541](https://github.com/versini-org/node-cli/commit/cca45414f758508d21a179d41b9f04efe293d6d8))
+
 ## [1.2.3](https://github.com/versini-org/node-cli/compare/secret-v1.2.2...secret-v1.2.3) (2024-11-18)
 
 

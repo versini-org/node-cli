@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.7](https://github.com/versini-org/node-cli/compare/perf-v1.0.6...perf-v1.0.7) (2025-06-20)
+
+
+### Bug Fixes
+
+* convert tests from Jest to Vitest ([#399](https://github.com/versini-org/node-cli/issues/399)) ([cca4541](https://github.com/versini-org/node-cli/commit/cca45414f758508d21a179d41b9f04efe293d6d8))
+
 ## [1.0.6](https://github.com/aversini/node-cli/compare/perf-v1.0.5...perf-v1.0.6) (2024-04-21)
 
 
