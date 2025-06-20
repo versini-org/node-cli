@@ -81,10 +81,7 @@ function eq(a: any, b: any, aStack: any[], bStack: any[]) {
 			}
 		}
 	} else {
-		if (
-			Object.prototype.hasOwnProperty.call(a, "valueOf") &&
-			Object.prototype.hasOwnProperty.call(b, "valueOf")
-		) {
+		if (Object.hasOwn(a, "valueOf") && Object.hasOwn(b, "valueOf")) {
 			return a.valueOf() === b.valueOf();
 		}
 		const keys = Object.keys(a);
