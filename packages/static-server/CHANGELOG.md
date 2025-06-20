@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.2](https://github.com/versini-org/node-cli/compare/static-server-v3.1.1...static-server-v3.1.2) (2025-06-20)
+
+
+### Bug Fixes
+
+* convert tests from Jest to Vitest ([#399](https://github.com/versini-org/node-cli/issues/399)) ([cca4541](https://github.com/versini-org/node-cli/commit/cca45414f758508d21a179d41b9f04efe293d6d8))
+
 ## [3.1.1](https://github.com/versini-org/node-cli/compare/static-server-v3.1.0...static-server-v3.1.1) (2024-11-18)
 
 

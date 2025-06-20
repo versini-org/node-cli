@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.3](https://github.com/versini-org/node-cli/compare/utilities-v1.0.2...utilities-v1.0.3) (2025-06-20)
+
+
+### Bug Fixes
+
+* bump non-breaking dependencies to latest ([#401](https://github.com/versini-org/node-cli/issues/401)) ([79387db](https://github.com/versini-org/node-cli/commit/79387db1070910f59ce19a9300e5fa48b9c830a0))
+* convert tests from Jest to Vitest ([#399](https://github.com/versini-org/node-cli/issues/399)) ([cca4541](https://github.com/versini-org/node-cli/commit/cca45414f758508d21a179d41b9f04efe293d6d8))
+
 ## [1.0.2](https://github.com/aversini/node-cli/compare/utilities-v1.0.1...utilities-v1.0.2) (2024-04-21)
 
 

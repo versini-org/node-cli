@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.2](https://github.com/versini-org/node-cli/compare/bundlesize-v4.2.1...bundlesize-v4.2.2) (2025-06-20)
+
+
+### Bug Fixes
+
+* convert tests from Jest to Vitest ([#399](https://github.com/versini-org/node-cli/issues/399)) ([cca4541](https://github.com/versini-org/node-cli/commit/cca45414f758508d21a179d41b9f04efe293d6d8))
+
 ## [4.2.1](https://github.com/aversini/node-cli/compare/bundlesize-v4.2.0...bundlesize-v4.2.1) (2024-08-05)
 
 
