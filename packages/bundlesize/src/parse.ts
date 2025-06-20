@@ -20,7 +20,6 @@ export type Configuration = {
 	showHelp?: () => void;
 };
 
-/* v8 ignore next 57 */
 export const config: Configuration = parser({
 	meta: import.meta,
 	examples: [],
