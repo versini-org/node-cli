@@ -1,3 +1,4 @@
+/* v8 ignore start */
 import { parser } from "@node-cli/parser";
 import { defaultFlags } from "./defaults.js";
 
@@ -19,7 +20,7 @@ export type Configuration = {
 	showHelp?: () => void;
 };
 
-/* istanbul ignore next */
+/* v8 ignore next 57 */
 export const config: Configuration = parser({
 	meta: import.meta,
 	examples: [],
@@ -77,3 +78,4 @@ export const config: Configuration = parser({
 	usage: true,
 	defaultFlags,
 });
+/* v8 ignore stop */

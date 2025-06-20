@@ -8,9 +8,7 @@
 	"types": "./dist/index.d.ts",
 	"exports": "./dist/bundlesize.js",
 	"bin": "dist/bundlesize.js",
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"node": ">=18",
 	"scripts": {
 		"build": "npm-run-all --serial clean build:types build:js build:barrel",
@@ -21,9 +19,9 @@
 		"lint": "biome lint src",
 		"stats": "bundlesize -c bundlesize.config.js -p \"$npm_package_version\"",
 		"stats:diff": "bundlesize -t diff",
-		"test": "cross-env-shell NODE_OPTIONS=--experimental-vm-modules jest",
-		"test:coverage": "npm run test -- --coverage",
-		"test:watch": "npm run test -- --watch",
+		"test": "vitest run --globals",
+		"test:coverage": "vitest run --coverage --globals",
+		"test:watch": "vitest --globals",
 		"watch": "swc --strip-leading-paths --watch --out-dir dist src"
 	},
 	"dependencies": {
@@ -36,5 +34,9 @@
 	},
 	"publishConfig": {
 		"access": "public"
+	},
+	"devDependencies": {
+		"@vitest/coverage-v8": "^3.2.4",
+		"vitest": "^3.2.4"
 	}
 }

@@ -1,35 +1,17 @@
-import { Mock, SpiedFunction, UnknownFunction } from "jest-mock";
-
-import { jest } from "@jest/globals";
 import kleur from "kleur";
+import { MockInstance, vi } from "vitest";
 import { Search } from "../core";
 import { defaultFlags } from "../defaults";
 
 kleur.enabled = false;
 
-let mockLog: Mock<UnknownFunction>,
-	mockLogError: Mock<UnknownFunction>,
-	mockLogWarning: Mock<UnknownFunction>,
-	spyExit: SpiedFunction<{
-		(code?: number | undefined): never;
-		(code?: number | undefined): never;
-	}>,
-	spyLog: SpiedFunction<{
-		(...data: any[]): void;
-		(message?: any, ...optionalParameters: any[]): void;
-		(message?: any, ...optionalParameters: any[]): void;
-	}>,
-	spyLogError: SpiedFunction<{
-		(...data: any[]): void;
-		(message?: any, ...optionalParameters: any[]): void;
-		(message?: any, ...optionalParameters: any[]): void;
-	}>,
-	spyLogWarning: SpiedFunction<{
-		(...data: any[]): void;
-		(message?: any, ...optionalParameters: any[]): void;
-		(message?: any, ...optionalParameters: any[]): void;
-	}>,
-	mockExit: any;
+let mockLog: ReturnType<typeof vi.fn>,
+	mockLogError: ReturnType<typeof vi.fn>,
+	mockLogWarning: ReturnType<typeof vi.fn>,
+	spyExit: MockInstance,
+	spyLog: MockInstance,
+	spyLogError: MockInstance,
+	spyLogWarning: MockInstance;
 
 /**
  * Some utilities have logging capabilities that needs to be
@@ -40,15 +22,16 @@ let mockLog: Mock<UnknownFunction>,
  */
 describe("when testing for utilities with logging side-effects", () => {
 	beforeEach(() => {
-		mockExit = jest.fn();
-		mockLog = jest.fn();
-		mockLogError = jest.fn();
-		mockLogWarning = jest.fn();
+		mockLog = vi.fn();
+		mockLogError = vi.fn();
+		mockLogWarning = vi.fn();
 
-		spyExit = jest.spyOn(process, "exit").mockImplementation(mockExit);
-		spyLog = jest.spyOn(console, "log").mockImplementation(mockLog);
-		spyLogError = jest.spyOn(console, "error").mockImplementation(mockLogError);
-		spyLogWarning = jest
+		spyExit = vi
+			.spyOn(process, "exit")
+			.mockImplementation(() => undefined as never);
+		spyLog = vi.spyOn(console, "log").mockImplementation(mockLog);
+		spyLogError = vi.spyOn(console, "error").mockImplementation(mockLogError);
+		spyLogWarning = vi
 			.spyOn(console, "warn")
 			.mockImplementation(mockLogWarning);
 	});
@@ -430,7 +413,7 @@ describe("when testing for utilities with logging side-effects", () => {
 		const search = new Search(config);
 		await search.start();
 		expect(mockLog).not.toHaveBeenCalledWith(" package.json (1 occurrence)");
-		expect(mockExit).toHaveBeenCalledWith(1);
+		expect(spyExit).toHaveBeenCalledWith(1);
 	});
 });
 
@@ -466,12 +449,12 @@ describe("when testing for utilities with NO logging side-effects", () => {
 		expect(res).toContain("<source>./README.md</source>");
 	});
 
-	it("should find and print a minified content of a specific file based on the arguments (xml, cjs)", async () => {
+	it("should find and print a minified content of a specific file based on the arguments (xml, ts)", async () => {
 		const search = new Search({
 			...defaultFlags,
 			boring: true,
 			path: `${process.cwd()}`,
-			pattern: ".cjs",
+			pattern: ".ts",
 			short: true,
 			stats: false,
 			type: "f",
@@ -479,10 +462,8 @@ describe("when testing for utilities with NO logging side-effects", () => {
 			minifyForLLM: true,
 		});
 		const res = await search.start(true);
-		expect(res).toContain("<source>./jest.config.cjs</source>");
-		expect(res).toContain(
-			'const commonJest=require("../../configuration/jest.config.common.cjs");module.exports={...commonJest,};',
-		);
+		expect(res).toContain("<source>./src/utilities.ts</source>");
+		expect(res).toContain("export const convertDate");
 	});
 
 	it("should find and print a minified content of a specific file based on the arguments (xml, ts)", async () => {

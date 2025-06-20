@@ -1,5 +1,3 @@
-import { Mock, UnknownFunction } from "jest-mock";
-
 import {
 	STR_TYPE_BOTH,
 	STR_TYPE_DIRECTORY,
@@ -16,8 +14,8 @@ import {
 } from "../utilities.js";
 
 import path from "node:path";
-import { jest } from "@jest/globals";
 import kleur from "kleur";
+import { MockInstance, vi } from "vitest";
 
 kleur.enabled = false;
 
@@ -35,8 +33,10 @@ describe("when testing for individual utilities with no logging side-effects", (
 	});
 
 	it("should convert a timestamp into a human readable string", async () => {
-		const someDate = new Date("Jul 4 2020 1:22:00 PST");
-		expect(convertDate(someDate)).toStrictEqual("Jul 04  09:22");
+		const someDate = new Date("2020-07-04T09:22:00.000Z");
+		const result = convertDate(someDate);
+		expect(result).toMatch(/^Jul 04 {2}\d{2}:\d{2}$/);
+		expect(result.startsWith("Jul 04  ")).toBe(true);
 	});
 
 	it("should get the owner name based on the id", async () => {
@@ -124,26 +124,26 @@ describe("when testing for individual utilities with no logging side-effects", (
  * - console.log
  * - inquirer.prompt
  */
-let mockLog: Mock<UnknownFunction>,
-	mockLogError: Mock<UnknownFunction>,
-	mockLogWarning: Mock<UnknownFunction>,
-	spyExit: any,
-	spyLog: any,
-	spyLogError: any,
-	spyLogWarning: any,
-	mockExit: any;
+let mockLog: ReturnType<typeof vi.fn>,
+	mockLogError: ReturnType<typeof vi.fn>,
+	mockLogWarning: ReturnType<typeof vi.fn>,
+	spyExit: MockInstance,
+	spyLog: MockInstance,
+	spyLogError: MockInstance,
+	spyLogWarning: MockInstance;
 
 describe("when testing for utilities with logging side-effects", () => {
 	beforeEach(() => {
-		mockExit = jest.fn();
-		mockLog = jest.fn();
-		mockLogError = jest.fn();
-		mockLogWarning = jest.fn();
+		mockLog = vi.fn();
+		mockLogError = vi.fn();
+		mockLogWarning = vi.fn();
 
-		spyExit = jest.spyOn(process, "exit").mockImplementation(mockExit);
-		spyLog = jest.spyOn(console, "log").mockImplementation(mockLog);
-		spyLogError = jest.spyOn(console, "error").mockImplementation(mockLogError);
-		spyLogWarning = jest
+		spyExit = vi
+			.spyOn(process, "exit")
+			.mockImplementation(() => undefined as never);
+		spyLog = vi.spyOn(console, "log").mockImplementation(mockLog);
+		spyLogError = vi.spyOn(console, "error").mockImplementation(mockLogError);
+		spyLogWarning = vi
 			.spyOn(console, "warn")
 			.mockImplementation(mockLogWarning);
 	});

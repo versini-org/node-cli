@@ -152,7 +152,7 @@ export const getOwnerNameFromId = async (
 ): Promise<string | number> => {
 	let result: RunResult;
 
-	/* istanbul ignore else */
+	/* v8 ignore next */
 	if (ownerNames[uid]) {
 		return ownerNames[uid];
 	} else {
@@ -289,7 +289,7 @@ export const runGrepOnNode = async (
 			totalMatchingLines,
 		};
 	} catch (error) {
-		/* istanbul ignore next */
+		/* v8 ignore next */
 		logger.error(error);
 	}
 };

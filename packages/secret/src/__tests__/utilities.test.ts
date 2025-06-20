@@ -3,8 +3,8 @@ import { processFileWithPassword } from "../utilities";
 
 import os from "node:os";
 import path from "node:path";
-import { jest } from "@jest/globals";
 import fs from "fs-extra";
+import { vi } from "vitest";
 
 let mockLog: Mock<UnknownFunction>,
 	spyLog: SpiedFunction<{
@@ -42,8 +42,8 @@ describe("when testing with filesystem dependency", () => {
 
 describe("when testing with filesystem dependency and logging side effects", () => {
 	beforeEach(() => {
-		mockLog = jest.fn();
-		spyLog = jest.spyOn(console, "log").mockImplementation(mockLog);
+		mockLog = vi.fn();
+		spyLog = vi.spyOn(console, "log").mockImplementation(mockLog);
 	});
 	afterEach(() => {
 		spyLog.mockRestore();

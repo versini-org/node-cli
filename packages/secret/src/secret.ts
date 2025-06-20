@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* istanbul ignore file */
+/* v8 ignore start */
 
 import {
 	displayConfirmation,
@@ -64,3 +64,4 @@ try {
 } catch (error) {
 	logger.error(error);
 }
+/* v8 ignore stop */

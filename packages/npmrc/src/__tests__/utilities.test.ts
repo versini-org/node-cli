@@ -1,9 +1,9 @@
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { jest } from "@jest/globals";
 import fs from "fs-extra";
 import kleur from "kleur";
+import { vi } from "vitest";
 import { createProfile } from "../utilities/createProfile.js";
 import { deleteProfile } from "../utilities/deleteProfile.js";
 import { listProfiles } from "../utilities/listProfiles.js";
@@ -14,11 +14,11 @@ kleur.enabled = false;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 let mock = {
-		info: jest.fn(),
-		debug: jest.fn(),
-		warn: jest.fn(),
-		error: jest.fn(),
-		log: jest.fn(),
+		info: vi.fn(),
+		debug: vi.fn(),
+		warn: vi.fn(),
+		error: vi.fn(),
+		log: vi.fn(),
 	},
 	spyDate: any,
 	spyLocaleTime: any,
@@ -34,21 +34,21 @@ let mock = {
 describe("when testing with logging side-effects", () => {
 	beforeEach(() => {
 		kleur.enabled = false;
-		mock.info = jest.fn();
-		mock.log = jest.fn();
-		mock.debug = jest.fn();
-		mock.warn = jest.fn();
-		mock.error = jest.fn();
-		spyInfo = jest.spyOn(console, "info").mockImplementation(mock.info);
-		spyLog = jest.spyOn(console, "log").mockImplementation(mock.log);
-		spyDebug = jest.spyOn(console, "debug").mockImplementation(mock.debug);
-		spyWarn = jest.spyOn(console, "warn").mockImplementation(mock.warn);
-		spyError = jest.spyOn(console, "error").mockImplementation(mock.error);
+		mock.info = vi.fn();
+		mock.log = vi.fn();
+		mock.debug = vi.fn();
+		mock.warn = vi.fn();
+		mock.error = vi.fn();
+		spyInfo = vi.spyOn(console, "info").mockImplementation(mock.info);
+		spyLog = vi.spyOn(console, "log").mockImplementation(mock.log);
+		spyDebug = vi.spyOn(console, "debug").mockImplementation(mock.debug);
+		spyWarn = vi.spyOn(console, "warn").mockImplementation(mock.warn);
+		spyError = vi.spyOn(console, "error").mockImplementation(mock.error);
 
-		spyDate = jest
+		spyDate = vi
 			.spyOn(Date.prototype, "toDateString")
 			.mockImplementation(() => "Sat Oct 31 2020");
-		spyLocaleTime = jest
+		spyLocaleTime = vi
 			.spyOn(Date.prototype, "toLocaleTimeString")
 			.mockImplementation(() => "5:00:00 PM");
 	});

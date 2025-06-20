@@ -25,7 +25,7 @@ export const extractDuration = (config: Configuration): Duration => {
 	const { parameters, showHelp } = config;
 	let totalMicroseconds = 0;
 
-	/* istanbul ignore if */
+	/* v8 ignore next 6 */
 	if (
 		Object.entries(parameters).length === 0 ||
 		Object.entries(parameters).length > 1
@@ -35,7 +35,7 @@ export const extractDuration = (config: Configuration): Duration => {
 
 	const groups = parameters["0"].toLowerCase().match(/[+-]?[\d.]+[a-z]+/g);
 
-	/* istanbul ignore if */
+	/* v8 ignore next 2 */
 	if (groups === null) {
 		showHelp();
 	} else {
@@ -48,7 +48,7 @@ export const extractDuration = (config: Configuration): Duration => {
 	}
 };
 
-/* istanbul ignore next */
+/* v8 ignore next 60 */
 export class Timer {
 	config: Configuration;
 	startTime: number;

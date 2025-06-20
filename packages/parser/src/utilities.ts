@@ -136,18 +136,22 @@ export const meowParserHelper = (parameters: {
 			cli.showHelp();
 			process.exit(0);
 		}
+		/* v8 ignore start */
 	} catch {
 		// nothing to declare officer
 	}
+	/* v8 ignore stop */
 
 	try {
 		if (cli.flags.version) {
 			cli.showVersion();
 			process.exit(0);
 		}
+		/* v8 ignore start */
 	} catch {
 		// nothing to declare officer
 	}
+	/* v8 ignore stop */
 
 	if (restrictions && restrictions.length > 0) {
 		for (const rule of restrictions) {

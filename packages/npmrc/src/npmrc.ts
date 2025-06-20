@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* istanbul ignore file */
+/* v8 ignore start */
 
 import path from "node:path";
 import { config } from "./parse.js";
@@ -66,3 +66,4 @@ if (flags.list || (!flags.version && !flags.help)) {
 }
 
 showHelp();
+/* v8 ignore stop */

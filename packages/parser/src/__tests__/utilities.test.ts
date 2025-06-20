@@ -1,7 +1,7 @@
 import { meowOptionsHelper, meowParserHelper } from "../utilities.js";
 
-import { jest } from "@jest/globals";
 import kleur from "kleur";
+import { vi } from "vitest";
 
 kleur.enabled = false;
 
@@ -323,14 +323,14 @@ describe("when testing for utilities with logging side-effects", () => {
 		mockExit = () => {
 			return undefined as never;
 		};
-		mockLog = jest.fn();
-		mockLogError = jest.fn();
-		mockLogWarning = jest.fn();
+		mockLog = vi.fn();
+		mockLogError = vi.fn();
+		mockLogWarning = vi.fn();
 
-		spyExit = jest.spyOn(process, "exit").mockImplementation(mockExit);
-		spyLog = jest.spyOn(console, "log").mockImplementation(mockLog);
-		spyLogError = jest.spyOn(console, "error").mockImplementation(mockLogError);
-		spyLogWarning = jest
+		spyExit = vi.spyOn(process, "exit").mockImplementation(mockExit);
+		spyLog = vi.spyOn(console, "log").mockImplementation(mockLog);
+		spyLogError = vi.spyOn(console, "error").mockImplementation(mockLogError);
+		spyLogWarning = vi
 			.spyOn(console, "warn")
 			.mockImplementation(mockLogWarning);
 	});

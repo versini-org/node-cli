@@ -214,7 +214,7 @@ export class Logger {
 	}
 }
 
-/* istanbul ignore next */
+/* v8 ignore next 48 */
 export class Spinner {
 	spinner: Ora;
 
