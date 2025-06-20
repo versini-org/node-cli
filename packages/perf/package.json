@@ -7,9 +7,7 @@
 	"type": "module",
 	"types": "./dist/index.d.ts",
 	"exports": "./dist/performance.js",
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"node": ">=16",
 	"dependencies": {
 		"@node-cli/logger": "workspace:../logger",
@@ -22,11 +20,16 @@
 		"build:types": "tsc",
 		"clean": "rimraf dist types coverage",
 		"lint": "biome lint src",
-		"test": "cross-env-shell NODE_OPTIONS=--experimental-vm-modules jest",
-		"test:coverage": "npm run test -- --coverage",
+		"test": "vitest run --globals",
+		"test:coverage": "vitest run --coverage --globals",
+		"test:watch": "vitest --globals",
 		"watch": "swc --strip-leading-paths --watch --out-dir dist src"
 	},
 	"publishConfig": {
 		"access": "public"
+	},
+	"devDependencies": {
+		"@vitest/coverage-v8": "3.2.4",
+		"vitest": "3.2.4"
 	}
 }

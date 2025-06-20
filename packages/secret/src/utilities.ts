@@ -43,7 +43,7 @@ export const processFileWithPassword = async (
 	}
 };
 
-/* istanbul ignore next */
+/* v8 ignore next 12 */
 export const displayConfirmation = async (message: string) => {
 	const questions = {
 		default: true,
@@ -56,7 +56,7 @@ export const displayConfirmation = async (message: string) => {
 	return answers.goodToGo;
 };
 
-/* istanbul ignore next */
+/* v8 ignore next 16 */
 export const displayPromptWithPassword = async (message: string) => {
 	const questions = {
 		message: message,
@@ -73,7 +73,7 @@ export const displayPromptWithPassword = async (message: string) => {
 	return answers.password;
 };
 
-/* istanbul ignore next */
+/* v8 ignore next 8 */
 export const shouldContinue = (goodToGo: boolean) => {
 	if (!goodToGo) {
 		logger.log("\nBye then!");

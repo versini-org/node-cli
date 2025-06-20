@@ -270,7 +270,7 @@ export class Search {
 	async readFileContent(filePath: string): Promise<string> {
 		try {
 			// Check if it's a known binary extension
-			/* istanbul ignore if */
+			/* v8 ignore next */
 			if (isBinaryFileExtension(filePath)) {
 				return null;
 			}
@@ -279,7 +279,7 @@ export class Search {
 				? await minifyFileContent(filePath, content)
 				: content;
 		} catch (_error) {
-			/* istanbul ignore next */
+			/* v8 ignore next */
 			return null;
 		}
 	}
@@ -379,7 +379,7 @@ export class Search {
 			return await this.printFilesContent(returnResults);
 		}
 
-		/* istanbul ignore if */
+		/* v8 ignore next */
 		if (!this.boring) {
 			logger.log();
 		}
@@ -407,7 +407,7 @@ export class Search {
 					name: string,
 					separator: string = "";
 
-				/* istanbul ignore if */
+				/* v8 ignore next */
 				if (this.displayLongListing) {
 					list = await formatLongListings(node.stat, node.type);
 					separator = "\t";
@@ -430,7 +430,7 @@ export class Search {
 						node.name,
 						this.grep,
 					);
-					/* istanbul ignore else */
+					/* v8 ignore next */
 					if (totalMatchingLines) {
 						this.totalFileFound++;
 						const occurrences = plur("occurrence", totalMatchingLines);
@@ -447,7 +447,7 @@ export class Search {
 						logger.log(`${results.join("\n")}\n`);
 					}
 				} else {
-					/* istanbul ignore next */
+					/* v8 ignore next */
 					if (!this.grep) {
 						logger.log(
 							` %s${separator}%s${separator}%s${separator}%s${separator}%s`,

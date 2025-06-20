@@ -1,4 +1,4 @@
-/* istanbul ignore file */
+/* v8 ignore start */
 import { basename, dirname, join, relative } from "node:path";
 import { promisify } from "node:util";
 import fs from "fs-extra";
@@ -170,3 +170,4 @@ export class GitIgnoreHandler {
 		this.ignoredPathsCache.clear();
 	}
 }
+/* v8 ignore stop */

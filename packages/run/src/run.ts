@@ -49,7 +49,7 @@ export const run = async (
 		execaOptions.shell = true;
 	}
 
-	/* istanbul ignore next */
+	/* v8 ignore next 3 */
 	if (options?.streamOutput) {
 		execaOptions.stdout = ["pipe", "inherit"];
 	}

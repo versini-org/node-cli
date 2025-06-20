@@ -26,12 +26,14 @@ export const formatRegistries = (registries: string) => {
 				try {
 					const jsonObject = JSON.parse(`{${jsonLine}}`);
 					return jsonObject;
+					/* v8 ignore start */
 				} catch {
 					// nothing to declare officer
 				}
 			}
 			// eslint-disable-next-line unicorn/no-null
 			return null;
+			/* v8 ignore stop */
 		})
 		.filter(Boolean); // remove undefined values
 

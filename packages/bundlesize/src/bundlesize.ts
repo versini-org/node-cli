@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* istanbul ignore file */
+/* v8 ignore start */
 
 import { IGNORE, STDOUT } from "./utilities.js";
 
@@ -78,3 +78,4 @@ if (flags.type === "report") {
 
 log.error("Invalid type, please use 'size' or 'report'");
 process.exit(1);
+/* v8 ignore stop */

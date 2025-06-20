@@ -130,6 +130,7 @@ export const getRawStats = async ({ flags }): Promise<ReportStats> => {
 	if (outputFile !== STDOUT) {
 		try {
 			existingResults = fs.readJsonSync(outputFile);
+			/* v8 ignore next 6 */
 		} catch {
 			/**
 			 * There are no existing results, so we can ignore this error,

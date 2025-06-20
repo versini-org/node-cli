@@ -1,3 +1,4 @@
+/* v8 ignore start */
 import { parser } from "@node-cli/parser";
 import kleur from "kleur";
 
@@ -18,7 +19,7 @@ export type Configuration = {
 	parameters?: Parameters;
 };
 
-/* istanbul ignore next */
+/* v8 ignore next 67 */
 export const config: Configuration = parser({
 	meta: import.meta,
 	examples: [
@@ -86,3 +87,4 @@ export const config: Configuration = parser({
 
 	usage: "secret [options] [input] [output]",
 });
+/* v8 ignore stop */

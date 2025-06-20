@@ -1,9 +1,7 @@
-import { Mock, UnknownFunction } from "jest-mock";
-
-import { jest } from "@jest/globals";
+import { vi } from "vitest";
 import { Performance } from "../performance";
 
-let mockLogError: Mock<UnknownFunction>, spyLogError: any;
+let mockLogError: any, spyLogError: any;
 
 describe("when testing for Performance with no logging side-effects", () => {
 	it("should report basic performance data", async () => {
@@ -46,9 +44,9 @@ describe("when testing for performance.now polyfill", () => {
  */
 describe("when testing for utilities with logging side-effects", () => {
 	beforeEach(() => {
-		mockLogError = jest.fn();
+		mockLogError = vi.fn();
 
-		spyLogError = jest.spyOn(console, "error").mockImplementation(mockLogError);
+		spyLogError = vi.spyOn(console, "error").mockImplementation(mockLogError);
 	});
 	afterEach(() => {
 		spyLogError.mockRestore();

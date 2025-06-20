@@ -146,15 +146,15 @@ export async function minifyFileContent(
 		content.length > 0 &&
 		(fileExtension.endsWith("js") ||
 			fileExtension.endsWith("ts") ||
-			/* istanbul ignore next */
+			/* v8 ignore next */
 			fileExtension.endsWith("jsx") ||
-			/* istanbul ignore next */
+			/* v8 ignore next */
 			fileExtension.endsWith("tsx"))
 	) {
 		return minifyJs(content);
 	}
 
-	/* istanbul ignore next */
+	/* v8 ignore next */
 	if (content && content.length > 0 && fileExtension.endsWith("css")) {
 		return minifyCss(content);
 	}

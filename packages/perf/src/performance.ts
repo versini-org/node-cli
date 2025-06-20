@@ -14,7 +14,7 @@ export class Performance {
 
 	constructor() {
 		this.perfObserver = new PerformanceObserver(
-			/* istanbul ignore next */ () => {
+			/* v8 ignore next 2 */ () => {
 				performance.clearMeasures();
 			},
 		);

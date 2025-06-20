@@ -1,3 +1,4 @@
+/* v8 ignore start */
 import { defaultFlags, defaultParameters } from "./defaults.js";
 
 import { parser } from "@node-cli/parser";
@@ -23,7 +24,7 @@ export type Configuration = {
 	parameters?: Parameters;
 };
 
-/* istanbul ignore next */
+/* v8 ignore start */
 export const config: Configuration = parser({
 	meta: import.meta,
 	examples: [
@@ -140,3 +141,4 @@ export const config: Configuration = parser({
 	defaultFlags,
 	defaultParameters,
 });
+/* v8 ignore stop */

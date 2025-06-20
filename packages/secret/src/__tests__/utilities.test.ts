@@ -1,17 +1,11 @@
-import { Mock, SpiedFunction, UnknownFunction } from "jest-mock";
 import { processFileWithPassword } from "../utilities";
 
 import os from "node:os";
 import path from "node:path";
-import { jest } from "@jest/globals";
 import fs from "fs-extra";
+import { vi } from "vitest";
 
-let mockLog: Mock<UnknownFunction>,
-	spyLog: SpiedFunction<{
-		(...data: any[]): void;
-		(message?: any, ...optionalParameters: any[]): void;
-		(message?: any, ...optionalParameters: any[]): void;
-	}>;
+let mockLog: any, spyLog: any;
 const password = "this is a skrt";
 const contentToEncryptUTF8 = "⭐️ Hello World ⭐️";
 
@@ -42,8 +36,8 @@ describe("when testing with filesystem dependency", () => {
 
 describe("when testing with filesystem dependency and logging side effects", () => {
 	beforeEach(() => {
-		mockLog = jest.fn();
-		spyLog = jest.spyOn(console, "log").mockImplementation(mockLog);
+		mockLog = vi.fn();
+		spyLog = vi.spyOn(console, "log").mockImplementation(mockLog);
 	});
 	afterEach(() => {
 		spyLog.mockRestore();

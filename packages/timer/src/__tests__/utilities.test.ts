@@ -2,8 +2,8 @@ import moment, { Duration } from "moment";
 import { extractDuration, timeToMicroseconds } from "../utilities.js";
 
 import path from "node:path";
-import { jest } from "@jest/globals";
 import kleur from "kleur";
+import { vi } from "vitest";
 
 kleur.enabled = false;
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* istanbul ignore file */
+/* v8 ignore start */
 
 import path from "node:path";
 import { Logger } from "@node-cli/logger";
@@ -32,3 +32,4 @@ const search = new Search({
 });
 
 await search.start();
+/* v8 ignore stop */
