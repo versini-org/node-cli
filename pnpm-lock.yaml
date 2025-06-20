@@ -64,10 +64,10 @@ importers:
         version: 7.7.2
     devDependencies:
       '@vitest/coverage-v8':
-        specifier: ^3.2.4
+        specifier: 3.2.4
         version: 3.2.4(vitest@3.2.4(@types/node@22.15.20)(happy-dom@17.4.7)(jsdom@26.1.0)(yaml@2.8.0))
       vitest:
-        specifier: ^3.2.4
+        specifier: 3.2.4
         version: 3.2.4(@types/node@22.15.20)(happy-dom@17.4.7)(jsdom@26.1.0)(yaml@2.8.0)
 
   packages/envtools: {}
@@ -85,10 +85,10 @@ importers:
         version: 8.2.0
     devDependencies:
       '@vitest/coverage-v8':
-        specifier: ^3.2.4
+        specifier: 3.2.4
         version: 3.2.4(vitest@3.2.4(@types/node@22.15.20)(happy-dom@17.4.7)(jsdom@26.1.0)(yaml@2.8.0))
       vitest:
-        specifier: ^3.2.4
+        specifier: 3.2.4
         version: 3.2.4(@types/node@22.15.20)(happy-dom@17.4.7)(jsdom@26.1.0)(yaml@2.8.0)
 
   packages/npmrc:
@@ -110,10 +110,10 @@ importers:
         version: 4.1.5
     devDependencies:
       '@vitest/coverage-v8':
-        specifier: ^3.2.4
+        specifier: 3.2.4
         version: 3.2.4(vitest@3.2.4(@types/node@22.15.20)(happy-dom@17.4.7)(jsdom@26.1.0)(yaml@2.8.0))
       vitest:
-        specifier: ^3.2.4
+        specifier: 3.2.4
         version: 3.2.4(@types/node@22.15.20)(happy-dom@17.4.7)(jsdom@26.1.0)(yaml@2.8.0)
 
   packages/parser:
@@ -135,10 +135,10 @@ importers:
         version: 13.2.0
     devDependencies:
       '@vitest/coverage-v8':
-        specifier: ^3.2.4
+        specifier: 3.2.4
         version: 3.2.4(vitest@3.2.4(@types/node@22.15.20)(happy-dom@17.4.7)(jsdom@26.1.0)(yaml@2.8.0))
       vitest:
-        specifier: ^3.2.4
+        specifier: 3.2.4
         version: 3.2.4(@types/node@22.15.20)(happy-dom@17.4.7)(jsdom@26.1.0)(yaml@2.8.0)
 
   packages/perf:
@@ -151,10 +151,10 @@ importers:
         version: link:../utilities
     devDependencies:
       '@vitest/coverage-v8':
-        specifier: ^3.2.4
+        specifier: 3.2.4
         version: 3.2.4(vitest@3.2.4(@types/node@22.15.20)(happy-dom@17.4.7)(jsdom@26.1.0)(yaml@2.8.0))
       vitest:
-        specifier: ^3.2.4
+        specifier: 3.2.4
         version: 3.2.4(@types/node@22.15.20)(happy-dom@17.4.7)(jsdom@26.1.0)(yaml@2.8.0)
 
   packages/run:
@@ -167,10 +167,10 @@ importers:
         version: 4.1.5
     devDependencies:
       '@vitest/coverage-v8':
-        specifier: ^3.2.4
+        specifier: 3.2.4
         version: 3.2.4(vitest@3.2.4(@types/node@22.15.20)(happy-dom@17.4.7)(jsdom@26.1.0)(yaml@2.8.0))
       vitest:
-        specifier: ^3.2.4
+        specifier: 3.2.4
         version: 3.2.4(@types/node@22.15.20)(happy-dom@17.4.7)(jsdom@26.1.0)(yaml@2.8.0)
 
   packages/search:
@@ -207,10 +207,10 @@ importers:
         version: 11.1.0
     devDependencies:
       '@vitest/coverage-v8':
-        specifier: ^3.2.4
+        specifier: 3.2.4
         version: 3.2.4(vitest@3.2.4(@types/node@22.15.20)(happy-dom@17.4.7)(jsdom@26.1.0)(yaml@2.8.0))
       vitest:
-        specifier: ^3.2.4
+        specifier: 3.2.4
         version: 3.2.4(@types/node@22.15.20)(happy-dom@17.4.7)(jsdom@26.1.0)(yaml@2.8.0)
 
   packages/secret:
@@ -229,10 +229,10 @@ importers:
         version: 9.3.7
     devDependencies:
       '@vitest/coverage-v8':
-        specifier: ^3.2.4
+        specifier: 3.2.4
         version: 3.2.4(vitest@3.2.4(@types/node@22.15.20)(happy-dom@17.4.7)(jsdom@26.1.0)(yaml@2.8.0))
       vitest:
-        specifier: ^3.2.4
+        specifier: 3.2.4
         version: 3.2.4(@types/node@22.15.20)(happy-dom@17.4.7)(jsdom@26.1.0)(yaml@2.8.0)
 
   packages/static-server:
@@ -278,10 +278,10 @@ importers:
         version: 1.0.37
     devDependencies:
       '@vitest/coverage-v8':
-        specifier: ^3.2.4
+        specifier: 3.2.4
         version: 3.2.4(vitest@3.2.4(@types/node@22.15.20)(happy-dom@17.4.7)(jsdom@26.1.0)(yaml@2.8.0))
       vitest:
-        specifier: ^3.2.4
+        specifier: 3.2.4
         version: 3.2.4(@types/node@22.15.20)(happy-dom@17.4.7)(jsdom@26.1.0)(yaml@2.8.0)
 
   packages/timer:
@@ -300,10 +300,10 @@ importers:
         version: 10.0.1
     devDependencies:
       '@vitest/coverage-v8':
-        specifier: ^3.2.4
+        specifier: 3.2.4
         version: 3.2.4(vitest@3.2.4(@types/node@22.15.20)(happy-dom@17.4.7)(jsdom@26.1.0)(yaml@2.8.0))
       vitest:
-        specifier: ^3.2.4
+        specifier: 3.2.4
         version: 3.2.4(@types/node@22.15.20)(happy-dom@17.4.7)(jsdom@26.1.0)(yaml@2.8.0)
 
   packages/utilities:
@@ -313,10 +313,10 @@ importers:
         version: 4.17.21
     devDependencies:
       '@vitest/coverage-v8':
-        specifier: ^3.2.4
+        specifier: 3.2.4
         version: 3.2.4(vitest@3.2.4(@types/node@22.15.20)(happy-dom@17.4.7)(jsdom@26.1.0)(yaml@2.8.0))
       vitest:
-        specifier: ^3.2.4
+        specifier: 3.2.4
         version: 3.2.4(@types/node@22.15.20)(happy-dom@17.4.7)(jsdom@26.1.0)(yaml@2.8.0)
 
 packages:

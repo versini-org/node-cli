@@ -8,9 +8,7 @@
 	"types": "./dist/index.d.ts",
 	"exports": "./dist/server.js",
 	"bin": "dist/server.js",
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"node": ">=18",
 	"scripts": {
 		"build": "npm-run-all clean build:types build:js build:barrel",
@@ -40,7 +38,7 @@
 		"access": "public"
 	},
 	"devDependencies": {
-		"@vitest/coverage-v8": "^3.2.4",
-		"vitest": "^3.2.4"
+		"@vitest/coverage-v8": "3.2.4",
+		"vitest": "3.2.4"
 	}
 }

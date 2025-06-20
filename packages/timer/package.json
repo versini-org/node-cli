@@ -8,9 +8,7 @@
 	"types": "./dist/index.d.ts",
 	"exports": "./dist/timer.js",
 	"bin": "dist/timer.js",
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"node": ">=16",
 	"scripts": {
 		"build": "npm-run-all --serial clean build:types build:js build:barrel",
@@ -34,7 +32,7 @@
 		"access": "public"
 	},
 	"devDependencies": {
-		"@vitest/coverage-v8": "^3.2.4",
-		"vitest": "^3.2.4"
+		"@vitest/coverage-v8": "3.2.4",
+		"vitest": "3.2.4"
 	}
 }
