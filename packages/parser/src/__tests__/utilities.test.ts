@@ -302,22 +302,25 @@ describe("when testing for meowHelpers with no logging side-effects", () => {
  * - inquirer.prompt
  */
 let mockLog:
-		| jest.Mock<any>
+		| ReturnType<typeof vi.fn>
 		| ((message?: any, ...optionalParameters: any[]) => void)
 		| undefined,
 	mockLogError:
-		| jest.Mock<any>
+		| ReturnType<typeof vi.fn>
 		| ((message?: any, ...optionalParameters: any[]) => void)
 		| undefined,
 	mockLogWarning:
-		| jest.Mock<any>
+		| ReturnType<typeof vi.fn>
 		| ((message?: any, ...optionalParameters: any[]) => void)
 		| undefined,
 	spyExit: any,
 	spyLog: any,
 	spyLogError: any,
 	spyLogWarning: any,
-	mockExit: jest.Mock<any> | ((code?: number | undefined) => never) | undefined;
+	mockExit:
+		| ReturnType<typeof vi.fn>
+		| ((code?: string | number | null | undefined) => never)
+		| undefined;
 describe("when testing for utilities with logging side-effects", () => {
 	beforeEach(() => {
 		mockExit = () => {

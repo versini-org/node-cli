@@ -481,7 +481,7 @@ describe("when testing for utilities with NO logging side-effects", () => {
 		const res = await search.start(true);
 		expect(res).toContain("<source>./src/__tests__/core.test.ts</source>");
 		expect(res).toContain(
-			'import {Mock,SpiedFunction,UnknownFunction} from "jest-mock";import {jest} from "@jest/globals";',
+			'import {ReturnType} from "vitest";import {vi} from "vitest";',
 		);
 	});
 

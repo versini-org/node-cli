@@ -1,9 +1,7 @@
-import { Mock, UnknownFunction } from "jest-mock";
-
 import { vi } from "vitest";
 import { Performance } from "../performance";
 
-let mockLogError: Mock<UnknownFunction>, spyLogError: any;
+let mockLogError: any, spyLogError: any;
 
 describe("when testing for Performance with no logging side-effects", () => {
 	it("should report basic performance data", async () => {
