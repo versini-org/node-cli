@@ -70,6 +70,25 @@ importers:
         specifier: 3.2.4
         version: 3.2.4(@types/node@24.2.1)(happy-dom@18.0.1)(jsdom@26.1.0)(tsx@4.20.4)(yaml@2.8.1)
 
+  packages/comments:
+    dependencies:
+      '@node-cli/logger':
+        specifier: workspace:../logger
+        version: link:../logger
+      '@node-cli/parser':
+        specifier: workspace:../parser
+        version: link:../parser
+      '@node-cli/utilities':
+        specifier: workspace:../utilities
+        version: link:../utilities
+    devDependencies:
+      '@vitest/coverage-v8':
+        specifier: 3.2.4
+        version: 3.2.4(vitest@3.2.4(@types/node@24.2.1)(happy-dom@18.0.1)(jsdom@26.1.0)(tsx@4.20.4)(yaml@2.8.1))
+      vitest:
+        specifier: 3.2.4
+        version: 3.2.4(@types/node@24.2.1)(happy-dom@18.0.1)(jsdom@26.1.0)(tsx@4.20.4)(yaml@2.8.1)
+
   packages/envtools: {}
 
   packages/logger:

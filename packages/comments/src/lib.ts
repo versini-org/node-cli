@@ -1,0 +1,370 @@
+import { Logger } from "@node-cli/logger";
+
+export const logger = new Logger({ boring: process.env.NODE_ENV === "test" });
+
+export interface ProcessOptions {
+	width: number;
+	wrapLineComments: boolean;
+	mergeLineComments: boolean;
+}
+
+export interface FileResult {
+	original: string;
+	transformed: string;
+	changed: boolean;
+}
+
+interface JsDocMatch {
+	indent: string;
+	body: string;
+	start: number;
+	end: number;
+}
+
+// Safety guards / limits (defense-in-depth vs pathological or malicious input)
+// Large indentation sequences (e.g. thousands of tabs) aren't meaningful for real
+// source formatting and could be used to inflate processing time if a regex
+// exhibited super-linear behavior. Our pattern is already linear (tempered), but
+// we still cap accepted indentation length to keep work bounded.
+const MAX_JSDOC_INDENT = 256; // characters (tabs + spaces)
+
+// JSDoc block extraction:
+// Previous pattern used a lazy dot-all: ([\s\S]*?) which could, under
+// pathological inputs, produce excessive backtracking. We replaced it with a
+// tempered pattern that advances linearly by never letting the inner part
+// consume a closing '*/'. This avoids catastrophic behavior while keeping
+// correctness.
+//
+// Reviewer (PR) concern: potential ReDoS on crafted inputs containing many
+// leading tabs then '/**'. Analysis: The inner quantified group
+//   (?:[^*]|\*(?!/))*
+// is unambiguous: on each iteration it consumes exactly one character and can
+// never match the closing sentinel '*/' because of the negative lookahead. This
+// means the engine proceeds in O(n) time relative to the block body size.
+// There is no nested ambiguous quantifier (e.g. (a+)*, (.*)+, etc.). The only
+// other quantified part ^[\t ]* is a simple character class that is consumed
+// once per line start with no backtracking explosion potential.
+//
+// Defense-in-depth: we still (1) cap processed body length (see below) and
+// (2) cap accepted indentation length (MAX_JSDOC_INDENT) after match to ensure
+// we skip absurdly indented constructs.
+//
+// Pattern explanation:
+//  (^ [\t ]* )    -> capture indentation at start of line (multiline mode)
+//  /\*\*          -> opening delimiter
+//  (              -> capture group 2 body
+//    (?:[^*]      -> any non-* char
+//      |\*(?!/)   -> or a * not followed by /
+//    )*           -> repeated greedily (cannot cross closing */)
+//  )
+//  \n?[\t ]*\*/   -> optional newline + trailing indent + closing */
+// Complexity: linear in length of the matched block.
+const JSDOC_REGEX = /(^[\t ]*)\/\*\*((?:[^*]|\*(?!\/))*)\n?[\t ]*\*\//gm;
+
+export function diffLines(a: string, b: string): string {
+	if (a === b) {
+		return "";
+	}
+	const A = a.split(/\n/);
+	const B = b.split(/\n/);
+	const out: string[] = [];
+	const m = Math.max(A.length, B.length);
+	for (let i = 0; i < m; i++) {
+		if (A[i] === B[i]) {
+			continue;
+		}
+		if (A[i] !== undefined) {
+			out.push(`- ${A[i]}`);
+		}
+		if (B[i] !== undefined) {
+			out.push(`+ ${B[i]}`);
+		}
+	}
+	return out.join("\n");
+}
+
+function endsSentence(line: string): boolean {
+	return /[.!?](?:['")\]]*)$/.test(line.trim());
+}
+
+function needsTerminalPunctuation(line: string): boolean {
+	return /[A-Za-z0-9")\]']$/.test(line) && !endsSentence(line);
+}
+
+function maybeAddPeriod(line: string): string {
+	return needsTerminalPunctuation(line) ? line + "." : line;
+}
+
+function normalizeNote(line: string): string {
+	return line.replace(/^note:/i, "NOTE:");
+}
+
+function isListLike(line: string): boolean {
+	return /^(?:[-*+] |\d+\. )/.test(line.trim());
+}
+
+function isTagLine(line: string): boolean {
+	return /^@/.test(line.trim());
+}
+
+function isHeadingLike(line: string): boolean {
+	const t = line.trim();
+	return /:$/.test(t) && !isTagLine(t);
+}
+
+function isCodeFence(line: string): boolean {
+	return /^```/.test(line.trim());
+}
+
+function isVisuallyIndentedCode(line: string): boolean {
+	return /^\s{2,}\S/.test(line);
+}
+
+function wrapWords(text: string, width: number): string[] {
+	const words = text.split(/\s+/).filter(Boolean);
+	const lines: string[] = [];
+	let cur = "";
+	for (const w of words) {
+		if (!cur.length) {
+			cur = w;
+			continue;
+		}
+		if (cur.length + 1 + w.length <= width) {
+			cur += " " + w;
+		} else {
+			lines.push(cur);
+			cur = w;
+		}
+	}
+	if (cur) {
+		lines.push(cur);
+	}
+	return lines.length ? lines : [""];
+}
+
+function buildJsDoc(indent: string, rawBody: string, width: number): string {
+	const lines = rawBody.split(/\n/).map((l) => l.replace(/^\s*\*? ?/, ""));
+	const out: string[] = [];
+	let para: string[] = [];
+	let inFence = false;
+	const prefix = indent + " * ";
+	const avail = Math.max(10, width - prefix.length);
+
+	function flush(): void {
+		if (!para.length) {
+			return;
+		}
+		let text = para.join(" ").replace(/\s+/g, " ").trim();
+		text = normalizeNote(text);
+		text = maybeAddPeriod(text);
+		for (const l of wrapWords(text, avail)) {
+			out.push(prefix + l);
+		}
+		para = [];
+	}
+
+	for (const raw of lines) {
+		const trimmed = raw.trimEnd();
+		if (isCodeFence(trimmed)) {
+			flush();
+			inFence = !inFence;
+			out.push(prefix + trimmed);
+			continue;
+		}
+		if (inFence) {
+			out.push(prefix + trimmed);
+			continue;
+		}
+		if (
+			trimmed === "" ||
+			isListLike(trimmed) ||
+			isTagLine(trimmed) ||
+			isHeadingLike(trimmed) ||
+			isVisuallyIndentedCode(raw)
+		) {
+			flush();
+			if (trimmed === "") {
+				if (
+					out.length === 0 ||
+					/^(?:\s*\*\s*)$/.test(out[out.length - 1]) === false
+				) {
+					out.push(prefix.trimEnd());
+				}
+			} else {
+				out.push(prefix + normalizeNote(trimmed));
+			}
+			continue;
+		}
+		para.push(trimmed);
+	}
+	flush();
+	return `${indent}/**\n${out.join("\n")}\n${indent}*/`;
+}
+
+function reflowJsDocBlocks(
+	content: string,
+	width: number,
+): { content: string; blocks: number } {
+	JSDOC_REGEX.lastIndex = 0;
+	const blocks: JsDocMatch[] = [];
+	let m: RegExpExecArray | null = JSDOC_REGEX.exec(content);
+	while (m) {
+		const indent = m[1] || "";
+		const body = m[2] || "";
+		// Body length guard protects against extremely large comment blocks.
+		if (body.length <= 500_000 && indent.length <= MAX_JSDOC_INDENT) {
+			blocks.push({
+				indent,
+				body,
+				start: m.index,
+				end: m.index + m[0].length,
+			});
+		}
+		m = JSDOC_REGEX.exec(content);
+	}
+	if (!blocks.length) {
+		return { content, blocks: 0 };
+	}
+	let delta = 0;
+	let out = content;
+	for (const b of blocks) {
+		const original = out.slice(b.start + delta, b.end + delta);
+		const built = buildJsDoc(b.indent, b.body, width);
+		if (original !== built) {
+			out = out.slice(0, b.start + delta) + built + out.slice(b.end + delta);
+			delta += built.length - original.length;
+		}
+	}
+	return { content: out, blocks: blocks.length };
+}
+
+function wrapLineComments(
+	content: string,
+	width: number,
+): { content: string; applied: boolean } {
+	const lines = content.split(/\n/);
+	let changed = false;
+	const out: string[] = [];
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i];
+		const m = /^(\s*)\/\/( ?)(.*)$/.exec(line);
+		if (!m || /^\/\/\//.test(line)) {
+			out.push(line);
+			continue;
+		}
+		const indent = m[1];
+		const body = m[3];
+		if (/^(@|eslint|ts-ignore)/.test(body) || /https?:\/\//.test(body)) {
+			out.push(line);
+			continue;
+		}
+		const prefix = indent + "// ";
+		const avail = Math.max(10, width - prefix.length);
+		let text = body.replace(/\s+/g, " ").trim();
+		text = normalizeNote(text);
+		text = maybeAddPeriod(text);
+		const wrapped = wrapWords(text, avail).map((w) => prefix + w);
+		if (wrapped.join("\n") !== line) {
+			changed = true;
+		}
+		out.push(...wrapped);
+	}
+	return { content: out.join("\n"), applied: changed };
+}
+
+function mergeLineCommentGroups(content: string): {
+	content: string;
+	merged: boolean;
+} {
+	const lines = content.split(/\n/);
+	const out: string[] = [];
+	let i = 0;
+	let merged = false;
+	while (i < lines.length) {
+		if (/^\s*\/\//.test(lines[i]) && !/^\s*\/\/\//.test(lines[i])) {
+			const prev = i > 0 ? lines[i - 1] : "";
+			const prevTrim = prev.trim();
+			const contextEligible = prevTrim === "" || /[{}]$/.test(prevTrim);
+			if (!contextEligible) {
+				out.push(lines[i]);
+				i++;
+				continue;
+			}
+			const group: { indent: string; text: string }[] = [];
+			let j = i;
+			while (j < lines.length) {
+				const lm = /^(\s*)\/\/ ?(.*)$/.exec(lines[j]);
+				if (!lm || /^\s*\/\/\//.test(lines[j])) {
+					break;
+				}
+				const txt = lm[2];
+				if (
+					/license|copyright/i.test(txt) ||
+					/https?:\/\//.test(txt) ||
+					/eslint|ts-ignore/.test(txt)
+				) {
+					break; // do not merge directive / license groups
+				}
+				group.push({ indent: lm[1], text: txt });
+				j++;
+			}
+			if (group.length >= 2) {
+				// Structured explanatory blocks: now we CONVERT them into a multi-line JSDoc block
+				// while preserving each original line (instead of merging into a single paragraph).
+				// We must escape any raw '*/' inside the body to avoid premature termination.
+				// Definition of structured: presence of arrows (->), regex tokens (?:, */), or the phrase 'Pattern explanation:'.
+				const structured = group.some(
+					(g) =>
+						/->/.test(g.text) ||
+						/(\(\?:|\*\/)/.test(g.text) ||
+						/Pattern explanation:/i.test(g.text),
+				);
+				if (structured) {
+					const indent = group[0].indent;
+					out.push(`${indent}/**`);
+					for (const ln of group) {
+						// Escape closing sentinel inside content
+						const safe = ln.text.replace(/\*\//g, "*\\/");
+						out.push(`${indent} * ${safe}`);
+					}
+					out.push(`${indent} */`);
+					merged = true;
+					i = j;
+					continue;
+				}
+				const indent = group[0].indent;
+				merged = true;
+				const para = group
+					.map((g) => normalizeNote(g.text.trim()))
+					.map((g) => maybeAddPeriod(g))
+					.join(" ");
+				out.push(`${indent}/**`);
+				out.push(`${indent} * ${para}`);
+				out.push(`${indent} */`);
+				i = j;
+				continue;
+			}
+		}
+		out.push(lines[i]);
+		i++;
+	}
+	return { content: out.join("\n"), merged };
+}
+
+export function parseAndTransformComments(
+	input: string,
+	options: ProcessOptions,
+): FileResult {
+	let working = input;
+	if (options.mergeLineComments) {
+		const m = mergeLineCommentGroups(working);
+		working = m.content;
+	}
+	const js = reflowJsDocBlocks(working, options.width);
+	working = js.content;
+	if (options.wrapLineComments) {
+		const w = wrapLineComments(working, options.width);
+		working = w.content;
+	}
+	return { original: input, transformed: working, changed: working !== input };
+}
