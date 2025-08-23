@@ -23,7 +23,25 @@ interface JsDocMatch {
 	end: number;
 }
 
-const JSDOC_REGEX = /(^[\t ]*)\/\*\*([\s\S]*?)\n?[\t ]*\*\//gm;
+// JSDoc block extraction:
+// Previous pattern used a lazy dot-all: ([\s\S]*?) which could, under
+// pathological inputs, produce excessive backtracking. We replace it with a
+// tempered pattern that advances linearly by never letting the inner part
+// consume a closing '*/'. This avoids catastrophic behavior while keeping
+// correctness.
+// Pattern explanation:
+//  (^ [\t ]* )    -> capture indentation at start of line (multiline mode)
+//  /\*\*          -> opening delimiter
+//  (              -> capture group 2 body
+//    (?:[^*]      -> any non-* char
+//      |\*(?!/)   -> or a * not followed by /
+//    )*           -> repeated greedily (cannot cross closing */)
+//  )
+//  \n?[\t ]*\*/   -> optional newline + trailing indent + closing */
+// The greedy repetition is safe because the inner alternatives are mutually
+// exclusive and each consumes at least one char without overlapping on the
+// closing sentinel.
+const JSDOC_REGEX = /(^[\t ]*)\/\*\*((?:[^*]|\*(?!\/))*)\n?[\t ]*\*\//gm;
 
 // Simple line based diff (naive) used only for dry-run messaging.
 export function diffLines(a: string, b: string): string {
@@ -113,16 +131,24 @@ function reflowJsDocBlocks(
 	content: string,
 	width: number,
 ): { content: string; blocks: number } {
-	let match: RegExpExecArray | null = JSDOC_REGEX.exec(content);
+	JSDOC_REGEX.lastIndex = 0; // ensure fresh scan
+	let match: RegExpExecArray | null;
 	const blocks: JsDocMatch[] = [];
-	while (match) {
+	for (
+		match = JSDOC_REGEX.exec(content);
+		match;
+		match = JSDOC_REGEX.exec(content)
+	) {
+		// Safety guard: skip extremely large bodies (> 500k chars) to avoid excessive memory work.
+		if (match[2].length > 500_000) {
+			continue;
+		}
 		blocks.push({
 			indent: match[1] || "",
 			body: match[2] || "",
 			start: match.index,
 			end: match.index + match[0].length,
 		});
-		match = JSDOC_REGEX.exec(content);
 	}
 	if (!blocks.length) {
 		return { content, blocks: 0 };
@@ -245,6 +271,15 @@ function mergeLineCommentGroups(content: string): {
 	let merged = false;
 	while (i < lines.length) {
 		if (/^\s*\/\//.test(lines[i]) && !/^\s*\/\/\//.test(lines[i])) {
+			// Enforce FR-13: previous line must be blank or end with { or }
+			const prev = i > 0 ? lines[i - 1] : "";
+			const prevTrim = prev.trim();
+			const contextEligible = prevTrim === "" || /[{}]$/.test(prevTrim);
+			if (!contextEligible) {
+				out.push(lines[i]);
+				i++;
+				continue;
+			}
 			const group: { indent: string; text: string }[] = [];
 			let j = i;
 			while (j < lines.length) {

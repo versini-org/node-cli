@@ -115,4 +115,27 @@ describe("parseAndTransformComments", () => {
 		const expanded = expandGlobs(patterns);
 		expect(expanded.sort()).toEqual([a, b].sort());
 	});
+
+	// Added test for preserving multi-line // comment groups that should NOT merge when preceded by code.
+	it("does not merge an inline explanatory multi-line // comment group following code", () => {
+		const src = [
+			"function demo() {",
+			"  const x = 1; // keep",
+			"  // first line explains next block",
+			"  // still explaining",
+			"  // final line",
+			"  return x; // done",
+			"}",
+			"",
+		].join("\n");
+		const out = parseAndTransformComments(src, {
+			mergeLineComments: true,
+			wrapLineComments: true,
+			width: 80,
+		}).transformed;
+		expect(out).toContain("  // first line explains next block");
+		expect(out).toContain("  // still explaining");
+		expect(out).toContain("  // final line");
+		expect(out).not.toContain("/**");
+	});
 });
