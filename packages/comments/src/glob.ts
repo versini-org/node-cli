@@ -14,7 +14,7 @@ interface InternalPattern {
 const WILDCARD_CHARS = /[!*?]/;
 
 export function augmentPatterns(patterns: string[]): string[] {
-	// Add dir/**/*.ext for each dir/*.ext simple pattern
+	// Add dir/**/*.ext for each dir/*.ext simple pattern.
 	const extra: string[] = [];
 	for (const p of patterns) {
 		if (p.includes("**")) {
@@ -26,7 +26,7 @@ export function augmentPatterns(patterns: string[]): string[] {
 		}
 		const [_, dir, file] = m;
 		if (file.includes("*")) {
-			// if pattern is like dir/*.ts add deep variant
+			// if pattern is like dir/*.ts add deep variant.
 			if (!patterns.includes(`${dir}/**/${file}`)) {
 				extra.push(`${dir}/**/${file}`);
 			}
@@ -53,17 +53,17 @@ function toRegex(pattern: string): { regex: RegExp | null; root: string } {
 	if (!rootPart.length) {
 		rootPart = ".";
 	}
-	// Build regex: convert pattern path separators to '/'
+	// Build regex: convert pattern path separators to '/'.
 	const norm = pattern.replace(/\\/g, "/");
 	let rx = "";
 	for (let i = 0; i < norm.length; ) {
 		if (norm[i] === "*") {
 			if (norm[i + 1] === "*") {
-				// '**'
+				// '**'.
 				i += 2;
 				// collapse subsequent /** or trailing /
 				if (norm[i] === "/") {
-					// match zero or more directories
+					// match zero or more directories.
 					rx += "(?:.*?/)?";
 					i++;
 				} else {

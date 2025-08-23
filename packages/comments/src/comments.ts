@@ -25,7 +25,7 @@ const wrapLineComments = config.flags.noLineWrap !== true;
 const mergeLineComments = config.flags.mergeLineComments === true;
 
 let fileArgs: string[] = Object.values(config.parameters || {});
-// Expand simple glob patterns (*, **, ?) per PRD
+// Expand simple glob patterns (*, **, ?) per PRD.
 if (fileArgs.length > 0) {
 	fileArgs = expandGlobs(fileArgs);
 }
@@ -65,7 +65,7 @@ for (const file of files) {
 			`Reflowed ${path.basename(file)}${mergeLineComments ? " merged" : ""}${wrapLineComments ? " wrapped" : ""}`,
 		);
 	} else {
-		logger.info(`Unchanged ${file}`);
+		process.stdout.write(kleur.gray(`Unchanged ${file}\n`));
 	}
 }
 

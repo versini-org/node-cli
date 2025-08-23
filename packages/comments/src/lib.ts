@@ -183,7 +183,7 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 		) {
 			flushParagraph();
 			if (trimmed === "") {
-				// Avoid consecutive blank lines inside JSDoc
+				// Avoid consecutive blank lines inside JSDoc.
 				if (
 					out.length === 0 ||
 					/^(?:\s*\*\s*)$/.test(out[out.length - 1]) === false
