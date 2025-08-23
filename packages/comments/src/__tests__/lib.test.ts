@@ -244,13 +244,14 @@ describe("parseAndTransformComments", () => {
 			wrapLineComments: true,
 			mergeLineComments: true,
 		}).transformed;
-		// Ensure it became a JSDoc block
+		// Ensure it became a JSDoc block.
 		expect(out.startsWith("/**")).toBe(true);
 		// Should not contain stray periods after former line breaks.
 		expect(out).not.toMatch(/merged\./);
 		expect(out).not.toMatch(/spurious\./);
 		expect(out).not.toMatch(/introducing a\./);
-		// Should still retain existing legitimate period after 'wraps).' and final 'list.'
+		// Should still retain existing legitimate period after 'wraps).' and final
+		// 'list.'
 		expect(out).toMatch(/wraps\)\./);
 		expect(out).toMatch(/list\./);
 	});
@@ -273,7 +274,8 @@ describe("parseAndTransformComments", () => {
 		// Expect merged into a JSDoc immediately after the statement.
 		const re = /compute\(\);\n\/\*\*[\s\S]*?\n\*\//;
 		expect(re.test(out)).toBe(true);
-		// Ensure only one sentence-final period appended (present on final 'list.' already).
+		// Ensure only one sentence-final period appended (present on final 'list.'
+		// already).
 		expect(out.match(/merged\./)).toBeNull();
 	});
 });
