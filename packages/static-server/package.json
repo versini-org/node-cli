@@ -9,7 +9,7 @@
 	"exports": "./dist/server.js",
 	"bin": "dist/server.js",
 	"files": [
-		"dist"
+		"dist", "README.md"
 	],
 	"node": ">=18",
 	"scripts": {

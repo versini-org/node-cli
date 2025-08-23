@@ -8,7 +8,7 @@
 	"types": "./dist/index.d.ts",
 	"exports": "./dist/utilities.js",
 	"files": [
-		"dist"
+		"dist", "README.md"
 	],
 	"node": ">=16",
 	"dependencies": {

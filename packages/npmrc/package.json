@@ -9,7 +9,7 @@
 	"exports": "./dist/npmrc.js",
 	"bin": "dist/npmrc.js",
 	"files": [
-		"dist"
+		"dist", "README.md"
 	],
 	"node": ">=18",
 	"scripts": {

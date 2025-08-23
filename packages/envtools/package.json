@@ -5,7 +5,7 @@
 	"author": "Arno Versini",
 	"description": "Command line helper for software developers",
 	"files": [
-		"dist",
+		"dist", "README.md",
 		"shell"
 	],
 	"node": ">=18",
