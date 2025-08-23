@@ -23,7 +23,38 @@ interface JsDocMatch {
 	end: number;
 }
 
-const JSDOC_REGEX = /(^[\t ]*)\/\*\*([\s\S]*?)\n?[\t ]*\*\//gm;
+// NOTE: Replaced previous backtracking regex with a linear scan to avoid
+// potential ReDoS on pathological inputs (very large lines of tabs). The
+// previous pattern was: /(^[\t ]*)\/\*\*([\s\S]*?)\n?[\t ]*\*\//gm
+// We now perform a single pass string search for '/**' then the next '*/'.
+
+// Legacy constant kept (unused) for reference; can be removed later.
+// const JSDOC_REGEX = /(^[\t ]*)\/\*\*([\s\S]*?)\n?[\t ]*\*\//gm;
+
+function extractJsDocBlocks(content: string): JsDocMatch[] {
+	const blocks: JsDocMatch[] = [];
+	let cursor = 0;
+	while (cursor < content.length) {
+		const open = content.indexOf("/**", cursor);
+		if (open === -1) {
+			break;
+		}
+		// Determine indentation (chars from line start to '/**').
+		const lineStart = content.lastIndexOf("\n", open) + 1; // -1 -> 0
+		const indentMatch = /[\t ]*/.exec(content.slice(lineStart, open));
+		const indent = indentMatch ? indentMatch[0] : "";
+		const close = content.indexOf("*/", open + 3);
+		if (close === -1) {
+			// No closing delimiter; abort to avoid infinite loop.
+			break;
+		}
+		const body = content.slice(open + 3, close); // raw interior
+		// Start replacement from lineStart to preserve indentation.
+		blocks.push({ indent, body, start: lineStart, end: close + 2 });
+		cursor = close + 2;
+	}
+	return blocks;
+}
 
 // Simple line based diff (naive) used only for dry-run messaging.
 export function diffLines(a: string, b: string): string {
@@ -113,17 +144,7 @@ function reflowJsDocBlocks(
 	content: string,
 	width: number,
 ): { content: string; blocks: number } {
-	let match: RegExpExecArray | null = JSDOC_REGEX.exec(content);
-	const blocks: JsDocMatch[] = [];
-	while (match) {
-		blocks.push({
-			indent: match[1] || "",
-			body: match[2] || "",
-			start: match.index,
-			end: match.index + match[0].length,
-		});
-		match = JSDOC_REGEX.exec(content);
-	}
+	const blocks = extractJsDocBlocks(content);
 	if (!blocks.length) {
 		return { content, blocks: 0 };
 	}
