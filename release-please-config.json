@@ -11,6 +11,7 @@
 		"packages/static-server": {},
 		"packages/timer": {},
 		"packages/utilities": {},
-		"packages/npmrc": {}
+		"packages/npmrc": {},
+		"packages/comments": {}
 	}
 }
