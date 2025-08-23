@@ -318,7 +318,10 @@ function wrapLineComments(
 			i++;
 			continue;
 		}
-		// Collect a group of consecutive simple // lines (not triple slash) that are eligible.
+		/**
+		 * Collect a group of consecutive simple // lines (not triple slash) that are
+		 * eligible.
+		 */
 		const group: { raw: string; indent: string; body: string }[] = [];
 		let j = i;
 		while (j < lines.length) {
@@ -334,7 +337,7 @@ function wrapLineComments(
 			j++;
 		}
 		if (group.length <= 1) {
-			// Single line: existing logic (add period if needed)
+			// Single line: existing logic (add period if needed).
 			const indent = m[1];
 			const body = m[3];
 			if (/^(@|eslint|ts-ignore)/.test(body) || /https?:\/\//.test(body)) {
@@ -355,8 +358,11 @@ function wrapLineComments(
 			i++;
 			continue;
 		}
-		// Multi-line group: only add terminal punctuation (period) to final line if needed.
-		// Other lines are normalized for NOTE but left without forced punctuation.
+		/**
+		 * Multi-line group: only add terminal punctuation (period) to final line if
+		 * needed. Other lines are normalized for NOTE but left without forced
+		 * punctuation.
+		 */
 		for (let k = 0; k < group.length; k++) {
 			const { indent, body } = group[k];
 			const prefix = indent + "// ";
@@ -387,7 +393,7 @@ function mergeLineCommentGroups(content: string): {
 	let merged = false;
 
 	function qualifiesExplanatoryAfterStatement(start: number): boolean {
-		// Peek ahead to collect consecutive // lines (excluding triple slash)
+		// Peek ahead to collect consecutive // lines (excluding triple slash).
 		const collected: string[] = [];
 		for (let k = start; k < lines.length; k++) {
 			const lm = /^(\s*)\/\/( ?)(.*)$/.exec(lines[k]);
@@ -406,7 +412,10 @@ function mergeLineCommentGroups(content: string): {
 		if (!/^[A-Z]/.test(collected[0])) {
 			return false; // start with capitalized sentence
 		}
-		// Avoid matching directive-like or list-lists: require at least one line with a space (a sentence)
+		/**
+		 * Avoid matching directive-like or list-lists: require at least one line with
+		 * a space (a sentence).
+		 */
 		return collected.some((c) => /\s/.test(c));
 	}
 	while (i < lines.length) {
@@ -414,8 +423,11 @@ function mergeLineCommentGroups(content: string): {
 			const prev = i > 0 ? lines[i - 1] : "";
 			const prevTrim = prev.trim();
 			let contextEligible = prevTrim === "" || /[{}]$/.test(prevTrim);
-			// Additional heuristic: allow large explanatory group after a statement ending with ';'
-			// (but not inline trailing comment scenario) when it qualifies as explanatory.
+			/**
+			 * Additional heuristic: allow large explanatory group after a statement
+			 * ending with ';' (but not inline trailing comment scenario) when it
+			 * qualifies as explanatory.
+			 */
 			if (
 				!contextEligible &&
 				/;\s*$/.test(prevTrim) &&
@@ -451,7 +463,8 @@ function mergeLineCommentGroups(content: string): {
 				 * Structured explanatory blocks: now we CONVERT them into a multi-line JSDoc block
 				 * while preserving each original line (instead of merging into a single paragraph).
 				 * We must escape any raw '*\/' inside the body to avoid premature termination.
-				 * Definition of structured: presence of arrows (->), regex tokens (?:, *\/), or the phrase 'Pattern explanation:'.
+				 * Definition of structured:
+				 * presence of arrows (->), regex tokens (?:, *\/), or the phrase 'Pattern explanation:'.
 				 */
 				const structured = group.some(
 					(g) =>
@@ -474,11 +487,13 @@ function mergeLineCommentGroups(content: string): {
 				}
 				const indent = group[0].indent;
 				merged = true;
-				// We only want to add terminal punctuation once at the end of the merged
-				// paragraph, not after every original line (which can create spurious
-				// periods mid-sentence when lines were simple wraps). We also avoid
-				// appending a period if the final line ends with a colon introducing a
-				// list.
+				/**
+				 * We only want to add terminal punctuation once at the end of the merged
+				 * paragraph, not after every original line (which can create spurious
+				 * periods mid-sentence when lines were simple wraps). We also avoid
+				 * appending a period if the final line ends with a colon introducing a
+				 * list.
+				 */
 				const norm = group.map((g) => normalizeNote(g.text.trim()));
 				// Determine index of last non-empty line.
 				let lastIdx = norm.length - 1;
