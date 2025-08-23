@@ -5,15 +5,21 @@
 	"author": "Arno Versini",
 	"description": "Command line helper for software developers",
 	"files": [
-		"dist", "README.md",
+		"dist",
+		"README.md",
 		"shell"
 	],
 	"node": ">=18",
 	"scripts": {
-		"build": "mkdir -p dist; echo \"export EVTLS_VERSION='$npm_package_version' \" > dist/version.sh"
+		"build": "mkdir -p dist; echo \"export EVTLS_VERSION='$npm_package_version' \" > dist/version.sh",
+		"comments:fix": "comments --merge-line-comments src/**/*.ts",
+		"lint:fix": "biome check src --write --no-errors-on-unmatched"
 	},
 	"dependencies": {},
 	"publishConfig": {
 		"access": "public"
+	},
+	"devDependencies": {
+		"@node-cli/comments": "workspace:*"
 	}
 }

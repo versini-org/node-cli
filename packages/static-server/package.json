@@ -9,7 +9,8 @@
 	"exports": "./dist/server.js",
 	"bin": "dist/server.js",
 	"files": [
-		"dist", "README.md"
+		"dist",
+		"README.md"
 	],
 	"node": ">=18",
 	"scripts": {
@@ -18,7 +19,9 @@
 		"build:js": "swc --strip-leading-paths --source-maps --out-dir dist src --copy-files",
 		"build:types": "tsc",
 		"clean": "rimraf dist types coverage",
+		"comments:fix": "comments --merge-line-comments src/**/*.ts",
 		"lint": "biome lint src",
+		"lint:fix": "biome check src --write --no-errors-on-unmatched",
 		"watch": "swc --strip-leading-paths --watch --out-dir dist src"
 	},
 	"dependencies": {
@@ -40,6 +43,7 @@
 		"access": "public"
 	},
 	"devDependencies": {
+		"@node-cli/comments": "workspace:*",
 		"@vitest/coverage-v8": "3.2.4",
 		"vitest": "3.2.4"
 	}

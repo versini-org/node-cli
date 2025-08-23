@@ -8,7 +8,8 @@
 	"types": "./dist/index.d.ts",
 	"exports": "./dist/utilities.js",
 	"files": [
-		"dist", "README.md"
+		"dist",
+		"README.md"
 	],
 	"node": ">=16",
 	"dependencies": {
@@ -20,7 +21,9 @@
 		"build:js": "swc --strip-leading-paths --source-maps --out-dir dist src",
 		"build:types": "tsc",
 		"clean": "rimraf dist types coverage",
+		"comments:fix": "comments --merge-line-comments src/**/*.ts",
 		"lint": "biome lint src",
+		"lint:fix": "biome check src --write --no-errors-on-unmatched",
 		"test": "vitest run --globals",
 		"test:coverage": "vitest run --coverage --globals",
 		"test:watch": "vitest --globals",
@@ -30,6 +33,7 @@
 		"access": "public"
 	},
 	"devDependencies": {
+		"@node-cli/comments": "workspace:*",
 		"@vitest/coverage-v8": "3.2.4",
 		"vitest": "3.2.4"
 	}
