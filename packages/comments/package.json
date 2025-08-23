@@ -19,6 +19,7 @@
 		"build:js": "swc --strip-leading-paths --source-maps --out-dir dist src",
 		"build:types": "tsc",
 		"clean": "rimraf dist types coverage",
+		"comments:fix": "comments --merge-line-comments src/**/*.ts",
 		"lint": "biome lint src",
 		"lint:fix": "biome check src --write --no-errors-on-unmatched",
 		"test": "vitest run --globals",
