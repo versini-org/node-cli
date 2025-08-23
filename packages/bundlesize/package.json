@@ -9,7 +9,7 @@
 	"exports": "./dist/bundlesize.js",
 	"bin": "dist/bundlesize.js",
 	"files": [
-		"dist"
+		"dist", "README.md"
 	],
 	"node": ">=18",
 	"scripts": {
@@ -30,8 +30,8 @@
 		"@node-cli/logger": "workspace:../logger",
 		"@node-cli/parser": "workspace:../parser",
 		"bytes": "3.1.2",
-		"fs-extra": "11.3.0",
-		"glob": "10.4.5",
+		"fs-extra": "11.3.1",
+		"glob": "11.0.3",
 		"semver": "7.7.2"
 	},
 	"publishConfig": {

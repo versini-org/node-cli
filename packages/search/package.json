@@ -9,7 +9,7 @@
 	"exports": "./dist/core.js",
 	"bin": "dist/search.js",
 	"files": [
-		"dist"
+		"dist", "README.md"
 	],
 	"node": ">=16",
 	"scripts": {
@@ -29,7 +29,7 @@
 		"@node-cli/parser": "workspace:../parser",
 		"@node-cli/perf": "workspace:../perf",
 		"@node-cli/run": "workspace:../run",
-		"fs-extra": "11.3.0",
+		"fs-extra": "11.3.1",
 		"kleur": "4.1.5",
 		"micromatch": "4.0.8",
 		"plur": "5.1.0",

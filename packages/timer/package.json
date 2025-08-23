@@ -9,7 +9,7 @@
 	"exports": "./dist/timer.js",
 	"bin": "dist/timer.js",
 	"files": [
-		"dist"
+		"dist", "README.md"
 	],
 	"node": ">=16",
 	"scripts": {
