@@ -1,8 +1,6 @@
 import { Logger } from "@node-cli/logger";
 
-export const logger = new Logger({
-	boring: process.env.NODE_ENV === "test",
-});
+export const logger = new Logger({ boring: process.env.NODE_ENV === "test" });
 
 export interface ProcessOptions {
 	width: number;
@@ -43,26 +41,23 @@ interface JsDocMatch {
 // closing sentinel.
 const JSDOC_REGEX = /(^[\t ]*)\/\*\*((?:[^*]|\*(?!\/))*)\n?[\t ]*\*\//gm;
 
-// Simple line based diff (naive) used only for dry-run messaging.
 export function diffLines(a: string, b: string): string {
 	if (a === b) {
 		return "";
 	}
-	const aLines = a.split(/\n/);
-	const bLines = b.split(/\n/);
+	const A = a.split(/\n/);
+	const B = b.split(/\n/);
 	const out: string[] = [];
-	const max = Math.max(aLines.length, bLines.length);
-	for (let i = 0; i < max; i++) {
-		const A = aLines[i];
-		const B = bLines[i];
-		if (A === B) {
+	const m = Math.max(A.length, B.length);
+	for (let i = 0; i < m; i++) {
+		if (A[i] === B[i]) {
 			continue;
 		}
-		if (A !== undefined) {
-			out.push(`- ${A}`);
+		if (A[i] !== undefined) {
+			out.push(`- ${A[i]}`);
 		}
-		if (B !== undefined) {
-			out.push(`+ ${B}`);
+		if (B[i] !== undefined) {
+			out.push(`+ ${B[i]}`);
 		}
 	}
 	return out.join("\n");
@@ -73,7 +68,7 @@ function endsSentence(line: string): boolean {
 }
 
 function needsTerminalPunctuation(line: string): boolean {
-	return /[A-Za-z0-9"')\]]$/.test(line) && !endsSentence(line);
+	return /[A-Za-z0-9")\]']$/.test(line) && !endsSentence(line);
 }
 
 function maybeAddPeriod(line: string): string {
@@ -108,65 +103,23 @@ function isVisuallyIndentedCode(line: string): boolean {
 function wrapWords(text: string, width: number): string[] {
 	const words = text.split(/\s+/).filter(Boolean);
 	const lines: string[] = [];
-	let current = "";
+	let cur = "";
 	for (const w of words) {
-		if (!current.length) {
-			current = w;
+		if (!cur.length) {
+			cur = w;
 			continue;
 		}
-		if (current.length + 1 + w.length <= width) {
-			current += " " + w;
+		if (cur.length + 1 + w.length <= width) {
+			cur += " " + w;
 		} else {
-			lines.push(current);
-			current = w;
+			lines.push(cur);
+			cur = w;
 		}
 	}
-	if (current) {
-		lines.push(current);
+	if (cur) {
+		lines.push(cur);
 	}
 	return lines.length ? lines : [""];
-}
-
-function reflowJsDocBlocks(
-	content: string,
-	width: number,
-): { content: string; blocks: number } {
-	JSDOC_REGEX.lastIndex = 0; // ensure fresh scan
-	let match: RegExpExecArray | null;
-	const blocks: JsDocMatch[] = [];
-	for (
-		match = JSDOC_REGEX.exec(content);
-		match;
-		match = JSDOC_REGEX.exec(content)
-	) {
-		// Safety guard: skip extremely large bodies (> 500k chars) to avoid excessive memory work.
-		if (match[2].length > 500_000) {
-			continue;
-		}
-		blocks.push({
-			indent: match[1] || "",
-			body: match[2] || "",
-			start: match.index,
-			end: match.index + match[0].length,
-		});
-	}
-	if (!blocks.length) {
-		return { content, blocks: 0 };
-	}
-	let offset = 0;
-	let result = content;
-	for (const b of blocks) {
-		const original = result.slice(b.start + offset, b.end + offset);
-		const transformed = buildJsDoc(b.indent, b.body, width);
-		if (original !== transformed) {
-			result =
-				result.slice(0, b.start + offset) +
-				transformed +
-				result.slice(b.end + offset);
-			offset += transformed.length - original.length;
-		}
-	}
-	return { content: result, blocks: blocks.length };
 }
 
 function buildJsDoc(indent: string, rawBody: string, width: number): string {
@@ -174,30 +127,32 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 	const out: string[] = [];
 	let para: string[] = [];
 	let inFence = false;
-	const linePrefix = indent + " * ";
-	const avail = Math.max(10, width - linePrefix.length);
-	function flushParagraph() {
+	const prefix = indent + " * ";
+	const avail = Math.max(10, width - prefix.length);
+
+	function flush(): void {
 		if (!para.length) {
 			return;
 		}
 		let text = para.join(" ").replace(/\s+/g, " ").trim();
 		text = normalizeNote(text);
 		text = maybeAddPeriod(text);
-		for (const w of wrapWords(text, avail)) {
-			out.push(linePrefix + w);
+		for (const l of wrapWords(text, avail)) {
+			out.push(prefix + l);
 		}
 		para = [];
 	}
+
 	for (const raw of lines) {
 		const trimmed = raw.trimEnd();
 		if (isCodeFence(trimmed)) {
-			flushParagraph();
+			flush();
 			inFence = !inFence;
-			out.push(linePrefix + trimmed);
+			out.push(prefix + trimmed);
 			continue;
 		}
 		if (inFence) {
-			out.push(linePrefix + trimmed);
+			out.push(prefix + trimmed);
 			continue;
 		}
 		if (
@@ -207,24 +162,57 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 			isHeadingLike(trimmed) ||
 			isVisuallyIndentedCode(raw)
 		) {
-			flushParagraph();
+			flush();
 			if (trimmed === "") {
-				// Avoid consecutive blank lines inside JSDoc.
 				if (
 					out.length === 0 ||
 					/^(?:\s*\*\s*)$/.test(out[out.length - 1]) === false
 				) {
-					out.push(linePrefix.trimEnd());
+					out.push(prefix.trimEnd());
 				}
 			} else {
-				out.push(linePrefix + normalizeNote(trimmed));
+				out.push(prefix + normalizeNote(trimmed));
 			}
 			continue;
 		}
 		para.push(trimmed);
 	}
-	flushParagraph();
+	flush();
 	return `${indent}/**\n${out.join("\n")}\n${indent}*/`;
+}
+
+function reflowJsDocBlocks(
+	content: string,
+	width: number,
+): { content: string; blocks: number } {
+	JSDOC_REGEX.lastIndex = 0;
+	const blocks: JsDocMatch[] = [];
+	let m: RegExpExecArray | null = JSDOC_REGEX.exec(content);
+	while (m) {
+		if (m[2].length <= 500_000) {
+			blocks.push({
+				indent: m[1] || "",
+				body: m[2] || "",
+				start: m.index,
+				end: m.index + m[0].length,
+			});
+		}
+		m = JSDOC_REGEX.exec(content);
+	}
+	if (!blocks.length) {
+		return { content, blocks: 0 };
+	}
+	let delta = 0;
+	let out = content;
+	for (const b of blocks) {
+		const original = out.slice(b.start + delta, b.end + delta);
+		const built = buildJsDoc(b.indent, b.body, width);
+		if (original !== built) {
+			out = out.slice(0, b.start + delta) + built + out.slice(b.end + delta);
+			delta += built.length - original.length;
+		}
+	}
+	return { content: out, blocks: blocks.length };
 }
 
 function wrapLineComments(
@@ -236,7 +224,7 @@ function wrapLineComments(
 	const out: string[] = [];
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i];
-		const m = /^([\t ]*)\/\/( ?)(.*)$/.exec(line);
+		const m = /^(\s*)\/\/( ?)(.*)$/.exec(line);
 		if (!m || /^\/\/\//.test(line)) {
 			out.push(line);
 			continue;
@@ -271,7 +259,6 @@ function mergeLineCommentGroups(content: string): {
 	let merged = false;
 	while (i < lines.length) {
 		if (/^\s*\/\//.test(lines[i]) && !/^\s*\/\/\//.test(lines[i])) {
-			// Enforce FR-13: previous line must be blank or end with { or }
 			const prev = i > 0 ? lines[i - 1] : "";
 			const prevTrim = prev.trim();
 			const contextEligible = prevTrim === "" || /[{}]$/.test(prevTrim);
@@ -293,38 +280,40 @@ function mergeLineCommentGroups(content: string): {
 					/https?:\/\//.test(txt) ||
 					/eslint|ts-ignore/.test(txt)
 				) {
-					break; // abort group merge
+					break; // do not merge directive / license groups
 				}
 				group.push({ indent: lm[1], text: txt });
 				j++;
 			}
 			if (group.length >= 2) {
-				// Heuristics to AVOID merging large/structured explanatory blocks (like the
-				// regex commentary in this file). Rationale: merging them collapses
-				// intentional line-by-line formatting and harms readability.
-				// Skip merge if:
-				//  - group longer than 6 lines (likely documentation section)
-				//  - any line contains '->' (pattern explanation arrows)
-				//  - any line contains '(?:' (regex fragment) or '*/' (terminator text)
-				//  - a line starts with 'Pattern explanation:'
-				const tooLong = group.length > 6;
-				const hasArrows = group.some((g) => /->/.test(g.text));
-				const hasRegexTokens = group.some((g) => /(\(\?:|\*\/)/.test(g.text));
-				const hasPatternHeader = group.some((g) =>
-					/Pattern explanation:/i.test(g.text),
+				// Structured explanatory blocks: now we CONVERT them into a multi-line JSDoc block
+				// while preserving each original line (instead of merging into a single paragraph).
+				// We must escape any raw '*/' inside the body to avoid premature termination.
+				// Definition of structured: presence of arrows (->), regex tokens (?:, */), or the phrase 'Pattern explanation:'.
+				const structured = group.some(
+					(g) =>
+						/->/.test(g.text) ||
+						/(\(\?:|\*\/)/.test(g.text) ||
+						/Pattern explanation:/i.test(g.text),
 				);
-				if (tooLong || hasArrows || hasRegexTokens || hasPatternHeader) {
-					out.push(...group.map((g) => `${g.indent}// ${g.text}`));
+				if (structured) {
+					const indent = group[0].indent;
+					out.push(`${indent}/**`);
+					for (const ln of group) {
+						// Escape closing sentinel inside content
+						const safe = ln.text.replace(/\*\//g, "*\\/");
+						out.push(`${indent} * ${safe}`);
+					}
+					out.push(`${indent} */`);
+					merged = true;
 					i = j;
 					continue;
 				}
-				merged = true;
 				const indent = group[0].indent;
+				merged = true;
 				const para = group
 					.map((g) => normalizeNote(g.text.trim()))
-					.map((g, idx, arr) =>
-						idx === arr.length - 1 ? maybeAddPeriod(g) : maybeAddPeriod(g),
-					)
+					.map((g) => maybeAddPeriod(g))
 					.join(" ");
 				out.push(`${indent}/**`);
 				out.push(`${indent} * ${para}`);
@@ -345,18 +334,14 @@ export function parseAndTransformComments(
 ): FileResult {
 	let working = input;
 	if (options.mergeLineComments) {
-		const merged = mergeLineCommentGroups(working);
-		working = merged.content;
+		const m = mergeLineCommentGroups(working);
+		working = m.content;
 	}
-	const jsdoc = reflowJsDocBlocks(working, options.width);
-	working = jsdoc.content;
+	const js = reflowJsDocBlocks(working, options.width);
+	working = js.content;
 	if (options.wrapLineComments) {
-		const wrapped = wrapLineComments(working, options.width);
-		working = wrapped.content;
+		const w = wrapLineComments(working, options.width);
+		working = w.content;
 	}
-	return {
-		original: input,
-		transformed: working,
-		changed: working !== input,
-	};
+	return { original: input, transformed: working, changed: working !== input };
 }

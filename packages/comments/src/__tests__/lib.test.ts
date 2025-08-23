@@ -139,7 +139,7 @@ describe("parseAndTransformComments", () => {
 		expect(out).not.toContain("/**");
 	});
 
-	it("preserves the exact multi-line explanatory block from lib.ts (lines 26-43) without merging", () => {
+	it("converts the multi-line explanatory block from lib.ts into a multi-line JSDoc, preserving lines", () => {
 		const snippet = [
 			"// JSDoc block extraction:",
 			"// Previous pattern used a lazy dot-all: ([\\s\\S]*?) which could, under",
@@ -165,13 +165,15 @@ describe("parseAndTransformComments", () => {
 			wrapLineComments: true,
 			mergeLineComments: true,
 		}).transformed;
-		// Should remain line comments (no merged JSDoc)
-		expect(out).not.toContain("/**");
-		// First and last lines preserved
-		expect(out).toContain("// JSDoc block extraction:");
-		expect(out).toContain("// closing sentinel.");
-		// Arrow lines with -> remain separate (not concatenated into one line)
-		const arrowLineCount = out.split(/\n/).filter((l) => /->/.test(l)).length;
+		// Should be converted to a JSDoc (first and last lines delimiters)
+		const lines = out.split(/\n/);
+		expect(lines[0].trim()).toBe("/**");
+		expect(lines[lines.length - 1].trim()).toBe("*/");
+		// Ensure representative internal lines are present (now without leading //)
+		expect(out).toContain("* JSDoc block extraction:");
+		expect(out).toContain("* Pattern explanation:");
+		// Arrow lines preserved
+		const arrowLineCount = lines.filter((l) => /->/.test(l)).length;
 		expect(arrowLineCount).toBeGreaterThanOrEqual(5);
 	});
 });
