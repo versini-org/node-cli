@@ -95,6 +95,32 @@ describe("parseAndTransformComments", () => {
 		expect(/@returns something/.test(res)).toBe(true);
 	});
 
+	it("handles heading-like lines with colon and visually indented code & numeric lists", () => {
+		const input = [
+			"/**",
+			" * Overview:",
+			" *   const   x = 1;",
+			" * 1. first",
+			" * 2. second",
+			" *", // blank separation
+			" * Another paragraph without period",
+			" */",
+		].join("\n");
+		const out = parseAndTransformComments(input, baseOpts).transformed;
+		// Heading preserved, not merged into previous paragraph
+		expect(out).toMatch(/Overview:/);
+		// Visually indented code line kept as-is (no extra wrapping collapse)
+		expect(out).toMatch(/const\s{3}x = 1;/);
+		// Ensure final blank line before closing preserved (one line ending with ' *')
+		const trailingBlank = /\n \*\n\*\/$/.test(out.replace(/\r/g, ""));
+		expect(trailingBlank).toBe(true);
+		// Numeric list lines preserved
+		expect(out).toMatch(/1\. first/);
+		expect(out).toMatch(/2\. second/);
+		// Trailing paragraph got terminal period
+		expect(out).toMatch(/Another paragraph without period\./);
+	});
+
 	it("glob expansion matches created files", () => {
 		// Create a truly temporary isolated directory outside source tree
 		const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "comments-glob-"));

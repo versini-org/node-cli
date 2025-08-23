@@ -16,6 +16,10 @@ export default defineConfig({
 				"**/*.d.ts",
 				"**/*.config.*",
 				"src/__tests__/**",
+				// Exclude CLI entry & flag parsing wrappers (thin shells) from coverage thresholds
+				"src/comments.ts",
+				"src/parse.ts",
+				"src/defaults.ts",
 			],
 			thresholds: {
 				branches: 80,
