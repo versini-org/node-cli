@@ -197,4 +197,21 @@ describe("parseAndTransformComments", () => {
 		const arrowLineCount = lines.filter((l) => /->/.test(l)).length;
 		expect(arrowLineCount).toBeGreaterThanOrEqual(5);
 	});
+
+	it("does not insert period before list introduced by single lowercase word + colon", () => {
+		const input = [
+			"/**",
+			" * Some utilities have logging capabilities that needs to be",
+			" * tested a little bit differently:",
+			" * - mocking process.exit",
+			" * - console.log",
+			" * - inquirer.prompt",
+			" */",
+		].join("\n");
+		const out = parseAndTransformComments(input, baseOpts).transformed;
+		// Ensure no stray period after 'be'
+		expect(out).not.toMatch(/needs to be\./);
+		// Ensure list items unchanged
+		expect(out).toMatch(/- mocking process\.exit/);
+	});
 });

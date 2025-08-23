@@ -109,7 +109,18 @@ function isTagLine(line: string): boolean {
 
 function isHeadingLike(line: string): boolean {
 	const t = line.trim();
-	return /:$/.test(t) && !isTagLine(t);
+	if (!/:$/.test(t) || isTagLine(t)) {
+		return false;
+	}
+	// Heuristic: a trailing-colon line is considered a heading only if it's not
+	// just a single lowercase word. Patterns like "Overview:" or "Performance Notes:"
+	// should remain headings, while a wrapped sentence fragment like "differently:"
+	// (continuation introducing a list) should stay part of the paragraph.
+	const core = t.slice(0, -1).trim();
+	if (/^[a-z]+$/.test(core)) {
+		return false; // single lowercase word -> treat as continuation, not heading
+	}
+	return true;
 }
 
 function isCodeFence(line: string): boolean {
