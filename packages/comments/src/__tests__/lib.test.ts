@@ -2,7 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { augmentPatterns, expandGlobs } from "../glob.js";
+import { expandGlobs } from "../glob.js";
 import { diffLines, parseAndTransformComments } from "../lib.js";
 
 const baseOpts = {
@@ -121,8 +121,7 @@ describe("parseAndTransformComments", () => {
 		expect(out).toMatch(/Another paragraph without period\./);
 	});
 
-	it("glob expansion matches created files", () => {
-		// Create a truly temporary isolated directory outside source tree
+	it("glob expansion matches deep files only with explicit globstar", () => {
 		const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "comments-glob-"));
 		const a = path.join(tmpRoot, "a.ts");
 		const nestedDir = path.join(tmpRoot, "nested");
@@ -130,11 +129,12 @@ describe("parseAndTransformComments", () => {
 		const b = path.join(nestedDir, "b.ts");
 		fs.writeFileSync(a, "// file a", "utf8");
 		fs.writeFileSync(b, "// file b", "utf8");
-		const patterns = [`${tmpRoot}/*.ts`];
-		const augmented = augmentPatterns(patterns);
-		expect(augmented.some((p) => p.includes("**/*.ts"))).toBe(true);
-		const expanded = expandGlobs(patterns);
-		expect(expanded.sort()).toEqual([a, b].sort());
+		// Shallow pattern should only see top-level a.ts
+		const shallow = expandGlobs([`${tmpRoot}/*.ts`]).sort();
+		expect(shallow).toEqual([a]);
+		// Deep pattern matches both
+		const deep = expandGlobs([`${tmpRoot}/**/*.ts`]).sort();
+		expect(deep).toEqual([a, b].sort());
 	});
 
 	// Added test for preserving multi-line // comment groups that should NOT merge when preceded by code.

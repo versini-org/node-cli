@@ -30,7 +30,8 @@
 	"dependencies": {
 		"@node-cli/logger": "workspace:../logger",
 		"@node-cli/parser": "workspace:../parser",
-		"@node-cli/utilities": "workspace:../utilities"
+		"@node-cli/utilities": "workspace:../utilities",
+		"micromatch": "4.0.8"
 	},
 	"publishConfig": {
 		"access": "public"
