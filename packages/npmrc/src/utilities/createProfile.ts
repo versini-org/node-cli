@@ -15,23 +15,22 @@ export const createProfile = async ({
 	let profiles = { available: [], enabled: undefined };
 	await fs.ensureFile(storeConfig);
 	try {
-		// if the profile already exists, do nothing
+		// if the profile already exists, do nothing.
 		profiles = await fs.readJson(storeConfig);
 		if (profiles.available.includes(profileName)) {
 			logger.warn(`Profile '${profileName}' already exists...`);
 			return 0;
 		}
 	} catch {
-		// ignoring error since we are going to create the file
+		// ignoring error since we are going to create the file.
 	}
 
 	/**
-	 * If the profile does not exist, create a folder named as
-	 * the profile under the storeLocation folder, with the
-	 * existing npmrc / yarnrc files.
+	 * If the profile does not exist, create a folder named as the profile under
+	 * the storeLocation folder, with the existing npmrc / yarnrc files.
 	 */
 	await fs.ensureDir(`${storeLocation}/${profileName}`);
-	// copy the existing npmrc / yarnrc files to the new folder
+	// copy the existing npmrc / yarnrc files to the new folder.
 	const NPMRC = `${homeLocation}/.npmrc`;
 	const YARNRC = `${homeLocation}/.yarnrc`;
 	if (await fs.pathExists(YARNRC)) {
@@ -40,7 +39,7 @@ export const createProfile = async ({
 	if (await fs.pathExists(NPMRC)) {
 		await fs.copy(NPMRC, `${storeLocation}/${profileName}/npmrc`);
 	}
-	// then add the profile to the configuration file
+	// then add the profile to the configuration file.
 	const newProfiles = {
 		available: [...profiles.available, profileName],
 		enabled: profiles.enabled ?? profileName,

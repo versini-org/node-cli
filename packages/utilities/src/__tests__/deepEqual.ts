@@ -3,11 +3,12 @@
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the LICENSE file
+ * in the root directory of this source tree.
  *
  * @providesModule areEqual
  * @flow
+ *
  */
 
 const aStackPool: any = [];
@@ -20,6 +21,7 @@ const bStackPool: any = [];
  * @see http://underscorejs.org
  * @copyright 2009-2013 Jeremy Ashkenas, DocumentCloud Inc.
  * @license MIT
+ *
  */
 function eq(a: any, b: any, aStack: any[], bStack: any[]) {
 	if (a === b) {

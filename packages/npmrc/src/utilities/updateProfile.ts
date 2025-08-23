@@ -1,9 +1,8 @@
-import { GET_REGISTRY_CMD, formatRegistries } from "./common.js";
-
 import { Logger } from "@node-cli/logger";
 import { run } from "@node-cli/run";
 import fs from "fs-extra";
 import kleur from "kleur";
+import { formatRegistries, GET_REGISTRY_CMD } from "./common.js";
 
 export const updateProfile = async ({
 	flags,
@@ -17,11 +16,11 @@ export const updateProfile = async ({
 
 	let profiles: { available: string | any[]; enabled: any };
 
-	// Step 1: check if there is an active profile
+	// Step 1: check if there is an active profile.
 	try {
 		profiles = await fs.readJson(storeConfig);
 	} catch {
-		// ignoring error since we are going to create the file
+		// ignoring error since we are going to create the file.
 	}
 
 	if (profiles?.available?.length > 0) {
@@ -29,8 +28,8 @@ export const updateProfile = async ({
 		if (profileName) {
 			const messages = [kleur.green(`Profile '${profileName}' updated`)];
 			/**
-			 * Step2: since there is an active profile, we can check the
-			 * global registries and list them, alongside the updated profile.
+			 * Step2: since there is an active profile, we can check the global
+			 * registries and list them, alongside the updated profile.
 			 */
 			const { stdout, stderr } = await run(GET_REGISTRY_CMD, {
 				ignoreError: true,
@@ -39,9 +38,9 @@ export const updateProfile = async ({
 				messages.push(...formatRegistries(stdout as string));
 			}
 
-			// Step 3: update the active profile
+			// Step 3: update the active profile.
 			await fs.ensureDir(`${storeLocation}/${profileName}`);
-			// copy the existing npmrc / yarnrc files to the storage folder
+			// copy the existing npmrc / yarnrc files to the storage folder.
 			const NPMRC = `${homeLocation}/.npmrc`;
 			const YARNRC = `${homeLocation}/.yarnrc`;
 			if (await fs.pathExists(YARNRC)) {

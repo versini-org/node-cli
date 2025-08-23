@@ -1,13 +1,13 @@
 #!/usr/bin/env node
-/* v8 ignore start */
 
-import { IGNORE, STDOUT } from "./utilities.js";
+/* v8 ignore start */
 
 import { Logger } from "@node-cli/logger";
 import fs from "fs-extra";
 import { getRawStats } from "./getRawStats.js";
 import { config } from "./parse.js";
 import { reportStats } from "./reportStats.js";
+import { IGNORE, STDOUT } from "./utilities.js";
 
 const flags = config.flags;
 

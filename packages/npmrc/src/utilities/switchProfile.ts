@@ -1,9 +1,8 @@
-import { GET_REGISTRY_CMD, formatRegistries } from "./common.js";
-
 import { Logger } from "@node-cli/logger";
 import { run } from "@node-cli/run";
 import fs from "fs-extra";
 import kleur from "kleur";
+import { formatRegistries, GET_REGISTRY_CMD } from "./common.js";
 
 export const switchProfile = async ({
 	flags,
@@ -22,13 +21,15 @@ export const switchProfile = async ({
 			logger.error(`Profile '${profileName}' does not exist`);
 			return 1;
 		}
-		// if profile is already enabled, do nothing
+		// if profile is already enabled, do nothing.
 		if (profiles.enabled === profileName) {
 			logger.warn(`Profile '${profileName}' is already active`);
 			return 0;
 		}
-		// if profile exists and is not enabled, switch to it by copying
-		// the npmrc and yarnrc files from the profile folder to the home folder
+		/**
+		 * if profile exists and is not enabled, switch to it by copying the npmrc and
+		 * yarnrc files from the profile folder to the home folder.
+		 */
 		const NPMRC = `${homeLocation}/.npmrc`;
 		const PROFILE_NPMRC = `${storeLocation}/${profileName}/npmrc`;
 		const YARNRC = `${homeLocation}/.yarnrc`;

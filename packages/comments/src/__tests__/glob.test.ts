@@ -7,7 +7,7 @@ import { parseAndTransformComments } from "../lib.js";
 
 describe("glob utilities & additional lib branches", () => {
 	it("explicit globstar required for deep matches (no implicit augmentation)", () => {
-		// create temp structure
+		// create temp structure.
 		const root = fs.mkdtempSync(
 			path.join(os.tmpdir(), "comments-glob-simplify-"),
 		);
@@ -64,7 +64,7 @@ describe("glob utilities & additional lib branches", () => {
 		const root = fs.mkdtempSync(path.join(os.tmpdir(), "comments-glob-lit-"));
 		const file = path.join(root, "only.ts");
 		fs.writeFileSync(file, "// only", "utf8");
-		// duplicate patterns plus a nonexistent literal
+		// duplicate patterns plus a nonexistent literal.
 		const patterns = [file, file, path.join(root, "missing.ts")];
 		const out = expandGlobs(patterns);
 		expect(out).toEqual([file]); // only once
@@ -87,14 +87,14 @@ describe("glob utilities & additional lib branches", () => {
 			wrapLineComments: true,
 			mergeLineComments: false,
 		}).transformed;
-		// At least one blank line (line with only '*') preserved around fence
+		// At least one blank line (line with only '*') preserved around fence.
 		const starBlankCount = out
 			.split(/\n/)
 			.filter((l) => /^\s*\*\s*$/.test(l)).length;
 		expect(starBlankCount).toBeGreaterThanOrEqual(1);
-		// Fenced code block retained
+		// Fenced code block retained.
 		expect(out).toContain("```sh");
-		// Second paragraph ended with period added
+		// Second paragraph ended with period added.
 		expect(/Second paragraph without period\./.test(out)).toBe(true);
 	});
 });

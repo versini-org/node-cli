@@ -20,7 +20,7 @@ const PERMISSIONS_PREFIX = {
 	[STR_TYPE_FILE]: "-",
 };
 const BINARY_EXTENSIONS = [
-	// Executables and compiled code
+	// Executables and compiled code.
 	"exe",
 	"dll",
 	"so",
@@ -28,7 +28,7 @@ const BINARY_EXTENSIONS = [
 	"bin",
 	"obj",
 	"o",
-	// Compressed files
+	// Compressed files.
 	"zip",
 	"tar",
 	"gz",
@@ -36,7 +36,7 @@ const BINARY_EXTENSIONS = [
 	"7z",
 	"jar",
 	"war",
-	// Media files
+	// Media files.
 	"jpg",
 	"jpeg",
 	"png",
@@ -53,7 +53,7 @@ const BINARY_EXTENSIONS = [
 	"flv",
 	"wav",
 	"ogg",
-	// Document formats
+	// Document formats.
 	"pdf",
 	"doc",
 	"docx",
@@ -61,11 +61,11 @@ const BINARY_EXTENSIONS = [
 	"xlsx",
 	"ppt",
 	"pptx",
-	// Database files
+	// Database files.
 	"db",
 	"sqlite",
 	"mdb",
-	// Other binary formats
+	// Other binary formats.
 	"class",
 	"pyc",
 	"pyd",
@@ -161,7 +161,7 @@ export const getOwnerNameFromId = async (
 			ownerNames[uid] = result.stdout;
 			return result.stdout;
 		} catch {
-			// nothing to declare officer
+			// nothing to declare officer.
 			return `${uid}`;
 		}
 	}
@@ -249,7 +249,7 @@ export const runCommandOnNode = async (node: string, command: string) => {
 			logger.log(stdout);
 		}
 	} catch {
-		// nothing to declare officer
+		// nothing to declare officer.
 	}
 };
 
@@ -296,7 +296,7 @@ export const runGrepOnNode = async (
 
 export function isBinaryFileExtension(filePath: string): boolean {
 	const ext = getFileExtension(filePath);
-	// If there's no extension, assume it's binary
+	// If there's no extension, assume it's binary.
 	if (!ext) {
 		return true;
 	}

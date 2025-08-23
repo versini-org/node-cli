@@ -1,20 +1,19 @@
+import { statSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
+import bytes from "bytes";
+import fs from "fs-extra";
+import { glob } from "glob";
 import {
 	GLOB_HASH,
 	GLOB_SEMVER,
+	getOutputFile,
+	gzipSizeFromFileSync,
 	HASH_KEY,
 	IGNORE,
 	SEMVER_KEY,
 	STDOUT,
-	getOutputFile,
-	gzipSizeFromFileSync,
 	validateConfigurationFile,
 } from "./utilities.js";
-
-import { statSync } from "node:fs";
-import bytes from "bytes";
-import fs from "fs-extra";
-import { glob } from "glob";
 
 type SizesConfiguration = {
 	limit: string;
@@ -133,8 +132,8 @@ export const getRawStats = async ({ flags }): Promise<ReportStats> => {
 			/* v8 ignore next 6 */
 		} catch {
 			/**
-			 * There are no existing results, so we can ignore this error,
-			 * and simply write the current results to the output file.
+			 * There are no existing results, so we can ignore this error, and simply
+			 * write the current results to the output file.
 			 */
 		}
 	}

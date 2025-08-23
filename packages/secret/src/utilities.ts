@@ -12,8 +12,8 @@ const UTF8 = "utf8";
 const DEFAULT_FILE_ENCODING = UTF8;
 
 /**
- * Process a file with a given password. The file can be
- * encoded or decoded depending on the `encode` flag.
+ * Process a file with a given password. The file can be encoded or decoded
+ * depending on the `encode` flag.
  * @param  {Boolean} encode   whether to encode or decode the file
  * @param  {String}  input    the input file path
  * @param  {String}  [output] the output file path
@@ -35,10 +35,10 @@ export const processFileWithPassword = async (
 	const data = await fs.readFile(input, DEFAULT_FILE_ENCODING);
 
 	if (output) {
-		// Save data to output file
+		// Save data to output file.
 		await fs.outputFile(output, fileProcessor(password, data));
 	} else {
-		// Print to stdout directly
+		// Print to stdout directly.
 		logger.log(fileProcessor(password, data));
 	}
 };

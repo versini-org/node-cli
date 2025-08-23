@@ -1,6 +1,10 @@
 #!/usr/bin/env node
+
 /* v8 ignore start */
 
+import path from "node:path";
+import fs from "fs-extra";
+import { config } from "./parse.js";
 import {
 	displayConfirmation,
 	displayPromptWithPassword,
@@ -8,10 +12,6 @@ import {
 	processFileWithPassword,
 	shouldContinue,
 } from "./utilities.js";
-
-import path from "node:path";
-import fs from "fs-extra";
-import { config } from "./parse.js";
 
 const ENCRYPT = "encrypt";
 const DECRYPT = "decrypt";

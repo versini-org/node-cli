@@ -75,11 +75,11 @@ export class Timer {
 			this.startTime = Date.now();
 			spinner.start(this.introMessage);
 
-			// update the spinner every second
+			// update the spinner every second.
 			this.printRemainingTime();
 			const timer = setInterval(this.printRemainingTime, 1000);
 
-			// kill the spinner when the timer is done
+			// kill the spinner when the timer is done.
 			setTimeout(() => {
 				const message = "Time's up!";
 				if (this.config.flags.notification) {

@@ -36,8 +36,8 @@ describe("when testing for performance.now polyfill", () => {
 });
 
 /**
- * Some utilities have logging capabilities that needs to be
- * tested a little bit differently:
+ * Some utilities have logging capabilities that needs to be tested a little bit
+ * differently:
  * - mocking process.exit
  * - console.log
  * - inquirer.prompt

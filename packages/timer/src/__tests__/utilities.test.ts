@@ -1,9 +1,8 @@
-import moment, { Duration } from "moment";
-import { extractDuration, timeToMicroseconds } from "../utilities.js";
-
 import path from "node:path";
 import kleur from "kleur";
+import moment, { Duration } from "moment";
 import { vi } from "vitest";
+import { extractDuration, timeToMicroseconds } from "../utilities.js";
 
 kleur.enabled = false;
 

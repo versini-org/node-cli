@@ -1,7 +1,7 @@
+import path from "node:path";
+import kleur from "kleur";
+import { MockInstance, vi } from "vitest";
 import {
-	STR_TYPE_BOTH,
-	STR_TYPE_DIRECTORY,
-	STR_TYPE_FILE,
 	checkPattern,
 	convertDate,
 	convertSize,
@@ -11,11 +11,10 @@ import {
 	isBinaryFileExtension,
 	printStatistics,
 	runGrepOnNode,
+	STR_TYPE_BOTH,
+	STR_TYPE_DIRECTORY,
+	STR_TYPE_FILE,
 } from "../utilities.js";
-
-import path from "node:path";
-import kleur from "kleur";
-import { MockInstance, vi } from "vitest";
 
 kleur.enabled = false;
 
@@ -118,8 +117,8 @@ describe("when testing for individual utilities with no logging side-effects", (
 });
 
 /**
- * Some utilities have logging capabilities that needs to be
- * tested a little bit differently:
+ * Some utilities have logging capabilities that needs to be tested a little bit
+ * differently:
  * - mocking process.exit
  * - console.log
  * - inquirer.prompt

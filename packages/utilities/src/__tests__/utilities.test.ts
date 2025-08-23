@@ -81,9 +81,9 @@ describe("when testing for utilities with no logging side-effects", () => {
 		expect(deepEqual(configDefault, configDefault)).toBe(true);
 		expect(deepEqual(configDefault, configCustom)).toBe(false);
 		/**
-		 * This method will alter the objects, so no way to test for their
-		 * equality AFTER the merge is done... Only thing we can do is test
-		 * that the end result gets the right values.
+		 * This method will alter the objects, so no way to test for their equality
+		 * AFTER the merge is done... Only thing we can do is test that the end result
+		 * gets the right values.
 		 */
 		const result: any = fastMerge(configDefault, configCustom);
 
@@ -141,9 +141,9 @@ describe("when testing for utilities with no logging side-effects", () => {
 		};
 		expect(deepEqual(configA, configB)).toBe(false);
 		/**
-		 * This method will alter the objects, so no way to test for their
-		 * equality AFTER the merge is done... Only thing we can do is test
-		 * that the end result gets the right values.
+		 * This method will alter the objects, so no way to test for their equality
+		 * AFTER the merge is done... Only thing we can do is test that the end result
+		 * gets the right values.
 		 */
 		const result: any = fastMerge(
 			configA,
