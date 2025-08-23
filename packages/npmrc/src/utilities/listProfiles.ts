@@ -1,9 +1,8 @@
-import { GET_REGISTRY_CMD, formatRegistries } from "./common.js";
-
 import { Logger } from "@node-cli/logger";
 import { run } from "@node-cli/run";
 import fs from "fs-extra";
 import kleur from "kleur";
+import { formatRegistries, GET_REGISTRY_CMD } from "./common.js";
 
 export const listProfiles = async ({ flags, storeConfig }) => {
 	const logger = new Logger({
@@ -21,8 +20,8 @@ export const listProfiles = async ({ flags, storeConfig }) => {
 					: [kleur.green(`★ ${activeProfile} (active)`)];
 
 			/**
-			 * Since there is an active profile, we can check the
-			 * global registries and list them, alongside the active profile.
+			 * Since there is an active profile, we can check the global registries and
+			 * list them, alongside the active profile.
 			 */
 			if (activeProfile) {
 				const { stdout, stderr } = await run(GET_REGISTRY_CMD, {

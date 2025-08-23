@@ -78,7 +78,7 @@ export function expandGlobs(
 	const seen = new Set<string>();
 	const out: string[] = [];
 	for (const pattern of patterns) {
-		// Literal file (no metachars)
+		// Literal file (no metachars).
 		if (!WILDCARD_CHARS.test(pattern)) {
 			if (
 				fs.existsSync(pattern) &&

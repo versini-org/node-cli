@@ -21,44 +21,50 @@ interface JsDocMatch {
 	end: number;
 }
 
-// Safety guards / limits (defense-in-depth vs pathological or malicious input)
-// Large indentation sequences (e.g. thousands of tabs) aren't meaningful for real
-// source formatting and could be used to inflate processing time if a regex
-// exhibited super-linear behavior. Our pattern is already linear (tempered), but
-// we still cap accepted indentation length to keep work bounded.
+/**
+ * Safety guards / limits (defense-in-depth vs pathological or malicious input)
+ * Large indentation sequences (e.g. thousands of tabs) aren't meaningful for
+ * real source formatting and could be used to inflate processing time if a
+ * regex exhibited super-linear behavior. Our pattern is already linear
+ * (tempered), but we still cap accepted indentation length to keep work
+ * bounded.
+ */
 const MAX_JSDOC_INDENT = 256; // characters (tabs + spaces)
 
-// JSDoc block extraction:
-// Previous pattern used a lazy dot-all: ([\s\S]*?) which could, under
-// pathological inputs, produce excessive backtracking. We replaced it with a
-// tempered pattern that advances linearly by never letting the inner part
-// consume a closing '*/'. This avoids catastrophic behavior while keeping
-// correctness.
-//
-// Reviewer (PR) concern: potential ReDoS on crafted inputs containing many
-// leading tabs then '/**'. Analysis: The inner quantified group
-//   (?:[^*]|\*(?!/))*
-// is unambiguous: on each iteration it consumes exactly one character and can
-// never match the closing sentinel '*/' because of the negative lookahead. This
-// means the engine proceeds in O(n) time relative to the block body size.
-// There is no nested ambiguous quantifier (e.g. (a+)*, (.*)+, etc.). The only
-// other quantified part ^[\t ]* is a simple character class that is consumed
-// once per line start with no backtracking explosion potential.
-//
-// Defense-in-depth: we still (1) cap processed body length (see below) and
-// (2) cap accepted indentation length (MAX_JSDOC_INDENT) after match to ensure
-// we skip absurdly indented constructs.
-//
-// Pattern explanation:
-//  (^ [\t ]* )    -> capture indentation at start of line (multiline mode)
-//  /\*\*          -> opening delimiter
-//  (              -> capture group 2 body
-//    (?:[^*]      -> any non-* char
-//      |\*(?!/)   -> or a * not followed by /
-//    )*           -> repeated greedily (cannot cross closing */)
-//  )
-//  \n?[\t ]*\*/   -> optional newline + trailing indent + closing */
-// Complexity: linear in length of the matched block.
+/**
+ * JSDoc block extraction:
+ * Previous pattern used a lazy dot-all: ([\s\S]*?) which could, under
+ * pathological inputs, produce excessive backtracking. We replaced it with a
+ * tempered pattern that advances linearly by never letting the inner part
+ * consume a closing '*\/'. This avoids catastrophic behavior while keeping
+ * correctness.
+ *
+ * Reviewer (PR) concern: potential ReDoS on crafted inputs containing many
+ * leading tabs then '/**'. Analysis: The inner quantified group
+ *   (?:[^*]|\*(?!/))*
+ * is unambiguous: on each iteration it consumes exactly one character and can
+ * never match the closing sentinel '*\/' because of the negative lookahead. This
+ * means the engine proceeds in O(n) time relative to the block body size.
+ * There is no nested ambiguous quantifier (e.g. (a+)*, (.*)+, etc.). The only
+ * other quantified part ^[\t ]* is a simple character class that is consumed
+ * once per line start with no backtracking explosion potential.
+ *
+ * Defense-in-depth: we still (1) cap processed body length (see below) and
+ * (2) cap accepted indentation length (MAX_JSDOC_INDENT) after match to ensure
+ * we skip absurdly indented constructs.
+ *
+ * Pattern explanation:
+ *  (^ [\t ]* )    -> capture indentation at start of line (multiline mode)
+ *  /\*\*          -> opening delimiter
+ *  (              -> capture group 2 body
+ *    (?:[^*]      -> any non-* char
+ *      |\*(?!/)   -> or a * not followed by /
+ *    )*           -> repeated greedily (cannot cross closing *\/)
+ *  )
+ *  \n?[\t ]*\*\/   -> optional newline + trailing indent + closing *\/
+ * Complexity: linear in length of the matched block.
+ *
+ */
 const JSDOC_REGEX = /(^[\t ]*)\/\*\*((?:[^*]|\*(?!\/))*)\n?[\t ]*\*\//gm;
 
 export function diffLines(a: string, b: string): string {
@@ -112,10 +118,13 @@ function isHeadingLike(line: string): boolean {
 	if (!/:$/.test(t) || isTagLine(t)) {
 		return false;
 	}
-	// New heuristic: treat as heading only if composed of one or more words that
-	// each start with an uppercase letter (allows Internal IDs with dashes/underscores too).
-	// Examples considered headings: "Overview:", "Performance Notes:", "API Surface:".
-	// Non-headings (treated as sentence continuation): "tested a little bit differently:", "differently:".
+	/**
+	 * New heuristic: treat as heading only if composed of one or more words that
+	 * each start with an uppercase letter (allows Internal IDs with
+	 * dashes/underscores too). Examples considered headings: "Overview:",
+	 * "Performance Notes:", "API Surface:". Non-headings (treated as sentence
+	 * continuation): "tested a little bit differently:", "differently:".
+	 */
 	return /^[A-Z][A-Za-z0-9_-]*(?: [A-Z][A-Za-z0-9_-]*)*:$/.test(t);
 }
 
@@ -151,7 +160,8 @@ function wrapWords(text: string, width: number): string[] {
 
 function buildJsDoc(indent: string, rawBody: string, width: number): string {
 	let lines = rawBody.split(/\n/).map((l) => l.replace(/^\s*\*? ?/, ""));
-	// Remove a single leading blank line (artifact of regex capture starting after /**) if content follows.
+	// Remove a single leading blank line (artifact of regex capture starting after
+	// /**) if content follows.
 	while (
 		lines.length > 1 &&
 		lines[0].trim() === "" &&
@@ -159,10 +169,12 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 	) {
 		lines = lines.slice(1);
 	}
-	// Trailing blank handling: keep a single trailing blank only if there are
-	// multiple paragraphs (i.e., an internal blank separator exists). If the doc
-	// is a single paragraph, drop the trailing blank to avoid an extra standalone
-	// '*' line before the closing delimiter.
+	/**
+	 * Trailing blank handling: keep a single trailing blank only if there are
+	 * multiple paragraphs (i.e., an internal blank separator exists). If the doc
+	 * is a single paragraph, drop the trailing blank to avoid an extra standalone
+	 * '*' line before the closing delimiter.
+	 */
 	if (lines.length > 1 && lines[lines.length - 1].trim() === "") {
 		const internalBlank = lines.slice(0, -1).some((l) => l.trim() === "");
 		if (!internalBlank) {
@@ -175,9 +187,11 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 	const prefix = indent + " * ";
 	const avail = Math.max(10, width - prefix.length);
 
-	// Detect structured explanatory / regex description blocks where we want to
-	// preserve each original line verbatim (no paragraph joining or sentence
-	// period insertion) to avoid altering carefully aligned or enumerated lines.
+	/**
+	 * Detect structured explanatory / regex description blocks where we want to
+	 * preserve each original line verbatim (no paragraph joining or sentence
+	 * period insertion) to avoid altering carefully aligned or enumerated lines.
+	 */
 	const structured = lines.some(
 		(l) =>
 			/->/.test(l) || /(\(\?:|\*\/)/.test(l) || /Pattern explanation:/i.test(l),
@@ -186,7 +200,7 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 		for (const raw of lines) {
 			const trimmed = raw.trimEnd();
 			if (trimmed === "") {
-				// ensure a blank line represented by a lone '*'
+				// ensure a blank line represented by a lone '*'.
 				if (
 					out.length === 0 ||
 					/^(?:\s*\*\s*)$/.test(out[out.length - 1]) === false
@@ -359,10 +373,12 @@ function mergeLineCommentGroups(content: string): {
 				j++;
 			}
 			if (group.length >= 2) {
-				// Structured explanatory blocks: now we CONVERT them into a multi-line JSDoc block
-				// while preserving each original line (instead of merging into a single paragraph).
-				// We must escape any raw '*/' inside the body to avoid premature termination.
-				// Definition of structured: presence of arrows (->), regex tokens (?:, */), or the phrase 'Pattern explanation:'.
+				/**
+				 * Structured explanatory blocks: now we CONVERT them into a multi-line JSDoc block
+				 * while preserving each original line (instead of merging into a single paragraph).
+				 * We must escape any raw '*\/' inside the body to avoid premature termination.
+				 * Definition of structured: presence of arrows (->), regex tokens (?:, *\/), or the phrase 'Pattern explanation:'.
+				 */
 				const structured = group.some(
 					(g) =>
 						/->/.test(g.text) ||
@@ -373,7 +389,7 @@ function mergeLineCommentGroups(content: string): {
 					const indent = group[0].indent;
 					out.push(`${indent}/**`);
 					for (const ln of group) {
-						// Escape closing sentinel inside content
+						// Escape closing sentinel inside content.
 						const safe = ln.text.replace(/\*\//g, "*\\/");
 						out.push(`${indent} * ${safe}`);
 					}
@@ -384,10 +400,11 @@ function mergeLineCommentGroups(content: string): {
 				}
 				const indent = group[0].indent;
 				merged = true;
-				// We only want to add terminal punctuation once at the end of the merged
-				// paragraph, not after every original line (which can create spurious
-				// periods mid-sentence when lines were simple wraps). We also avoid
-				// appending a period if the final line ends with a colon introducing a list.
+				// We only want to add terminal punctuation once at the end of the merged.
+				// paragraph, not after every original line (which can create spurious.
+				// periods mid-sentence when lines were simple wraps). We also avoid.
+				// appending a period if the final line ends with a colon introducing a
+				// list.
 				const norm = group.map((g) => normalizeNote(g.text.trim()));
 				// Determine index of last non-empty line.
 				let lastIdx = norm.length - 1;

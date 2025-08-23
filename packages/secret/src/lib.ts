@@ -15,9 +15,8 @@ const DEFAULT_BYTES_FOR_SALT = 256;
 const DEFAULT_SALT_SIZE_FOR_HASH = 16;
 
 /**
- * Create an hexadecimal hash from a given string. The default
- * algorithm is md5 but it can be changed to anything that
- * crypto.createHash allows.
+ * Create an hexadecimal hash from a given string. The default algorithm is md5
+ * but it can be changed to anything that crypto.createHash allows.
  * @param  {String} string            the string to hash
  * @param  {String} [algorithm='md5'] the algorithm to use or hashing
  * @return {String}                   the hashed string in hexa format
@@ -40,8 +39,7 @@ export const createSalt = (bytes?: number): string => {
 };
 
 /**
- * Encrypts a string or a buffer using AES-256-CTR
- * algorithm.
+ * Encrypts a string or a buffer using AES-256-CTR algorithm.
  * @param  {String} password a unique password
  * @param  {String} data     a string to encrypt
  * @return {String} the encrypted data in hexa
@@ -66,12 +64,10 @@ export const encrypt = (password: string, data: string): string => {
 };
 
 /**
- * Decrypts a string that was encrypted using the
- * AES-256-CRT algorithm via `encrypt`. It expects
- * the encrypted string to have the corresponding
- * initialization vector appended at the end, after
- * a dollar sign ($) - which was done via the
- * corresponding `encrypt` method.
+ * Decrypts a string that was encrypted using the AES-256-CRT algorithm via
+ * `encrypt`. It expects the encrypted string to have the corresponding
+ * initialization vector appended at the end, after a dollar sign ($) - which
+ * was done via the corresponding `encrypt` method.
  * @param  {String} password a unique password
  * @param  {String} data     a string to decrypt
  * @return {String}          the decrypted data
@@ -79,7 +75,7 @@ export const encrypt = (password: string, data: string): string => {
 export const decrypt = (password: string, data: string): string => {
 	// Extract encrypted data and initialization vector (IV).
 	const [encrypted, ivHex] = data.split("$");
-	// Create a buffer out of the raw hex IV
+	// Create a buffer out of the raw hex IV.
 	const iv = Buffer.from(ivHex, HEX);
 	// Hash the given password (result is always the same).
 	const hash = createHash(password);
@@ -90,13 +86,13 @@ export const decrypt = (password: string, data: string): string => {
 };
 
 /**
- * Function using the scrypt Password-Based Key Derivation method.
- * It generates a derived key of a given length from the given data
- * and salt.
+ * Function using the scrypt Password-Based Key Derivation method. It generates
+ * a derived key of a given length from the given data and salt.
  *
  * @param {String} data  the data to derive the key from
  * @param {String} salt  the salt to use
  * @returns {String} the derived key in hex format
+ *
  */
 function generateScryptKey(data: string, salt: string): string {
 	const encodedData = new TextEncoder().encode(data);
@@ -111,7 +107,8 @@ function generateScryptKey(data: string, salt: string): string {
 	 * - The size parameter should be set to 64.
 	 *
 	 * Reference:
-	 * https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
+	 * https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html.
+	 *
 	 */
 	const derivedKey = crypto.scryptSync(encodedData, encodedSalt, 64, {
 		cost: Math.pow(2, 14),
@@ -127,6 +124,7 @@ function generateScryptKey(data: string, salt: string): string {
  * @param {String} password  the password to hash
  * @param {String} salt      the salt to use
  * @returns {String} the hashed password
+ *
  */
 export const hashPassword = (password: string, salt?: string): string => {
 	const pepper = salt || createSalt(DEFAULT_SALT_SIZE_FOR_HASH);
@@ -140,6 +138,7 @@ export const hashPassword = (password: string, salt?: string): string => {
  * @param {String} password  the password to verify
  * @param {String} hash      the hash to verify against
  * @returns {Boolean} true if the password is correct, false otherwise
+ *
  */
 export const verifyPassword = (password: string, hash: string): boolean => {
 	const [salt, key] = hash.split(":");

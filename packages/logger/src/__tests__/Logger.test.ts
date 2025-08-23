@@ -178,8 +178,8 @@ describe("when testing with logging side-effects", () => {
 });
 
 /**
- * printErrorsAndExit logging capabilities need to be
- * tested a little bit differently:
+ * printErrorsAndExit logging capabilities need to be tested a little bit
+ * differently:
  * - mocking process.exit
  * - console.log
  */
@@ -338,7 +338,7 @@ describe("when testing in-memory logging functionality", () => {
 		const logs = log.getMemoryLogs();
 		expect(logs).toBe("Memory log 1\nMemory log 2");
 
-		// Verify no console output when inMemory is enabled
+		// Verify no console output when inMemory is enabled.
 		expect(mock.info).not.toHaveBeenCalled();
 		expect(mock.error).not.toHaveBeenCalled();
 	});
@@ -348,13 +348,13 @@ describe("when testing in-memory logging functionality", () => {
 		log.info("Memory log 1");
 		log.error("Memory log 2");
 
-		// Verify logs are stored
+		// Verify logs are stored.
 		expect(log.getMemoryLogs()).toBe("Memory log 1\nMemory log 2");
 
-		// Clear logs
+		// Clear logs.
 		log.clearMemoryLogs();
 
-		// Verify logs are cleared
+		// Verify logs are cleared.
 		expect(log.getMemoryLogs()).toBe("");
 	});
 
@@ -391,16 +391,16 @@ describe("when testing in-memory logging functionality", () => {
 		const logs = log.getMemoryLogs();
 		log.clearMemoryLogs();
 
-		// Original variable should still contain the logs
+		// Original variable should still contain the logs.
 		expect(logs).toBe("Memory log 1\nMemory log 2");
-		// But new retrieval should be empty
+		// But new retrieval should be empty.
 		expect(log.getMemoryLogs()).toBe("");
 	});
 
 	it("should disable colors when inMemory is enabled via constructor", () => {
 		const log = new Logger({ inMemory: true });
 
-		// Try to enable colors, which should be ignored in memory mode
+		// Try to enable colors, which should be ignored in memory mode.
 		log.boring = false;
 
 		log.info("Memory log with colors disabled");
@@ -411,7 +411,7 @@ describe("when testing in-memory logging functionality", () => {
 		const log = new Logger();
 		log.boring = false; // Enable colors
 
-		// Then enable in-memory mode, which should disable colors
+		// Then enable in-memory mode, which should disable colors.
 		log.inMemory = true;
 
 		log.info("Memory log with colors disabled");

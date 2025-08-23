@@ -1,7 +1,7 @@
 /* v8 ignore start */
-import { defaultFlags, defaultParameters } from "./defaults.js";
 
 import { parser } from "@node-cli/parser";
+import { defaultFlags, defaultParameters } from "./defaults.js";
 
 export type Flags = {
 	boring?: boolean;

@@ -1,18 +1,17 @@
 #!/usr/bin/env node
 
-import fastifyStatic, { FastifyStaticOptions } from "@fastify/static";
-import { cert, key } from "./certs.js";
-
 import path from "node:path";
 import fastifyCache from "@fastify/caching";
 import fastifyCompress from "@fastify/compress";
 import fastifyCors from "@fastify/cors";
+import fastifyStatic, { FastifyStaticOptions } from "@fastify/static";
 import { Logger } from "@node-cli/logger";
 import Fastify from "fastify";
 import fs from "fs-extra";
 import kleur from "kleur";
 import open from "open";
 import portfinder from "portfinder";
+import { cert, key } from "./certs.js";
 import fastifyLogs from "./logs.js";
 import { config } from "./parse.js";
 import { renderDirectories } from "./templates/directories.js";

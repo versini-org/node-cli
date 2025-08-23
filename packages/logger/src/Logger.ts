@@ -1,8 +1,7 @@
-import boxen, { Options as BoxenOptions } from "boxen";
-import ora, { Ora, Options as OraOptions } from "ora";
-
 import util from "node:util";
+import boxen, { Options as BoxenOptions } from "boxen";
 import kleur from "kleur";
+import ora, { Ora, Options as OraOptions } from "ora";
 
 export type PrintBoxOptions = {
 	newLineAfter?: boolean;
@@ -38,7 +37,7 @@ export class Logger {
 		this.#inMemory = inMemory;
 		this.#memoryLogs = [];
 
-		// When in memory mode, we disable colors
+		// When in memory mode, we disable colors.
 		this.#printOptions = {
 			colors: !boring && !inMemory,
 			compact: false,
@@ -51,7 +50,7 @@ export class Logger {
 	}
 
 	set boring(flag: boolean) {
-		// Only set colors if not in memory mode
+		// Only set colors if not in memory mode.
 		if (!this.#inMemory) {
 			this.#printOptions.colors = !flag;
 		}
@@ -67,14 +66,14 @@ export class Logger {
 
 	set inMemory(flag: boolean) {
 		this.#inMemory = flag;
-		// When enabling in-memory mode, disable colors
+		// When enabling in-memory mode, disable colors.
 		if (flag) {
 			this.#printOptions.colors = false;
 		}
 	}
 
 	/**
-	 * Get the accumulated logs as a string
+	 * Get the accumulated logs as a string.
 	 * @returns {string} All logs joined by the separator
 	 */
 	getMemoryLogs(): string {
@@ -82,7 +81,7 @@ export class Logger {
 	}
 
 	/**
-	 * Clear all accumulated logs from memory
+	 * Clear all accumulated logs from memory.
 	 */
 	clearMemoryLogs(): void {
 		this.#memoryLogs = [];
@@ -116,12 +115,12 @@ export class Logger {
 				);
 			}
 
-			// Store in memory if enabled
+			// Store in memory if enabled.
 			if (this.#inMemory) {
 				this.#memoryLogs.push(message);
 			}
 
-			// Still output to console if not in memory-only mode
+			// Still output to console if not in memory-only mode.
 			if (!this.#inMemory) {
 				console[type.method](
 					this.#printOptions.colors ? `${type.color(message)}` : message,
@@ -151,7 +150,8 @@ export class Logger {
 	}
 
 	/**
-	 * Log multiple error messages at the prompt using `console.error` behind the scenes.
+	 * Log multiple error messages at the prompt using `console.error` behind the
+	 * scenes.
 	 * @param {string[]} errorMessages array of error message to display line by line
 	 * @param {number} [exitStatus] the process will exit with this value if provided
 	 */
@@ -171,7 +171,7 @@ export class Logger {
 	}
 
 	/**
-	 * Print sets of logs in a box (wrapper to Boxen)
+	 * Print sets of logs in a box (wrapper to Boxen).
 	 * @param messages Messages to print
 	 * @param options
 	 */
@@ -183,8 +183,7 @@ export class Logger {
 		};
 
 		/**
-		 * Setting some sensible Boxen options if
-		 * not provided by the user.
+		 * Setting some sensible Boxen options if not provided by the user.
 		 */
 		const borderColor = options.borderColor || "yellow";
 		const boxenOptions: BoxenOptions = {

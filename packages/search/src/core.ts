@@ -9,9 +9,6 @@ import plur from "plur";
 import { GitIgnoreHandler } from "./gitIgnoreHandler.js";
 import { minifyCss, minifyFileContent, minifyJs } from "./minifiers.js";
 import {
-	STR_TYPE_BOTH,
-	STR_TYPE_DIRECTORY,
-	STR_TYPE_FILE,
 	checkPattern,
 	formatLongListings,
 	getFileExtension,
@@ -19,6 +16,9 @@ import {
 	printStatistics,
 	runCommandOnNode,
 	runGrepOnNode,
+	STR_TYPE_BOTH,
+	STR_TYPE_DIRECTORY,
+	STR_TYPE_FILE,
 } from "./utilities.js";
 
 const lstatAsync = promisify(fs.lstat);
@@ -125,7 +125,7 @@ export class Search {
 
 	shouldIgnoreFolder(directory: string) {
 		const folderName = basename(directory);
-		// Check for exact folder name match
+		// Check for exact folder name match.
 		if (this.ignoreFolders && this.ignoreFolders.includes(folderName)) {
 			return true;
 		}
@@ -133,32 +133,32 @@ export class Search {
 	}
 
 	shouldIgnoreFile(filePath: string) {
-		// First check if the file is in the ignoreFiles list
+		// First check if the file is in the ignoreFiles list.
 		const filename = basename(filePath);
 		if (this.ignoreFiles && this.ignoreFiles.includes(filename)) {
 			return true;
 		}
 
-		// Then check if the extension should be ignored
+		// Then check if the extension should be ignored.
 		if (!this.ignoreExtensions || this.ignoreExtensions.length === 0) {
 			return false;
 		}
 
 		const extension = getFileExtension(filePath);
 
-		// Check for exact extension match
+		// Check for exact extension match.
 		if (this.ignoreExtensions.includes(extension)) {
 			return true;
 		}
 
-		// Check for complex patterns like "min.js"
+		// Check for complex patterns like "min.js".
 		for (const pattern of this.ignoreExtensions) {
-			// Skip patterns that don't contain a dot
+			// Skip patterns that don't contain a dot.
 			if (!pattern.includes(".")) {
 				continue;
 			}
 
-			// Check if the filename ends with the pattern
+			// Check if the filename ends with the pattern.
 			if (filename.toLowerCase().endsWith(`.${pattern}`)) {
 				return true;
 			}
@@ -212,7 +212,7 @@ export class Search {
 			const isDirectory = stat && stat.isDirectory();
 			const isFile = stat && stat.isFile();
 
-			// Add this check to respect .gitignore patterns
+			// Add this check to respect .gitignore patterns.
 			if (await this.shouldIgnoreByGitIgnore(node, isDirectory)) {
 				continue;
 			}
@@ -242,10 +242,10 @@ export class Search {
 							}),
 					);
 				} catch {
-					// nothing to declare
+					// nothing to declare.
 				}
 			} else if (isFile) {
-				// Skip files with ignored extensions
+				// Skip files with ignored extensions.
 				if (this.shouldIgnoreFile(node)) {
 					continue;
 				}
@@ -269,7 +269,7 @@ export class Search {
 
 	async readFileContent(filePath: string): Promise<string> {
 		try {
-			// Check if it's a known binary extension
+			// Check if it's a known binary extension.
 			/* v8 ignore next */
 			if (isBinaryFileExtension(filePath)) {
 				return null;
@@ -303,7 +303,7 @@ export class Search {
 				} else {
 					logger.log(content);
 				}
-				// adding a new line after each file content except the last one
+				// adding a new line after each file content except the last one.
 				if (node !== fileNodes[fileNodes.length - 1]) {
 					if (returnResults) {
 						loggerInMemory.log("");
@@ -367,14 +367,13 @@ export class Search {
 	async postProcessResults(returnResults: boolean) {
 		if (this.grep) {
 			/**
-			 * Resetting the number of files found, since we want to
-			 * show how many matched the grep, not how many matched the
-			 * pattern (in the file name).
+			 * Resetting the number of files found, since we want to show how many
+			 * matched the grep, not how many matched the pattern (in the file name).
 			 */
 			this.totalFileFound = 0;
 		}
 
-		// If printMode is enabled, handle file content printing and return
+		// If printMode is enabled, handle file content printing and return.
 		if (this.printMode && ["simple", "xml"].includes(this.printMode)) {
 			return await this.printFilesContent(returnResults);
 		}
