@@ -1,6 +1,6 @@
 {
 	"name": "@node-cli/timer",
-	"version": "1.0.6",
+	"version": "1.0.7",
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "Dead simpler CLI timer",
