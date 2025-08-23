@@ -19,7 +19,7 @@
 		"build:js": "swc --strip-leading-paths --source-maps --out-dir dist src",
 		"build:types": "tsc",
 		"clean": "rimraf dist types coverage",
-		"comments:fix": "comments --merge-line-comments src/**/*.ts",
+		"comments:fix": "comments --merge-line-comments 'src/**/*.ts'",
 		"lint": "biome lint src",
 		"lint:fix": "biome check src --write --no-errors-on-unmatched",
 		"test": "vitest run --globals",
@@ -30,7 +30,8 @@
 	"dependencies": {
 		"@node-cli/logger": "workspace:../logger",
 		"@node-cli/parser": "workspace:../parser",
-		"@node-cli/utilities": "workspace:../utilities"
+		"@node-cli/utilities": "workspace:../utilities",
+		"micromatch": "4.0.8"
 	},
 	"publishConfig": {
 		"access": "public"

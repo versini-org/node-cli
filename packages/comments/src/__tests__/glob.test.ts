@@ -2,16 +2,25 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { augmentPatterns, expandGlobs } from "../glob.js";
+import { expandGlobs } from "../glob.js";
 import { parseAndTransformComments } from "../lib.js";
 
 describe("glob utilities & additional lib branches", () => {
-	it("augmentPatterns adds deep variant only when needed", () => {
-		const input = ["/tmp/dir/*.ts", "/tmp/dir/**/a.ts", "/tmp/file.txt"]; // second already deep, third no wildcard folder/file split
-		const out = augmentPatterns(input);
-		// Should add one deep variant for first pattern
-		const additions = out.filter((p) => p.includes("**/*.ts"));
-		expect(additions.length).toBe(1);
+	it("explicit globstar required for deep matches (no implicit augmentation)", () => {
+		// create temp structure
+		const root = fs.mkdtempSync(
+			path.join(os.tmpdir(), "comments-glob-simplify-"),
+		);
+		fs.mkdirSync(path.join(root, "nested"));
+		const a = path.join(root, "a.ts");
+		const b = path.join(root, "nested", "b.ts");
+		fs.writeFileSync(a, "// a", "utf8");
+		fs.writeFileSync(b, "// b", "utf8");
+		const shallow = expandGlobs([`${root}/*.ts`]);
+		expect(shallow).toContain(a);
+		expect(shallow).not.toContain(b); // no implicit deep variant
+		const deep = expandGlobs([`${root}/**/*.ts`]);
+		expect(deep).toEqual(expect.arrayContaining([a, b]));
 	});
 
 	it("expandGlobs matches literals and wildcards including ?", () => {
