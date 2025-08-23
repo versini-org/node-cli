@@ -109,7 +109,14 @@ function isTagLine(line: string): boolean {
 
 function isHeadingLike(line: string): boolean {
 	const t = line.trim();
-	return /:$/.test(t) && !isTagLine(t);
+	if (!/:$/.test(t) || isTagLine(t)) {
+		return false;
+	}
+	// New heuristic: treat as heading only if composed of one or more words that
+	// each start with an uppercase letter (allows Internal IDs with dashes/underscores too).
+	// Examples considered headings: "Overview:", "Performance Notes:", "API Surface:".
+	// Non-headings (treated as sentence continuation): "tested a little bit differently:", "differently:".
+	return /^[A-Z][A-Za-z0-9_-]*(?: [A-Z][A-Za-z0-9_-]*)*:$/.test(t);
 }
 
 function isCodeFence(line: string): boolean {
@@ -143,12 +150,55 @@ function wrapWords(text: string, width: number): string[] {
 }
 
 function buildJsDoc(indent: string, rawBody: string, width: number): string {
-	const lines = rawBody.split(/\n/).map((l) => l.replace(/^\s*\*? ?/, ""));
+	let lines = rawBody.split(/\n/).map((l) => l.replace(/^\s*\*? ?/, ""));
+	// Remove a single leading blank line (artifact of regex capture starting after /**) if content follows.
+	while (
+		lines.length > 1 &&
+		lines[0].trim() === "" &&
+		lines.some((l) => l.trim() !== "")
+	) {
+		lines = lines.slice(1);
+	}
+	// Trailing blank handling: keep a single trailing blank only if there are
+	// multiple paragraphs (i.e., an internal blank separator exists). If the doc
+	// is a single paragraph, drop the trailing blank to avoid an extra standalone
+	// '*' line before the closing delimiter.
+	if (lines.length > 1 && lines[lines.length - 1].trim() === "") {
+		const internalBlank = lines.slice(0, -1).some((l) => l.trim() === "");
+		if (!internalBlank) {
+			lines = lines.slice(0, -1);
+		}
+	}
 	const out: string[] = [];
 	let para: string[] = [];
 	let inFence = false;
 	const prefix = indent + " * ";
 	const avail = Math.max(10, width - prefix.length);
+
+	// Detect structured explanatory / regex description blocks where we want to
+	// preserve each original line verbatim (no paragraph joining or sentence
+	// period insertion) to avoid altering carefully aligned or enumerated lines.
+	const structured = lines.some(
+		(l) =>
+			/->/.test(l) || /(\(\?:|\*\/)/.test(l) || /Pattern explanation:/i.test(l),
+	);
+	if (structured) {
+		for (const raw of lines) {
+			const trimmed = raw.trimEnd();
+			if (trimmed === "") {
+				// ensure a blank line represented by a lone '*'
+				if (
+					out.length === 0 ||
+					/^(?:\s*\*\s*)$/.test(out[out.length - 1]) === false
+				) {
+					out.push(prefix.trimEnd());
+				}
+				continue;
+			}
+			out.push(prefix + normalizeNote(trimmed));
+		}
+		return `${indent}/**\n${out.join("\n")}\n${indent}*/`;
+	}
 
 	function flush(): void {
 		if (!para.length) {
@@ -334,10 +384,25 @@ function mergeLineCommentGroups(content: string): {
 				}
 				const indent = group[0].indent;
 				merged = true;
-				const para = group
-					.map((g) => normalizeNote(g.text.trim()))
-					.map((g) => maybeAddPeriod(g))
-					.join(" ");
+				// We only want to add terminal punctuation once at the end of the merged
+				// paragraph, not after every original line (which can create spurious
+				// periods mid-sentence when lines were simple wraps). We also avoid
+				// appending a period if the final line ends with a colon introducing a list.
+				const norm = group.map((g) => normalizeNote(g.text.trim()));
+				// Determine index of last non-empty line.
+				let lastIdx = norm.length - 1;
+				while (lastIdx > 0 && norm[lastIdx].trim() === "") {
+					lastIdx--;
+				}
+				for (let k = 0; k < norm.length; k++) {
+					if (k === lastIdx) {
+						const ln = norm[k];
+						if (!/:$/.test(ln.trim())) {
+							norm[k] = maybeAddPeriod(ln);
+						}
+					}
+				}
+				const para = norm.join(" ").replace(/\s+/g, " ").trim();
 				out.push(`${indent}/**`);
 				out.push(`${indent} * ${para}`);
 				out.push(`${indent} */`);
