@@ -12,14 +12,10 @@
 	"node": ">=18",
 	"scripts": {
 		"build": "mkdir -p dist; echo \"export EVTLS_VERSION='$npm_package_version' \" > dist/version.sh",
-		"comments:fix": "comments --merge-line-comments src/**/*.ts",
 		"lint:fix": "biome check src --write --no-errors-on-unmatched"
 	},
 	"dependencies": {},
 	"publishConfig": {
 		"access": "public"
-	},
-	"devDependencies": {
-		"@node-cli/comments": "workspace:*"
 	}
 }
