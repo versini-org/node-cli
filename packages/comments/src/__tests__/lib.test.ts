@@ -254,4 +254,26 @@ describe("parseAndTransformComments", () => {
 		expect(out).toMatch(/wraps\)\./);
 		expect(out).toMatch(/list\./);
 	});
+
+	it("merges a large explanatory // group after a statement into JSDoc", () => {
+		const src = [
+			"const value = compute();",
+			"// We only want to add terminal punctuation once at the end of the merged",
+			"// paragraph, not after every original line (which can create spurious",
+			"// periods mid-sentence when lines were simple wraps). We also avoid",
+			"// appending a period if the final line ends with a colon introducing a",
+			"// list.",
+			"function next() {}",
+		].join("\n");
+		const out = parseAndTransformComments(src, {
+			width: 160,
+			wrapLineComments: true,
+			mergeLineComments: true,
+		}).transformed;
+		// Expect merged into a JSDoc immediately after the statement.
+		const re = /compute\(\);\n\/\*\*[\s\S]*?\n\*\//;
+		expect(re.test(out)).toBe(true);
+		// Ensure only one sentence-final period appended (present on final 'list.' already).
+		expect(out.match(/merged\./)).toBeNull();
+	});
 });

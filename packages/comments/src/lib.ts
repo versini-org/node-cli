@@ -385,11 +385,44 @@ function mergeLineCommentGroups(content: string): {
 	const out: string[] = [];
 	let i = 0;
 	let merged = false;
+
+	function qualifiesExplanatoryAfterStatement(start: number): boolean {
+		// Peek ahead to collect consecutive // lines (excluding triple slash)
+		const collected: string[] = [];
+		for (let k = start; k < lines.length; k++) {
+			const lm = /^(\s*)\/\/( ?)(.*)$/.exec(lines[k]);
+			if (!lm || /^\/\/\//.test(lines[k])) {
+				break;
+			}
+			const body = lm[3];
+			if (/^(@|eslint|ts-ignore)/.test(body) || /https?:\/\//.test(body)) {
+				break;
+			}
+			collected.push(body.trim());
+		}
+		if (collected.length < 4) {
+			return false; // require minimum size
+		}
+		if (!/^[A-Z]/.test(collected[0])) {
+			return false; // start with capitalized sentence
+		}
+		// Avoid matching directive-like or list-lists: require at least one line with a space (a sentence)
+		return collected.some((c) => /\s/.test(c));
+	}
 	while (i < lines.length) {
 		if (/^\s*\/\//.test(lines[i]) && !/^\s*\/\/\//.test(lines[i])) {
 			const prev = i > 0 ? lines[i - 1] : "";
 			const prevTrim = prev.trim();
-			const contextEligible = prevTrim === "" || /[{}]$/.test(prevTrim);
+			let contextEligible = prevTrim === "" || /[{}]$/.test(prevTrim);
+			// Additional heuristic: allow large explanatory group after a statement ending with ';'
+			// (but not inline trailing comment scenario) when it qualifies as explanatory.
+			if (
+				!contextEligible &&
+				/;\s*$/.test(prevTrim) &&
+				qualifiesExplanatoryAfterStatement(i)
+			) {
+				contextEligible = true;
+			}
 			if (!contextEligible) {
 				out.push(lines[i]);
 				i++;
