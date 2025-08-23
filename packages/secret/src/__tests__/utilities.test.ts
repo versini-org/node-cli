@@ -1,9 +1,8 @@
-import { processFileWithPassword } from "../utilities";
-
 import os from "node:os";
 import path from "node:path";
 import fs from "fs-extra";
 import { vi } from "vitest";
+import { processFileWithPassword } from "../utilities";
 
 let mockLog: any, spyLog: any;
 const password = "this is a skrt";

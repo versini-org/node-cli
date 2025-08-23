@@ -1,4 +1,6 @@
 import { basename, dirname, join } from "node:path";
+import bytes from "bytes";
+import type { FooterProperties } from "./utilities.js";
 import {
 	addMDrow,
 	formatFooter,
@@ -8,9 +10,6 @@ import {
 	readJSONFile,
 	validateConfigurationFile,
 } from "./utilities.js";
-
-import bytes from "bytes";
-import type { FooterProperties } from "./utilities.js";
 
 type ReportConfiguration = {
 	current: string;
@@ -73,7 +72,7 @@ export const reportStats = async ({ flags }): Promise<ReportCompare> => {
 		}
 		previousVersion = getMostRecentVersion(previousStats.data);
 	} catch {
-		// nothing to declare officer
+		// nothing to declare officer.
 	}
 	const currentVersion = getMostRecentVersion(currentStats.data);
 

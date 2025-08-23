@@ -1,6 +1,5 @@
-import { defaultFlags, defaultParameters } from "./defaults.js";
-
 import { parser } from "@node-cli/parser";
+import { defaultFlags, defaultParameters } from "./defaults.js";
 
 export type Flags = {
 	cache?: number;

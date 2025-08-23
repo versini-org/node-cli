@@ -3,13 +3,13 @@ import kleur from "kleur";
 import { parseCommandString } from "./utilities.js";
 
 /**
- * Runs a shell command asynchronously and
- * returns both `stdout` and `stderr`.
+ * Runs a shell command asynchronously and returns both `stdout` and `stderr`.
  * If the command fails to run (invalid command or the commands status is
  * anything but 0), the call will throw an exception. The exception can be
  * ignored if the `options.ignoreError` flag is true.
  *
  * @async
+ *
  */
 export type RunResult = {
 	stderr?: string | number;

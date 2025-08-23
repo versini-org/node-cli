@@ -22,7 +22,7 @@ if (fs.pathExistsSync(customPath)) {
 if (config.flags.grep) {
 	// forcing simplified display if grep is true.
 	config.flags.short = true;
-	// And forcing type to files
+	// And forcing type to files.
 	config.flags.type = STR_TYPE_FILE;
 }
 

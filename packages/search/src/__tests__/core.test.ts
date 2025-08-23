@@ -14,8 +14,8 @@ let mockLog: ReturnType<typeof vi.fn>,
 	spyLogWarning: MockInstance;
 
 /**
- * Some utilities have logging capabilities that needs to be
- * tested a little bit differently:
+ * Some utilities have logging capabilities that needs to be tested a little bit
+ * differently:
  * - mocking process.exit
  * - console.log
  * - inquirer.prompt

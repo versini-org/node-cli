@@ -179,12 +179,14 @@ describe("when testing for minifiers utilities with no logging side-effects", ()
       /**
        * @param {string} name - The name parameter
        * @returns {string} A greeting message
-       */
+      */
       function greet(name) {
         return 'Hello, ' + name;
       }
 
-      /** This is not an important comment */
+      /**
+       * This is not an important comment.
+      */
     `;
 			const result = minifyJs(input);
 			expect(result).toContain("@param");
@@ -195,14 +197,16 @@ describe("when testing for minifiers utilities with no logging side-effects", ()
 		test("should NOT preserve non-important JSDoc comments", () => {
 			const input = `
       /**
-       * This async function is awesome
+       * This async function is awesome.
        * @async
-       */
+      */
       function greet(name) {
         return 'Hello, ' + name;
       }
 
-      /** This is not an important comment */
+      /**
+       * This is not an important comment.
+      */
     `;
 			const result = minifyJs(input);
 			expect(result).not.toContain("awesome");
@@ -213,7 +217,7 @@ describe("when testing for minifiers utilities with no logging side-effects", ()
 		test("should remove single-line comments", () => {
 			const input = `
       const x = 5; // This is a comment
-      // This is another comment
+      // This is another comment.
       const y = 10;
     `;
 			const result = minifyJs(input);
@@ -356,14 +360,14 @@ describe("when testing for minifiers utilities with no logging side-effects", ()
        * @description Custom hook for fetching data
        * @param {string} url - The URL to fetch from
        * @returns {Object} The fetched data and loading state
-       */
+      */
       function useFetch(url) {
         const [data, setData] = useState(null);
         const [loading, setLoading] = useState(true);
         const [error, setError] = useState(null);
 
         useEffect(() => {
-          // Skip if no URL provided
+          // Skip if no URL provided.
           if (!url) return;
 
           const fetchData = async () => {
@@ -381,9 +385,9 @@ describe("when testing for minifiers utilities with no logging side-effects", ()
 
           fetchData();
 
-          // Cleanup function
+          // Cleanup function.
           return () => {
-            // Cancel any pending requests if needed
+            // Cancel any pending requests if needed.
           };
         }, [url]);
 
@@ -395,23 +399,23 @@ describe("when testing for minifiers utilities with no logging side-effects", ()
 
 			const result = minifyJs(input);
 
-			// Check that important JSDoc is preserved
+			// Check that important JSDoc is preserved.
 			expect(result).toContain("@description");
 			expect(result).toContain("@param");
 			expect(result).toContain("@returns");
 
-			// Check that code structure is preserved but minified
+			// Check that code structure is preserved but minified.
 			expect(result).toContain("function useFetch(url) {");
 			expect(result).toContain("const [data,setData]=useState(null);");
 			expect(result).toContain("useEffect(() => {");
 			expect(result).toContain("if (!url) return;");
 			expect(result).toContain("const fetchData=async () => {");
 
-			// Check that comments are removed
+			// Check that comments are removed.
 			expect(result).not.toContain("// Skip if no URL provided");
 			expect(result).not.toContain("// Cleanup function");
 
-			// Check that export is preserved
+			// Check that export is preserved.
 			expect(result).toContain("export default useFetch;");
 		});
 	});

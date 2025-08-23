@@ -1,7 +1,6 @@
-import { meowOptionsHelper, meowParserHelper } from "./utilities.js";
-
 import { fastMerge } from "@node-cli/utilities";
 import meow from "meow";
+import { meowOptionsHelper, meowParserHelper } from "./utilities.js";
 
 type Flags = {
 	[key: string]: {

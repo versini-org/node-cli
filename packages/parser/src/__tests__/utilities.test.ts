@@ -1,7 +1,6 @@
-import { meowOptionsHelper, meowParserHelper } from "../utilities.js";
-
 import kleur from "kleur";
 import { vi } from "vitest";
+import { meowOptionsHelper, meowParserHelper } from "../utilities.js";
 
 kleur.enabled = false;
 
@@ -295,8 +294,8 @@ describe("when testing for meowHelpers with no logging side-effects", () => {
 });
 
 /**
- * Some utilities have logging capabilities that needs to be
- * tested a little bit differently:
+ * Some utilities have logging capabilities that needs to be tested a little bit
+ * differently:
  * - mocking process.exit
  * - console.log
  * - inquirer.prompt

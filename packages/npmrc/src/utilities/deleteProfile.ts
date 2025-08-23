@@ -17,14 +17,14 @@ export const deleteProfile = async ({
 			logger.error(`Profile '${profileName}' does not exist`);
 			return 1;
 		}
-		// if the profile is enabled, do nothing
+		// if the profile is enabled, do nothing.
 		if (profiles.enabled === profileName) {
 			logger.error(`Profile '${profileName}' is currently active`);
 			return 1;
 		}
-		// if profile exists, delete it by removing the profile folder
+		// if profile exists, delete it by removing the profile folder.
 		await fs.remove(`${storeLocation}/${profileName}`);
-		// then remove the profile from the configuration file
+		// then remove the profile from the configuration file.
 		const newProfiles = {
 			available: profiles.available.filter(
 				(profile: any) => profile !== profileName,

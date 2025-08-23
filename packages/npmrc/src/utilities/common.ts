@@ -5,16 +5,13 @@ export const GET_REGISTRY_CMD =
 
 export const formatRegistries = (registries: string) => {
 	/**
-	 * We receive this kind of output:
-	 * [
+	 * We receive this kind of output: [
 	 *   '  "@node-cli:registry": "https://other-registry.npmjs.org/"',
 	 *   '  "registry": "https://registry.npmjs.org/"',
-	 * ]
-	 * And we need convert that to a JSON object that looks like that:
-	 * [
+	 * ] And we need convert that to a JSON object that looks like that: [
 	 *   { "@node-cli:registry": "https://other-registry.npmjs.org/" },
 	 *   { "registry": "https://registry.npmjs.org/" },
-	 * ]
+	 * ].
 	 */
 	const messages = [];
 	const stdoutLines = registries.split("\n");
@@ -28,7 +25,7 @@ export const formatRegistries = (registries: string) => {
 					return jsonObject;
 					/* v8 ignore start */
 				} catch {
-					// nothing to declare officer
+					// nothing to declare officer.
 				}
 			}
 			// eslint-disable-next-line unicorn/no-null

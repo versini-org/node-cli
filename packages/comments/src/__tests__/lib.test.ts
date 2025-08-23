@@ -57,7 +57,7 @@ describe("parseAndTransformComments", () => {
 			"/**\n * Before\n * ```js\n * const  x=  1;   \n * ```\n * After\n */";
 		const res = parseAndTransformComments(input, baseOpts).transformed;
 		expect(/```js/.test(res)).toBe(true);
-		// ensure spacing inside fence not normalized
+		// ensure spacing inside fence not normalized.
 		expect(/const {2}x= {2}1;/.test(res)).toBe(true);
 	});
 
@@ -74,7 +74,7 @@ describe("parseAndTransformComments", () => {
 			mergeLineComments: true,
 		});
 		expect(/eslint-disable/.test(res.transformed)).toBe(true);
-		// Should not have merged into a jsdoc (no /** directly before const)
+		// Should not have merged into a jsdoc (no /** directly before const).
 		expect(/\/\*\*/.test(res.transformed)).toBe(false);
 	});
 
@@ -82,7 +82,7 @@ describe("parseAndTransformComments", () => {
 		const input =
 			"/**\n * First line explaining.\n * - item one more words here\n * - item two\n */";
 		const res = parseAndTransformComments(input, baseOpts).transformed;
-		// each list item remains on its own line with leading dash
+		// each list item remains on its own line with leading dash.
 		const lines = res.split(/\n/).filter((l) => /- item/.test(l));
 		expect(lines.length).toBe(2);
 	});
@@ -107,17 +107,17 @@ describe("parseAndTransformComments", () => {
 			" */",
 		].join("\n");
 		const out = parseAndTransformComments(input, baseOpts).transformed;
-		// Heading preserved, not merged into previous paragraph
+		// Heading preserved, not merged into previous paragraph.
 		expect(out).toMatch(/Overview:/);
-		// Visually indented code line kept as-is (no extra wrapping collapse)
+		// Visually indented code line kept as-is (no extra wrapping collapse).
 		expect(out).toMatch(/const\s{3}x = 1;/);
-		// Trailing blank before closing is optional after recent trimming change
+		// Trailing blank before closing is optional after recent trimming change.
 		// (we only keep it when multiple paragraphs exist). Assert closing exists.
 		expect(/\n\*\/$/.test(out)).toBe(true);
-		// Numeric list lines preserved
+		// Numeric list lines preserved.
 		expect(out).toMatch(/1\. first/);
 		expect(out).toMatch(/2\. second/);
-		// Trailing paragraph got terminal period
+		// Trailing paragraph got terminal period.
 		expect(out).toMatch(/Another paragraph without period\./);
 	});
 
@@ -129,15 +129,18 @@ describe("parseAndTransformComments", () => {
 		const b = path.join(nestedDir, "b.ts");
 		fs.writeFileSync(a, "// file a", "utf8");
 		fs.writeFileSync(b, "// file b", "utf8");
-		// Shallow pattern should only see top-level a.ts
+		// Shallow pattern should only see top-level a.ts.
 		const shallow = expandGlobs([`${tmpRoot}/*.ts`]).sort();
 		expect(shallow).toEqual([a]);
-		// Deep pattern matches both
+		// Deep pattern matches both.
 		const deep = expandGlobs([`${tmpRoot}/**/*.ts`]).sort();
 		expect(deep).toEqual([a, b].sort());
 	});
 
-	// Added test for preserving multi-line // comment groups that should NOT merge when preceded by code.
+	/**
+	 * Added test for preserving multi-line // comment groups that should NOT merge
+	 * when preceded by code.
+	 */
 	it("does not merge an inline explanatory multi-line // comment group following code", () => {
 		const src = [
 			"function demo() {",
@@ -186,14 +189,14 @@ describe("parseAndTransformComments", () => {
 			wrapLineComments: true,
 			mergeLineComments: true,
 		}).transformed;
-		// Should be converted to a JSDoc (first and last lines delimiters)
+		// Should be converted to a JSDoc (first and last lines delimiters).
 		const lines = out.split(/\n/);
 		expect(lines[0].trim()).toBe("/**");
 		expect(lines[lines.length - 1].trim()).toBe("*/");
-		// Ensure representative internal lines are present (now without leading //)
+		// Ensure representative internal lines are present (now without leading //).
 		expect(out).toContain("* JSDoc block extraction:");
 		expect(out).toContain("* Pattern explanation:");
-		// Arrow lines preserved
+		// Arrow lines preserved.
 		const arrowLineCount = lines.filter((l) => /->/.test(l)).length;
 		expect(arrowLineCount).toBeGreaterThanOrEqual(5);
 	});
@@ -209,9 +212,9 @@ describe("parseAndTransformComments", () => {
 			" */",
 		].join("\n");
 		const out = parseAndTransformComments(input, baseOpts).transformed;
-		// Ensure no stray period after 'be'
+		// Ensure no stray period after 'be'.
 		expect(out).not.toMatch(/needs to be\./);
-		// Ensure list items unchanged
+		// Ensure list items unchanged.
 		expect(out).toMatch(/- mocking process\.exit/);
 	});
 
@@ -226,5 +229,53 @@ describe("parseAndTransformComments", () => {
 		].join("\n");
 		const out = parseAndTransformComments(input, baseOpts).transformed;
 		expect(out).not.toMatch(/needs to be\./);
+	});
+
+	it("does not append periods to every line of a merged // comment group", () => {
+		const original = [
+			"// We only want to add terminal punctuation once at the end of the merged",
+			"// paragraph, not after every original line (which can create spurious",
+			"// periods mid-sentence when lines were simple wraps). We also avoid",
+			"// appending a period if the final line ends with a colon introducing a",
+			"// list.",
+		].join("\n");
+		const out = parseAndTransformComments(original, {
+			width: 160, // keep wide to avoid secondary wrapping noise
+			wrapLineComments: true,
+			mergeLineComments: true,
+		}).transformed;
+		// Ensure it became a JSDoc block.
+		expect(out.startsWith("/**")).toBe(true);
+		// Should not contain stray periods after former line breaks.
+		expect(out).not.toMatch(/merged\./);
+		expect(out).not.toMatch(/spurious\./);
+		expect(out).not.toMatch(/introducing a\./);
+		// Should still retain existing legitimate period after 'wraps).' and final
+		// 'list.'
+		expect(out).toMatch(/wraps\)\./);
+		expect(out).toMatch(/list\./);
+	});
+
+	it("merges a large explanatory // group after a statement into JSDoc", () => {
+		const src = [
+			"const value = compute();",
+			"// We only want to add terminal punctuation once at the end of the merged",
+			"// paragraph, not after every original line (which can create spurious",
+			"// periods mid-sentence when lines were simple wraps). We also avoid",
+			"// appending a period if the final line ends with a colon introducing a",
+			"// list.",
+			"function next() {}",
+		].join("\n");
+		const out = parseAndTransformComments(src, {
+			width: 160,
+			wrapLineComments: true,
+			mergeLineComments: true,
+		}).transformed;
+		// Expect merged into a JSDoc immediately after the statement.
+		const re = /compute\(\);\n\/\*\*[\s\S]*?\n\*\//;
+		expect(re.test(out)).toBe(true);
+		// Ensure only one sentence-final period appended (present on final 'list.'
+		// already).
+		expect(out.match(/merged\./)).toBeNull();
 	});
 });

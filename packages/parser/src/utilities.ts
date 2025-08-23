@@ -138,7 +138,7 @@ export const meowParserHelper = (parameters: {
 		}
 		/* v8 ignore start */
 	} catch {
-		// nothing to declare officer
+		// nothing to declare officer.
 	}
 	/* v8 ignore stop */
 
@@ -149,7 +149,7 @@ export const meowParserHelper = (parameters: {
 		}
 		/* v8 ignore start */
 	} catch {
-		// nothing to declare officer
+		// nothing to declare officer.
 	}
 	/* v8 ignore stop */
 
