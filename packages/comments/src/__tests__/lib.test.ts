@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { augmentPatterns, expandGlobs } from "../glob.js";
@@ -95,14 +96,8 @@ describe("parseAndTransformComments", () => {
 	});
 
 	it("glob expansion matches created files", () => {
-		// create a temporary structure under OS temp inside test workspace
-		const tmpRoot = path.join(
-			process.cwd(),
-			"packages",
-			"comments",
-			"tmp-test",
-		);
-		fs.mkdirSync(tmpRoot, { recursive: true });
+		// Create a truly temporary isolated directory outside source tree
+		const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "comments-glob-"));
 		const a = path.join(tmpRoot, "a.ts");
 		const nestedDir = path.join(tmpRoot, "nested");
 		fs.mkdirSync(nestedDir, { recursive: true });
