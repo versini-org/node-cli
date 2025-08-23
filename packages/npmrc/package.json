@@ -9,7 +9,8 @@
 	"exports": "./dist/npmrc.js",
 	"bin": "dist/npmrc.js",
 	"files": [
-		"dist", "README.md"
+		"dist",
+		"README.md"
 	],
 	"node": ">=18",
 	"scripts": {
@@ -19,6 +20,7 @@
 		"build:types": "tsc",
 		"clean": "rimraf dist types coverage",
 		"lint": "biome lint src",
+		"lint:fix": "biome check src --write --no-errors-on-unmatched",
 		"test": "vitest run --globals",
 		"test:coverage": "vitest run --coverage --globals",
 		"test:watch": "vitest --globals",

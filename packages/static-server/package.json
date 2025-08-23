@@ -9,7 +9,8 @@
 	"exports": "./dist/server.js",
 	"bin": "dist/server.js",
 	"files": [
-		"dist", "README.md"
+		"dist",
+		"README.md"
 	],
 	"node": ">=18",
 	"scripts": {
@@ -19,6 +20,7 @@
 		"build:types": "tsc",
 		"clean": "rimraf dist types coverage",
 		"lint": "biome lint src",
+		"lint:fix": "biome check src --write --no-errors-on-unmatched",
 		"watch": "swc --strip-leading-paths --watch --out-dir dist src"
 	},
 	"dependencies": {

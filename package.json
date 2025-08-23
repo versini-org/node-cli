@@ -1,11 +1,14 @@
 {
 	"name": "root",
 	"private": true,
-	"workspaces": ["packages/*"],
+	"workspaces": [
+		"packages/*"
+	],
 	"description": "Monorepo of small Node CLI helpers, such as logger, run, perf, bundlesize, etc.",
 	"scripts": {
 		"build": "lerna run build",
 		"lint": "lerna run lint",
+		"lint:fix": "lerna run lint:fix",
 		"lint-staged": "lint-staged --config \"./configuration/lint-staged.config.cjs\"",
 		"prepare": "husky",
 		"test": "lerna run test",
