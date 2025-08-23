@@ -21,12 +21,34 @@ interface JsDocMatch {
 	end: number;
 }
 
+// Safety guards / limits (defense-in-depth vs pathological or malicious input)
+// Large indentation sequences (e.g. thousands of tabs) aren't meaningful for real
+// source formatting and could be used to inflate processing time if a regex
+// exhibited super-linear behavior. Our pattern is already linear (tempered), but
+// we still cap accepted indentation length to keep work bounded.
+const MAX_JSDOC_INDENT = 256; // characters (tabs + spaces)
+
 // JSDoc block extraction:
 // Previous pattern used a lazy dot-all: ([\s\S]*?) which could, under
-// pathological inputs, produce excessive backtracking. We replace it with a
+// pathological inputs, produce excessive backtracking. We replaced it with a
 // tempered pattern that advances linearly by never letting the inner part
 // consume a closing '*/'. This avoids catastrophic behavior while keeping
 // correctness.
+//
+// Reviewer (PR) concern: potential ReDoS on crafted inputs containing many
+// leading tabs then '/**'. Analysis: The inner quantified group
+//   (?:[^*]|\*(?!/))*
+// is unambiguous: on each iteration it consumes exactly one character and can
+// never match the closing sentinel '*/' because of the negative lookahead. This
+// means the engine proceeds in O(n) time relative to the block body size.
+// There is no nested ambiguous quantifier (e.g. (a+)*, (.*)+, etc.). The only
+// other quantified part ^[\t ]* is a simple character class that is consumed
+// once per line start with no backtracking explosion potential.
+//
+// Defense-in-depth: we still (1) cap processed body length (see below) and
+// (2) cap accepted indentation length (MAX_JSDOC_INDENT) after match to ensure
+// we skip absurdly indented constructs.
+//
 // Pattern explanation:
 //  (^ [\t ]* )    -> capture indentation at start of line (multiline mode)
 //  /\*\*          -> opening delimiter
@@ -36,9 +58,7 @@ interface JsDocMatch {
 //    )*           -> repeated greedily (cannot cross closing */)
 //  )
 //  \n?[\t ]*\*/   -> optional newline + trailing indent + closing */
-// The greedy repetition is safe because the inner alternatives are mutually
-// exclusive and each consumes at least one char without overlapping on the
-// closing sentinel.
+// Complexity: linear in length of the matched block.
 const JSDOC_REGEX = /(^[\t ]*)\/\*\*((?:[^*]|\*(?!\/))*)\n?[\t ]*\*\//gm;
 
 export function diffLines(a: string, b: string): string {
@@ -189,10 +209,13 @@ function reflowJsDocBlocks(
 	const blocks: JsDocMatch[] = [];
 	let m: RegExpExecArray | null = JSDOC_REGEX.exec(content);
 	while (m) {
-		if (m[2].length <= 500_000) {
+		const indent = m[1] || "";
+		const body = m[2] || "";
+		// Body length guard protects against extremely large comment blocks.
+		if (body.length <= 500_000 && indent.length <= MAX_JSDOC_INDENT) {
 			blocks.push({
-				indent: m[1] || "",
-				body: m[2] || "",
+				indent,
+				body,
 				start: m.index,
 				end: m.index + m[0].length,
 			});
