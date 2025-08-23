@@ -137,8 +137,10 @@ describe("parseAndTransformComments", () => {
 		expect(deep).toEqual([a, b].sort());
 	});
 
-	// Added test for preserving multi-line // comment groups that should NOT merge
-	// when preceded by code.
+	/**
+	 * Added test for preserving multi-line // comment groups that should NOT merge
+	 * when preceded by code.
+	 */
 	it("does not merge an inline explanatory multi-line // comment group following code", () => {
 		const src = [
 			"function demo() {",

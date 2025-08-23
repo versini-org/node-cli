@@ -20,8 +20,10 @@ export function minifyImports(content: string): string {
 }
 
 export function minifyJs(content: string): string {
-	// Store template literals and regular expressions to protect them from
-	// minification.
+	/**
+	 * Store template literals and regular expressions to protect them from
+	 * minification.
+	 */
 	const tokenPrefix = `__PROTECTED_${uuidv4()}_`;
 	const protectedSegments: string[] = [];
 
@@ -31,8 +33,10 @@ export function minifyJs(content: string): string {
 	// Function to protect a segment of code with a custom handler.
 	const protect = (pattern: RegExp, handler?: (match: string) => boolean) => {
 		content = content.replace(pattern, (match) => {
-			// If a handler is provided, use it to determine if we should protect this
-			// match.
+			/**
+			 * If a handler is provided, use it to determine if we should protect this
+			 * match.
+			 */
 			if (handler && !handler(match)) {
 				return ""; // Return empty string for JSDoc comments we don't want to keep
 			}
