@@ -7,6 +7,8 @@
 	"description": "Monorepo of small Node CLI helpers, such as logger, run, perf, bundlesize, etc.",
 	"scripts": {
 		"build": "lerna run build",
+		"comments:fix": "lerna run comments:fix",
+		"fix": "npm-run-all --serial comments:fix lint:fix",
 		"lint": "lerna run lint",
 		"lint:fix": "lerna run lint:fix",
 		"lint-staged": "lint-staged --config \"./configuration/lint-staged.config.cjs\"",
