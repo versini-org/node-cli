@@ -309,29 +309,70 @@ function wrapLineComments(
 	const lines = content.split(/\n/);
 	let changed = false;
 	const out: string[] = [];
-	for (let i = 0; i < lines.length; i++) {
+	let i = 0;
+	while (i < lines.length) {
 		const line = lines[i];
 		const m = /^(\s*)\/\/( ?)(.*)$/.exec(line);
 		if (!m || /^\/\/\//.test(line)) {
 			out.push(line);
+			i++;
 			continue;
 		}
-		const indent = m[1];
-		const body = m[3];
-		if (/^(@|eslint|ts-ignore)/.test(body) || /https?:\/\//.test(body)) {
-			out.push(line);
+		// Collect a group of consecutive simple // lines (not triple slash) that are eligible.
+		const group: { raw: string; indent: string; body: string }[] = [];
+		let j = i;
+		while (j < lines.length) {
+			const gm = /^(\s*)\/\/ ?(.*)$/.exec(lines[j]);
+			if (!gm || /^\/\/\//.test(lines[j])) {
+				break;
+			}
+			const body = gm[2];
+			if (/^(@|eslint|ts-ignore)/.test(body) || /https?:\/\//.test(body)) {
+				break; // stop group before directives/URLs; process current line normally
+			}
+			group.push({ raw: lines[j], indent: gm[1], body });
+			j++;
+		}
+		if (group.length <= 1) {
+			// Single line: existing logic (add period if needed)
+			const indent = m[1];
+			const body = m[3];
+			if (/^(@|eslint|ts-ignore)/.test(body) || /https?:\/\//.test(body)) {
+				out.push(line);
+				i++;
+				continue;
+			}
+			const prefix = indent + "// ";
+			const avail = Math.max(10, width - prefix.length);
+			let text = body.replace(/\s+/g, " ").trim();
+			text = normalizeNote(text);
+			text = maybeAddPeriod(text);
+			const wrapped = wrapWords(text, avail).map((w) => prefix + w);
+			if (wrapped.join("\n") !== line) {
+				changed = true;
+			}
+			out.push(...wrapped);
+			i++;
 			continue;
 		}
-		const prefix = indent + "// ";
-		const avail = Math.max(10, width - prefix.length);
-		let text = body.replace(/\s+/g, " ").trim();
-		text = normalizeNote(text);
-		text = maybeAddPeriod(text);
-		const wrapped = wrapWords(text, avail).map((w) => prefix + w);
-		if (wrapped.join("\n") !== line) {
-			changed = true;
+		// Multi-line group: only add terminal punctuation (period) to final line if needed.
+		// Other lines are normalized for NOTE but left without forced punctuation.
+		for (let k = 0; k < group.length; k++) {
+			const { indent, body } = group[k];
+			const prefix = indent + "// ";
+			const avail = Math.max(10, width - prefix.length);
+			let text = body.replace(/\s+/g, " ").trim();
+			text = normalizeNote(text);
+			if (k === group.length - 1 && !/:$/.test(text.trim())) {
+				text = maybeAddPeriod(text);
+			}
+			const wrapped = wrapWords(text, avail).map((w) => prefix + w);
+			if (wrapped.join("\n") !== group[k].raw) {
+				changed = true;
+			}
+			out.push(...wrapped);
 		}
-		out.push(...wrapped);
+		i = j;
 	}
 	return { content: out.join("\n"), applied: changed };
 }
@@ -400,9 +441,9 @@ function mergeLineCommentGroups(content: string): {
 				}
 				const indent = group[0].indent;
 				merged = true;
-				// We only want to add terminal punctuation once at the end of the merged.
-				// paragraph, not after every original line (which can create spurious.
-				// periods mid-sentence when lines were simple wraps). We also avoid.
+				// We only want to add terminal punctuation once at the end of the merged
+				// paragraph, not after every original line (which can create spurious
+				// periods mid-sentence when lines were simple wraps). We also avoid
 				// appending a period if the final line ends with a colon introducing a
 				// list.
 				const norm = group.map((g) => normalizeNote(g.text.trim()));

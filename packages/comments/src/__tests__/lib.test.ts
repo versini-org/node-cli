@@ -230,4 +230,28 @@ describe("parseAndTransformComments", () => {
 		const out = parseAndTransformComments(input, baseOpts).transformed;
 		expect(out).not.toMatch(/needs to be\./);
 	});
+
+	it("does not append periods to every line of a merged // comment group", () => {
+		const original = [
+			"// We only want to add terminal punctuation once at the end of the merged",
+			"// paragraph, not after every original line (which can create spurious",
+			"// periods mid-sentence when lines were simple wraps). We also avoid",
+			"// appending a period if the final line ends with a colon introducing a",
+			"// list.",
+		].join("\n");
+		const out = parseAndTransformComments(original, {
+			width: 160, // keep wide to avoid secondary wrapping noise
+			wrapLineComments: true,
+			mergeLineComments: true,
+		}).transformed;
+		// Ensure it became a JSDoc block
+		expect(out.startsWith("/**")).toBe(true);
+		// Should not contain stray periods after former line breaks.
+		expect(out).not.toMatch(/merged\./);
+		expect(out).not.toMatch(/spurious\./);
+		expect(out).not.toMatch(/introducing a\./);
+		// Should still retain existing legitimate period after 'wraps).' and final 'list.'
+		expect(out).toMatch(/wraps\)\./);
+		expect(out).toMatch(/list\./);
+	});
 });
