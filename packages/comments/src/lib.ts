@@ -299,6 +299,25 @@ function mergeLineCommentGroups(content: string): {
 				j++;
 			}
 			if (group.length >= 2) {
+				// Heuristics to AVOID merging large/structured explanatory blocks (like the
+				// regex commentary in this file). Rationale: merging them collapses
+				// intentional line-by-line formatting and harms readability.
+				// Skip merge if:
+				//  - group longer than 6 lines (likely documentation section)
+				//  - any line contains '->' (pattern explanation arrows)
+				//  - any line contains '(?:' (regex fragment) or '*/' (terminator text)
+				//  - a line starts with 'Pattern explanation:'
+				const tooLong = group.length > 6;
+				const hasArrows = group.some((g) => /->/.test(g.text));
+				const hasRegexTokens = group.some((g) => /(\(\?:|\*\/)/.test(g.text));
+				const hasPatternHeader = group.some((g) =>
+					/Pattern explanation:/i.test(g.text),
+				);
+				if (tooLong || hasArrows || hasRegexTokens || hasPatternHeader) {
+					out.push(...group.map((g) => `${g.indent}// ${g.text}`));
+					i = j;
+					continue;
+				}
 				merged = true;
 				const indent = group[0].indent;
 				const para = group

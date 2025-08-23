@@ -138,4 +138,40 @@ describe("parseAndTransformComments", () => {
 		expect(out).toContain("  // final line");
 		expect(out).not.toContain("/**");
 	});
+
+	it("preserves the exact multi-line explanatory block from lib.ts (lines 26-43) without merging", () => {
+		const snippet = [
+			"// JSDoc block extraction:",
+			"// Previous pattern used a lazy dot-all: ([\\s\\S]*?) which could, under",
+			"// pathological inputs, produce excessive backtracking. We replace it with a",
+			"// tempered pattern that advances linearly by never letting the inner part",
+			"// consume a closing '*/'. This avoids catastrophic behavior while keeping",
+			"// correctness.",
+			"// Pattern explanation:",
+			"//  (^ [\\t ]* )    -> capture indentation at start of line (multiline mode)",
+			"//  /\\*\\*          -> opening delimiter",
+			"//  (              -> capture group 2 body",
+			"//    (?:[^*]      -> any non-* char",
+			"//      |\\*(?!/)   -> or a * not followed by /",
+			"//    )*           -> repeated greedily (cannot cross closing */)",
+			"//  )",
+			"//  \\n?[\\t ]*\\*/   -> optional newline + trailing indent + closing */",
+			"// The greedy repetition is safe because the inner alternatives are mutually",
+			"// exclusive and each consumes at least one char without overlapping on the",
+			"// closing sentinel.",
+		].join("\n");
+		const out = parseAndTransformComments(snippet, {
+			width: 100,
+			wrapLineComments: true,
+			mergeLineComments: true,
+		}).transformed;
+		// Should remain line comments (no merged JSDoc)
+		expect(out).not.toContain("/**");
+		// First and last lines preserved
+		expect(out).toContain("// JSDoc block extraction:");
+		expect(out).toContain("// closing sentinel.");
+		// Arrow lines with -> remain separate (not concatenated into one line)
+		const arrowLineCount = out.split(/\n/).filter((l) => /->/.test(l)).length;
+		expect(arrowLineCount).toBeGreaterThanOrEqual(5);
+	});
 });
