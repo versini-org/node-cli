@@ -92,11 +92,7 @@ importers:
         specifier: 3.2.4
         version: 3.2.4(@types/node@24.2.1)(happy-dom@18.0.1)(jsdom@26.1.0)(tsx@4.20.4)(yaml@2.8.1)
 
-  packages/envtools:
-    devDependencies:
-      '@node-cli/comments':
-        specifier: workspace:*
-        version: link:../comments
+  packages/envtools: {}
 
   packages/logger:
     dependencies:
