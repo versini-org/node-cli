@@ -237,7 +237,14 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 			continue;
 		}
 		if (inFence) {
-			out.push(prefix + trimmed);
+			// Inside a code fence we preserve content verbatim, but for a blank line
+			// we still prefer the canonical ' *' (no trailing space after the star)
+			// instead of ' * '.
+			if (trimmed === "") {
+				out.push(prefix.trimEnd());
+			} else {
+				out.push(prefix + trimmed);
+			}
 			continue;
 		}
 		if (

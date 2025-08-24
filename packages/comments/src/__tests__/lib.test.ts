@@ -308,4 +308,29 @@ describe("parseAndTransformComments", () => {
 		// Should not regress by emitting no-space variant
 		expect(/\n\*\/$/.test(out)).toBe(false);
 	});
+
+	it("does not add trailing space on blank '*' lines inside code fences", () => {
+		const input = [
+			"/**",
+			" * Function to format a number with commas as thousands separators.",
+			" *",
+			" * @example",
+			" * ```js",
+			" * const formattedNumber = numberFormatter.format(1000);",
+			' * console.log(formattedNumber); // "1,000"',
+			" *", // blank line inside fence we want ' *' (no trailing space)
+			" * const roundedNumber = numberFormatter.format(1234.56);",
+			' * console.log(roundedNumber); // "1,235"',
+			" * ```",
+			" *",
+			" */",
+		].join("\n");
+		const out = parseAndTransformComments(input, baseOpts).transformed;
+		// Collect lines that are just star forms.
+		const starLines = out.split(/\n/).filter((l) => /^ \* ?$/.test(l));
+		// None of them should have a trailing space after the star.
+		for (const l of starLines) {
+			expect(l).toBe(" *");
+		}
+	});
 });
