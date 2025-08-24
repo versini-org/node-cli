@@ -21,34 +21,34 @@ importers:
   examples/bundlesize:
     dependencies:
       '@node-cli/bundlesize':
-        specifier: workspace:../../packages/bundlesize
+        specifier: workspace:*
         version: link:../../packages/bundlesize
 
   examples/logger:
     dependencies:
       '@node-cli/logger':
-        specifier: workspace:../../packages/logger
+        specifier: workspace:*
         version: link:../../packages/logger
 
   examples/perf:
     dependencies:
       '@node-cli/perf':
-        specifier: workspace:../../packages/perf
+        specifier: workspace:*
         version: link:../../packages/perf
 
   examples/run:
     dependencies:
       '@node-cli/run':
-        specifier: workspace:../../packages/run
+        specifier: workspace:*
         version: link:../../packages/run
 
   packages/bundlesize:
     dependencies:
       '@node-cli/logger':
-        specifier: workspace:../logger
+        specifier: workspace:*
         version: link:../logger
       '@node-cli/parser':
-        specifier: workspace:../parser
+        specifier: workspace:*
         version: link:../parser
       bytes:
         specifier: 3.1.2
@@ -122,13 +122,13 @@ importers:
   packages/npmrc:
     dependencies:
       '@node-cli/logger':
-        specifier: workspace:../logger
+        specifier: workspace:*
         version: link:../logger
       '@node-cli/parser':
-        specifier: workspace:../parser
+        specifier: workspace:*
         version: link:../parser
       '@node-cli/run':
-        specifier: workspace:../run
+        specifier: workspace:*
         version: link:../run
       fs-extra:
         specifier: 11.3.1
@@ -150,10 +150,10 @@ importers:
   packages/parser:
     dependencies:
       '@node-cli/logger':
-        specifier: workspace:../logger
+        specifier: workspace:*
         version: link:../logger
       '@node-cli/utilities':
-        specifier: workspace:../utilities
+        specifier: workspace:*
         version: link:../utilities
       cli-table3:
         specifier: 0.6.5
@@ -178,10 +178,10 @@ importers:
   packages/perf:
     dependencies:
       '@node-cli/logger':
-        specifier: workspace:../logger
+        specifier: workspace:*
         version: link:../logger
       '@node-cli/utilities':
-        specifier: workspace:../utilities
+        specifier: workspace:*
         version: link:../utilities
     devDependencies:
       '@node-cli/comments':
@@ -216,16 +216,16 @@ importers:
   packages/search:
     dependencies:
       '@node-cli/logger':
-        specifier: workspace:../logger
+        specifier: workspace:*
         version: link:../logger
       '@node-cli/parser':
-        specifier: workspace:../parser
+        specifier: workspace:*
         version: link:../parser
       '@node-cli/perf':
-        specifier: workspace:../perf
+        specifier: workspace:*
         version: link:../perf
       '@node-cli/run':
-        specifier: workspace:../run
+        specifier: workspace:*
         version: link:../run
       fs-extra:
         specifier: 11.3.1
@@ -259,10 +259,10 @@ importers:
   packages/secret:
     dependencies:
       '@node-cli/logger':
-        specifier: workspace:../logger
+        specifier: workspace:*
         version: link:../logger
       '@node-cli/parser':
-        specifier: workspace:../parser
+        specifier: workspace:*
         version: link:../parser
       fs-extra:
         specifier: 11.3.1
@@ -296,10 +296,10 @@ importers:
         specifier: 8.2.0
         version: 8.2.0
       '@node-cli/logger':
-        specifier: workspace:../logger
+        specifier: workspace:*
         version: link:../logger
       '@node-cli/parser':
-        specifier: workspace:../parser
+        specifier: workspace:*
         version: link:../parser
       fastify:
         specifier: 5.5.0
@@ -336,10 +336,10 @@ importers:
   packages/timer:
     dependencies:
       '@node-cli/logger':
-        specifier: workspace:../logger
+        specifier: workspace:*
         version: link:../logger
       '@node-cli/parser':
-        specifier: workspace:../parser
+        specifier: workspace:*
         version: link:../parser
       moment:
         specifier: 2.30.1

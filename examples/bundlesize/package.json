@@ -6,7 +6,7 @@
 	"author": "Arno Versini",
 	"description": "Examples",
 	"dependencies": {
-		"@node-cli/bundlesize": "workspace:../../packages/bundlesize"
+		"@node-cli/bundlesize": "workspace:*"
 	},
 	"type": "module",
 	"publishConfig": {

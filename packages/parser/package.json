@@ -13,8 +13,8 @@
 	],
 	"node": ">=16",
 	"dependencies": {
-		"@node-cli/logger": "workspace:../logger",
-		"@node-cli/utilities": "workspace:../utilities",
+		"@node-cli/logger": "workspace:*",
+		"@node-cli/utilities": "workspace:*",
 		"cli-table3": "0.6.5",
 		"kleur": "4.1.5",
 		"meow": "13.2.0"

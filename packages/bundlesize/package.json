@@ -30,8 +30,8 @@
 		"watch": "swc --strip-leading-paths --watch --out-dir dist src"
 	},
 	"dependencies": {
-		"@node-cli/logger": "workspace:../logger",
-		"@node-cli/parser": "workspace:../parser",
+		"@node-cli/logger": "workspace:*",
+		"@node-cli/parser": "workspace:*",
 		"bytes": "3.1.2",
 		"fs-extra": "11.3.1",
 		"glob": "11.0.3",
