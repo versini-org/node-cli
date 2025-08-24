@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/versini-org/node-cli/compare/comments-v0.2.1...comments-v0.2.2) (2025-08-24)
+
+
+### Bug Fixes
+
+* ensure space before closing JSDoc delimiter - take 2 ([#413](https://github.com/versini-org/node-cli/issues/413)) ([140f27d](https://github.com/versini-org/node-cli/commit/140f27d4710c8d0acdac29f1087e03476863b601))
+
 ## [0.2.1](https://github.com/versini-org/node-cli/compare/comments-v0.2.0...comments-v0.2.1) (2025-08-24)
 
 
