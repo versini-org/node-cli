@@ -105,6 +105,61 @@ function normalizeNote(line: string): string {
 	return line.replace(/^note:/i, "NOTE:");
 }
 
+/**
+ * ' at start or immediately after a sentence terminator + space.
+ */
+function splitNoteSentences(text: string): string[] {
+	if (!/NOTE: /.test(text)) {
+		return [text];
+	}
+	const segments: string[] = [];
+	let i = 0;
+	while (i < text.length) {
+		const idx = text.indexOf("NOTE: ", i);
+		if (idx === -1) {
+			const tail = text.slice(i).trim();
+			if (tail) {
+				segments.push(tail);
+			}
+			break;
+		}
+		/**
+		 * Boundary heuristics: start of text, sentence punctuation + space, OR a
+		 * plain space (allows splitting even when author forgot to terminate the
+		 * previous sentence before starting a NOTE clause).
+		 */
+		const boundary =
+			idx === 0 ||
+			/[.!?] /.test(text.slice(Math.max(0, idx - 2), idx + 1)) ||
+			text[idx - 1] === " ";
+		if (!boundary) {
+			i = idx + 6; // skip this occurrence
+			continue;
+		}
+		const before = text.slice(i, idx).trim();
+		if (before) {
+			segments.push(before);
+		}
+		let end = idx;
+		while (end < text.length && !/[.!?]/.test(text[end])) {
+			end++;
+		}
+		if (end < text.length && /[.!?]/.test(text[end])) {
+			end++;
+		}
+		let note = text.slice(idx, end).trim();
+		if (!/[.!?]$/.test(note)) {
+			note += ".";
+		}
+		segments.push(note);
+		i = end;
+		if (text[i] === " ") {
+			i++;
+		}
+	}
+	return segments.filter(Boolean);
+}
+
 function isListLike(line: string): boolean {
 	return /^(?:[-*+] |\d+\. )/.test(line.trim());
 }
@@ -194,7 +249,9 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 	 */
 	const structured = lines.some(
 		(l) =>
-			/->/.test(l) || /(\(\?:|\*\/)/.test(l) || /Pattern explanation:/i.test(l),
+			/->/.test(l) ||
+			/(\(?:\?|\*\/)/.test(l) ||
+			/Pattern explanation:/i.test(l),
 	);
 	if (structured) {
 		for (const raw of lines) {
@@ -222,8 +279,11 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 		let text = para.join(" ").replace(/\s+/g, " ").trim();
 		text = normalizeNote(text);
 		text = maybeAddPeriod(text);
-		for (const l of wrapWords(text, avail)) {
-			out.push(prefix + l);
+		const pieces = splitNoteSentences(text);
+		for (const piece of pieces) {
+			for (const l of wrapWords(piece, avail)) {
+				out.push(prefix + l);
+			}
 		}
 		para = [];
 	}
@@ -237,9 +297,11 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 			continue;
 		}
 		if (inFence) {
-			// Inside a code fence we preserve content verbatim, but for a blank line
-			// we still prefer the canonical ' *' (no trailing space after the star)
-			// instead of ' * '.
+			/**
+			 * Inside a code fence we preserve content verbatim, but for a blank line we
+			 * still prefer the canonical ' *' (no trailing space after the star) instead
+			 * of ' * '.
+			 */
 			if (trimmed === "") {
 				out.push(prefix.trimEnd());
 			} else {
@@ -252,7 +314,8 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 			isListLike(trimmed) ||
 			isTagLine(trimmed) ||
 			isHeadingLike(trimmed) ||
-			isVisuallyIndentedCode(raw)
+			isVisuallyIndentedCode(raw) ||
+			/^NOTE: /.test(normalizeNote(trimmed))
 		) {
 			flush();
 			if (trimmed === "") {
@@ -263,7 +326,11 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 					out.push(prefix.trimEnd());
 				}
 			} else {
-				out.push(prefix + normalizeNote(trimmed));
+				let noteLine = normalizeNote(trimmed);
+				if (/^NOTE: /.test(noteLine) && !/[.!?]$/.test(noteLine)) {
+					noteLine += "."; // ensure terminal punctuation for standalone NOTE lines
+				}
+				out.push(prefix + noteLine);
 			}
 			continue;
 		}
@@ -331,7 +398,8 @@ function wrapLineComments(
 		}
 		/**
 		 * Collect a group of consecutive simple // lines (not triple slash) that are
-		 * eligible.
+		 * eligible to be wrapped/merged. We stop before directive lines, URLs, or
+		 * triple-slash (reference) comments to avoid altering those semantics.
 		 */
 		const group: { raw: string; indent: string; body: string }[] = [];
 		let j = i;
@@ -370,9 +438,10 @@ function wrapLineComments(
 			continue;
 		}
 		/**
-		 * Multi-line group: only add terminal punctuation (period) to final line if
-		 * needed. Other lines are normalized for NOTE but left without forced
-		 * punctuation.
+		 * Multi-line group: only add terminal punctuation (a single period) to the
+		 * final logical sentence if needed. Earlier lines are treated as soft wraps
+		 * of the same paragraph; adding periods to each would create spurious
+		 * sentence boundaries.
 		 */
 		for (let k = 0; k < group.length; k++) {
 			const { indent, body } = group[k];
@@ -404,7 +473,11 @@ function mergeLineCommentGroups(content: string): {
 	let merged = false;
 
 	function qualifiesExplanatoryAfterStatement(start: number): boolean {
-		// Peek ahead to collect consecutive // lines (excluding triple slash).
+		/**
+		 * Peek ahead to collect consecutive // lines (excluding triple slash) to
+		 * decide if they form a sufficiently large explanatory paragraph that
+		 * deserves merging directly after a terminated statement.
+		 */
 		const collected: string[] = [];
 		for (let k = start; k < lines.length; k++) {
 			const lm = /^(\s*)\/\/( ?)(.*)$/.exec(lines[k]);
@@ -424,8 +497,8 @@ function mergeLineCommentGroups(content: string): {
 			return false; // start with capitalized sentence
 		}
 		/**
-		 * Avoid matching directive-like or list-lists: require at least one line with
-		 * a space (a sentence).
+		 * Avoid matching directive-like or list-lists: require at least one line
+		 * containing a space (a sentence fragment vs a single token).
 		 */
 		return collected.some((c) => /\s/.test(c));
 	}
@@ -434,11 +507,9 @@ function mergeLineCommentGroups(content: string): {
 			const prev = i > 0 ? lines[i - 1] : "";
 			const prevTrim = prev.trim();
 			let contextEligible = prevTrim === "" || /[{}]$/.test(prevTrim);
-			/**
-			 * Additional heuristic: allow large explanatory group after a statement
-			 * ending with ';' (but not inline trailing comment scenario) when it
-			 * qualifies as explanatory.
-			 */
+			// Heuristic: also allow large explanatory group after a statement ending
+			// with ';' when it qualifies as explanatory so it can be elevated to a
+			// block comment rather than remaining a run of // lines.
 			if (
 				!contextEligible &&
 				/;\s*$/.test(prevTrim) &&
@@ -506,7 +577,13 @@ function mergeLineCommentGroups(content: string): {
 				 * list.
 				 */
 				const norm = group.map((g) => normalizeNote(g.text.trim()));
-				// Determine index of last non-empty line.
+				/**
+				 * We only want to add terminal punctuation once at the end of the merged
+				 * paragraph, not after every original line (which can create spurious
+				 * periods mid-sentence when lines were simple wraps). We also avoid
+				 * appending a period if the final line ends with a colon introducing a
+				 * list.
+				 */
 				let lastIdx = norm.length - 1;
 				while (lastIdx > 0 && norm[lastIdx].trim() === "") {
 					lastIdx--;
@@ -521,7 +598,9 @@ function mergeLineCommentGroups(content: string): {
 				}
 				const para = norm.join(" ").replace(/\s+/g, " ").trim();
 				out.push(`${indent}/**`);
-				out.push(`${indent} * ${para}`);
+				for (const seg of splitNoteSentences(para)) {
+					out.push(`${indent} * ${seg}`);
+				}
 				out.push(`${indent} */`);
 				i = j;
 				continue;
