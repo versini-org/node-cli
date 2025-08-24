@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.6](https://github.com/versini-org/node-cli/compare/secret-v1.2.5...secret-v1.2.6) (2025-08-24)
+
+
+### Bug Fixes
+
+* update workspace dependency specifiers to wildcard ([#423](https://github.com/versini-org/node-cli/issues/423)) ([728e764](https://github.com/versini-org/node-cli/commit/728e764c1deb7bb75c9769efefd79f350d4e00d3))
+
 ## [1.2.5](https://github.com/versini-org/node-cli/compare/secret-v1.2.4...secret-v1.2.5) (2025-08-23)
 
 
