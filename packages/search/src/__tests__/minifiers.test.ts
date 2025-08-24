@@ -1,3 +1,5 @@
+import { describe, expect, it, test } from "vitest";
+
 import {
 	minifyCss,
 	minifyFileContent,
@@ -179,14 +181,14 @@ describe("when testing for minifiers utilities with no logging side-effects", ()
       /**
        * @param {string} name - The name parameter
        * @returns {string} A greeting message
-      */
+       */
       function greet(name) {
         return 'Hello, ' + name;
       }
 
       /**
        * This is not an important comment.
-      */
+       */
     `;
 			const result = minifyJs(input);
 			expect(result).toContain("@param");
@@ -199,14 +201,14 @@ describe("when testing for minifiers utilities with no logging side-effects", ()
       /**
        * This async function is awesome.
        * @async
-      */
+       */
       function greet(name) {
         return 'Hello, ' + name;
       }
 
       /**
        * This is not an important comment.
-      */
+       */
     `;
 			const result = minifyJs(input);
 			expect(result).not.toContain("awesome");
@@ -360,7 +362,7 @@ describe("when testing for minifiers utilities with no logging side-effects", ()
        * @description Custom hook for fetching data
        * @param {string} url - The URL to fetch from
        * @returns {Object} The fetched data and loading state
-      */
+       */
       function useFetch(url) {
         const [data, setData] = useState(null);
         const [loading, setLoading] = useState(true);
