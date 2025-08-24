@@ -76,13 +76,13 @@ importers:
   packages/comments:
     dependencies:
       '@node-cli/logger':
-        specifier: workspace:../logger
+        specifier: workspace:*
         version: link:../logger
       '@node-cli/parser':
-        specifier: workspace:../parser
+        specifier: workspace:*
         version: link:../parser
       '@node-cli/utilities':
-        specifier: workspace:../utilities
+        specifier: workspace:*
         version: link:../utilities
       micromatch:
         specifier: 4.0.8
