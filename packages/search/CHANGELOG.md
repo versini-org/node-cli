@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.4](https://github.com/versini-org/node-cli/compare/search-v3.1.3...search-v3.1.4) (2025-08-24)
+
+
+### Bug Fixes
+
+* update workspace dependency specifiers to wildcard ([#423](https://github.com/versini-org/node-cli/issues/423)) ([728e764](https://github.com/versini-org/node-cli/commit/728e764c1deb7bb75c9769efefd79f350d4e00d3))
+
 ## [3.1.3](https://github.com/versini-org/node-cli/compare/search-v3.1.2...search-v3.1.3) (2025-08-24)
 
 

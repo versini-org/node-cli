@@ -1,6 +1,6 @@
 {
 	"name": "@node-cli/npmrc",
-	"version": "1.2.3",
+	"version": "1.2.4",
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "Toggle different npmrc configuration files on the fly",
