@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.3](https://github.com/versini-org/node-cli/compare/search-v3.1.2...search-v3.1.3) (2025-08-24)
+
+
+### Bug Fixes
+
+* align JSDoc closing delimiter formatting ([#411](https://github.com/versini-org/node-cli/issues/411)) ([ad46e7e](https://github.com/versini-org/node-cli/commit/ad46e7e89d2c7d0c4bd5dc7818662f771a64fbcd))
+
 ## [3.1.2](https://github.com/versini-org/node-cli/compare/search-v3.1.1...search-v3.1.2) (2025-08-23)
 
 

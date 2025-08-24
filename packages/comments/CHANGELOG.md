@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/versini-org/node-cli/compare/comments-v0.2.0...comments-v0.2.1) (2025-08-24)
+
+
+### Bug Fixes
+
+* align JSDoc closing delimiter formatting ([#411](https://github.com/versini-org/node-cli/issues/411)) ([ad46e7e](https://github.com/versini-org/node-cli/commit/ad46e7e89d2c7d0c4bd5dc7818662f771a64fbcd))
+
 ## [0.2.0](https://github.com/versini-org/node-cli/compare/comments-v0.1.0...comments-v0.2.0) (2025-08-23)
 
 
