@@ -28,8 +28,8 @@
 		"watch": "swc --strip-leading-paths --watch --out-dir dist src"
 	},
 	"dependencies": {
-		"@node-cli/logger": "workspace:../logger",
-		"@node-cli/parser": "workspace:../parser",
+		"@node-cli/logger": "workspace:*",
+		"@node-cli/parser": "workspace:*",
 		"moment": "2.30.1",
 		"node-notifier": "10.0.1"
 	},

@@ -28,9 +28,9 @@
 		"watch": "swc --strip-leading-paths --watch --out-dir dist src"
 	},
 	"dependencies": {
-		"@node-cli/logger": "workspace:../logger",
-		"@node-cli/parser": "workspace:../parser",
-		"@node-cli/run": "workspace:../run",
+		"@node-cli/logger": "workspace:*",
+		"@node-cli/parser": "workspace:*",
+		"@node-cli/run": "workspace:*",
 		"fs-extra": "11.3.1",
 		"kleur": "4.1.5"
 	},

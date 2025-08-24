@@ -6,7 +6,7 @@
 	"author": "Arno Versini",
 	"description": "Examples",
 	"dependencies": {
-		"@node-cli/run": "workspace:../../packages/run"
+		"@node-cli/run": "workspace:*"
 	},
 	"type": "module",
 	"publishConfig": {

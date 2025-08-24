@@ -6,7 +6,7 @@
 	"author": "Arno Versini",
 	"description": "Examples",
 	"dependencies": {
-		"@node-cli/logger": "workspace:../../packages/logger"
+		"@node-cli/logger": "workspace:*"
 	},
 	"type": "module",
 	"publishConfig": {

@@ -6,7 +6,7 @@
 	"author": "Arno Versini",
 	"description": "Examples",
 	"dependencies": {
-		"@node-cli/perf": "workspace:../../packages/perf"
+		"@node-cli/perf": "workspace:*"
 	},
 	"type": "module",
 	"publishConfig": {
