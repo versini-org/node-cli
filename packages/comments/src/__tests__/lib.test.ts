@@ -283,6 +283,26 @@ describe("parseAndTransformComments", () => {
 		expect(out.match(/merged\./)).toBeNull();
 	});
 
+	it("merges a 3-line explanatory // group after a statement into JSDoc (threshold lowered)", () => {
+		const src = [
+			"const value = compute();",
+			"// First explanatory line that starts with a capital",
+			"// second line continues the explanation",
+			"// third line completes it",
+			"next();",
+		].join("\n");
+		const out = parseAndTransformComments(src, {
+			width: 120,
+			wrapLineComments: true,
+			mergeLineComments: true,
+		}).transformed;
+		// The 3-line group should have been converted to a JSDoc block.
+		expect(/compute\(\);\n\/\*\*/.test(out)).toBe(true);
+		// Ensure original lines no longer start with // (inside block now) and period appended once.
+		expect(out).toMatch(/First explanatory line that starts with a capital/);
+		expect(out).not.toMatch(/third line completes it\n\/\//); // no stray // after
+	});
+
 	it("keeps a space before closing delimiter for complex multi-paragraph example", () => {
 		const input = [
 			"/**",

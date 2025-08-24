@@ -337,9 +337,11 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 		para.push(trimmed);
 	}
 	flush();
-	// Style: ensure a space precedes the closing */ for consistency with blocks
-	// generated elsewhere in this tool (merged line comment groups). Previously
-	// we emitted `${indent}*/` which produced an off-by-one visual alignment.
+	/**
+	 * Style: ensure a space precedes the closing *\/ for consistency with blocks
+	 * generated elsewhere in this tool (merged line comment groups). Previously we
+	 * emitted `${indent}*\/` which produced an off-by-one visual alignment.
+	 */
 	return `${indent}/**\n${out.join("\n")}\n${indent} */`;
 }
 
@@ -490,8 +492,8 @@ function mergeLineCommentGroups(content: string): {
 			}
 			collected.push(body.trim());
 		}
-		if (collected.length < 4) {
-			return false; // require minimum size
+		if (collected.length < 3) {
+			return false; // lowered threshold from 4 -> 3 to permit shorter explanatory groups
 		}
 		if (!/^[A-Z]/.test(collected[0])) {
 			return false; // start with capitalized sentence
@@ -507,9 +509,11 @@ function mergeLineCommentGroups(content: string): {
 			const prev = i > 0 ? lines[i - 1] : "";
 			const prevTrim = prev.trim();
 			let contextEligible = prevTrim === "" || /[{}]$/.test(prevTrim);
-			// Heuristic: also allow large explanatory group after a statement ending
-			// with ';' when it qualifies as explanatory so it can be elevated to a
-			// block comment rather than remaining a run of // lines.
+			/**
+			 * Heuristic: also allow large explanatory group after a statement ending
+			 * with ';' when it qualifies as explanatory so it can be elevated to a block
+			 * comment rather than remaining a run of // lines.
+			 */
 			if (
 				!contextEligible &&
 				/;\s*$/.test(prevTrim) &&
