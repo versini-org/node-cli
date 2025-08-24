@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.5](https://github.com/versini-org/node-cli/compare/comments-v0.2.4...comments-v0.2.5) (2025-08-24)
+
+
+### Bug Fixes
+
+* improve handling of NOTE sentences in comments ([#419](https://github.com/versini-org/node-cli/issues/419)) ([ad397a1](https://github.com/versini-org/node-cli/commit/ad397a1cf28a681c3bbf80de0d6e447aeb3e0a40))
+* improve NOTE line punctuation handling in JSDoc ([#422](https://github.com/versini-org/node-cli/issues/422)) ([0e7ac17](https://github.com/versini-org/node-cli/commit/0e7ac17e5ca7b3b0e005ffd3074463dba0ccc518))
+* lower threshold for merging line comments to JSDoc ([#421](https://github.com/versini-org/node-cli/issues/421)) ([e029a6d](https://github.com/versini-org/node-cli/commit/e029a6dc88c62ea83807f14d7d2707c478f7b59f))
+
 ## [0.2.4](https://github.com/versini-org/node-cli/compare/comments-v0.2.3...comments-v0.2.4) (2025-08-24)
 
 
