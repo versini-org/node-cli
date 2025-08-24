@@ -303,9 +303,9 @@ describe("parseAndTransformComments", () => {
 			" */",
 		].join("\n");
 		const out = parseAndTransformComments(input, baseOpts).transformed;
-		// Closing line should contain a leading space before */ (style consistency)
+		// Closing line should contain a leading space before */ (style consistency).
 		expect(/\n \*\/$/.test(out)).toBe(true);
-		// Should not regress by emitting no-space variant
+		// Should not regress by emitting no-space variant.
 		expect(/\n\*\/$/.test(out)).toBe(false);
 	});
 
@@ -332,5 +332,102 @@ describe("parseAndTransformComments", () => {
 		for (const l of starLines) {
 			expect(l).toBe(" *");
 		}
+	});
+
+	it("isolates mid-paragraph NOTE sentence inside a JSDoc block", () => {
+		const input = [
+			"/**",
+			" * This operation performs work and may take time NOTE: use with caution if running on production systems. It returns a result",
+			" */",
+		].join("\n");
+		const out = parseAndTransformComments(input, {
+			...baseOpts,
+			width: 120,
+		}).transformed;
+		// Ensure NOTE is on its own line.
+		expect(
+			/\n \* NOTE: use with caution if running on production systems\.\n/.test(
+				out,
+			),
+		).toBe(true);
+		// Preceding sentence fragments present and end with period somewhere before
+		// NOTE line.
+		expect(out).toMatch(/This operation performs work and may take time\n/);
+		// Trailing sentence appears after NOTE line with terminal period.
+		expect(/NOTE: use with caution[\s\S]*It returns a result\./.test(out)).toBe(
+			true,
+		);
+	});
+
+	it("keeps NOTE at start of JSDoc on its own line with added period", () => {
+		const input = [
+			"/**",
+			" * note: must initialize the runtime before calling any methods",
+			" * subsequent calls depend on global state",
+			" */",
+		].join("\n");
+		const out = parseAndTransformComments(input, {
+			...baseOpts,
+			width: 100,
+		}).transformed;
+		const noteLine = out
+			.split(/\n/)
+			.find((l) => /NOTE: must initialize/.test(l));
+		expect(noteLine).toBeDefined();
+		expect(/\.$/.test(noteLine || "")).toBe(true);
+		expect(out).toMatch(/subsequent calls depend on global state\./);
+	});
+
+	it("isolates multiple NOTE sentences within merged // comment group", () => {
+		const src = [
+			"// This performs the main task.",
+			"// NOTE: side effects may occur.",
+			"// It then produces output.",
+			"// NOTE: results are cached for 5 minutes.",
+			"function run() {}",
+		].join("\n");
+		const out = parseAndTransformComments(src, {
+			width: 160,
+			wrapLineComments: true,
+			mergeLineComments: true,
+		}).transformed;
+		const noteLines = out.split(/\n/).filter((l) => /NOTE: /.test(l));
+		expect(noteLines.length).toBe(2);
+		for (const l of noteLines) {
+			expect(l.trim()).toMatch(/\.$/);
+		}
+	});
+
+	it("splits consecutive NOTE sentences in a single paragraph", () => {
+		const input = [
+			"/**",
+			" * This does work. NOTE: first caveat. NOTE: second caveat. Done",
+			" */",
+		].join("\n");
+		const out = parseAndTransformComments(input, {
+			...baseOpts,
+			width: 100,
+		}).transformed;
+		const lines = out.split(/\n/).filter((l) => /^ \* /.test(l));
+		const notes = lines.filter((l) => /NOTE: /.test(l));
+		expect(notes.length).toBe(2);
+		for (const l of notes) {
+			expect(l).toMatch(/\.$/);
+		}
+		expect(out).toMatch(/Done\./);
+	});
+
+	it("detects NOTE after exclamation boundary", () => {
+		const input = [
+			"/**",
+			" * Success! NOTE: edge case follows. Continue processing",
+			" */",
+		].join("\n");
+		const out = parseAndTransformComments(input, {
+			...baseOpts,
+			width: 120,
+		}).transformed;
+		expect(out).toMatch(/Success!\n \* NOTE: edge case follows\./);
+		expect(out).toMatch(/Continue processing\./);
 	});
 });
