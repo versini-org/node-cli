@@ -111,9 +111,13 @@ describe("parseAndTransformComments", () => {
 		expect(out).toMatch(/Overview:/);
 		// Visually indented code line kept as-is (no extra wrapping collapse).
 		expect(out).toMatch(/const\s{3}x = 1;/);
-		// Trailing blank before closing is optional after recent trimming change.
-		// (we only keep it when multiple paragraphs exist). Assert closing exists.
-		expect(/\n\*\/$/.test(out)).toBe(true);
+		/**
+		 * Trailing blank before closing is optional after recent trimming change. (we
+		 * only keep it when multiple paragraphs exist). Assert closing exists.
+		 * Closing delimiter should be on its own line; allow optional leading
+		 * space(s).
+		 */
+		expect(/\n\s*\*\/$/.test(out)).toBe(true);
 		// Numeric list lines preserved.
 		expect(out).toMatch(/1\. first/);
 		expect(out).toMatch(/2\. second/);
@@ -272,7 +276,7 @@ describe("parseAndTransformComments", () => {
 			mergeLineComments: true,
 		}).transformed;
 		// Expect merged into a JSDoc immediately after the statement.
-		const re = /compute\(\);\n\/\*\*[\s\S]*?\n\*\//;
+		const re = /compute\(\);\n\/\*\*[\s\S]*?\n\s*\*\//;
 		expect(re.test(out)).toBe(true);
 		// Ensure only one sentence-final period appended (present on final 'list.'
 		// already).

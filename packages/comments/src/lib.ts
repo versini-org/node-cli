@@ -262,7 +262,10 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 		para.push(trimmed);
 	}
 	flush();
-	return `${indent}/**\n${out.join("\n")}\n${indent}*/`;
+	// Style: ensure a space precedes the closing */ for consistency with blocks
+	// generated elsewhere in this tool (merged line comment groups). Previously
+	// we emitted `${indent}*/` which produced an off-by-one visual alignment.
+	return `${indent}/**\n${out.join("\n")}\n${indent} */`;
 }
 
 function reflowJsDocBlocks(
