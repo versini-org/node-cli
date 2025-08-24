@@ -1,6 +1,6 @@
 {
 	"name": "@node-cli/comments",
-	"version": "0.2.4",
+	"version": "0.2.5",
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "CLI tool to reflow and normalize JSDoc and line comments in source files",
