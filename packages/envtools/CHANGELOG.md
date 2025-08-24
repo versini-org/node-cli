@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.2](https://github.com/versini-org/node-cli/compare/envtools-v4.2.1...envtools-v4.2.2) (2025-08-23)
+
+
+### Bug Fixes
+
+* bump non-breaking dependencies to latest ([#403](https://github.com/versini-org/node-cli/issues/403)) ([9338e27](https://github.com/versini-org/node-cli/commit/9338e27122994f5780d3be5c0c5886171b2a059c))
+
 ## [4.2.1](https://github.com/aversini/node-cli/compare/envtools-v4.2.0...envtools-v4.2.1) (2024-04-21)
 
 

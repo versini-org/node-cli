@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.1.3](https://github.com/versini-org/node-cli/compare/static-server-v3.1.2...static-server-v3.1.3) (2025-08-23)
+
+
+### Bug Fixes
+
+* bump non-breaking dependencies to latest ([#403](https://github.com/versini-org/node-cli/issues/403)) ([9338e27](https://github.com/versini-org/node-cli/commit/9338e27122994f5780d3be5c0c5886171b2a059c))
+* refactor glob matching to use micromatch ([#408](https://github.com/versini-org/node-cli/issues/408)) ([17f9e5b](https://github.com/versini-org/node-cli/commit/17f9e5b493f3c25614ae095594e239fb41c60fb6))
+
 ## [3.1.2](https://github.com/versini-org/node-cli/compare/static-server-v3.1.1...static-server-v3.1.2) (2025-06-20)
 
 
