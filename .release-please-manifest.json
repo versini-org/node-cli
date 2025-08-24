@@ -11,5 +11,5 @@
 	"packages/timer": "1.0.7",
 	"packages/utilities": "1.0.4",
 	"packages/npmrc": "1.2.3",
-	"packages/comments": "0.2.2"
+	"packages/comments": "0.2.3"
 }

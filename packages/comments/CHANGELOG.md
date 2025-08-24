@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.3](https://github.com/versini-org/node-cli/compare/comments-v0.2.2...comments-v0.2.3) (2025-08-24)
+
+
+### Bug Fixes
+
+* remove trailing space on blank lines in code fences ([#415](https://github.com/versini-org/node-cli/issues/415)) ([7de1d66](https://github.com/versini-org/node-cli/commit/7de1d665368b4a22f4a265943876c8e98dda55a3))
+
 ## [0.2.2](https://github.com/versini-org/node-cli/compare/comments-v0.2.1...comments-v0.2.2) (2025-08-24)
 
 
