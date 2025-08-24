@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.4](https://github.com/versini-org/node-cli/compare/comments-v0.2.3...comments-v0.2.4) (2025-08-24)
+
+
+### Bug Fixes
+
+* update workspace dependencies to use wildcard ([#417](https://github.com/versini-org/node-cli/issues/417)) ([e258ee8](https://github.com/versini-org/node-cli/commit/e258ee8a8ee0ca101b3d3ac4670980543e2a7cdb))
+
 ## [0.2.3](https://github.com/versini-org/node-cli/compare/comments-v0.2.2...comments-v0.2.3) (2025-08-24)
 
 
