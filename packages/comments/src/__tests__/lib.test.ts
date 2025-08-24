@@ -298,7 +298,8 @@ describe("parseAndTransformComments", () => {
 		}).transformed;
 		// The 3-line group should have been converted to a JSDoc block.
 		expect(/compute\(\);\n\/\*\*/.test(out)).toBe(true);
-		// Ensure original lines no longer start with // (inside block now) and period appended once.
+		// Ensure original lines no longer start with // (inside block now) and period
+		// appended once.
 		expect(out).toMatch(/First explanatory line that starts with a capital/);
 		expect(out).not.toMatch(/third line completes it\n\/\//); // no stray // after
 	});
@@ -449,5 +450,24 @@ describe("parseAndTransformComments", () => {
 		}).transformed;
 		expect(out).toMatch(/Success!\n \* NOTE: edge case follows\./);
 		expect(out).toMatch(/Continue processing\./);
+	});
+
+	it("does not force period on NOTE line ending with continuation word when followed by continuation line", () => {
+		const input = [
+			"/**",
+			" * NOTE: we are still using the good old lodash uniqueId when the code is not in",
+			" * production, so that the results are a little bit more consistent tests after",
+			" * test instead of being completely random.",
+			" */",
+		].join("\n");
+		const out = parseAndTransformComments(input, {
+			...baseOpts,
+			width: 100,
+		}).transformed;
+		// New structural policy: first NOTE line always gets period even if followed
+		// by prose.
+		expect(out).toMatch(/when the code is not in\./);
+		// Ensure final sentence has period.
+		expect(/completely random\./.test(out)).toBe(true);
 	});
 });

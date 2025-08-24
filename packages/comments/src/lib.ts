@@ -288,7 +288,9 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 		para = [];
 	}
 
+	let lineIndex = -1;
 	for (const raw of lines) {
+		lineIndex++;
 		const trimmed = raw.trimEnd();
 		if (isCodeFence(trimmed)) {
 			flush();
@@ -328,7 +330,50 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 			} else {
 				let noteLine = normalizeNote(trimmed);
 				if (/^NOTE: /.test(noteLine) && !/[.!?]$/.test(noteLine)) {
-					noteLine += "."; // ensure terminal punctuation for standalone NOTE lines
+					/**
+					 * Structural lookahead: add period only if the NOTE line is followed by a
+					 * boundary (blank line, tag line, list item, heading, code fence, visually
+					 * indented code, another NOTE line, or end-of-block). If next non-blank
+					 * line is plain prose, skip.
+					 */
+					let addPeriod = true; // assume boundary until proven prose continuation
+					const look = lineIndex + 1;
+					while (look < lines.length) {
+						const rawNext = lines[look];
+						const cleaned = rawNext.replace(/^\s*\*? ?/, "").trimEnd();
+						const trimmedNext = cleaned.trim();
+						if (trimmedNext === "") {
+							// Blank line: definite boundary.
+							addPeriod = true;
+							break;
+						}
+						if (
+							/^NOTE: /i.test(trimmedNext) ||
+							isTagLine(trimmedNext) ||
+							isListLike(trimmedNext) ||
+							isHeadingLike(trimmedNext) ||
+							isCodeFence(trimmedNext) ||
+							isVisuallyIndentedCode(rawNext)
+						) {
+							addPeriod = true; // boundary structure
+							break;
+						}
+						// Anything else: treat as prose continuation.
+						addPeriod = false;
+						break;
+					}
+					/**
+					 * If this is the first NOTE line emitted in the block (no prior non-blank
+					 * paragraph lines), we still want a period for consistency even if a prose
+					 * continuation follows; treat it as a standalone NOTE sentence introducing
+					 * subsequent content.
+					 */
+					const hasPriorContent = out.some(
+						(l) => /\* [^ ]/.test(l) && !/\* NOTE: /.test(l),
+					);
+					if (addPeriod || !hasPriorContent) {
+						noteLine += ".";
+					}
 				}
 				out.push(prefix + noteLine);
 			}
