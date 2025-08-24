@@ -282,4 +282,30 @@ describe("parseAndTransformComments", () => {
 		// already).
 		expect(out.match(/merged\./)).toBeNull();
 	});
+
+	it("keeps a space before closing delimiter for complex multi-paragraph example", () => {
+		const input = [
+			"/**",
+			" * Extract the average from a list of numbers.",
+			" *",
+			" * @example",
+			" * ```js",
+			" * const res = extractAverage({ data: [11, 22, 33, 44] });",
+			" * console.log(res); // 27.5 -> (11 + 22 + 33 + 44) / 4",
+			" * ```",
+			" *",
+			" * Any value that is not a number or is less than 0 will be ignored.",
+			" *",
+			" * A formatter function can be passed to format the output. If no formatter is",
+			" * provided, the default behavior is to cast the number to the generic Output",
+			" * type.",
+			" *",
+			" */",
+		].join("\n");
+		const out = parseAndTransformComments(input, baseOpts).transformed;
+		// Closing line should contain a leading space before */ (style consistency)
+		expect(/\n \*\/$/.test(out)).toBe(true);
+		// Should not regress by emitting no-space variant
+		expect(/\n\*\/$/.test(out)).toBe(false);
+	});
 });

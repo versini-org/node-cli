@@ -211,7 +211,8 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 			}
 			out.push(prefix + normalizeNote(trimmed));
 		}
-		return `${indent}/**\n${out.join("\n")}\n${indent}*/`;
+		// Consistent style: space before closing */
+		return `${indent}/**\n${out.join("\n")}\n${indent} */`;
 	}
 
 	function flush(): void {
