@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.6](https://github.com/versini-org/node-cli/compare/comments-v0.2.5...comments-v0.2.6) (2025-08-27)
+
+
+### Bug Fixes
+
+* improve merging of line comments after comma-ending lines ([#425](https://github.com/versini-org/node-cli/issues/425)) ([3fb535e](https://github.com/versini-org/node-cli/commit/3fb535e9a6e977e935bd28a64f8a97a6b17a63d0))
+
 ## [0.2.5](https://github.com/versini-org/node-cli/compare/comments-v0.2.4...comments-v0.2.5) (2025-08-24)
 
 
