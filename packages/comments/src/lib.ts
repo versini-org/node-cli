@@ -553,7 +553,7 @@ function mergeLineCommentGroups(content: string): {
 		if (/^\s*\/\//.test(lines[i]) && !/^\s*\/\/\//.test(lines[i])) {
 			const prev = i > 0 ? lines[i - 1] : "";
 			const prevTrim = prev.trim();
-			let contextEligible = prevTrim === "" || /[{}]$/.test(prevTrim);
+			let contextEligible = prevTrim === "" || /[{}\]),;]$/.test(prevTrim);
 			/**
 			 * Heuristic: also allow large explanatory group after a statement ending
 			 * with ';' when it qualifies as explanatory so it can be elevated to a block
