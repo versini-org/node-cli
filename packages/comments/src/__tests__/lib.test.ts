@@ -419,6 +419,75 @@ describe("parseAndTransformComments", () => {
 		}
 	});
 
+	it("merges line comments after lines ending with },", () => {
+		const src = [
+			"const config = {",
+			'	"key": "value",',
+			'	"another": "property",',
+			"},",
+			"// This is a multi-line comment that should be merged",
+			"// because it follows a line ending with }, which indicates",
+			"// the end of an object or array element",
+			"const next = 42;",
+		].join("\n");
+		const out = parseAndTransformComments(src, {
+			width: 80,
+			wrapLineComments: true,
+			mergeLineComments: true,
+		}).transformed;
+		expect(out).toMatch(/},\n\/\*\*/);
+		expect(out).toMatch(/multi-line comment that should be merged/);
+		expect(out).toMatch(/object or array element\./);
+		expect(out).not.toMatch(/\/\/ This is a multi-line/);
+	});
+
+	it("merges line comments after various comma-ending contexts", () => {
+		const src = [
+			"const items = [",
+			'	"first",',
+			'	"second",',
+			"];",
+			"// Comments after array with trailing comma",
+			"// should be merged into JSDoc format",
+			"",
+			"function demo(a, b,) {",
+			"	return a + b;",
+			"}",
+			"// Comments after function ending with }",
+			"// should also be merged properly",
+		].join("\n");
+		const out = parseAndTransformComments(src, {
+			width: 80,
+			wrapLineComments: true,
+			mergeLineComments: true,
+		}).transformed;
+
+		// First comment group after array should be merged
+		expect(out).toMatch(/];\n\/\*\*/);
+		expect(out).toMatch(/Comments after array with trailing comma/);
+
+		// Second comment group after function should be merged
+		expect(out).toMatch(/}\n\/\*\*/);
+		expect(out).toMatch(/Comments after function ending with }/);
+	});
+
+	it("does not merge single line comment when context is not eligible", () => {
+		const src = [
+			"const value = process()", // doesn't end with eligible punctuation, no semicolon
+			"// single comment that should not be merged",
+			"console.log(value);",
+		].join("\n");
+		const out = parseAndTransformComments(src, {
+			width: 80,
+			wrapLineComments: true,
+			mergeLineComments: true,
+		}).transformed;
+
+		// Single comment should remain as line comment, not merged to JSDoc
+		expect(out).toMatch(/\/\/ single comment that should not be merged/);
+		expect(out).not.toMatch(/\/\*\*/);
+	});
+
 	it("splits consecutive NOTE sentences in a single paragraph", () => {
 		const input = [
 			"/**",
