@@ -1,6 +1,8 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import kleur from "kleur";
+import { describe, expect, it } from "vitest";
+
 import { reportStats } from "../reportStats.js";
 import { STDOUT } from "../utilities.js";
 
@@ -18,6 +20,48 @@ describe("when testing for reportStats with errors", () => {
 			exitCode: 1,
 			exitMessage: "Please provide a configuration file",
 			outputFile: "",
+		});
+	});
+
+	it("should report stats with subgroup headers", async () => {
+		const result = await reportStats({
+			flags: {
+				configuration: path.join(
+					__dirname,
+					"fixtures/configuration/with-groups.js",
+				),
+			},
+		});
+
+		expect(result).toEqual({
+			data: `
+## Bundle Size With Groups
+
+### Group A
+
+| Status | File | Size (Gzip) | Limits |
+| --- | --- | --- | --- |
+| ✅ | file.txt | 19.43 KB (-78.5 KB -80.16%) | 1.5 kB |
+| ✅ | file.zip | 19.53 KB (+19.51 KB +105,157.89%) | 1.5 kB |
+
+Sub-bundle size: 38.96 KB (-58.99 KB -60.22%)
+
+
+### Group B
+
+| Status | File | Size (Gzip) | Limits |
+| --- | --- | --- | --- |
+| ✅ | file-no-change | 19.53 KB | 1.5 kB |
+
+Sub-bundle size: 19.53 KB
+
+
+Overall bundle size: 58.49 KB (-58.99 KB -50.21%)
+Overall status: ✅
+`,
+			exitCode: 0,
+			exitMessage: "",
+			outputFile: STDOUT,
 		});
 	});
 

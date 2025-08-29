@@ -15,11 +15,15 @@ import {
 	validateConfigurationFile,
 } from "./utilities.js";
 
-type SizesConfiguration = {
+type SizeEntry = {
 	limit: string;
 	path: string;
 	alias?: string;
 };
+
+type HeaderEntry = { header: string };
+
+type SizesConfiguration = SizeEntry | HeaderEntry;
 
 type ReportStats = {
 	data: Record<string, unknown>;
@@ -63,25 +67,31 @@ export const getRawStats = async ({ flags }): Promise<ReportStats> => {
 	}
 
 	for (const artifact of configuration.sizes) {
-		const rootPath = artifact.path.startsWith("/")
+		// Support header-only entries (group markers) that do not contribute to raw stats
+		if ((artifact as HeaderEntry).header) {
+			continue;
+		}
+
+		const sizeArtifact = artifact as SizeEntry;
+		const rootPath = sizeArtifact.path.startsWith("/")
 			? ""
 			: dirname(configurationFile);
-		const artifactPath = dirname(artifact.path);
-		const hasHash = artifact.path.includes(HASH_KEY);
-		const hasSemver = artifact.path.includes(SEMVER_KEY);
+		const artifactPath = dirname(sizeArtifact.path);
+		const hasHash = sizeArtifact.path.includes(HASH_KEY);
+		const hasSemver = sizeArtifact.path.includes(SEMVER_KEY);
 
 		if (hasSemver && hasHash) {
 			result.exitCode = 1;
-			result.exitMessage = `Invalid path: ${artifact.path}.\nCannot use ${HASH_KEY} and ${SEMVER_KEY} in the same path.`;
+			result.exitMessage = `Invalid path: ${sizeArtifact.path}.\nCannot use ${HASH_KEY} and ${SEMVER_KEY} in the same path.`;
 			return result;
 		}
 
-		let location = artifact.path;
+		let location = sizeArtifact.path;
 		if (hasHash) {
-			location = artifact.path.replace(HASH_KEY, GLOB_HASH);
+			location = sizeArtifact.path.replace(HASH_KEY, GLOB_HASH);
 		}
 		if (hasSemver) {
-			location = artifact.path.replace(SEMVER_KEY, GLOB_SEMVER);
+			location = sizeArtifact.path.replace(SEMVER_KEY, GLOB_SEMVER);
 		}
 		const fileGlob = join(rootPath, location);
 		const files = glob.sync(fileGlob);
@@ -94,14 +104,14 @@ export const getRawStats = async ({ flags }): Promise<ReportStats> => {
 
 		if (files.length > 1) {
 			result.exitCode = 1;
-			result.exitMessage = `Multiple files found for: ${artifact.path}.\nPlease use a more specific path.`;
+			result.exitMessage = `Multiple files found for: ${sizeArtifact.path}.\nPlease use a more specific path.`;
 			return result;
 		}
 
 		for (const file of files) {
 			const fileSize = statSync(file).size;
 			const fileSizeGzip = gzipSizeFromFileSync(file);
-			const passed = fileSizeGzip < bytes(artifact.limit);
+			const passed = fileSizeGzip < bytes(sizeArtifact.limit);
 
 			if (passed === false) {
 				result.pass = false;
@@ -110,16 +120,16 @@ export const getRawStats = async ({ flags }): Promise<ReportStats> => {
 
 			let index =
 				hasHash || hasSemver
-					? artifact.path
+					? sizeArtifact.path
 					: join(artifactPath, basename(file));
-			if (artifact.alias) {
-				index = artifact.alias;
+			if (sizeArtifact.alias) {
+				index = sizeArtifact.alias;
 			}
 
 			currentResults[index] = {
 				fileSize,
 				fileSizeGzip,
-				limit: artifact.limit,
+				limit: sizeArtifact.limit,
 				passed,
 			};
 		}

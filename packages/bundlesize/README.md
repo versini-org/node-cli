@@ -184,6 +184,64 @@ export default {
 };
 ```
 
+#### Report with subgroup headers (multiple tables)
+
+You can interleave header objects inside the `sizes` array to break the report output into multiple markdown tables. Each header object must contain a `header` property (any markdown heading is allowed). A sub-bundle total line will be printed after each group along with its diff to previous stats (if available), followed by the overall bundle size and status at the end.
+
+```js
+export default {
+  report: {
+    header: "## Bundle Size With Groups",
+    previous: "stats/previous.json",
+    current: "stats/current.json"
+  },
+  sizes: [
+    { header: "### Core" },
+    { path: "dist/core.js", limit: "20 kB" },
+    { path: "dist/core-extra.js", limit: "10 kB" },
+    { header: "### Widgets" },
+    { path: "dist/widget-a.js", limit: "15 kB" },
+    { path: "dist/widget-b.js", limit: "15 kB" }
+  ]
+};
+```
+
+Example output:
+
+```
+## Bundle Size With Groups
+
+### Core
+
+| Status | File | Size (Gzip) | Limits |
+| --- | --- | --- | --- |
+| ✅ | core.js | 12.34 KB (-1.2 KB -8.80%) | 20 kB |
+| ✅ | core-extra.js | 3.21 KB | 10 kB |
+
+Sub-bundle size: 15.55 KB (-1.2 KB -7.17%)
+
+
+### Widgets
+
+| Status | File | Size (Gzip) | Limits |
+| --- | --- | --- | --- |
+| ✅ | widget-a.js | 5.00 KB (+500 B +10.84%) | 15 kB |
+| ✅ | widget-b.js | 4.50 KB | 15 kB |
+
+Sub-bundle size: 9.50 KB (+500 B +5.56%)
+
+
+Overall bundle size: 25.05 KB (-700 B -2.72%)
+Overall status: ✅
+```
+
+Notes:
+
+- If no header objects are present, the legacy single-table format is used (backwards compatible).
+- Headers are rendered in the order they appear in `sizes`.
+- Only size entries that resolve in the current stats are printed; missing ones are skipped silently.
+- Sub-bundle diff lines only show percentage / size diff when previous stats for at least one file in the subgroup exist.
+
 ## Usage
 
 ### Print the stats at the command line
