@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.3.0](https://github.com/versini-org/node-cli/compare/bundlesize-v4.2.4...bundlesize-v4.3.0) (2025-08-29)
+
+
+### Features
+
+* **bundlesize:** add support for subgroup headers in bundle size reports ([#427](https://github.com/versini-org/node-cli/issues/427)) ([ebc4f20](https://github.com/versini-org/node-cli/commit/ebc4f208e61d86e9aa5eb7fb3440990327cfddb5))
+
 ## [4.2.4](https://github.com/versini-org/node-cli/compare/bundlesize-v4.2.3...bundlesize-v4.2.4) (2025-08-24)
 
 
