@@ -67,7 +67,8 @@ export const getRawStats = async ({ flags }): Promise<ReportStats> => {
 	}
 
 	for (const artifact of configuration.sizes) {
-		// Support header-only entries (group markers) that do not contribute to raw stats
+		// Support header-only entries (group markers) that do not contribute to raw
+		// stats.
 		if ((artifact as HeaderEntry).header) {
 			continue;
 		}

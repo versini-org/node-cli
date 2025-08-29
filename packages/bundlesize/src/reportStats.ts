@@ -79,7 +79,7 @@ export const reportStats = async ({ flags }): Promise<ReportCompare> => {
 		}
 		previousVersion = getMostRecentVersion(previousStats.data);
 	} catch {
-		// no previous stats available
+		// no previous stats available.
 	}
 
 	const currentVersion = getMostRecentVersion(currentStats.data);
@@ -103,7 +103,7 @@ export const reportStats = async ({ flags }): Promise<ReportCompare> => {
 		rowsMD.push(addMDrow({ type: "header", columns }));
 	}
 
-	// Build ordered keys based on configuration.sizes if present
+	// Build ordered keys based on configuration.sizes if present.
 	const orderedKeys: Array<{
 		type: "header" | "item";
 		value: string;
@@ -115,7 +115,7 @@ export const reportStats = async ({ flags }): Promise<ReportCompare> => {
 				orderedKeys.push({ type: "header", value: "", header: entry.header });
 				continue;
 			}
-			// entry is FileSizeEntry here
+			// entry is FileSizeEntry here.
 			if (entry.alias && currentStats.data[currentVersion][entry.alias]) {
 				orderedKeys.push({ type: "item", value: entry.alias });
 			} else if (currentStats.data[currentVersion][entry.path]) {
