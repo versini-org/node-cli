@@ -65,6 +65,33 @@ Overall status: ✅
 		});
 	});
 
+	it("should error when previous stats file is missing (coverage: previous read failure)", async () => {
+		const result = await reportStats({
+			flags: {
+				configuration: path.join(
+					__dirname,
+					"fixtures/configuration/with-groups-no-previous.js",
+				),
+			},
+		});
+		expect(result.exitCode).toBe(1);
+		expect(result.exitMessage).toMatch(/Failed to read JSON file/);
+	});
+
+	it("should report subgroup with no diffs when previous equals current (coverage: diff === item.fileSizeGzip branch)", async () => {
+		// Use config where previous= current version so each diff becomes empty string
+		const tempConfig = path.join(
+			__dirname,
+			"fixtures/configuration/with-groups.js",
+		);
+		const result = await reportStats({ flags: { configuration: tempConfig } });
+		// Sanity checks
+		expect(result.exitCode).toBe(0);
+		expect(result.data).toContain("### Group A");
+		// Ensure a row with no diff (pattern: size cell ends with 'KB |')
+		expect(result.data).toMatch(/file-no-change \| 19\.53 KB \| 1\.5 kB/);
+	});
+
 	it("should report there is an invalid configuration file", async () => {
 		const result = await reportStats({
 			flags: { configuration: "invalid" },

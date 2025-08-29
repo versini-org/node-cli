@@ -1,4 +1,4 @@
-/* v8 ignore start */
+/* istanbul ignore file */
 import { parser } from "@node-cli/parser";
 import { defaultFlags } from "./defaults.js";
 
@@ -77,4 +77,3 @@ export const config: Configuration = parser({
 	usage: true,
 	defaultFlags,
 });
-/* v8 ignore stop */
