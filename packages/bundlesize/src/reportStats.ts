@@ -19,9 +19,19 @@ type ReportConfiguration = {
 	columns?: { [key: string]: string }[];
 };
 
-type SizesConfiguration = Array<
-	{ header: string } | { path: string; limit: string; alias?: string }
->;
+interface HeaderSizeEntry {
+	header: string;
+}
+interface FileSizeEntry {
+	path: string;
+	limit: string;
+	alias?: string;
+}
+type SizesConfiguration = Array<HeaderSizeEntry | FileSizeEntry>;
+
+const isHeaderEntry = (
+	entry: HeaderSizeEntry | FileSizeEntry,
+): entry is HeaderSizeEntry => "header" in entry;
 
 type ReportCompare = {
 	data: string;
@@ -88,9 +98,7 @@ export const reportStats = async ({ flags }): Promise<ReportCompare> => {
 	];
 
 	const rowsMD: string[] = [];
-	const hasGroupHeaders = Boolean(
-		configuration.sizes?.some((entry: any) => entry.header !== undefined),
-	);
+	const hasGroupHeaders = Boolean(configuration.sizes?.some(isHeaderEntry));
 	if (!hasGroupHeaders) {
 		rowsMD.push(addMDrow({ type: "header", columns }));
 	}
@@ -103,26 +111,15 @@ export const reportStats = async ({ flags }): Promise<ReportCompare> => {
 	}> = [];
 	if (configuration.sizes && Array.isArray(configuration.sizes)) {
 		for (const entry of configuration.sizes) {
-			if ((entry as any).header) {
-				orderedKeys.push({
-					type: "header",
-					value: "",
-					header: (entry as any).header,
-				});
+			if (isHeaderEntry(entry)) {
+				orderedKeys.push({ type: "header", value: "", header: entry.header });
 				continue;
 			}
-			const sizeEntry = entry as {
-				path: string;
-				limit: string;
-				alias?: string;
-			};
-			if (
-				sizeEntry.alias &&
-				currentStats.data[currentVersion][sizeEntry.alias]
-			) {
-				orderedKeys.push({ type: "item", value: sizeEntry.alias });
-			} else if (currentStats.data[currentVersion][sizeEntry.path]) {
-				orderedKeys.push({ type: "item", value: sizeEntry.path });
+			// entry is FileSizeEntry here
+			if (entry.alias && currentStats.data[currentVersion][entry.alias]) {
+				orderedKeys.push({ type: "item", value: entry.alias });
+			} else if (currentStats.data[currentVersion][entry.path]) {
+				orderedKeys.push({ type: "item", value: entry.path });
 			}
 		}
 	}
