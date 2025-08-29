@@ -1,4 +1,4 @@
-/* v8 ignore start */
+/* istanbul ignore file */
 
 export const defaultFlags = {
 	boring: false,
@@ -7,4 +7,3 @@ export const defaultFlags = {
 	type: "size",
 	force: false,
 };
-/* v8 ignore stop */

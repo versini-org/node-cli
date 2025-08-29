@@ -1,6 +1,8 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import kleur from "kleur";
+import { describe, expect, it } from "vitest";
+
 import { getRawStats } from "../getRawStats.js";
 import { IGNORE } from "../utilities.js";
 

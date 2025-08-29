@@ -1,6 +1,8 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import kleur from "kleur";
+import { describe, expect, it } from "vitest";
+
 import { reportStats } from "../reportStats.js";
 import { STDOUT } from "../utilities.js";
 
@@ -19,6 +21,76 @@ describe("when testing for reportStats with errors", () => {
 			exitMessage: "Please provide a configuration file",
 			outputFile: "",
 		});
+	});
+
+	it("should report stats with subgroup headers", async () => {
+		const result = await reportStats({
+			flags: {
+				configuration: path.join(
+					__dirname,
+					"fixtures/configuration/with-groups.js",
+				),
+			},
+		});
+
+		expect(result).toEqual({
+			data: `
+## Bundle Size With Groups
+
+### Group A
+
+| Status | File | Size (Gzip) | Limits |
+| --- | --- | --- | --- |
+| ✅ | file.txt | 19.43 KB (-78.5 KB -80.16%) | 1.5 kB |
+| ✅ | file.zip | 19.53 KB (+19.51 KB +105,157.89%) | 1.5 kB |
+
+Sub-bundle size: 38.96 KB (-58.99 KB -60.22%)
+
+
+### Group B
+
+| Status | File | Size (Gzip) | Limits |
+| --- | --- | --- | --- |
+| ✅ | file-no-change | 19.53 KB | 1.5 kB |
+
+Sub-bundle size: 19.53 KB
+
+
+Overall bundle size: 58.49 KB (-58.99 KB -50.21%)
+Overall status: ✅
+`,
+			exitCode: 0,
+			exitMessage: "",
+			outputFile: STDOUT,
+		});
+	});
+
+	it("should error when previous stats file is missing (coverage: previous read failure)", async () => {
+		const result = await reportStats({
+			flags: {
+				configuration: path.join(
+					__dirname,
+					"fixtures/configuration/with-groups-no-previous.js",
+				),
+			},
+		});
+		expect(result.exitCode).toBe(1);
+		expect(result.exitMessage).toMatch(/Failed to read JSON file/);
+	});
+
+	it("should report subgroup with no diffs when previous equals current (coverage: diff === item.fileSizeGzip branch)", async () => {
+		// Use config where previous= current version so each diff becomes empty
+		// string.
+		const tempConfig = path.join(
+			__dirname,
+			"fixtures/configuration/with-groups.js",
+		);
+		const result = await reportStats({ flags: { configuration: tempConfig } });
+		// Sanity checks.
+		expect(result.exitCode).toBe(0);
+		expect(result.data).toContain("### Group A");
+		// Ensure a row with no diff (pattern: size cell ends with 'KB |').
+		expect(result.data).toMatch(/file-no-change \| 19\.53 KB \| 1\.5 kB/);
 	});
 
 	it("should report there is an invalid configuration file", async () => {

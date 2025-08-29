@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-/* v8 ignore start */
+/* istanbul ignore file */
 
 import { Logger } from "@node-cli/logger";
 import fs from "fs-extra";
@@ -78,4 +78,3 @@ if (flags.type === "report") {
 
 log.error("Invalid type, please use 'size' or 'report'");
 process.exit(1);
-/* v8 ignore stop */
