@@ -26,6 +26,7 @@ For the report option, it must export an object named "report" which is an objec
 - `previous`: the previous path to the report to compare against (required, string)
 - `current`: the current path to the report to compare against (required, string)
 - `columns`: the columns to display (optional, array of objects)
+- `threshold`: the minimum gzip size change in bytes to consider as a change (optional, number, defaults to 0). Changes below this threshold are treated as no change.
 
 ## Examples
 
@@ -178,6 +179,20 @@ export default {
       { size: "Size" },
       { limits: "Limits" }
     ],
+    prev: "stats/previous.json",
+    current: "stats/current.json"
+  }
+};
+```
+
+#### Simple report with custom threshold
+
+By default, all gzip size changes are reported. You can set a threshold to ignore small changes:
+
+```js
+export default {
+  report: {
+    threshold: 10, // ignore changes smaller than 10 bytes
     prev: "stats/previous.json",
     current: "stats/current.json"
   }
