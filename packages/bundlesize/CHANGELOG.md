@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.5.1](https://github.com/versini-org/node-cli/compare/bundlesize-v4.5.0...bundlesize-v4.5.1) (2025-11-26)
+
+
+### Bug Fixes
+
+* **bundlesize:** switch to type-safe config and remove JSON schema ([#442](https://github.com/versini-org/node-cli/issues/442)) ([f97ebb6](https://github.com/versini-org/node-cli/commit/f97ebb60763092fef4345fb6db3a01a90c5f20b1))
+
 ## [4.5.0](https://github.com/versini-org/node-cli/compare/bundlesize-v4.4.0...bundlesize-v4.5.0) (2025-11-26)
 
 
