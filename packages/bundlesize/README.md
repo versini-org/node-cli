@@ -14,14 +14,16 @@
 
 A configuration file must be provided via the `-c` parameter.
 
-### JSON Schema Support
+### Type-Safe Configuration
 
-For IDE autocompletion and validation, you can add a `$schema` property to your configuration file:
+For IDE autocompletion and validation, you can use either JSDoc type hints or the `defineConfig` helper function.
+
+#### Using JSDoc (recommended for JavaScript configs)
 
 ```js
+// @ts-check
+/** @type {import('@node-cli/bundlesize').BundlesizeConfig} */
 export default {
-  $schema:
-    "https://cdn.jsdelivr.net/npm/@node-cli/bundlesize/schemas/bundlesize.config.schema.json",
   sizes: [
     {
       path: "dist/bundle.js",
@@ -31,19 +33,29 @@ export default {
 };
 ```
 
-This provides:
+#### Using defineConfig helper
+
+```js
+// @ts-check
+import { defineConfig } from "@node-cli/bundlesize";
+
+export default defineConfig({
+  sizes: [
+    {
+      path: "dist/bundle.js",
+      limit: "10 kB"
+    }
+  ]
+});
+```
+
+Both approaches provide:
 
 - Autocompletion for configuration options
 - Inline documentation for each property
-- Validation of configuration values
+- Type validation in your IDE
 
-**Note**: For a specific version of the schema, use:
-
-```
-https://cdn.jsdelivr.net/npm/@node-cli/bundlesize@VERSION/schemas/bundlesize.config.schema.json
-```
-
-### Configuration Options
+**Note**: The `// @ts-check` comment enables TypeScript checking for the file, which is required for validation errors to appear.
 
 ### Configuration Options
 
