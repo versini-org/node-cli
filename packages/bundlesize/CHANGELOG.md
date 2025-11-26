@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.4.0](https://github.com/versini-org/node-cli/compare/bundlesize-v4.3.0...bundlesize-v4.4.0) (2025-11-26)
+
+
+### Features
+
+* **bundlesize:** add threshold support to bundle size reporting ([#437](https://github.com/versini-org/node-cli/issues/437)) ([e2d0aff](https://github.com/versini-org/node-cli/commit/e2d0aff47f502404175c4b89ed2d753c28e531c0))
+
 ## [4.3.0](https://github.com/versini-org/node-cli/compare/bundlesize-v4.2.4...bundlesize-v4.3.0) (2025-08-29)
 
 
