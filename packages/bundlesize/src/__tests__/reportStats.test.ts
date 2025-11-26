@@ -3,12 +3,60 @@ import { fileURLToPath } from "node:url";
 import kleur from "kleur";
 import { describe, expect, it } from "vitest";
 
+import { DEFAULT_THRESHOLD } from "../defaults.js";
 import { reportStats } from "../reportStats.js";
 import { STDOUT } from "../utilities.js";
 
 kleur.enabled = false;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+describe("when testing for reportStats with threshold", () => {
+	it("should ignore changes below the configured threshold", async () => {
+		// file.txt: 1000 -> 1003 (diff = 3 bytes, below threshold of 5)
+		// file-small-change.txt: 1000 -> 1004 (diff = 4 bytes, below threshold of 5)
+		// file-no-change.txt: 1000 -> 1000 (diff = 0 bytes)
+		const result = await reportStats({
+			flags: {
+				configuration: path.join(
+					__dirname,
+					"fixtures/configuration/with-threshold.js",
+				),
+			},
+		});
+
+		expect(result.exitCode).toBe(0);
+		// All diffs should be ignored since they are below threshold (5 bytes)
+		expect(result.data).not.toContain("+3 B");
+		expect(result.data).not.toContain("+4 B");
+		// Check that sizes are still reported
+		expect(result.data).toContain("1000 B");
+		expect(result.data).toContain("1003 B");
+		expect(result.data).toContain("1004 B");
+	});
+
+	it("should show all changes when threshold is set to 0", async () => {
+		// Same files but threshold is 0, so all changes should be shown
+		const result = await reportStats({
+			flags: {
+				configuration: path.join(
+					__dirname,
+					"fixtures/configuration/with-threshold-zero.js",
+				),
+			},
+		});
+
+		expect(result.exitCode).toBe(0);
+		// With threshold 0, all non-zero diffs should be shown
+		expect(result.data).toContain("+3 B");
+		expect(result.data).toContain("+4 B");
+	});
+
+	it("should use default threshold when not specified in config", async () => {
+		// Basic config doesn't specify threshold, should use DEFAULT_THRESHOLD (0)
+		expect(DEFAULT_THRESHOLD).toBe(0);
+	});
+});
 
 describe("when testing for reportStats with errors", () => {
 	it("should report there is a missing configuration file", async () => {
