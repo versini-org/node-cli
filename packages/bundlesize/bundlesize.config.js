@@ -1,4 +1,6 @@
 export default {
+	$schema:
+		"https://cdn.jsdelivr.net/npm/@node-cli/bundlesize/schemas/bundlesize.config.schema.json",
 	sizes: [
 		{
 			path: "dist/bundlesize.js",

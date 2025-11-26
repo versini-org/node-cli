@@ -10,6 +10,7 @@
 	"bin": "dist/bundlesize.js",
 	"files": [
 		"dist",
+		"schemas",
 		"README.md"
 	],
 	"node": ">=18",

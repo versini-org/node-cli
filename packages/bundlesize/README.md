@@ -14,6 +14,39 @@
 
 A configuration file must be provided via the `-c` parameter.
 
+### JSON Schema Support
+
+For IDE autocompletion and validation, you can add a `$schema` property to your configuration file:
+
+```js
+export default {
+  $schema:
+    "https://cdn.jsdelivr.net/npm/@node-cli/bundlesize/schemas/bundlesize.config.schema.json",
+  sizes: [
+    {
+      path: "dist/bundle.js",
+      limit: "10 kB"
+    }
+  ]
+};
+```
+
+This provides:
+
+- Autocompletion for configuration options
+- Inline documentation for each property
+- Validation of configuration values
+
+**Note**: For a specific version of the schema, use:
+
+```
+https://cdn.jsdelivr.net/npm/@node-cli/bundlesize@VERSION/schemas/bundlesize.config.schema.json
+```
+
+### Configuration Options
+
+### Configuration Options
+
 For the size option, it must export an object named "size" which is an array of objects with the following properties:
 
 - `path`: the path to the file to check
