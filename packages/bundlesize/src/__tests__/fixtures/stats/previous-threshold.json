@@ -1,0 +1,22 @@
+{
+	"0.0.7": {
+		"data/file.txt": {
+			"fileSize": 281,
+			"fileSizeGzip": 1000,
+			"limit": "1.5 kB",
+			"passed": true
+		},
+		"data/file-small-change.txt": {
+			"fileSize": 281,
+			"fileSizeGzip": 1000,
+			"limit": "1.5 kB",
+			"passed": true
+		},
+		"data/file-no-change.txt": {
+			"fileSize": 281,
+			"fileSizeGzip": 1000,
+			"limit": "1.5 kB",
+			"passed": true
+		}
+	}
+}

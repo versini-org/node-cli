@@ -3,5 +3,7 @@ packages:
   - examples/*
 
 onlyBuiltDependencies:
-  - '@swc/core'
+  - "@swc/core"
   - esbuild
+
+shamefullyHoist: true

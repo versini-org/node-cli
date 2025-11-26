@@ -7,3 +7,5 @@ export const defaultFlags = {
 	type: "size",
 	force: false,
 };
+
+export const DEFAULT_THRESHOLD = 0;

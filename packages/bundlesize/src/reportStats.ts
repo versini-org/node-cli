@@ -1,5 +1,6 @@
 import { basename, dirname, join } from "node:path";
 import bytes from "bytes";
+import { DEFAULT_THRESHOLD } from "./defaults.js";
 import type { FooterProperties } from "./utilities.js";
 import {
 	addMDrow,
@@ -17,6 +18,7 @@ type ReportConfiguration = {
 	header?: string;
 	footer?: (arguments_: FooterProperties) => string;
 	columns?: { [key: string]: string }[];
+	threshold?: number;
 };
 
 interface HeaderSizeEntry {
@@ -88,6 +90,7 @@ export const reportStats = async ({ flags }): Promise<ReportCompare> => {
 	let overallDiff = 0;
 	let totalGzipSize = 0;
 
+	const threshold = configuration.report.threshold ?? DEFAULT_THRESHOLD;
 	const headerString = configuration.report.header || "## Bundle Size";
 	const footerFormatter = configuration.report.footer || formatFooter;
 	const columns = configuration.report.columns || [
@@ -137,7 +140,11 @@ export const reportStats = async ({ flags }): Promise<ReportCompare> => {
 		if (!hasSubGroup) {
 			return;
 		}
-		const diff = subGroupAccumulatedSize - subGroupAccumulatedPrevSize;
+		let diff = subGroupAccumulatedSize - subGroupAccumulatedPrevSize;
+		// Apply threshold: if the absolute diff is below threshold, treat as no change
+		if (Math.abs(diff) < threshold) {
+			diff = 0;
+		}
 		let diffString = "";
 		if (diff !== 0 && subGroupAccumulatedPrevSize !== 0) {
 			const sign = diff > 0 ? "+" : "-";
@@ -182,7 +189,11 @@ export const reportStats = async ({ flags }): Promise<ReportCompare> => {
 				previousStats.data[previousVersion] &&
 				previousStats.data[previousVersion][key];
 			previousFileSizeGzip = previousFileStats?.fileSizeGzip || 0;
-			const diff = item.fileSizeGzip - previousFileSizeGzip;
+			let diff = item.fileSizeGzip - previousFileSizeGzip;
+			// Apply threshold: if the absolute diff is below threshold, treat as no change
+			if (Math.abs(diff) < threshold) {
+				diff = 0;
+			}
 			overallDiff += diff;
 			diffString =
 				diff === 0 || diff === item.fileSizeGzip
