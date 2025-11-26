@@ -56,6 +56,31 @@ describe("when testing for reportStats with threshold", () => {
 		// Basic config doesn't specify threshold, should use DEFAULT_THRESHOLD (0)
 		expect(DEFAULT_THRESHOLD).toBe(0);
 	});
+
+	it("should not show sub-bundle diff when all individual files are below threshold", async () => {
+		// file.txt: 1000 -> 1003 (diff = 3 bytes, below threshold of 5)
+		// file-2.txt: 1000 -> 1004 (diff = 4 bytes, below threshold of 5)
+		// Raw sum would be +7 bytes (above threshold), but since individual diffs
+		// are threshold to 0, sub-bundle diff should also be 0
+		const result = await reportStats({
+			flags: {
+				configuration: path.join(
+					__dirname,
+					"fixtures/configuration/with-threshold-groups.js",
+				),
+			},
+		});
+
+		expect(result.exitCode).toBe(0);
+		// Individual files should not show diffs
+		expect(result.data).not.toContain("+3 B");
+		expect(result.data).not.toContain("+4 B");
+		// Sub-bundle should NOT show diff either (no +7 B)
+		expect(result.data).not.toContain("+7 B");
+		// Sub-bundle size line should exist but without diff (no parentheses with diff info)
+		expect(result.data).toContain("Sub-bundle size: 1.96 KB");
+		expect(result.data).not.toMatch(/Sub-bundle size:.*\(/);
+	});
 });
 
 describe("when testing for reportStats with errors", () => {

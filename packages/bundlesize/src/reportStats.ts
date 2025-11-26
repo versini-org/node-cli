@@ -134,17 +134,15 @@ export const reportStats = async ({ flags }): Promise<ReportCompare> => {
 	}
 
 	let subGroupAccumulatedSize = 0;
+	let subGroupAccumulatedDiff = 0;
 	let subGroupAccumulatedPrevSize = 0;
 	let hasSubGroup = false;
 	const flushSubGroup = () => {
 		if (!hasSubGroup) {
 			return;
 		}
-		let diff = subGroupAccumulatedSize - subGroupAccumulatedPrevSize;
-		// Apply threshold: if the absolute diff is below threshold, treat as no change
-		if (Math.abs(diff) < threshold) {
-			diff = 0;
-		}
+		// Use the accumulated thresholded diff directly
+		const diff = subGroupAccumulatedDiff;
 		let diffString = "";
 		if (diff !== 0 && subGroupAccumulatedPrevSize !== 0) {
 			const sign = diff > 0 ? "+" : "-";
@@ -161,6 +159,7 @@ export const reportStats = async ({ flags }): Promise<ReportCompare> => {
 			);
 		}
 		subGroupAccumulatedSize = 0;
+		subGroupAccumulatedDiff = 0;
 		subGroupAccumulatedPrevSize = 0;
 		hasSubGroup = false;
 	};
@@ -184,6 +183,7 @@ export const reportStats = async ({ flags }): Promise<ReportCompare> => {
 
 		let diffString = "";
 		let previousFileSizeGzip = 0;
+		let thresholdedDiff = 0;
 		if (previousStats && previousVersion) {
 			const previousFileStats =
 				previousStats.data[previousVersion] &&
@@ -194,6 +194,7 @@ export const reportStats = async ({ flags }): Promise<ReportCompare> => {
 			if (Math.abs(diff) < threshold) {
 				diff = 0;
 			}
+			thresholdedDiff = diff;
 			overallDiff += diff;
 			diffString =
 				diff === 0 || diff === item.fileSizeGzip
@@ -205,6 +206,7 @@ export const reportStats = async ({ flags }): Promise<ReportCompare> => {
 
 		totalGzipSize += item.fileSizeGzip;
 		subGroupAccumulatedSize += item.fileSizeGzip;
+		subGroupAccumulatedDiff += thresholdedDiff;
 		subGroupAccumulatedPrevSize += previousFileSizeGzip;
 		hasSubGroup = true;
 
