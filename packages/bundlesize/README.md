@@ -199,6 +199,8 @@ export default {
 };
 ```
 
+**Note on threshold with subgroups**: When using subgroup headers, the threshold is applied consistently. If individual file changes are below the threshold (and thus treated as zero), the sub-bundle total will also reflect this. For example, if file A changes by +3 bytes and file B changes by +4 bytes with a threshold of 5, both individual changes are ignored, and the sub-bundle will show no change (even though the raw total would be +7 bytes).
+
 #### Report with subgroup headers (multiple tables)
 
 You can interleave header objects inside the `sizes` array to break the report output into multiple markdown tables. Each header object must contain a `header` property (any markdown heading is allowed). A sub-bundle total line will be printed after each group along with its diff to previous stats (if available), followed by the overall bundle size and status at the end.
