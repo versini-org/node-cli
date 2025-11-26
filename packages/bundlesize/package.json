@@ -6,11 +6,15 @@
 	"description": "Simple CLI tool that checks file(s) size and report if limits have been reached",
 	"type": "module",
 	"types": "./dist/index.d.ts",
-	"exports": "./dist/bundlesize.js",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/config.js"
+		}
+	},
 	"bin": "dist/bundlesize.js",
 	"files": [
 		"dist",
-		"schemas",
 		"README.md"
 	],
 	"node": ">=18",

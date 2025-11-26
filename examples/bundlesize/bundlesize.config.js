@@ -1,6 +1,6 @@
+// @ts-check
+/** @type {import('@node-cli/bundlesize').BundlesizeConfig} */
 export default {
-	$schema:
-		"https://cdn.jsdelivr.net/npm/@node-cli/bundlesize/schemas/bundlesize.config.schema.json",
 	report: {
 		// header: "## My custom header",
 		// footer: (limitReached, diff) =>
