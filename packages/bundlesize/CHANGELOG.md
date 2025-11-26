@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.5.0](https://github.com/versini-org/node-cli/compare/bundlesize-v4.4.0...bundlesize-v4.5.0) (2025-11-26)
+
+
+### Features
+
+* **bundlesize:** add JSON schema for bundlesize config and update docs ([#441](https://github.com/versini-org/node-cli/issues/441)) ([c039bbe](https://github.com/versini-org/node-cli/commit/c039bbead4f1faeb08f48591288d6df7fa2f10f1))
+
+
+### Bug Fixes
+
+* **bundlesize:** better handle threshold diffs in sub-bundle reporting ([#439](https://github.com/versini-org/node-cli/issues/439)) ([658ffc8](https://github.com/versini-org/node-cli/commit/658ffc888e84c793019ad9a6e6030dd7160f768b))
+
 ## [4.4.0](https://github.com/versini-org/node-cli/compare/bundlesize-v4.3.0...bundlesize-v4.4.0) (2025-11-26)
 
 
