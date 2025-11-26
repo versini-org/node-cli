@@ -39,7 +39,7 @@
 		"@node-cli/parser": "workspace:*",
 		"bytes": "3.1.2",
 		"fs-extra": "11.3.1",
-		"glob": "11.0.3",
+		"glob": "11.1.0",
 		"semver": "7.7.2"
 	},
 	"publishConfig": {
