@@ -2,8 +2,14 @@ packages:
   - packages/*
   - examples/*
 
+ignoredBuiltDependencies:
+  - nx
+
 onlyBuiltDependencies:
-  - "@swc/core"
+  - '@swc/core'
   - esbuild
 
 shamefullyHoist: true
+
+strictDepBuilds: true
+minimumReleaseAge: 720 # twelve hours in minutes
