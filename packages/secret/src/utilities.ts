@@ -43,7 +43,7 @@ export const processFileWithPassword = async (
 	}
 };
 
-/* v8 ignore next 12 */
+/* v8 ignore start */
 export const displayConfirmation = async (message: string) => {
 	const questions = {
 		default: true,
@@ -56,7 +56,6 @@ export const displayConfirmation = async (message: string) => {
 	return answers.goodToGo;
 };
 
-/* v8 ignore next 16 */
 export const displayPromptWithPassword = async (message: string) => {
 	const questions = {
 		message: message,
@@ -73,7 +72,6 @@ export const displayPromptWithPassword = async (message: string) => {
 	return answers.password;
 };
 
-/* v8 ignore next 8 */
 export const shouldContinue = (goodToGo: boolean) => {
 	if (!goodToGo) {
 		logger.log("\nBye then!");
@@ -82,3 +80,4 @@ export const shouldContinue = (goodToGo: boolean) => {
 	}
 	return true;
 };
+/* v8 ignore stop */

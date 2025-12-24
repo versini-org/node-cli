@@ -49,10 +49,11 @@ export const run = async (
 		execaOptions.shell = true;
 	}
 
-	/* v8 ignore next 3 */
+	/* v8 ignore start */
 	if (options?.streamOutput) {
 		execaOptions.stdout = ["pipe", "inherit"];
 	}
+	/* v8 ignore stop */
 
 	try {
 		if (execaOptions.shell) {
