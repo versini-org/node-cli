@@ -106,6 +106,8 @@ export interface BundlesizeConfig {
  * });
  * ```
  */
+/* v8 ignore start */
 export function defineConfig(config: BundlesizeConfig): BundlesizeConfig {
 	return config;
 }
+/* v8 ignore stop */

@@ -19,7 +19,6 @@ export type Configuration = {
 	parameters?: Parameters;
 };
 
-/* v8 ignore next 67 */
 export const config: Configuration = parser({
 	meta: import.meta,
 	examples: [
