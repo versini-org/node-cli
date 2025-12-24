@@ -122,6 +122,7 @@ export class Logger {
 
 			// Still output to console if not in memory-only mode.
 			if (!this.#inMemory) {
+				// biome-ignore lint/suspicious/noConsole: logger utility
 				console[type.method](
 					this.#printOptions.colors ? `${type.color(message)}` : message,
 				);
@@ -213,7 +214,7 @@ export class Logger {
 	}
 }
 
-/* v8 ignore next 48 */
+/* v8 ignore start */
 export class Spinner {
 	spinner: Ora;
 
@@ -260,3 +261,4 @@ export class Spinner {
 	static WARNING = "warn";
 	static INFO = "info";
 }
+/* v8 ignore stop */

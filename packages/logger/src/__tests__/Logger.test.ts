@@ -220,6 +220,14 @@ describe("when testing for printErrorsAndExit with logging side-effects", () => 
 		expect(mock.error).toHaveBeenCalledWith("message two");
 		expect(spyExit).not.toHaveBeenCalled();
 	});
+
+	it("should not log anything when errorMessages is empty", async () => {
+		const log = new Logger({ boring: true });
+		log.printErrorsAndExit([]);
+		expect(mock.error).not.toHaveBeenCalled();
+		expect(mock.log).not.toHaveBeenCalled();
+		expect(spyExit).not.toHaveBeenCalled();
+	});
 });
 
 describe("when testing for printInABox with logging side-effects", () => {
@@ -295,6 +303,17 @@ describe("when testing for printInABox with logging side-effects", () => {
 		expect(mock.log).toHaveBeenCalledWith(
 			expect.stringContaining("└───────────────────────┘"),
 		);
+	});
+
+	it("should respect a custom box padding object", async () => {
+		const log = new Logger();
+		const messages = ["Hello World", "Hello Moon"];
+		log.boring = true;
+		log.printBox(messages, {
+			padding: { top: 1, bottom: 1, left: 2, right: 2 },
+		});
+		expect(mock.log).toHaveBeenCalledWith(expect.stringContaining(messages[0]));
+		expect(mock.log).toHaveBeenCalledWith(expect.stringContaining(messages[1]));
 	});
 });
 
@@ -416,6 +435,22 @@ describe("when testing in-memory logging functionality", () => {
 
 		log.info("Memory log with colors disabled");
 		expect(log.getMemoryLogs()).toBe("Memory log with colors disabled");
+	});
+
+	it("should allow disabling inMemory mode via setter", () => {
+		const log = new Logger({ inMemory: true });
+		log.info("Memory log");
+
+		// Verify it stored in memory.
+		expect(log.getMemoryLogs()).toBe("Memory log");
+
+		// Disable in-memory mode.
+		log.inMemory = false;
+		log.boring = true;
+
+		// Now logs should go to console.
+		log.info("Console log");
+		expect(mock.info).toHaveBeenCalledWith("Console log");
 	});
 
 	it("should handle multiple log types in memory", () => {

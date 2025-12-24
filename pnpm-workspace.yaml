@@ -13,3 +13,8 @@ shamefullyHoist: true
 
 strictDepBuilds: true
 minimumReleaseAge: 720 # twelve hours in minutes
+minimumReleaseAgeExclude:
+  - "@versini/dev-dependencies-common"
+  - "@versini/dev-dependencies-server"
+  - "@versini/dev-dependencies-types"
+  
