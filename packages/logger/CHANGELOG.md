@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.3](https://github.com/versini-org/node-cli/compare/logger-v1.3.2...logger-v1.3.3) (2025-12-24)
+
+
+### Bug Fixes
+
+* bump breaking dependencies to latest ([#451](https://github.com/versini-org/node-cli/issues/451)) ([efb2f08](https://github.com/versini-org/node-cli/commit/efb2f084a937095242dbf23a1ae21399a9654ae4))
+
 ## [1.3.2](https://github.com/versini-org/node-cli/compare/logger-v1.3.1...logger-v1.3.2) (2025-08-23)
 
 
