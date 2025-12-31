@@ -7,7 +7,7 @@
 	"packages/run": "1.1.5",
 	"packages/search": "3.1.5",
 	"packages/secret": "1.2.7",
-	"packages/static-server": "3.1.5",
+	"packages/static-server": "3.1.6",
 	"packages/timer": "1.0.9",
 	"packages/utilities": "1.0.5",
 	"packages/npmrc": "1.2.5",
