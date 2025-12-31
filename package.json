@@ -18,7 +18,7 @@
 	},
 	"devDependencies": {
 		"@versini/dev-dependencies-common": "9.2.0",
-		"@versini/dev-dependencies-server": "8.0.22",
+		"@versini/dev-dependencies-server": "8.0.23",
 		"@versini/dev-dependencies-types": "4.1.1"
 	},
 	"packageManager": "pnpm@10.26.2"
