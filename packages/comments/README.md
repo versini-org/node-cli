@@ -117,7 +117,14 @@ interface FileResult {
 
 - Adds a terminal period to sentences lacking final punctuation (unless ending with a colon, tag line, list marker, or detected continuation).
 - Normalizes `NOTE:` capitalization and splits multiple NOTE sentences safely.
-- Skips wrapping for directive / tool lines (`@tag`, `eslint`, `ts-ignore`) and URLs.
+- Skips wrapping/merging for linter and tool directive comments, including:
+  - ESLint (`eslint-disable`, `eslint-enable`, `eslint-disable-next-line`, etc.)
+  - Biome (`biome-ignore`)
+  - TypeScript (`@ts-ignore`, `@ts-expect-error`, `@ts-nocheck`, `@ts-check`)
+  - Prettier (`prettier-ignore`)
+  - StyleLint (`stylelint-disable`, `stylelint-enable`)
+  - Coverage tools (`v8 ignore`, `c8 ignore`, `istanbul ignore`)
+  - URLs (`https://...`)
 - Preserves fenced code blocks and visually indented code blocks in JSDoc.
 - Structured explanation groups (regex / pattern walkthroughs) remain line‑stable to avoid unintended semantic changes.
 - Protects against pathological inputs with maximum indentation and comment body size limits.
