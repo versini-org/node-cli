@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.8](https://github.com/versini-org/node-cli/compare/comments-v0.2.7...comments-v0.2.8) (2026-01-04)
+
+
+### Bug Fixes
+
+* **comments:** Improve handling of linter and tool directive comments ([#459](https://github.com/versini-org/node-cli/issues/459)) ([0960038](https://github.com/versini-org/node-cli/commit/096003826471508d839f2ec3346bb12b1a73b7fe))
+
 ## [0.2.7](https://github.com/versini-org/node-cli/compare/comments-v0.2.6...comments-v0.2.7) (2025-12-24)
 
 
