@@ -191,6 +191,18 @@ function isVisuallyIndentedCode(line: string): boolean {
 	return /^\s{2,}\S/.test(line);
 }
 
+/**
+ * Detects linter/tool directive comments that should be left untouched.
+ * These include ESLint, Biome, Prettier, TypeScript, StyleLint, and coverage
+ * tool directives.
+ */
+function isLinterDirective(text: string): boolean {
+	const trimmed = text.trim();
+	return /^(@?(?:ts-ignore|ts-expect-error|ts-nocheck|ts-check)|eslint|biome-ignore|prettier-ignore|stylelint-(?:disable|enable)|c8 ignore|v8 ignore|istanbul ignore|tsc:|type:|@ts-)/i.test(
+		trimmed,
+	);
+}
+
 function wrapWords(text: string, width: number): string[] {
 	const words = text.split(/\s+/).filter(Boolean);
 	const lines: string[] = [];
@@ -456,7 +468,7 @@ function wrapLineComments(
 				break;
 			}
 			const body = gm[2];
-			if (/^(@|eslint|ts-ignore)/.test(body) || /https?:\/\//.test(body)) {
+			if (isLinterDirective(body) || /https?:\/\//.test(body)) {
 				break; // stop group before directives/URLs; process current line normally
 			}
 			group.push({ raw: lines[j], indent: gm[1], body });
@@ -466,7 +478,7 @@ function wrapLineComments(
 			// Single line: existing logic (add period if needed).
 			const indent = m[1];
 			const body = m[3];
-			if (/^(@|eslint|ts-ignore)/.test(body) || /https?:\/\//.test(body)) {
+			if (isLinterDirective(body) || /https?:\/\//.test(body)) {
 				out.push(line);
 				i++;
 				continue;
@@ -532,7 +544,7 @@ function mergeLineCommentGroups(content: string): {
 				break;
 			}
 			const body = lm[3];
-			if (/^(@|eslint|ts-ignore)/.test(body) || /https?:\/\//.test(body)) {
+			if (isLinterDirective(body) || /https?:\/\//.test(body)) {
 				break;
 			}
 			collected.push(body.trim());
@@ -582,7 +594,7 @@ function mergeLineCommentGroups(content: string): {
 				if (
 					/license|copyright/i.test(txt) ||
 					/https?:\/\//.test(txt) ||
-					/eslint|ts-ignore/.test(txt)
+					isLinterDirective(txt)
 				) {
 					break; // do not merge directive / license groups
 				}

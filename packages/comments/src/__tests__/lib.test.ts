@@ -585,4 +585,161 @@ describe("parseAndTransformComments", () => {
 		expect(out).toMatch(/NOTE: important note here/);
 		expect(out).toMatch(/Final concluding text/);
 	});
+
+	it("preserves biome-ignore comments without modification", () => {
+		const src = [
+			"// biome-ignore lint/suspicious/noExplicitAny: required for dynamic typing",
+			"const x: any = {};",
+		].join("\n");
+		const out = parseAndTransformComments(src, {
+			width: 80,
+			wrapLineComments: true,
+			mergeLineComments: true,
+		}).transformed;
+		expect(out).toBe(src);
+	});
+
+	it("does not merge biome-ignore with following comment lines", () => {
+		const src = [
+			"// biome-ignore lint/suspicious/noExplicitAny: dynamic",
+			"// This is a separate comment",
+			"// that should not be merged with biome-ignore",
+			"const x = 1;",
+		].join("\n");
+		const out = parseAndTransformComments(src, {
+			width: 80,
+			wrapLineComments: true,
+			mergeLineComments: true,
+		}).transformed;
+		// The biome directive should remain as a line comment.
+		expect(out).toContain(
+			"// biome-ignore lint/suspicious/noExplicitAny: dynamic",
+		);
+		// The following comments should not include the biome directive content.
+		expect(out).not.toMatch(/\* biome-ignore/);
+	});
+
+	it("preserves eslint-disable comments", () => {
+		const src = [
+			"// eslint-disable-next-line no-console",
+			"console.log('test');",
+		].join("\n");
+		const out = parseAndTransformComments(src, {
+			width: 80,
+			wrapLineComments: true,
+			mergeLineComments: false,
+		}).transformed;
+		expect(out).toBe(src);
+	});
+
+	it("preserves prettier-ignore comments", () => {
+		const src = [
+			"// prettier-ignore",
+			"const matrix = [",
+			"  1, 0, 0,",
+			"  0, 1, 0,",
+			"];",
+		].join("\n");
+		const out = parseAndTransformComments(src, {
+			width: 80,
+			wrapLineComments: true,
+			mergeLineComments: true,
+		}).transformed;
+		expect(out).toContain("// prettier-ignore");
+	});
+
+	it("preserves @ts-expect-error comments", () => {
+		const src = [
+			"// @ts-expect-error - intentionally testing error case",
+			"invalidFunction();",
+		].join("\n");
+		const out = parseAndTransformComments(src, {
+			width: 80,
+			wrapLineComments: true,
+			mergeLineComments: false,
+		}).transformed;
+		expect(out).toBe(src);
+	});
+
+	it("preserves @ts-ignore comments", () => {
+		const src = "// @ts-ignore\nconst x = badCode;";
+		const out = parseAndTransformComments(src, {
+			width: 80,
+			wrapLineComments: true,
+			mergeLineComments: false,
+		}).transformed;
+		expect(out).toBe(src);
+	});
+
+	it("preserves stylelint-disable comments", () => {
+		const src = "// stylelint-disable declaration-no-important";
+		const out = parseAndTransformComments(src, {
+			width: 80,
+			wrapLineComments: true,
+			mergeLineComments: false,
+		}).transformed;
+		expect(out).toBe(src);
+	});
+
+	it("preserves v8 ignore and c8 ignore coverage directives", () => {
+		const src = [
+			"// v8 ignore next",
+			"// c8 ignore start",
+			"function untestable() {}",
+			"// c8 ignore stop",
+		].join("\n");
+		const out = parseAndTransformComments(src, {
+			width: 80,
+			wrapLineComments: true,
+			mergeLineComments: true,
+		}).transformed;
+		expect(out).toContain("// v8 ignore next");
+		expect(out).toContain("// c8 ignore start");
+		expect(out).toContain("// c8 ignore stop");
+	});
+
+	it("preserves istanbul ignore comments", () => {
+		const src = "// istanbul ignore next";
+		const out = parseAndTransformComments(src, {
+			width: 80,
+			wrapLineComments: true,
+			mergeLineComments: false,
+		}).transformed;
+		expect(out).toBe(src);
+	});
+
+	it("stops merging comment group before linter directive", () => {
+		const src = [
+			"// This is an explanatory comment",
+			"// that spans multiple lines",
+			"// biome-ignore lint/style/useConst: needs reassignment",
+			"let value = compute();",
+		].join("\n");
+		const out = parseAndTransformComments(src, {
+			width: 80,
+			wrapLineComments: true,
+			mergeLineComments: true,
+		}).transformed;
+		expect(out).toContain("/**");
+		expect(out).toContain("// biome-ignore");
+		expect(out).not.toMatch(/\* biome-ignore/);
+	});
+
+	it("handles multiple different linter directives in sequence", () => {
+		const src = [
+			"// eslint-disable-next-line @typescript-eslint/no-explicit-any",
+			"// biome-ignore lint/suspicious/noExplicitAny: legacy code",
+			"// @ts-expect-error - type mismatch expected",
+			"const x: any = getValue();",
+		].join("\n");
+		const out = parseAndTransformComments(src, {
+			width: 80,
+			wrapLineComments: true,
+			mergeLineComments: true,
+		}).transformed;
+		expect(out).toContain("// eslint-disable-next-line");
+		expect(out).toContain("// biome-ignore");
+		expect(out).toContain("// @ts-expect-error");
+		expect(out).not.toContain("/**");
+	});
 });
