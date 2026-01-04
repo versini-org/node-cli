@@ -215,16 +215,75 @@ export default {
 
 #### Simple report with custom columns
 
+The `columns` option allows you to customize the report table columns. Each column is defined as an object with a key (column identifier) and value (column header text displayed in the table).
+
+**Available column keys:**
+
+| Key      | Description                                          | Default Header |
+| -------- | ---------------------------------------------------- | -------------- |
+| `status` | Shows ✅ if within limit, 🚫 if limit exceeded       | "Status"       |
+| `file`   | Displays the file name or alias                      | "File"         |
+| `size`   | Shows the gzipped size with diff from previous stats | "Size (Gzip)"  |
+| `limits` | Displays the configured size limit                   | "Limits"       |
+
+**Default columns:**
+
+```js
+columns: [
+  { status: "Status" },
+  { file: "File" },
+  { size: "Size (Gzip)" },
+  { limits: "Limits" }
+];
+```
+
+**Customizing column headers:**
+
+You can change the header text while keeping the same column:
+
 ```js
 export default {
   report: {
     columns: [
-      { status: "Status" },
-      { file: "File" },
-      { size: "Size" },
-      { limits: "Limits" }
+      { status: "✓/✗" },
+      { file: "Bundle" },
+      { size: "Gzip Size" },
+      { limits: "Max" }
     ],
-    prev: "stats/previous.json",
+    previous: "stats/previous.json",
+    current: "stats/current.json"
+  }
+};
+```
+
+**Removing columns:**
+
+You can remove columns by omitting them from the array:
+
+```js
+export default {
+  report: {
+    columns: [{ file: "File" }, { size: "Size (Gzip)" }],
+    previous: "stats/previous.json",
+    current: "stats/current.json"
+  }
+};
+```
+
+**Reordering columns:**
+
+You can change the column order by rearranging the array:
+
+```js
+export default {
+  report: {
+    columns: [
+      { file: "File" },
+      { status: "Status" },
+      { limits: "Limits" },
+      { size: "Size (Gzip)" }
+    ],
+    previous: "stats/previous.json",
     current: "stats/current.json"
   }
 };
