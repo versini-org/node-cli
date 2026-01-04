@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.6.0](https://github.com/versini-org/node-cli/compare/bundlesize-v4.5.2...bundlesize-v4.6.0) (2026-01-04)
+
+
+### Features
+
+* **bundlesize:** Expand documentation for custom report columns ([#461](https://github.com/versini-org/node-cli/issues/461)) ([311d1db](https://github.com/versini-org/node-cli/commit/311d1dbe21607cb4e27c4ab0e678b81b3dda7d89))
+
 ## [4.5.2](https://github.com/versini-org/node-cli/compare/bundlesize-v4.5.1...bundlesize-v4.5.2) (2025-12-24)
 
 
