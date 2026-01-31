@@ -9,6 +9,13 @@ import { DEFAULT_EXTERNALS } from "./defaults.js";
 
 const gzipAsync = promisify(zlib.gzip);
 
+/**
+ * Escape special regex characters in a string
+ */
+function escapeRegExp(str: string): string {
+	return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 export type ParsedPackage = {
 	name: string;
 	version: string;
@@ -386,14 +393,20 @@ function findSubpathsForExports(
 						continue;
 					}
 
+					// Escape regex special characters in the name to prevent injection
+					const escapedName = escapeRegExp(name);
+
 					// Look for various export patterns
 					const patterns = [
-						new RegExp(`export\\s*\\{[^}]*\\b${name}\\b[^}]*\\}`, "m"),
+						new RegExp(`export\\s*\\{[^}]*\\b${escapedName}\\b[^}]*\\}`, "m"),
 						new RegExp(
-							`export\\s+declare\\s+(?:const|function|class)\\s+${name}\\b`,
+							`export\\s+declare\\s+(?:const|function|class)\\s+${escapedName}\\b`,
 							"m",
 						),
-						new RegExp(`export\\s+(?:const|function|class)\\s+${name}\\b`, "m"),
+						new RegExp(
+							`export\\s+(?:const|function|class)\\s+${escapedName}\\b`,
+							"m",
+						),
 					];
 
 					if (patterns.some((pattern) => pattern.test(content))) {
