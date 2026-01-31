@@ -21,6 +21,9 @@ import { fetchPackageVersions, promptForVersion } from "./versions.js";
 const flags = config.flags;
 const parameters = config.parameters;
 
+// Disable kleur colors when --boring flag is set
+kleur.enabled = !flags?.boring;
+
 const log = new Logger({
 	boring: flags?.boring,
 });
