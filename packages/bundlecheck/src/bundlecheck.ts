@@ -64,7 +64,10 @@ async function main() {
 				: TREND_VERSION_COUNT;
 
 		try {
-			const { name } = parsePackageSpecifier(packageName);
+			const { name, subpath } = parsePackageSpecifier(packageName);
+			// Construct the full package path including subpath if present
+			const fullPackagePath = subpath ? `${name}/${subpath}` : name;
+
 			log.info(`\nFetching available versions for ${name}...`);
 
 			const { versions } = await fetchPackageVersions(packageName);
@@ -83,7 +86,7 @@ async function main() {
 			log.info("");
 
 			const results = await analyzeTrend({
-				packageName: name,
+				packageName: fullPackagePath,
 				versions: trendVersions,
 				exports,
 				additionalExternals,
@@ -98,7 +101,11 @@ async function main() {
 			}
 
 			// Render and display the trend graph
-			const graphLines = renderTrendGraph(name, results, flags?.boring);
+			const graphLines = renderTrendGraph(
+				fullPackagePath,
+				results,
+				flags?.boring,
+			);
 			for (const line of graphLines) {
 				log.log(line);
 			}
@@ -115,7 +122,7 @@ async function main() {
 	// If --versions flag is set, fetch and prompt for version selection
 	if (flags?.versions) {
 		try {
-			const { name } = parsePackageSpecifier(packageName);
+			const { name, subpath } = parsePackageSpecifier(packageName);
 			log.info(`\nFetching available versions for ${name}...`);
 
 			const { versions, tags } = await fetchPackageVersions(packageName);
@@ -126,7 +133,10 @@ async function main() {
 			}
 
 			const selectedVersion = await promptForVersion(name, versions, tags);
-			packageName = `${name}@${selectedVersion}`;
+			// Rebuild specifier preserving any subpath
+			packageName = subpath
+				? `${name}/${subpath}@${selectedVersion}`
+				: `${name}@${selectedVersion}`;
 			log.info(`\nSelected: ${packageName}`);
 		} catch (error) {
 			const errorMessage =
