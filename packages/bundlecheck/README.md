@@ -16,6 +16,7 @@ A CLI tool to check the bundle size of npm packages, similar to [bundlephobia.co
 - **Platform support**: target `browser` (default) or `node` with smart auto-detection
 - Custom npm registry support (for private registries)
 - Fast bundling using esbuild (with pnpm support)
+- **Local caching** for faster repeated lookups (SQLite-based, max 100 entries)
 
 ## Installation
 
@@ -105,6 +106,7 @@ bundlecheck lodash "debounce,throttle"
 | `--noExternal`      | `-n`        | Do not mark any packages as external                             |
 | `--registry <url>`  | `-r <url>`  | Custom npm registry URL (default: registry.npmjs.org)            |
 | `--platform <name>` | `-p <name>` | Target platform: `auto` (default), `browser`, or `node`          |
+| `--force`           | `-f`        | Bypass cache and force re-fetch/re-calculation                   |
 
 ### Examples
 
@@ -145,6 +147,9 @@ bundlecheck express --platform node
 
 # Auto-detect platform (default behavior)
 bundlecheck express  # auto-detects "node" from package.json engines
+
+# Bypass cache and force re-fetch
+bundlecheck lodash --force
 ```
 
 ## How It Works
@@ -197,6 +202,46 @@ bundlecheck my-local-pkg --registry http://localhost:4873
 ```
 
 Note: If the registry requires authentication, ensure your npm/pnpm is configured with the appropriate credentials (via `.npmrc` or environment variables).
+
+## Cache
+
+Bundle size results are cached locally to speed up repeated lookups. The cache is stored in `~/.bundlecheck/cache.db` using SQLite.
+
+### How it works
+
+- Results are cached based on: package name, version, exports, platform, gzip level, and externals configuration
+- The cache holds up to **100 entries** (least recently used entries are evicted first)
+- When you check a package, the CLI first looks for a cached result with matching parameters
+
+### Smart version matching
+
+The cache uses **resolved versions**, not the requested specifier. This means:
+
+```bash
+bundlecheck @mantine/core          # Resolves "latest" to e.g. 8.0.0, caches as 8.0.0
+bundlecheck @mantine/core@8.0.0    # Cache hit! Same resolved version
+```
+
+This also works with `--trend`: if you previously checked `@mantine/core` (which resolved to v8.0.0), running `--trend` will use the cached result for v8.0.0 and only fetch the other versions.
+
+### Bypassing the cache
+
+Use the `--force` flag to skip the cache and re-fetch/re-calculate:
+
+```bash
+bundlecheck lodash --force    # Always fetches fresh data
+bundlecheck lodash -f         # Short form
+```
+
+### Cache location
+
+The cache database is stored at:
+
+```
+~/.bundlecheck/cache.db
+```
+
+To clear the cache, simply delete this file or the `~/.bundlecheck` directory.
 
 ## License
 

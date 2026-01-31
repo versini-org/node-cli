@@ -7,8 +7,14 @@ import kleur from "kleur";
 import {
 	checkBundleSize,
 	formatBytes,
+	getExternals,
 	parsePackageSpecifier,
 } from "./bundler.js";
+import {
+	getCachedResult,
+	normalizeCacheKey,
+	setCachedResult,
+} from "./cache.js";
 import { normalizePlatform, TREND_VERSION_COUNT } from "./defaults.js";
 import { config } from "./parse.js";
 import {
@@ -27,6 +33,56 @@ kleur.enabled = !flags?.boring;
 const log = new Logger({
 	boring: flags?.boring,
 });
+
+/**
+ * Display bundle result in a formatted box
+ */
+function displayResult(
+	result: {
+		packageName: string;
+		packageVersion: string;
+		exports: string[];
+		rawSize: number;
+		gzipSize: number | null;
+		gzipLevel: number;
+		externals: string[];
+		dependencies: string[];
+		platform: "browser" | "node";
+	},
+	isAutoDetected: boolean,
+): void {
+	const blue = kleur.blue;
+	const green = kleur.green;
+
+	const platformLabel = result.platform === "node" ? "node" : "browser";
+	const platformNote = isAutoDetected ? " (auto-detected)" : "";
+
+	log.printBox(
+		[
+			`${blue("Package:")} ${result.packageName} (${blue("version:")} ${result.packageVersion})`,
+			result.exports.length > 0
+				? `${blue("Exports:")} { ${result.exports.join(", ")} }`
+				: `${blue("Exports:")} * (entire package)`,
+			"",
+			`${blue("Raw size:")}  ${formatBytes(result.rawSize)}`,
+			result.gzipSize !== null
+				? `${blue("Gzip size:")} ${formatBytes(result.gzipSize)} (level ${result.gzipLevel})`
+				: `${blue("Gzip size:")} N/A (not applicable for node platform)`,
+			"",
+			result.externals.length > 0
+				? `${blue("Externals:")} ${result.externals.join(", ")}`
+				: `${blue("Externals:")} ${green("none")}`,
+			result.dependencies.length > 0
+				? `${blue("Dependencies:")} ${result.dependencies.join(", ")}`
+				: `${blue("Dependencies:")} ${green("none")}`,
+			`${blue("Platform:")} ${platformLabel}${platformNote}`,
+		],
+		{
+			borderStyle: "round",
+			align: "left",
+		},
+	);
+}
 
 async function main() {
 	let packageName = parameters?.["0"];
@@ -104,6 +160,7 @@ async function main() {
 				boring: flags?.boring,
 				registry: flags?.registry,
 				platform,
+				force: flags?.force,
 			});
 
 			if (results.length === 0) {
@@ -164,9 +221,53 @@ async function main() {
 	if (exports && exports.length > 0) {
 		log.info(`Exports: { ${exports.join(", ")} }`);
 	}
-	log.info("Please wait, installing and bundling...\n");
 
 	try {
+		// Parse package specifier to get name and version
+		const { name: baseName, version: requestedVersion } =
+			parsePackageSpecifier(packageName);
+
+		// Resolve "latest" to actual version for cache key
+		let resolvedVersion = requestedVersion;
+		if (requestedVersion === "latest") {
+			const { tags } = await fetchPackageVersions({
+				packageName: baseName,
+				registry: flags?.registry,
+			});
+			resolvedVersion = tags.latest || requestedVersion;
+		}
+
+		// Compute externals for cache key (same logic as bundler)
+		const externals = getExternals(
+			baseName,
+			additionalExternals,
+			flags?.noExternal,
+		);
+
+		// Build cache key
+		// Note: platform can be undefined (auto-detect), which is stored as "auto" in cache
+		const cacheKey = normalizeCacheKey({
+			packageName: baseName,
+			version: resolvedVersion,
+			exports,
+			platform,
+			gzipLevel: flags?.gzipLevel ?? 5,
+			externals,
+			noExternal: flags?.noExternal ?? false,
+		});
+
+		// Check cache (unless --force flag is set)
+		if (!flags?.force) {
+			const cached = getCachedResult(cacheKey);
+			if (cached) {
+				log.info("NOTE: Using cached results\n");
+				displayResult(cached, platform === undefined);
+				process.exit(0);
+			}
+		}
+
+		log.info("Please wait, installing and bundling...\n");
+
 		const result = await checkBundleSize({
 			packageName,
 			exports,
@@ -177,38 +278,10 @@ async function main() {
 			platform,
 		});
 
-		const blue = kleur.blue;
-		const green = kleur.green;
+		// Store result in cache
+		setCachedResult(cacheKey, result);
 
-		// Display results
-		const platformLabel = result.platform === "node" ? "node" : "browser";
-		const platformNote = platform === undefined ? " (auto-detected)" : "";
-
-		log.printBox(
-			[
-				`${blue("Package:")} ${result.packageName} (${blue("version:")} ${result.packageVersion})`,
-				result.exports.length > 0
-					? `${blue("Exports:")} { ${result.exports.join(", ")} }`
-					: `${blue("Exports:")} * (entire package)`,
-				"",
-				`${blue("Raw size:")}  ${formatBytes(result.rawSize)}`,
-				result.gzipSize !== null
-					? `${blue("Gzip size:")} ${formatBytes(result.gzipSize)} (level ${result.gzipLevel})`
-					: `${blue("Gzip size:")} N/A (not applicable for node platform)`,
-				"",
-				result.externals.length > 0
-					? `${blue("Externals:")} ${result.externals.join(", ")}`
-					: `${blue("Externals:")} ${green("none")}`,
-				result.dependencies.length > 0
-					? `${blue("Dependencies:")} ${result.dependencies.join(", ")}`
-					: `${blue("Dependencies:")} ${green("none")}`,
-				`${blue("Platform:")} ${platformLabel}${platformNote}`,
-			],
-			{
-				borderStyle: "round",
-				align: "left",
-			},
-		);
+		displayResult(result, platform === undefined);
 
 		process.exit(0);
 	} catch (error) {

@@ -269,7 +269,7 @@ function generateEntryContent(options: EntryContentOptions): string {
 /**
  * Get externals list based on options
  */
-function getExternals(
+export function getExternals(
 	packageName: string,
 	externals?: string[],
 	noExternal?: boolean,

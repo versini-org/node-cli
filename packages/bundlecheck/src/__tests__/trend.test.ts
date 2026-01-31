@@ -17,6 +17,13 @@ vi.mock("../bundler.js", async () => {
 	};
 });
 
+// Mock the cache module to avoid cache interference in tests
+vi.mock("../cache.js", () => ({
+	getCachedResult: vi.fn().mockReturnValue(null),
+	setCachedResult: vi.fn(),
+	normalizeCacheKey: vi.fn((options) => options),
+}));
+
 describe("selectTrendVersions", () => {
 	it("should return first N versions (most recent)", () => {
 		const versions = ["3.0.0", "2.0.0", "1.0.0", "0.9.0", "0.8.0", "0.7.0"];
