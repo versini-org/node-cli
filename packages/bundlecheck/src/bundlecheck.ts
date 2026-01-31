@@ -73,7 +73,10 @@ async function main() {
 
 			log.info(`\nFetching available versions for ${name}...`);
 
-			const { versions } = await fetchPackageVersions(packageName);
+			const { versions } = await fetchPackageVersions({
+				packageName,
+				registry: flags?.registry,
+			});
 
 			if (versions.length === 0) {
 				log.error("No versions found for this package");
@@ -96,6 +99,7 @@ async function main() {
 				noExternal: flags?.noExternal,
 				gzipLevel: flags?.gzipLevel,
 				boring: flags?.boring,
+				registry: flags?.registry,
 			});
 
 			if (results.length === 0) {
@@ -128,7 +132,10 @@ async function main() {
 			const { name, subpath } = parsePackageSpecifier(packageName);
 			log.info(`\nFetching available versions for ${name}...`);
 
-			const { versions, tags } = await fetchPackageVersions(packageName);
+			const { versions, tags } = await fetchPackageVersions({
+				packageName,
+				registry: flags?.registry,
+			});
 
 			if (versions.length === 0) {
 				log.error("No versions found for this package");
@@ -162,6 +169,7 @@ async function main() {
 			additionalExternals,
 			noExternal: flags?.noExternal,
 			gzipLevel: flags?.gzipLevel,
+			registry: flags?.registry,
 		});
 
 		const blue = kleur.blue;

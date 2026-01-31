@@ -135,6 +135,66 @@ describe("fetchPackageVersions", () => {
 
 		expect(result.tags).toEqual({});
 	});
+
+	it("should use custom registry URL when provided", async () => {
+		mockFetch.mockResolvedValue({
+			ok: true,
+			json: () =>
+				Promise.resolve({
+					versions: { "1.0.0": {} },
+					"dist-tags": { latest: "1.0.0" },
+				}),
+		});
+
+		await fetchPackageVersions({
+			packageName: "test-package",
+			registry: "https://custom.registry.com",
+		});
+
+		expect(mockFetch).toHaveBeenCalledWith(
+			"https://custom.registry.com/test-package",
+		);
+	});
+
+	it("should strip trailing slash from custom registry URL", async () => {
+		mockFetch.mockResolvedValue({
+			ok: true,
+			json: () =>
+				Promise.resolve({
+					versions: { "1.0.0": {} },
+					"dist-tags": { latest: "1.0.0" },
+				}),
+		});
+
+		await fetchPackageVersions({
+			packageName: "test-package",
+			registry: "https://custom.registry.com/",
+		});
+
+		expect(mockFetch).toHaveBeenCalledWith(
+			"https://custom.registry.com/test-package",
+		);
+	});
+
+	it("should use options object format", async () => {
+		mockFetch.mockResolvedValue({
+			ok: true,
+			json: () =>
+				Promise.resolve({
+					versions: { "1.0.0": {} },
+					"dist-tags": { latest: "1.0.0" },
+				}),
+		});
+
+		const result = await fetchPackageVersions({
+			packageName: "@scope/package",
+		});
+
+		expect(mockFetch).toHaveBeenCalledWith(
+			"https://registry.npmjs.org/@scope/package",
+		);
+		expect(result.versions).toEqual(["1.0.0"]);
+	});
 });
 
 describe("promptForVersion", () => {
