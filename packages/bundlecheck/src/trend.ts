@@ -97,20 +97,31 @@ export function renderTrendGraph(
 	// Color helper (respects boring flag)
 	const blue = (text: string) => (boring ? text : kleur.blue(text));
 
-	// Find min/max sizes for scaling (use min-max scaling to show differences)
-	const gzipSizes = results.map((r) => r.gzipSize);
-	const rawSizes = results.map((r) => r.rawSize);
+	// Create maps from formatted string to representative value
+	// This ensures values that display the same get the same bar length
+	const gzipFormattedToValue = new Map<string, number>();
+	const rawFormattedToValue = new Map<string, number>();
 
-	const minGzipSize = Math.min(...gzipSizes);
-	const maxGzipSize = Math.max(...gzipSizes);
-	const minRawSize = Math.min(...rawSizes);
-	const maxRawSize = Math.max(...rawSizes);
+	for (const result of results) {
+		const gzipFormatted = formatBytes(result.gzipSize);
+		const rawFormatted = formatBytes(result.rawSize);
+		// Use first occurrence as representative value for each formatted string
+		if (!gzipFormattedToValue.has(gzipFormatted)) {
+			gzipFormattedToValue.set(gzipFormatted, result.gzipSize);
+		}
+		if (!rawFormattedToValue.has(rawFormatted)) {
+			rawFormattedToValue.set(rawFormatted, result.rawSize);
+		}
+	}
 
-	// Check if all formatted values are the same (to avoid misleading bar differences)
-	const formattedGzipSizes = results.map((r) => formatBytes(r.gzipSize));
-	const formattedRawSizes = results.map((r) => formatBytes(r.rawSize));
-	const allGzipSame = new Set(formattedGzipSizes).size === 1;
-	const allRawSame = new Set(formattedRawSizes).size === 1;
+	// Get unique representative values for min/max calculation
+	const uniqueGzipValues = [...gzipFormattedToValue.values()];
+	const uniqueRawValues = [...rawFormattedToValue.values()];
+
+	const minGzipSize = Math.min(...uniqueGzipValues);
+	const maxGzipSize = Math.max(...uniqueGzipValues);
+	const minRawSize = Math.min(...uniqueRawValues);
+	const maxRawSize = Math.max(...uniqueRawValues);
 
 	// Find max version length for alignment
 	const maxVersionLen = Math.max(...results.map((r) => r.version.length));
@@ -120,14 +131,9 @@ export function renderTrendGraph(
 	const minBarWidth = 10; // Minimum bar length for smallest value
 
 	// Helper to calculate bar length with min-max scaling
-	const calcBarLength = (
-		value: number,
-		min: number,
-		max: number,
-		allSame: boolean,
-	): number => {
-		if (max === min || allSame) {
-			return barWidth; // All values are effectively the same
+	const calcBarLength = (value: number, min: number, max: number): number => {
+		if (max === min) {
+			return barWidth; // All values are the same
 		}
 		// Scale from minBarWidth to barWidth based on position between min and max
 		const ratio = (value - min) / (max - min);
@@ -143,15 +149,16 @@ export function renderTrendGraph(
 	// Gzip size bars
 	lines.push(blue("Gzip Size:"));
 	for (const result of results) {
+		const sizeStr = formatBytes(result.gzipSize);
+		// Use representative value for this formatted string to ensure consistent bar length
+		const representativeValue = gzipFormattedToValue.get(sizeStr) as number;
 		const barLength = calcBarLength(
-			result.gzipSize,
+			representativeValue,
 			minGzipSize,
 			maxGzipSize,
-			allGzipSame,
 		);
 		const bar = "▇".repeat(barLength);
 		const padding = " ".repeat(maxVersionLen - result.version.length);
-		const sizeStr = formatBytes(result.gzipSize);
 		lines.push(`  ${result.version}${padding}  ${bar} ${sizeStr}`);
 	}
 
@@ -160,15 +167,16 @@ export function renderTrendGraph(
 	// Raw size bars
 	lines.push(blue("Raw Size:"));
 	for (const result of results) {
+		const sizeStr = formatBytes(result.rawSize);
+		// Use representative value for this formatted string to ensure consistent bar length
+		const representativeValue = rawFormattedToValue.get(sizeStr) as number;
 		const barLength = calcBarLength(
-			result.rawSize,
+			representativeValue,
 			minRawSize,
 			maxRawSize,
-			allRawSame,
 		);
 		const bar = "▇".repeat(barLength);
 		const padding = " ".repeat(maxVersionLen - result.version.length);
-		const sizeStr = formatBytes(result.rawSize);
 		lines.push(`  ${result.version}${padding}  ${bar} ${sizeStr}`);
 	}
 
