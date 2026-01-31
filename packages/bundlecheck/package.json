@@ -17,7 +17,7 @@
 		"dist",
 		"README.md"
 	],
-	"node": ">=18",
+	"node": ">=20",
 	"scripts": {
 		"build": "npm-run-all --serial clean build:types build:js build:barrel",
 		"build:barrel": "barrelsby --delete --directory dist --pattern \"**/*.d.ts\" --name \"index.d\"",
