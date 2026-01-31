@@ -160,9 +160,13 @@ export function renderTrendGraph(
 		const rawPercent = ((rawDiff / oldestResult.rawSize) * 100).toFixed(1);
 
 		const gzipTrend =
-			gzipDiff > 0 ? `+${formatBytes(gzipDiff)}` : formatBytes(gzipDiff);
+			gzipDiff >= 0
+				? `+${formatBytes(gzipDiff)}`
+				: `-${formatBytes(Math.abs(gzipDiff))}`;
 		const rawTrend =
-			rawDiff > 0 ? `+${formatBytes(rawDiff)}` : formatBytes(rawDiff);
+			rawDiff >= 0
+				? `+${formatBytes(rawDiff)}`
+				: `-${formatBytes(Math.abs(rawDiff))}`;
 
 		lines.push("─".repeat(60));
 		lines.push(
