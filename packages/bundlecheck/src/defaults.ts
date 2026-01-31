@@ -8,6 +8,7 @@ export const defaultFlags = {
 	versions: false,
 	registry: "",
 	platform: "auto",
+	force: false,
 };
 
 /**

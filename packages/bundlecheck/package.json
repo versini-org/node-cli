@@ -36,6 +36,7 @@
 		"@inquirer/select": "5.0.4",
 		"@node-cli/logger": "workspace:*",
 		"@node-cli/parser": "workspace:*",
+		"better-sqlite3": "12.6.2",
 		"esbuild": "0.27.2",
 		"kleur": "4.1.5",
 		"semver": "7.7.3"
@@ -45,6 +46,7 @@
 	},
 	"devDependencies": {
 		"@node-cli/comments": "workspace:*",
+		"@types/better-sqlite3": "7.6.13",
 		"@vitest/coverage-v8": "4.0.18",
 		"vitest": "4.0.18"
 	}

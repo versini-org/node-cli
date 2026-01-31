@@ -1,7 +1,17 @@
 import { Logger } from "@node-cli/logger";
 import kleur from "kleur";
 import { prerelease } from "semver";
-import { checkBundleSize, formatBytes } from "./bundler.js";
+import {
+	checkBundleSize,
+	formatBytes,
+	getExternals,
+	parsePackageSpecifier,
+} from "./bundler.js";
+import {
+	getCachedResult,
+	normalizeCacheKey,
+	setCachedResult,
+} from "./cache.js";
 import { TREND_VERSION_COUNT } from "./defaults.js";
 
 export type TrendResult = {
@@ -22,6 +32,8 @@ export type TrendOptions = {
 	registry?: string;
 	/** Target platform. If undefined, auto-detects from package.json engines */
 	platform?: "browser" | "node";
+	/** Bypass cache and force re-fetch/re-calculation */
+	force?: boolean;
 };
 
 /**
@@ -54,13 +66,49 @@ export async function analyzeTrend(
 		boring,
 		registry,
 		platform,
+		force,
 	} = options;
 
 	const log = new Logger({ boring });
 	const results: TrendResult[] = [];
 
+	// Parse base package name (without version)
+	const { name: baseName } = parsePackageSpecifier(packageName);
+
+	// Compute externals for cache key (same logic as bundler)
+	const externals = getExternals(baseName, additionalExternals, noExternal);
+
+	// Determine platform for cache key
+	const cachePlatform = platform || "browser";
+
 	for (const version of versions) {
 		const versionedPackage = `${packageName}@${version}`;
+
+		// Build cache key for this version
+		const cacheKey = normalizeCacheKey({
+			packageName: baseName,
+			version,
+			exports,
+			platform: cachePlatform,
+			gzipLevel: gzipLevel ?? 5,
+			externals,
+			noExternal: noExternal ?? false,
+		});
+
+		// Check cache first (unless --force flag is set)
+		if (!force) {
+			const cached = getCachedResult(cacheKey);
+			if (cached) {
+				log.info(`  Checking ${version}... (cached)`);
+				results.push({
+					version,
+					rawSize: cached.rawSize,
+					gzipSize: cached.gzipSize,
+				});
+				continue;
+			}
+		}
+
 		log.info(`  Checking ${version}...`);
 
 		try {
@@ -73,6 +121,9 @@ export async function analyzeTrend(
 				registry,
 				platform,
 			});
+
+			// Store result in cache
+			setCachedResult(cacheKey, result);
 
 			results.push({
 				version,

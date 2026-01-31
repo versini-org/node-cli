@@ -17,6 +17,7 @@ export type Flags = {
 	noExternal?: boolean;
 	registry?: string;
 	platform?: string;
+	force?: boolean;
 };
 
 export type Parameters = {
@@ -85,6 +86,10 @@ export const config: Configuration = parser({
 			comment:
 				"## Check bundle size for Node.js platform (aliases: server, nodejs, backend)",
 		},
+		{
+			command: "bundlecheck lodash --force",
+			comment: "## Bypass cache and force re-fetch/re-calculation",
+		},
 	],
 	flags: {
 		gzipLevel: {
@@ -146,6 +151,12 @@ export const config: Configuration = parser({
 			description:
 				'Target platform: "auto" (default, detects from engines), "browser" or "node"',
 			type: "string",
+		},
+		force: {
+			shortFlag: "f",
+			default: defaultFlags.force,
+			description: "Bypass cache and force re-fetch/re-calculation",
+			type: "boolean",
 		},
 	},
 	parameters: {
