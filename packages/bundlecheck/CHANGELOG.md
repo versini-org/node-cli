@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/versini-org/node-cli/compare/bundlecheck-v1.4.0...bundlecheck-v1.4.1) (2026-01-31)
+
+
+### Bug Fixes
+
+* **bundlecheck:** types are not properly exported ([#490](https://github.com/versini-org/node-cli/issues/490)) ([9322202](https://github.com/versini-org/node-cli/commit/93222022921d230adcd3deb070f352e1025efd61))
+
 ## [1.4.0](https://github.com/versini-org/node-cli/compare/bundlecheck-v1.3.0...bundlecheck-v1.4.0) (2026-01-31)
 
 
