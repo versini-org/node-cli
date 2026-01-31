@@ -223,6 +223,38 @@ describe("renderTrendGraph", () => {
 		expect(new Set(barCounts).size).toBeGreaterThan(1); // Different lengths
 	});
 
+	it("should use same bar length for same formatted value when mixed with different values", () => {
+		// Simulates uuid case: some values format to "10.14 kB", others to "10.12 kB"
+		// 10380 bytes = 10.14 kB, 10360 bytes = 10.12 kB
+		const results: TrendResult[] = [
+			{ version: "5.0.0", rawSize: 10380, gzipSize: 4000 },
+			{ version: "4.0.0", rawSize: 10385, gzipSize: 4000 }, // Same formatted as 5.0.0
+			{ version: "3.0.0", rawSize: 10360, gzipSize: 3900 },
+			{ version: "2.0.0", rawSize: 10362, gzipSize: 3900 }, // Same formatted as 3.0.0
+			{ version: "1.0.0", rawSize: 10361, gzipSize: 3900 }, // Same formatted as 3.0.0
+		];
+
+		const lines = renderTrendGraph("test-package", results, true);
+
+		// Find raw size lines
+		const rawStartIdx = lines.findIndex((l) => l.includes("Raw Size:"));
+		const changeIdx = lines.findIndex((l) => l.includes("Change from"));
+		const rawLines = lines
+			.slice(rawStartIdx + 1, changeIdx > 0 ? changeIdx : undefined)
+			.filter((l) => l.includes("▇") && l.match(/\d+\.\d+ kB/));
+
+		// Get bar counts for each version
+		const barCounts = rawLines.map((l) => (l.match(/▇/g) || []).length);
+
+		// 5.0.0 and 4.0.0 should have same bar length (both "10.14 kB")
+		expect(barCounts[0]).toBe(barCounts[1]);
+		// 3.0.0, 2.0.0, 1.0.0 should have same bar length (all "10.12 kB")
+		expect(barCounts[2]).toBe(barCounts[3]);
+		expect(barCounts[3]).toBe(barCounts[4]);
+		// The two groups should have different lengths
+		expect(barCounts[0]).not.toBe(barCounts[2]);
+	});
+
 	it("should include bar characters", () => {
 		const results: TrendResult[] = [
 			{ version: "2.0.0", rawSize: 2048, gzipSize: 1024 },
