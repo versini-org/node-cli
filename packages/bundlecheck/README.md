@@ -160,13 +160,11 @@ Use the `--registry` flag to check packages from private or alternative npm regi
 
 ```bash
 # Private corporate registry
-bundlecheck @myorg/ui-components --registry https://npm.mycompany.com
+bundlecheck @myorg/myorg-ui-library --registry https://npm.mycompany.com
 
 # Verdaccio local registry
 bundlecheck my-local-pkg --registry http://localhost:4873
 
-# npm mirror (e.g., npmmirror for China)
-bundlecheck lodash --registry https://registry.npmmirror.com
 ```
 
 Note: If the registry requires authentication, ensure your npm/pnpm is configured with the appropriate credentials (via `.npmrc` or environment variables).
