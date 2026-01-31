@@ -48,6 +48,56 @@ describe("selectTrendVersions", () => {
 		const result = selectTrendVersions([]);
 		expect(result).toEqual([]);
 	});
+
+	it("should filter out canary versions", () => {
+		const versions = [
+			"19.3.0-canary-abc123",
+			"19.2.4",
+			"19.2.3",
+			"19.2.0-canary-xyz789",
+			"19.2.2",
+		];
+		const result = selectTrendVersions(versions, 3);
+		expect(result).toEqual(["19.2.4", "19.2.3", "19.2.2"]);
+	});
+
+	it("should filter out alpha versions", () => {
+		const versions = ["2.0.0-alpha.1", "1.2.0", "1.1.0-alpha.2", "1.0.0"];
+		const result = selectTrendVersions(versions, 3);
+		expect(result).toEqual(["1.2.0", "1.0.0"]);
+	});
+
+	it("should filter out beta versions", () => {
+		const versions = ["3.0.0-beta.1", "2.0.0", "1.5.0-beta.2", "1.0.0"];
+		const result = selectTrendVersions(versions, 3);
+		expect(result).toEqual(["2.0.0", "1.0.0"]);
+	});
+
+	it("should filter out rc versions", () => {
+		const versions = ["3.0.0-rc.1", "2.0.0", "1.5.0-rc.2", "1.0.0"];
+		const result = selectTrendVersions(versions, 3);
+		expect(result).toEqual(["2.0.0", "1.0.0"]);
+	});
+
+	it("should filter out all prerelease types mixed together", () => {
+		const versions = [
+			"5.0.0-canary.1",
+			"4.0.0-alpha.1",
+			"3.0.0-beta.1",
+			"2.0.0-rc.1",
+			"1.2.0",
+			"1.1.0",
+			"1.0.0",
+		];
+		const result = selectTrendVersions(versions, 3);
+		expect(result).toEqual(["1.2.0", "1.1.0", "1.0.0"]);
+	});
+
+	it("should return empty array if all versions are prereleases", () => {
+		const versions = ["2.0.0-canary.1", "1.5.0-alpha.1", "1.0.0-beta.1"];
+		const result = selectTrendVersions(versions, 3);
+		expect(result).toEqual([]);
+	});
 });
 
 describe("renderTrendGraph", () => {

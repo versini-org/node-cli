@@ -1,5 +1,6 @@
 import { Logger } from "@node-cli/logger";
 import kleur from "kleur";
+import { prerelease } from "semver";
 import { checkBundleSize, formatBytes } from "./bundler.js";
 import { TREND_VERSION_COUNT } from "./defaults.js";
 
@@ -21,13 +22,16 @@ export type TrendOptions = {
 
 /**
  * Select versions for trend analysis
- * Returns the most recent versions (newest first)
+ * Returns the most recent stable versions (newest first)
+ * Filters out prerelease versions (canary, alpha, beta, rc, etc.)
  */
 export function selectTrendVersions(
 	allVersions: string[],
 	count: number = TREND_VERSION_COUNT,
 ): string[] {
-	return allVersions.slice(0, count);
+	// Filter out prerelease versions (canary, alpha, beta, rc, etc.)
+	const stableVersions = allVersions.filter((v) => !prerelease(v));
+	return stableVersions.slice(0, count);
 }
 
 /**
