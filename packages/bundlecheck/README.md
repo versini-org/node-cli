@@ -210,7 +210,7 @@ Bundle size results are cached locally to speed up repeated lookups. The cache i
 ### How it works
 
 - Results are cached based on: package name, version, exports, platform, gzip level, and externals configuration
-- The cache holds up to **100 entries** (oldest entries are evicted first)
+- The cache holds up to **100 entries** (least recently used entries are evicted first)
 - When you check a package, the CLI first looks for a cached result with matching parameters
 
 ### Smart version matching

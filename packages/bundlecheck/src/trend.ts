@@ -78,18 +78,16 @@ export async function analyzeTrend(
 	// Compute externals for cache key (same logic as bundler)
 	const externals = getExternals(baseName, additionalExternals, noExternal);
 
-	// Determine platform for cache key
-	const cachePlatform = platform || "browser";
-
 	for (const version of versions) {
 		const versionedPackage = `${packageName}@${version}`;
 
 		// Build cache key for this version
+		// Note: platform can be undefined (auto-detect), which is stored as "auto" in cache
 		const cacheKey = normalizeCacheKey({
 			packageName: baseName,
 			version,
 			exports,
-			platform: cachePlatform,
+			platform,
 			gzipLevel: gzipLevel ?? 5,
 			externals,
 			noExternal: noExternal ?? false,

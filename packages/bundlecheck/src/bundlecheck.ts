@@ -244,15 +244,13 @@ async function main() {
 			flags?.noExternal,
 		);
 
-		// Determine platform for cache key (use input, undefined for auto)
-		const cachePlatform = platform || "browser";
-
 		// Build cache key
+		// Note: platform can be undefined (auto-detect), which is stored as "auto" in cache
 		const cacheKey = normalizeCacheKey({
 			packageName: baseName,
 			version: resolvedVersion,
 			exports,
-			platform: cachePlatform,
+			platform,
 			gzipLevel: flags?.gzipLevel ?? 5,
 			externals,
 			noExternal: flags?.noExternal ?? false,

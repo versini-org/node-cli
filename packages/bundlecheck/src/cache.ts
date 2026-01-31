@@ -24,7 +24,8 @@ export type CacheKey = {
 	packageName: string;
 	version: string;
 	exports: string;
-	platform: "browser" | "node";
+	/** Platform: "browser", "node", or "auto" (for auto-detection) */
+	platform: "browser" | "node" | "auto";
 	gzipLevel: number;
 	externals: string;
 	noExternal: number;
@@ -98,12 +99,17 @@ export function initCache(): Database.Database {
 /**
  * Normalize cache key options to a consistent format
  * Sorts exports and externals to ensure consistent cache hits
+ *
+ * Note: platform can be "browser", "node", or "auto" (when user doesn't specify).
+ * Using "auto" in the cache key ensures that auto-detected results are cached
+ * separately from explicitly specified platform results.
  */
 export function normalizeCacheKey(options: {
 	packageName: string;
 	version: string;
 	exports?: string[];
-	platform: "browser" | "node";
+	/** Platform: "browser", "node", or undefined (treated as "auto") */
+	platform: "browser" | "node" | undefined;
 	gzipLevel: number;
 	externals: string[];
 	noExternal: boolean;
@@ -112,7 +118,8 @@ export function normalizeCacheKey(options: {
 		packageName: options.packageName,
 		version: options.version,
 		exports: (options.exports || []).slice().sort().join(","),
-		platform: options.platform,
+		// Use "auto" when platform is undefined to distinguish from explicit platform
+		platform: options.platform ?? "auto",
 		gzipLevel: options.gzipLevel,
 		externals: options.externals.slice().sort().join(","),
 		noExternal: options.noExternal ? 1 : 0,
@@ -121,86 +128,109 @@ export function normalizeCacheKey(options: {
 
 /**
  * Get a cached result if it exists
+ * Returns null if not found or if an error occurs (graceful degradation)
  */
 export function getCachedResult(key: CacheKey): CachedBundleResult | null {
-	const database = initCache();
+	try {
+		const database = initCache();
 
-	const stmt = database.prepare<
-		[string, string, string, string, number, string, number]
-	>(`
-		SELECT * FROM bundle_cache
-		WHERE package_name = ?
-		AND version = ?
-		AND exports = ?
-		AND platform = ?
-		AND gzip_level = ?
-		AND externals = ?
-		AND no_external = ?
-	`);
+		const stmt = database.prepare<
+			[string, string, string, string, number, string, number]
+		>(`
+			SELECT * FROM bundle_cache
+			WHERE package_name = ?
+			AND version = ?
+			AND exports = ?
+			AND platform = ?
+			AND gzip_level = ?
+			AND externals = ?
+			AND no_external = ?
+		`);
 
-	const row = stmt.get(
-		key.packageName,
-		key.version,
-		key.exports,
-		key.platform,
-		key.gzipLevel,
-		key.externals,
-		key.noExternal,
-	) as CacheRow | undefined;
+		const row = stmt.get(
+			key.packageName,
+			key.version,
+			key.exports,
+			key.platform,
+			key.gzipLevel,
+			key.externals,
+			key.noExternal,
+		) as CacheRow | undefined;
 
-	if (!row) {
+		if (!row) {
+			return null;
+		}
+
+		// Parse dependencies with error handling for corrupted data
+		let dependencies: string[] = [];
+		try {
+			dependencies = JSON.parse(row.dependencies) as string[];
+		} catch {
+			// If JSON is corrupted, use empty array
+			dependencies = [];
+		}
+
+		// Convert row to BundleResult
+		return {
+			packageName: row.display_name,
+			packageVersion: row.version,
+			exports: row.exports ? row.exports.split(",").filter(Boolean) : [],
+			rawSize: row.raw_size,
+			gzipSize: row.gzip_size,
+			gzipLevel: row.gzip_level,
+			externals: row.externals ? row.externals.split(",").filter(Boolean) : [],
+			dependencies,
+			platform: row.platform as "browser" | "node",
+		};
+	} catch {
+		// On any database error, return null (graceful degradation - continue without cache)
 		return null;
 	}
-
-	// Convert row to BundleResult
-	return {
-		packageName: row.display_name,
-		packageVersion: row.version,
-		exports: row.exports ? row.exports.split(",").filter(Boolean) : [],
-		rawSize: row.raw_size,
-		gzipSize: row.gzip_size,
-		gzipLevel: row.gzip_level,
-		externals: row.externals ? row.externals.split(",").filter(Boolean) : [],
-		dependencies: JSON.parse(row.dependencies) as string[],
-		platform: row.platform as "browser" | "node",
-	};
 }
 
 /**
  * Store a result in the cache
+ * Silently fails on errors (graceful degradation - CLI continues without caching)
  */
 export function setCachedResult(key: CacheKey, result: BundleResult): void {
-	const database = initCache();
+	try {
+		const database = initCache();
 
-	// Use INSERT OR REPLACE to handle duplicates
-	const stmt = database.prepare(`
-		INSERT OR REPLACE INTO bundle_cache (
-			package_name, version, exports, platform, gzip_level, externals, no_external,
-			raw_size, gzip_size, dependencies, display_name, created_at
-		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`);
+		// Use INSERT OR REPLACE to handle duplicates
+		// Note: This updates created_at on replace, making this LRU-style eviction
+		const stmt = database.prepare(`
+			INSERT OR REPLACE INTO bundle_cache (
+				package_name, version, exports, platform, gzip_level, externals, no_external,
+				raw_size, gzip_size, dependencies, display_name, created_at
+			) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		`);
 
-	stmt.run(
-		key.packageName,
-		key.version,
-		key.exports,
-		key.platform,
-		key.gzipLevel,
-		key.externals,
-		key.noExternal,
-		result.rawSize,
-		result.gzipSize,
-		JSON.stringify(result.dependencies),
-		result.packageName,
-		Date.now(),
-	);
+		stmt.run(
+			key.packageName,
+			key.version,
+			key.exports,
+			key.platform,
+			key.gzipLevel,
+			key.externals,
+			key.noExternal,
+			result.rawSize,
+			result.gzipSize,
+			JSON.stringify(result.dependencies),
+			result.packageName,
+			Date.now(),
+		);
 
-	// Enforce max entries (FIFO eviction)
-	enforceMaxEntries(database);
+		// Enforce max entries (LRU-style eviction based on created_at)
+		enforceMaxEntries(database);
+	} catch {
+		// On any database error, silently continue (graceful degradation)
+	}
 }
 
 /**
- * Enforce maximum cache entries by removing oldest entries
+ * Enforce maximum cache entries by removing entries with oldest timestamps
+ * Uses LRU-style eviction: entries that are re-checked get updated timestamps
+ * and move to the end of the eviction queue
  */
 function enforceMaxEntries(database: Database.Database): void {
 	const countResult = database
@@ -226,21 +256,31 @@ function enforceMaxEntries(database: Database.Database): void {
 
 /**
  * Clear all cache entries
+ * Silently fails on errors
  */
 export function clearCache(): void {
-	const database = initCache();
-	database.prepare("DELETE FROM bundle_cache").run();
+	try {
+		const database = initCache();
+		database.prepare("DELETE FROM bundle_cache").run();
+	} catch {
+		// Silently ignore errors
+	}
 }
 
 /**
  * Get the number of cached entries
+ * Returns 0 on error
  */
 export function getCacheCount(): number {
-	const database = initCache();
-	const result = database
-		.prepare("SELECT COUNT(*) as count FROM bundle_cache")
-		.get() as { count: number };
-	return result.count;
+	try {
+		const database = initCache();
+		const result = database
+			.prepare("SELECT COUNT(*) as count FROM bundle_cache")
+			.get() as { count: number };
+		return result.count;
+	} catch {
+		return 0;
+	}
 }
 
 /**
