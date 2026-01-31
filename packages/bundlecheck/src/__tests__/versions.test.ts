@@ -1,10 +1,23 @@
 import select from "@inquirer/select";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+	afterAll,
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	it,
+	vi,
+} from "vitest";
 import { fetchPackageVersions, promptForVersion } from "../versions.js";
 
-// Mock fetch globally
+// Save original fetch and restore after all tests
+const originalFetch = global.fetch;
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
+
+afterAll(() => {
+	global.fetch = originalFetch;
+});
 
 // Mock @inquirer/select
 vi.mock("@inquirer/select", () => ({
@@ -179,7 +192,7 @@ describe("promptForVersion", () => {
 		const choices = call.choices;
 
 		// Latest version should be first
-		expect(choices[0].value).toBe("3.0.0");
+		expect((choices as Array<{ value: string }>)[0].value).toBe("3.0.0");
 	});
 
 	it("should limit to 20 recent versions", async () => {
@@ -211,9 +224,9 @@ describe("promptForVersion", () => {
 		const choices = call.choices;
 
 		// Should include the tagged legacy version
-		expect(choices.some((c: { value: string }) => c.value === "0.1.0")).toBe(
-			true,
-		);
+		expect(
+			(choices as Array<{ value: string }>).some((c) => c.value === "0.1.0"),
+		).toBe(true);
 	});
 
 	it("should handle empty tags", async () => {
@@ -225,9 +238,9 @@ describe("promptForVersion", () => {
 		const choices = call.choices;
 
 		// All choices should just be version numbers without tags
-		expect(choices.every((c: { name: string }) => !c.name.includes("("))).toBe(
-			true,
-		);
+		expect(
+			(choices as Array<{ name: string }>).every((c) => !c.name.includes("(")),
+		).toBe(true);
 	});
 
 	it("should handle multiple tags pointing to same version", async () => {
@@ -243,8 +256,8 @@ describe("promptForVersion", () => {
 		const choices = call.choices;
 
 		// Should still work, version appears once with one of the tags
-		const v3Choices = choices.filter(
-			(c: { value: string }) => c.value === "3.0.0",
+		const v3Choices = (choices as Array<{ value: string }>).filter(
+			(c) => c.value === "3.0.0",
 		);
 		expect(v3Choices.length).toBe(1);
 	});
@@ -268,12 +281,13 @@ describe("promptForVersion", () => {
 		const choices = call.choices;
 
 		// Tagged versions should come first
-		const taggedIndices = choices
-			.map((c: { name: string }, i: number) => (c.name.includes("(") ? i : -1))
-			.filter((i: number) => i >= 0);
-		const untaggedIndices = choices
-			.map((c: { name: string }, i: number) => (!c.name.includes("(") ? i : -1))
-			.filter((i: number) => i >= 0);
+		const typedChoices = choices as Array<{ name: string }>;
+		const taggedIndices = typedChoices
+			.map((c, i) => (c.name.includes("(") ? i : -1))
+			.filter((i) => i >= 0);
+		const untaggedIndices = typedChoices
+			.map((c, i) => (!c.name.includes("(") ? i : -1))
+			.filter((i) => i >= 0);
 
 		// All tagged versions should have lower indices than untagged
 		if (taggedIndices.length > 0 && untaggedIndices.length > 0) {
