@@ -143,6 +143,34 @@ function isPnpmAvailable(): boolean {
 let usePnpm: boolean | null = null;
 
 /**
+ * Validate and sanitize a registry URL to prevent command injection
+ * @param registry - The registry URL to validate
+ * @returns The sanitized URL or undefined if invalid
+ * @throws Error if the URL is invalid or contains potentially malicious characters
+ */
+function validateRegistryUrl(registry: string): string {
+	// Parse as URL to validate format
+	let url: URL;
+	try {
+		url = new URL(registry);
+	} catch {
+		throw new Error(
+			`Invalid registry URL: ${registry}. Must be a valid URL (e.g., https://registry.example.com)`,
+		);
+	}
+
+	// Only allow http and https protocols
+	if (url.protocol !== "http:" && url.protocol !== "https:") {
+		throw new Error(
+			`Invalid registry URL protocol: ${url.protocol}. Only http: and https: are allowed`,
+		);
+	}
+
+	// Return the sanitized URL (URL constructor normalizes it)
+	return url.toString();
+}
+
+/**
  * Get the install command (pnpm preferred, npm fallback)
  * @param registry - Optional custom npm registry URL
  */
@@ -151,7 +179,13 @@ function getInstallCommand(registry?: string): string {
 		usePnpm = isPnpmAvailable();
 	}
 
-	const registryArg = registry ? ` --registry ${registry}` : "";
+	let registryArg = "";
+	if (registry) {
+		// Validate and sanitize the registry URL to prevent command injection
+		const sanitizedRegistry = validateRegistryUrl(registry);
+		// Quote the URL to handle any special characters safely
+		registryArg = ` --registry "${sanitizedRegistry}"`;
+	}
 
 	if (usePnpm) {
 		return `pnpm install --ignore-scripts --no-frozen-lockfile${registryArg}`;

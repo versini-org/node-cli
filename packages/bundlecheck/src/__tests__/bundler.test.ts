@@ -294,6 +294,50 @@ describe("checkBundleSize", () => {
 		expect(result.gzipLevel).toBe(5);
 	});
 
+	it("should pass valid registry URL to install command", async () => {
+		await checkBundleSize({
+			packageName: "test-package",
+			registry: "https://registry.example.com",
+		});
+
+		// Verify execSync was called with the registry flag
+		const execCalls = vi.mocked(execSync).mock.calls;
+		const installCall = execCalls.find(
+			(call) => typeof call[0] === "string" && call[0].includes("--registry"),
+		);
+		expect(installCall).toBeDefined();
+		expect(installCall?.[0]).toContain(
+			'--registry "https://registry.example.com/"',
+		);
+	});
+
+	it("should reject invalid registry URL", async () => {
+		await expect(
+			checkBundleSize({
+				packageName: "test-package",
+				registry: "not-a-valid-url",
+			}),
+		).rejects.toThrow("Invalid registry URL");
+	});
+
+	it("should reject non-http/https registry URL", async () => {
+		await expect(
+			checkBundleSize({
+				packageName: "test-package",
+				registry: "ftp://registry.example.com",
+			}),
+		).rejects.toThrow("Invalid registry URL protocol");
+	});
+
+	it("should reject registry URL with command injection attempt", async () => {
+		await expect(
+			checkBundleSize({
+				packageName: "test-package",
+				registry: "https://evil.com; rm -rf /",
+			}),
+		).rejects.toThrow("Invalid registry URL");
+	});
+
 	it("should handle package with subpath", async () => {
 		const result = await checkBundleSize({
 			packageName: "@scope/package/subpath",
