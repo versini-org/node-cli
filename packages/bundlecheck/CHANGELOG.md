@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.0](https://github.com/versini-org/node-cli/compare/bundlecheck-v1.2.0...bundlecheck-v1.3.0) (2026-01-31)
+
+
+### Features
+
+* **bundlecheck:** Add platform support (browser/node) ([#484](https://github.com/versini-org/node-cli/issues/484)) ([c7a02e0](https://github.com/versini-org/node-cli/commit/c7a02e0b40b353440fadbc4c735a4bb3cc4d23a3))
+* **bundlecheck:** Add SQLite cache for results ([#486](https://github.com/versini-org/node-cli/issues/486)) ([f9d519d](https://github.com/versini-org/node-cli/commit/f9d519dc8ea177738c3678fe7a33a48a36b623f5))
+
 ## [1.2.0](https://github.com/versini-org/node-cli/compare/bundlecheck-v1.1.2...bundlecheck-v1.2.0) (2026-01-31)
 
 
