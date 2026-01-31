@@ -455,7 +455,7 @@ export async function getBundleTrend(
 		const oldest = results[results.length - 1];
 
 		const rawDiff = newest.rawSize - oldest.rawSize;
-		// Handle division by zero: if oldest size is 0, percent is null
+		// Handle division by zero: if oldest size is 0, percent is null.
 		const rawPercent =
 			oldest.rawSize === 0 ? null : (rawDiff / oldest.rawSize) * 100;
 
@@ -465,7 +465,7 @@ export async function getBundleTrend(
 
 		if (newest.gzipSize !== null && oldest.gzipSize !== null) {
 			gzipDiff = newest.gzipSize - oldest.gzipSize;
-			// Handle division by zero: if oldest size is 0, percent is null
+			// Handle division by zero: if oldest size is 0, percent is null.
 			gzipPercent =
 				oldest.gzipSize === 0 ? null : (gzipDiff / oldest.gzipSize) * 100;
 			gzipDiffFormatted =
@@ -536,14 +536,14 @@ export async function getPackageVersions(
  */
 
 /**
- * Format bytes to human-readable string (e.g., 1024 → "1 kB").
- * Parse a package specifier (e.g., "@scope/name@1.0.0" → { name, version,
+ * - Format bytes to human-readable string (e.g., 1024 → "1 kB").
+ * - Parse a package specifier (e.g., "@scope/name@1.0.0" → { name, version,
  * subpath }).
  */
 export { formatBytes, parsePackageSpecifier } from "./bundler.js";
 /**
- * Clear the bundle cache.
- * Get the number of cached entries.
+ * - Clear the bundle cache.
+ * - Get the number of cached entries.
  */
 export { clearCache, getCacheCount } from "./cache.js";
 
