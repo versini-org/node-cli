@@ -37,21 +37,21 @@ vi.mock("../trend.js", async (importOriginal) => {
 	};
 });
 
+import { checkBundleSize } from "../bundler.js";
 import {
-	checkBundleSize,
-	formatBytes,
-	parsePackageSpecifier,
-} from "../bundler.js";
-import {
-	clearCache,
-	getCacheCount,
+	clearCache as clearCacheMock,
+	getCacheCount as getCacheCountMock,
 	getCachedResult,
 	setCachedResult,
 } from "../cache.js";
 import {
+	clearCache,
+	formatBytes,
 	getBundleStats,
 	getBundleTrend,
+	getCacheCount,
 	getPackageVersions,
+	parsePackageSpecifier,
 } from "../index.js";
 import { analyzeTrend } from "../trend.js";
 import { fetchPackageVersions } from "../versions.js";
@@ -575,16 +575,22 @@ describe("Library API", () => {
 		});
 
 		describe("clearCache", () => {
-			it("should call the underlying clearCache function", () => {
+			it("should delegate to the underlying cache module", () => {
+				// Call the re-exported function from index.ts
 				clearCache();
-				expect(clearCache).toHaveBeenCalled();
+				// Verify it delegated to the mocked cache module function
+				expect(clearCacheMock).toHaveBeenCalled();
 			});
 		});
 
 		describe("getCacheCount", () => {
-			it("should call the underlying getCacheCount function", () => {
-				vi.mocked(getCacheCount).mockReturnValue(42);
+			it("should delegate to the underlying cache module", () => {
+				// Setup mock return value on the underlying cache module
+				vi.mocked(getCacheCountMock).mockReturnValue(42);
+				// Call the re-exported function from index.ts
 				const count = getCacheCount();
+				// Verify it delegated and returned the expected value
+				expect(getCacheCountMock).toHaveBeenCalled();
 				expect(count).toBe(42);
 			});
 		});
