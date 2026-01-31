@@ -1,6 +1,6 @@
 {
 	"name": "@node-cli/static-server",
-	"version": "3.1.6",
+	"version": "3.1.7",
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "A simple, zero-configuration, command line HTTP server to serve static files locally",
