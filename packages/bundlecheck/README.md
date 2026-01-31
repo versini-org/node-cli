@@ -13,6 +13,7 @@ A CLI tool to check the bundle size of npm packages, similar to [bundlephobia.co
 - Support for checking specific exports (tree-shaking)
 - Automatic externalization of React and React-DOM
 - Raw and gzip sizes with configurable compression level
+- **Platform support**: target `browser` (default) or `node` with smart auto-detection
 - Custom npm registry support (for private registries)
 - Fast bundling using esbuild (with pnpm support)
 
@@ -92,17 +93,18 @@ bundlecheck lodash "debounce,throttle"
 
 ### Options
 
-| Flag                | Short       | Description                                             |
-| ------------------- | ----------- | ------------------------------------------------------- |
-| `--help`            | `-h`        | Display help instructions                               |
-| `--version`         | `-v`        | Output the current version                              |
-| `--versions`        | `-V`        | Choose from available package versions interactively    |
-| `--trend [N]`       | `-t [N]`    | Show bundle size trend for N versions (default: 5)      |
-| `--boring`          | `-b`        | Do not use color output                                 |
-| `--gzipLevel <n>`   | `-g <n>`    | Gzip compression level (1-9, default: 5)                |
-| `--external <pkgs>` | `-e <pkgs>` | Comma-separated additional packages to mark as external |
-| `--noExternal`      | `-n`        | Do not mark any packages as external                    |
-| `--registry <url>`  | `-r <url>`  | Custom npm registry URL (default: registry.npmjs.org)   |
+| Flag                | Short       | Description                                                      |
+| ------------------- | ----------- | ---------------------------------------------------------------- |
+| `--help`            | `-h`        | Display help instructions                                        |
+| `--version`         | `-v`        | Output the current version                                       |
+| `--versions`        | `-V`        | Choose from available package versions interactively             |
+| `--trend [N]`       | `-t [N]`    | Show bundle size trend for N versions (default: 5)               |
+| `--boring`          | `-b`        | Do not use color output                                          |
+| `--gzipLevel <n>`   | `-g <n>`    | Gzip compression level (1-9, default: 5)                         |
+| `--external <pkgs>` | `-e <pkgs>` | Comma-separated additional packages to mark as external          |
+| `--noExternal`      | `-n`        | Do not mark any packages as external                             |
+| `--registry <url>`  | `-r <url>`  | Custom npm registry URL (default: registry.npmjs.org)            |
+| `--platform <name>` | `-p <name>` | Target platform: `auto` (default), `browser`, or `node`          |
 
 ### Examples
 
@@ -137,6 +139,12 @@ bundlecheck lodash --trend 3
 
 # Use a custom npm registry
 bundlecheck @myorg/private-pkg --registry https://npm.mycompany.com
+
+# Check a Node.js package (explicit platform)
+bundlecheck express --platform node
+
+# Auto-detect platform (default behavior)
+bundlecheck express  # auto-detects "node" from package.json engines
 ```
 
 ## How It Works
@@ -147,6 +155,27 @@ bundlecheck @myorg/private-pkg --registry https://npm.mycompany.com
 4. Bundles with esbuild (minified, tree-shaken)
 5. Reports raw and gzip sizes
 6. Cleans up temporary files
+
+## Platform Support
+
+The `--platform` flag controls how the bundle is built:
+
+- **`auto`** (default): Automatically detects the platform from the package's `engines` field. If the package specifies `engines.node` without `engines.browser`, it uses `node`; otherwise defaults to `browser`.
+- **`browser`**: Builds for browser environments (also accepts aliases: `web`, `desktop`, `client`)
+- **`node`**: Builds for Node.js environments (also accepts aliases: `server`, `nodejs`, `backend`)
+
+When targeting **node** platform:
+- Gzip size is not calculated (shows "N/A") since server-side code isn't typically served compressed over HTTP
+- The bundle is optimized for Node.js built-ins
+
+```bash
+# Auto-detect (recommended for most cases)
+bundlecheck express           # detects "node" from engines.node
+
+# Explicit platform
+bundlecheck lodash --platform browser
+bundlecheck fastify -p server  # "server" is an alias for "node"
+```
 
 ## Default Externals
 

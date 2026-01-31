@@ -7,7 +7,8 @@ import { TREND_VERSION_COUNT } from "./defaults.js";
 export type TrendResult = {
 	version: string;
 	rawSize: number;
-	gzipSize: number;
+	/** Gzip size in bytes, or null for node platform */
+	gzipSize: number | null;
 };
 
 export type TrendOptions = {
@@ -19,6 +20,8 @@ export type TrendOptions = {
 	gzipLevel?: number;
 	boring?: boolean;
 	registry?: string;
+	/** Target platform. If undefined, auto-detects from package.json engines */
+	platform?: "browser" | "node";
 };
 
 /**
@@ -50,6 +53,7 @@ export async function analyzeTrend(
 		gzipLevel,
 		boring,
 		registry,
+		platform,
 	} = options;
 
 	const log = new Logger({ boring });
@@ -67,6 +71,7 @@ export async function analyzeTrend(
 				noExternal,
 				gzipLevel,
 				registry,
+				platform,
 			});
 
 			results.push({
@@ -100,18 +105,23 @@ export function renderTrendGraph(
 	// Color helper (respects boring flag)
 	const blue = (text: string) => (boring ? text : kleur.blue(text));
 
+	// Check if gzip data is available (null for node platform)
+	const hasGzipData = results.some((r) => r.gzipSize !== null);
+
 	// Create maps from formatted string to representative value
 	// This ensures values that display the same get the same bar length
 	const gzipFormattedToValue = new Map<string, number>();
 	const rawFormattedToValue = new Map<string, number>();
 
 	for (const result of results) {
-		const gzipFormatted = formatBytes(result.gzipSize);
-		const rawFormatted = formatBytes(result.rawSize);
-		// Use first occurrence as representative value for each formatted string
-		if (!gzipFormattedToValue.has(gzipFormatted)) {
-			gzipFormattedToValue.set(gzipFormatted, result.gzipSize);
+		if (hasGzipData && result.gzipSize !== null) {
+			const gzipFormatted = formatBytes(result.gzipSize);
+			// Use first occurrence as representative value for each formatted string
+			if (!gzipFormattedToValue.has(gzipFormatted)) {
+				gzipFormattedToValue.set(gzipFormatted, result.gzipSize);
+			}
 		}
+		const rawFormatted = formatBytes(result.rawSize);
 		if (!rawFormattedToValue.has(rawFormatted)) {
 			rawFormattedToValue.set(rawFormatted, result.rawSize);
 		}
@@ -121,8 +131,8 @@ export function renderTrendGraph(
 	const uniqueGzipValues = [...gzipFormattedToValue.values()];
 	const uniqueRawValues = [...rawFormattedToValue.values()];
 
-	const minGzipSize = Math.min(...uniqueGzipValues);
-	const maxGzipSize = Math.max(...uniqueGzipValues);
+	const minGzipSize = hasGzipData ? Math.min(...uniqueGzipValues) : 0;
+	const maxGzipSize = hasGzipData ? Math.max(...uniqueGzipValues) : 0;
 	const minRawSize = Math.min(...uniqueRawValues);
 	const maxRawSize = Math.max(...uniqueRawValues);
 
@@ -149,23 +159,28 @@ export function renderTrendGraph(
 	lines.push("─".repeat(60));
 	lines.push("");
 
-	// Gzip size bars
-	lines.push(blue("Gzip Size:"));
-	for (const result of results) {
-		const sizeStr = formatBytes(result.gzipSize);
-		// Use representative value for this formatted string to ensure consistent bar length
-		const representativeValue = gzipFormattedToValue.get(sizeStr) as number;
-		const barLength = calcBarLength(
-			representativeValue,
-			minGzipSize,
-			maxGzipSize,
-		);
-		const bar = "▇".repeat(barLength);
-		const padding = " ".repeat(maxVersionLen - result.version.length);
-		lines.push(`  ${result.version}${padding}  ${bar} ${sizeStr}`);
-	}
+	// Gzip size bars (only for browser platform)
+	if (hasGzipData) {
+		lines.push(blue("Gzip Size:"));
+		for (const result of results) {
+			if (result.gzipSize === null) {
+				continue;
+			}
+			const sizeStr = formatBytes(result.gzipSize);
+			// Use representative value for this formatted string to ensure consistent bar length
+			const representativeValue = gzipFormattedToValue.get(sizeStr) as number;
+			const barLength = calcBarLength(
+				representativeValue,
+				minGzipSize,
+				maxGzipSize,
+			);
+			const bar = "▇".repeat(barLength);
+			const padding = " ".repeat(maxVersionLen - result.version.length);
+			lines.push(`  ${result.version}${padding}  ${bar} ${sizeStr}`);
+		}
 
-	lines.push("");
+		lines.push("");
+	}
 
 	// Raw size bars
 	lines.push(blue("Raw Size:"));
@@ -190,15 +205,8 @@ export function renderTrendGraph(
 	const newestResult = results[0];
 
 	if (results.length > 1) {
-		const gzipDiff = newestResult.gzipSize - oldestResult.gzipSize;
-		const gzipPercent = ((gzipDiff / oldestResult.gzipSize) * 100).toFixed(1);
 		const rawDiff = newestResult.rawSize - oldestResult.rawSize;
 		const rawPercent = ((rawDiff / oldestResult.rawSize) * 100).toFixed(1);
-
-		const gzipTrend =
-			gzipDiff >= 0
-				? `+${formatBytes(gzipDiff)}`
-				: `-${formatBytes(Math.abs(gzipDiff))}`;
 		const rawTrend =
 			rawDiff >= 0
 				? `+${formatBytes(rawDiff)}`
@@ -208,9 +216,24 @@ export function renderTrendGraph(
 		lines.push(
 			`Change from ${oldestResult.version} to ${newestResult.version}:`,
 		);
-		lines.push(
-			`  ${blue("Gzip:")} ${gzipTrend} (${gzipDiff >= 0 ? "+" : ""}${gzipPercent}%)`,
-		);
+
+		// Gzip summary (only for browser platform)
+		if (
+			hasGzipData &&
+			newestResult.gzipSize !== null &&
+			oldestResult.gzipSize !== null
+		) {
+			const gzipDiff = newestResult.gzipSize - oldestResult.gzipSize;
+			const gzipPercent = ((gzipDiff / oldestResult.gzipSize) * 100).toFixed(1);
+			const gzipTrend =
+				gzipDiff >= 0
+					? `+${formatBytes(gzipDiff)}`
+					: `-${formatBytes(Math.abs(gzipDiff))}`;
+			lines.push(
+				`  ${blue("Gzip:")} ${gzipTrend} (${gzipDiff >= 0 ? "+" : ""}${gzipPercent}%)`,
+			);
+		}
+
 		lines.push(
 			`  ${blue("Raw:")}  ${rawTrend} (${rawDiff >= 0 ? "+" : ""}${rawPercent}%)`,
 		);

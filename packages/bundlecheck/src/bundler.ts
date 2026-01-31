@@ -81,6 +81,8 @@ export type BundleOptions = {
 	noExternal?: boolean;
 	gzipLevel?: number;
 	registry?: string;
+	/** Target platform. If undefined, auto-detects from package.json engines */
+	platform?: "browser" | "node";
 };
 
 export type BundleResult = {
@@ -88,10 +90,12 @@ export type BundleResult = {
 	packageVersion: string;
 	exports: string[];
 	rawSize: number;
-	gzipSize: number;
+	/** Gzip size in bytes, or null for node platform (gzip not applicable) */
+	gzipSize: number | null;
 	gzipLevel: number;
 	externals: string[];
 	dependencies: string[];
+	platform: "browser" | "node";
 };
 
 /**
@@ -303,6 +307,7 @@ export type PackageInfo = {
 	peerDependencies: Record<string, string>;
 	exports: PackageExports | null;
 	hasMainEntry: boolean;
+	engines: Record<string, string> | null;
 };
 
 /**
@@ -335,6 +340,7 @@ function getPackageInfo(tmpDir: string, packageName: string): PackageInfo {
 				peerDependencies: pkgJson.peerDependencies || {},
 				exports: pkgJson.exports || null,
 				hasMainEntry,
+				engines: pkgJson.engines || null,
 			};
 		}
 	} catch {
@@ -346,6 +352,7 @@ function getPackageInfo(tmpDir: string, packageName: string): PackageInfo {
 		peerDependencies: {},
 		exports: null,
 		hasMainEntry: true,
+		engines: null,
 	};
 }
 
@@ -485,6 +492,7 @@ export async function checkBundleSize(
 		noExternal,
 		gzipLevel = 5,
 		registry,
+		platform: explicitPlatform,
 	} = options;
 
 	// Parse the package specifier to extract name, version, and subpath
@@ -524,9 +532,18 @@ export async function checkBundleSize(
 			stdio: "pipe",
 		});
 
-		// Get package info (version, dependencies, peer dependencies, exports)
+		// Get package info (version, dependencies, peer dependencies, exports, engines)
 		const pkgInfo = getPackageInfo(tmpDir, packageName);
 		const peerDepKeys = Object.keys(pkgInfo.peerDependencies);
+
+		// Determine platform: use explicit value if provided, otherwise auto-detect from engines
+		let platform: "browser" | "node" = "browser";
+		if (explicitPlatform) {
+			platform = explicitPlatform;
+		} else if (pkgInfo.engines?.node && !pkgInfo.engines?.browser) {
+			// Package specifies node engine without browser - likely a Node.js package
+			platform = "node";
+		}
 
 		// Collect all dependency names (prod + peer)
 		const allDependencies = [
@@ -606,7 +623,7 @@ export async function checkBundleSize(
 			bundle: true,
 			write: false,
 			format: "esm",
-			platform: "browser",
+			platform,
 			target: "es2020",
 			minify: true,
 			treeShaking: true,
@@ -618,11 +635,14 @@ export async function checkBundleSize(
 		const bundleContent = result.outputFiles[0].contents;
 		const rawSize = bundleContent.length;
 
-		// Gzip the bundle
-		const gzipped = await gzipAsync(Buffer.from(bundleContent), {
-			level: gzipLevel,
-		});
-		const gzipSize = gzipped.length;
+		// Gzip the bundle (only for browser platform - not relevant for Node.js)
+		let gzipSize: number | null = null;
+		if (platform === "browser") {
+			const gzipped = await gzipAsync(Buffer.from(bundleContent), {
+				level: gzipLevel,
+			});
+			gzipSize = gzipped.length;
+		}
 
 		// Determine the display name
 		let displayName = packageName;
@@ -643,6 +663,7 @@ export async function checkBundleSize(
 			gzipLevel,
 			externals,
 			dependencies: allDependencies,
+			platform,
 		};
 	} finally {
 		cleanupTempDir(tmpDir);

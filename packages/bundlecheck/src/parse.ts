@@ -1,6 +1,10 @@
 /* istanbul ignore file */
 import { parser } from "@node-cli/parser";
-import { DEFAULT_EXTERNALS, defaultFlags } from "./defaults.js";
+import {
+	DEFAULT_EXTERNALS,
+	defaultFlags,
+	isValidPlatform,
+} from "./defaults.js";
 
 export type Flags = {
 	boring?: boolean;
@@ -12,6 +16,7 @@ export type Flags = {
 	external?: string;
 	noExternal?: boolean;
 	registry?: string;
+	platform?: string;
 };
 
 export type Parameters = {
@@ -75,6 +80,11 @@ export const config: Configuration = parser({
 			command: "bundlecheck lodash --registry https://registry.example.com",
 			comment: "## Use a custom npm registry",
 		},
+		{
+			command: "bundlecheck express --platform node",
+			comment:
+				"## Check bundle size for Node.js platform (aliases: server, nodejs, backend)",
+		},
 	],
 	flags: {
 		gzipLevel: {
@@ -130,6 +140,13 @@ export const config: Configuration = parser({
 				"Custom npm registry URL (default: https://registry.npmjs.org)",
 			type: "string",
 		},
+		platform: {
+			shortFlag: "p",
+			default: defaultFlags.platform,
+			description:
+				'Target platform: "auto" (default, detects from engines), "browser" or "node"',
+			type: "string",
+		},
 	},
 	parameters: {
 		package: {
@@ -152,6 +169,12 @@ export const config: Configuration = parser({
 			test: (flags) =>
 				flags.gzipLevel !== undefined &&
 				(flags.gzipLevel < 1 || flags.gzipLevel > 9),
+		},
+		{
+			exit: 1,
+			message: () =>
+				'Error: Invalid platform. Use "browser" (or web, desktop, client) or "node" (or server, nodejs, backend)',
+			test: (flags) => !isValidPlatform(flags.platform),
 		},
 	],
 	usage: true,
