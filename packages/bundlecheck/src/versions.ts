@@ -9,7 +9,7 @@ export type NpmPackageInfo = {
 };
 
 /**
- * Fetch available versions for an npm package from the registry
+ * Fetch available versions for an npm package from the registry.
  */
 type NpmRegistryResponse = {
 	versions?: Record<string, unknown>;
@@ -24,18 +24,18 @@ export type FetchVersionsOptions = {
 export async function fetchPackageVersions(
 	packageNameOrOptions: string | FetchVersionsOptions,
 ): Promise<NpmPackageInfo> {
-	// Support both string (legacy) and options object
+	// Support both string (legacy) and options object.
 	const { packageName, registry } =
 		typeof packageNameOrOptions === "string"
 			? { packageName: packageNameOrOptions, registry: undefined }
 			: packageNameOrOptions;
 
-	// Parse the package specifier to get just the name (without version)
+	// Parse the package specifier to get just the name (without version).
 	const { name } = parsePackageSpecifier(packageName);
 
-	// Use custom registry or default
+	// Use custom registry or default.
 	const registryUrl = registry || DEFAULT_REGISTRY;
-	// Ensure no trailing slash
+	// Ensure no trailing slash.
 	const baseUrl = registryUrl.replace(/\/$/, "");
 	const url = `${baseUrl}/${name}`;
 	const response = await fetch(url);
@@ -46,7 +46,7 @@ export async function fetchPackageVersions(
 
 	const data = (await response.json()) as NpmRegistryResponse;
 
-	// Get all versions sorted by semver (newest first)
+	// Get all versions sorted by semver (newest first).
 	const versions = rsort(Object.keys(data.versions || {}));
 
 	// Get dist-tags (latest, next, beta, etc.)
@@ -56,26 +56,29 @@ export async function fetchPackageVersions(
 }
 
 /**
- * Prompt user to select a version from available versions
+ * Prompt user to select a version from available versions.
  */
 export async function promptForVersion(
 	packageName: string,
 	versions: string[],
 	tags: Record<string, string>,
 ): Promise<string> {
-	// Build choices with tags highlighted
+	// Build choices with tags highlighted.
 	const taggedVersions = new Set(Object.values(tags));
 	const tagByVersion = Object.fromEntries(
 		Object.entries(tags).map(([tag, ver]) => [ver, tag]),
 	);
 
-	// Limit to most recent 20 versions for usability, but include all tagged versions
+	/**
+	 * Limit to most recent 20 versions for usability, but include all tagged
+	 * versions.
+	 */
 	const recentVersions = versions.slice(0, 20);
 	const displayVersions = [
 		...new Set([...Object.values(tags), ...recentVersions]),
 	];
 
-	// Sort so tagged versions appear first, then by version order
+	// Sort so tagged versions appear first, then by version order.
 	displayVersions.sort((a, b) => {
 		const aTagged = taggedVersions.has(a);
 		const bTagged = taggedVersions.has(b);

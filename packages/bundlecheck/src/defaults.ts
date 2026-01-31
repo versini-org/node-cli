@@ -12,7 +12,7 @@ export const defaultFlags = {
 };
 
 /**
- * Normalize platform aliases to canonical esbuild platform values
+ * Normalize platform aliases to canonical esbuild platform values.
  * - "auto" → undefined (triggers auto-detection based on package engines)
  * - Browser aliases: "browser", "web", "desktop", "client" → "browser"
  * - Node aliases: "node", "server", "nodejs", "backend" → "node"
@@ -26,27 +26,27 @@ export function normalizePlatform(
 
 	const normalized = platform.toLowerCase().trim();
 
-	// Auto-detect from package.json engines
+	// Auto-detect from package.json engines.
 	if (normalized === "auto") {
 		return undefined;
 	}
 
-	// Node aliases
+	// Node aliases.
 	if (["node", "server", "nodejs", "backend"].includes(normalized)) {
 		return "node";
 	}
 
-	// Browser aliases
+	// Browser aliases.
 	if (["browser", "web", "desktop", "client"].includes(normalized)) {
 		return "browser";
 	}
 
-	// Invalid value - will be caught by validation
+	// Invalid value - will be caught by validation.
 	return normalized as "browser" | "node";
 }
 
 /**
- * Check if a platform value is valid (either canonical or alias)
+ * Check if a platform value is valid (either canonical or alias).
  */
 export function isValidPlatform(platform: string | undefined): boolean {
 	if (platform === undefined) {
@@ -55,19 +55,19 @@ export function isValidPlatform(platform: string | undefined): boolean {
 
 	const normalized = platform.toLowerCase().trim();
 
-	// Empty string after trim is invalid
+	// Empty string after trim is invalid.
 	if (normalized === "") {
 		return false;
 	}
 	const validValues = [
-		// Auto-detect
+		// Auto-detect.
 		"auto",
-		// Browser
+		// Browser.
 		"browser",
 		"web",
 		"desktop",
 		"client",
-		// Node
+		// Node.
 		"node",
 		"server",
 		"nodejs",

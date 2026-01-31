@@ -17,7 +17,9 @@ import { TREND_VERSION_COUNT } from "./defaults.js";
 export type TrendResult = {
 	version: string;
 	rawSize: number;
-	/** Gzip size in bytes, or null for node platform */
+	/**
+	 * Gzip size in bytes, or null for node platform.
+	 */
 	gzipSize: number | null;
 };
 
@@ -30,16 +32,20 @@ export type TrendOptions = {
 	gzipLevel?: number;
 	boring?: boolean;
 	registry?: string;
-	/** Target platform. If undefined, auto-detects from package.json engines */
+	/**
+	 * Target platform. If undefined, auto-detects from package.json engines.
+	 */
 	platform?: "browser" | "node";
-	/** Bypass cache and force re-fetch/re-calculation */
+	/**
+	 * Bypass cache and force re-fetch/re-calculation.
+	 */
 	force?: boolean;
 };
 
 /**
- * Select versions for trend analysis
- * Returns the most recent stable versions (newest first)
- * Filters out prerelease versions (canary, alpha, beta, rc, etc.)
+ * Select versions for trend analysis Returns the most recent stable versions
+ * (newest first) Filters out prerelease versions (canary, alpha, beta, rc,
+ * etc.)
  */
 export function selectTrendVersions(
 	allVersions: string[],
@@ -51,7 +57,7 @@ export function selectTrendVersions(
 }
 
 /**
- * Analyze bundle size trend across multiple versions
+ * Analyze bundle size trend across multiple versions.
  */
 export async function analyzeTrend(
 	options: TrendOptions,
@@ -72,17 +78,19 @@ export async function analyzeTrend(
 	const log = new Logger({ boring });
 	const results: TrendResult[] = [];
 
-	// Parse base package name (without version)
+	// Parse base package name (without version).
 	const { name: baseName } = parsePackageSpecifier(packageName);
 
-	// Compute externals for cache key (same logic as bundler)
+	// Compute externals for cache key (same logic as bundler).
 	const externals = getExternals(baseName, additionalExternals, noExternal);
 
 	for (const version of versions) {
 		const versionedPackage = `${packageName}@${version}`;
 
-		// Build cache key for this version
-		// Note: platform can be undefined (auto-detect), which is stored as "auto" in cache
+		/**
+		 * Build cache key for this version.
+		 * NOTE: platform can be undefined (auto-detect), which is stored as "auto" in cache.
+		 */
 		const cacheKey = normalizeCacheKey({
 			packageName: baseName,
 			version,
@@ -93,7 +101,7 @@ export async function analyzeTrend(
 			noExternal: noExternal ?? false,
 		});
 
-		// Check cache first (unless --force flag is set)
+		// Check cache first (unless --force flag is set).
 		if (!force) {
 			const cached = getCachedResult(cacheKey);
 			if (cached) {
@@ -120,7 +128,7 @@ export async function analyzeTrend(
 				platform,
 			});
 
-			// Store result in cache
+			// Store result in cache.
 			setCachedResult(cacheKey, result);
 
 			results.push({
@@ -129,7 +137,7 @@ export async function analyzeTrend(
 				gzipSize: result.gzipSize,
 			});
 		} catch {
-			// Skip versions that fail to analyze
+			// Skip versions that fail to analyze.
 			log.info(`  Skipping ${version} (failed to analyze)`);
 		}
 	}
@@ -138,7 +146,7 @@ export async function analyzeTrend(
 }
 
 /**
- * Render a bar graph showing bundle size trend
+ * Render a bar graph showing bundle size trend.
  */
 export function renderTrendGraph(
 	packageName: string,
@@ -151,21 +159,23 @@ export function renderTrendGraph(
 
 	const lines: string[] = [];
 
-	// Color helper (respects boring flag)
+	// Color helper (respects boring flag).
 	const blue = (text: string) => (boring ? text : kleur.blue(text));
 
-	// Check if gzip data is available (null for node platform)
+	// Check if gzip data is available (null for node platform).
 	const hasGzipData = results.some((r) => r.gzipSize !== null);
 
-	// Create maps from formatted string to representative value
-	// This ensures values that display the same get the same bar length
+	/**
+	 * Create maps from formatted string to representative value This ensures
+	 * values that display the same get the same bar length.
+	 */
 	const gzipFormattedToValue = new Map<string, number>();
 	const rawFormattedToValue = new Map<string, number>();
 
 	for (const result of results) {
 		if (hasGzipData && result.gzipSize !== null) {
 			const gzipFormatted = formatBytes(result.gzipSize);
-			// Use first occurrence as representative value for each formatted string
+			// Use first occurrence as representative value for each formatted string.
 			if (!gzipFormattedToValue.has(gzipFormatted)) {
 				gzipFormattedToValue.set(gzipFormatted, result.gzipSize);
 			}
@@ -176,7 +186,7 @@ export function renderTrendGraph(
 		}
 	}
 
-	// Get unique representative values for min/max calculation
+	// Get unique representative values for min/max calculation.
 	const uniqueGzipValues = [...gzipFormattedToValue.values()];
 	const uniqueRawValues = [...rawFormattedToValue.values()];
 
@@ -185,30 +195,30 @@ export function renderTrendGraph(
 	const minRawSize = Math.min(...uniqueRawValues);
 	const maxRawSize = Math.max(...uniqueRawValues);
 
-	// Find max version length for alignment
+	// Find max version length for alignment.
 	const maxVersionLen = Math.max(...results.map((r) => r.version.length));
 
-	// Bar width (characters)
+	// Bar width (characters).
 	const barWidth = 30;
 	const minBarWidth = 10; // Minimum bar length for smallest value
 
-	// Helper to calculate bar length with min-max scaling
+	// Helper to calculate bar length with min-max scaling.
 	const calcBarLength = (value: number, min: number, max: number): number => {
 		if (max === min) {
 			return barWidth; // All values are the same
 		}
-		// Scale from minBarWidth to barWidth based on position between min and max
+		// Scale from minBarWidth to barWidth based on position between min and max.
 		const ratio = (value - min) / (max - min);
 		return Math.round(minBarWidth + ratio * (barWidth - minBarWidth));
 	};
 
-	// Header
+	// Header.
 	lines.push("");
 	lines.push(`${blue("Bundle Size:")} ${packageName}`);
 	lines.push("─".repeat(60));
 	lines.push("");
 
-	// Gzip size bars (only for browser platform)
+	// Gzip size bars (only for browser platform).
 	if (hasGzipData) {
 		lines.push(blue("Gzip Size:"));
 		for (const result of results) {
@@ -216,7 +226,10 @@ export function renderTrendGraph(
 				continue;
 			}
 			const sizeStr = formatBytes(result.gzipSize);
-			// Use representative value for this formatted string to ensure consistent bar length
+			/**
+			 * Use representative value for this formatted string to ensure consistent
+			 * bar length.
+			 */
 			const representativeValue = gzipFormattedToValue.get(sizeStr) as number;
 			const barLength = calcBarLength(
 				representativeValue,
@@ -231,11 +244,14 @@ export function renderTrendGraph(
 		lines.push("");
 	}
 
-	// Raw size bars
+	// Raw size bars.
 	lines.push(blue("Raw Size:"));
 	for (const result of results) {
 		const sizeStr = formatBytes(result.rawSize);
-		// Use representative value for this formatted string to ensure consistent bar length
+		/**
+		 * Use representative value for this formatted string to ensure consistent bar
+		 * length.
+		 */
 		const representativeValue = rawFormattedToValue.get(sizeStr) as number;
 		const barLength = calcBarLength(
 			representativeValue,
@@ -249,7 +265,7 @@ export function renderTrendGraph(
 
 	lines.push("");
 
-	// Summary
+	// Summary.
 	const oldestResult = results[results.length - 1];
 	const newestResult = results[0];
 
@@ -266,7 +282,7 @@ export function renderTrendGraph(
 			`Change from ${oldestResult.version} to ${newestResult.version}:`,
 		);
 
-		// Gzip summary (only for browser platform)
+		// Gzip summary (only for browser platform).
 		if (
 			hasGzipData &&
 			newestResult.gzipSize !== null &&

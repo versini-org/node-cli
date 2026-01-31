@@ -6,10 +6,11 @@
 	"description": "CLI tool to check the bundle size of npm packages (like bundlephobia)",
 	"type": "module",
 	"types": "./dist/index.d.ts",
+	"main": "./dist/index.js",
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
-			"import": "./dist/bundler.js"
+			"import": "./dist/index.js"
 		}
 	},
 	"bin": "dist/bundlecheck.js",

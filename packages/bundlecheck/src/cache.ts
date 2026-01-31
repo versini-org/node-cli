@@ -7,14 +7,14 @@ import type { BundleResult } from "./bundler.js";
 const MAX_CACHE_ENTRIES = 100;
 
 /**
- * Get the cache directory path (computed lazily to support testing)
+ * Get the cache directory path (computed lazily to support testing).
  */
 function getCacheDir(): string {
 	return path.join(os.homedir(), ".bundlecheck");
 }
 
 /**
- * Get the cache database path (computed lazily to support testing)
+ * Get the cache database path (computed lazily to support testing).
  */
 function getCacheDbPath(): string {
 	return path.join(getCacheDir(), "cache.db");
@@ -24,7 +24,9 @@ export type CacheKey = {
 	packageName: string;
 	version: string;
 	exports: string;
-	/** Platform: "browser", "node", or "auto" (for auto-detection) */
+	/**
+	 * Platform: "browser", "node", or "auto" (for auto-detection).
+	 */
 	platform: "browser" | "node" | "auto";
 	gzipLevel: number;
 	externals: string;
@@ -52,14 +54,14 @@ type CacheRow = {
 let db: Database.Database | null = null;
 
 /**
- * Initialize the cache database with proper pragmas and schema
+ * Initialize the cache database with proper pragmas and schema.
  */
 export function initCache(): Database.Database {
 	if (db) {
 		return db;
 	}
 
-	// Ensure cache directory exists
+	// Ensure cache directory exists.
 	const cacheDir = getCacheDir();
 	if (!fs.existsSync(cacheDir)) {
 		fs.mkdirSync(cacheDir, { recursive: true });
@@ -67,11 +69,11 @@ export function initCache(): Database.Database {
 
 	db = new Database(getCacheDbPath());
 
-	// Apply pragmas for better CLI performance
+	// Apply pragmas for better CLI performance.
 	db.pragma("journal_mode = WAL");
 	db.pragma("foreign_keys = ON");
 
-	// Create table if not exists
+	// Create table if not exists.
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS bundle_cache (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -97,18 +99,21 @@ export function initCache(): Database.Database {
 }
 
 /**
- * Normalize cache key options to a consistent format
- * Sorts exports and externals to ensure consistent cache hits
+ * Normalize cache key options to a consistent format Sorts exports and
+ * externals to ensure consistent cache hits.
  *
- * Note: platform can be "browser", "node", or "auto" (when user doesn't specify).
+ * NOTE: platform can be "browser", "node", or "auto" (when user doesn't specify).
  * Using "auto" in the cache key ensures that auto-detected results are cached
  * separately from explicitly specified platform results.
+ *
  */
 export function normalizeCacheKey(options: {
 	packageName: string;
 	version: string;
 	exports?: string[];
-	/** Platform: "browser", "node", or undefined (treated as "auto") */
+	/**
+	 * Platform: "browser", "node", or undefined (treated as "auto").
+	 */
 	platform: "browser" | "node" | undefined;
 	gzipLevel: number;
 	externals: string[];
@@ -118,7 +123,10 @@ export function normalizeCacheKey(options: {
 		packageName: options.packageName,
 		version: options.version,
 		exports: (options.exports || []).slice().sort().join(","),
-		// Use "auto" when platform is undefined to distinguish from explicit platform
+		/**
+		 * Use "auto" when platform is undefined to distinguish from explicit
+		 * platform.
+		 */
 		platform: options.platform ?? "auto",
 		gzipLevel: options.gzipLevel,
 		externals: options.externals.slice().sort().join(","),
@@ -127,8 +135,8 @@ export function normalizeCacheKey(options: {
 }
 
 /**
- * Get a cached result if it exists
- * Returns null if not found or if an error occurs (graceful degradation)
+ * Get a cached result if it exists Returns null if not found or if an error
+ * occurs (graceful degradation).
  */
 export function getCachedResult(key: CacheKey): CachedBundleResult | null {
 	try {
@@ -161,16 +169,16 @@ export function getCachedResult(key: CacheKey): CachedBundleResult | null {
 			return null;
 		}
 
-		// Parse dependencies with error handling for corrupted data
+		// Parse dependencies with error handling for corrupted data.
 		let dependencies: string[] = [];
 		try {
 			dependencies = JSON.parse(row.dependencies) as string[];
 		} catch {
-			// If JSON is corrupted, use empty array
+			// If JSON is corrupted, use empty array.
 			dependencies = [];
 		}
 
-		// Convert row to BundleResult
+		// Convert row to BundleResult.
 		return {
 			packageName: row.display_name,
 			packageVersion: row.version,
@@ -183,21 +191,26 @@ export function getCachedResult(key: CacheKey): CachedBundleResult | null {
 			platform: row.platform as "browser" | "node",
 		};
 	} catch {
-		// On any database error, return null (graceful degradation - continue without cache)
+		/**
+		 * On any database error, return null (graceful degradation - continue without
+		 * cache).
+		 */
 		return null;
 	}
 }
 
 /**
- * Store a result in the cache
- * Silently fails on errors (graceful degradation - CLI continues without caching)
+ * Store a result in the cache Silently fails on errors (graceful degradation -
+ * CLI continues without caching).
  */
 export function setCachedResult(key: CacheKey, result: BundleResult): void {
 	try {
 		const database = initCache();
 
-		// Use INSERT OR REPLACE to handle duplicates
-		// Note: This updates created_at on replace, making this LRU-style eviction
+		/**
+		 * Use INSERT OR REPLACE to handle duplicates.
+		 * NOTE: This updates created_at on replace, making this LRU-style eviction.
+		 */
 		const stmt = database.prepare(`
 			INSERT OR REPLACE INTO bundle_cache (
 				package_name, version, exports, platform, gzip_level, externals, no_external,
@@ -220,17 +233,17 @@ export function setCachedResult(key: CacheKey, result: BundleResult): void {
 			Date.now(),
 		);
 
-		// Enforce max entries (LRU-style eviction based on created_at)
+		// Enforce max entries (LRU-style eviction based on created_at).
 		enforceMaxEntries(database);
 	} catch {
-		// On any database error, silently continue (graceful degradation)
+		// On any database error, silently continue (graceful degradation).
 	}
 }
 
 /**
- * Enforce maximum cache entries by removing entries with oldest timestamps
- * Uses LRU-style eviction: entries that are re-checked get updated timestamps
- * and move to the end of the eviction queue
+ * Enforce maximum cache entries by removing entries with oldest timestamps Uses
+ * LRU-style eviction: entries that are re-checked get updated timestamps and
+ * move to the end of the eviction queue.
  */
 function enforceMaxEntries(database: Database.Database): void {
 	const countResult = database
@@ -255,21 +268,19 @@ function enforceMaxEntries(database: Database.Database): void {
 }
 
 /**
- * Clear all cache entries
- * Silently fails on errors
+ * Clear all cache entries Silently fails on errors.
  */
 export function clearCache(): void {
 	try {
 		const database = initCache();
 		database.prepare("DELETE FROM bundle_cache").run();
 	} catch {
-		// Silently ignore errors
+		// Silently ignore errors.
 	}
 }
 
 /**
- * Get the number of cached entries
- * Returns 0 on error
+ * Get the number of cached entries Returns 0 on error.
  */
 export function getCacheCount(): number {
 	try {
@@ -284,7 +295,7 @@ export function getCacheCount(): number {
 }
 
 /**
- * Close the database connection (useful for testing)
+ * Close the database connection (useful for testing).
  */
 export function closeCache(): void {
 	if (db) {
