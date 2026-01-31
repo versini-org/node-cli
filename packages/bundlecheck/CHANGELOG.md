@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/versini-org/node-cli/compare/bundlecheck-v1.1.1...bundlecheck-v1.1.2) (2026-01-31)
+
+
+### Bug Fixes
+
+* **bundlecheck:** Unify bar lengths for identical formatted sizes ([#480](https://github.com/versini-org/node-cli/issues/480)) ([f27085c](https://github.com/versini-org/node-cli/commit/f27085c489e206c80015b24a86284914e24302aa))
+
 ## [1.1.1](https://github.com/versini-org/node-cli/compare/bundlecheck-v1.1.0...bundlecheck-v1.1.1) (2026-01-31)
 
 
