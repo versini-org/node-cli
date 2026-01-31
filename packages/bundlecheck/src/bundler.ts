@@ -150,7 +150,7 @@ function getInstallCommand(): string {
 	}
 
 	if (usePnpm) {
-		return "pnpm install --ignore-scripts";
+		return "pnpm install --ignore-scripts --no-frozen-lockfile";
 	}
 	return "npm install --legacy-peer-deps --ignore-scripts";
 }
