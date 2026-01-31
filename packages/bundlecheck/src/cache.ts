@@ -4,7 +4,7 @@ import path from "node:path";
 import Database from "better-sqlite3";
 import type { BundleResult } from "./bundler.js";
 
-const MAX_CACHE_ENTRIES = 100;
+const MAX_CACHE_ENTRIES = 1000;
 
 /**
  * Get the cache directory path (computed lazily to support testing).

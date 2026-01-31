@@ -450,7 +450,7 @@ describe("clearCache", () => {
 });
 
 describe("cache eviction", () => {
-	it("should enforce maximum of 100 entries", () => {
+	it("should enforce maximum of 1000 entries", () => {
 		const mockResult: BundleResult = {
 			packageName: "test",
 			packageVersion: "1.0.0",
@@ -463,8 +463,8 @@ describe("cache eviction", () => {
 			platform: "browser",
 		};
 
-		// Add 105 entries
-		for (let i = 0; i < 105; i++) {
+		// Add 1005 entries
+		for (let i = 0; i < 1005; i++) {
 			const key = normalizeCacheKey({
 				packageName: `package-${i}`,
 				version: "1.0.0",
@@ -477,8 +477,8 @@ describe("cache eviction", () => {
 			setCachedResult(key, { ...mockResult, packageName: `package-${i}` });
 		}
 
-		// Should have at most 100 entries
-		expect(getCacheCount()).toBe(100);
+		// Should have at most 1000 entries
+		expect(getCacheCount()).toBe(1000);
 	});
 
 	it("should evict oldest entries first (FIFO)", () => {
@@ -494,8 +494,8 @@ describe("cache eviction", () => {
 			platform: "browser",
 		};
 
-		// Add 105 entries
-		for (let i = 0; i < 105; i++) {
+		// Add 1005 entries
+		for (let i = 0; i < 1005; i++) {
 			const key = normalizeCacheKey({
 				packageName: `package-${i}`,
 				version: "1.0.0",
@@ -522,8 +522,8 @@ describe("cache eviction", () => {
 			expect(getCachedResult(key)).toBeNull();
 		}
 
-		// Entries 5-104 should still exist
-		for (let i = 5; i < 105; i++) {
+		// Entries 5-1004 should still exist
+		for (let i = 5; i < 1005; i++) {
 			const key = normalizeCacheKey({
 				packageName: `package-${i}`,
 				version: "1.0.0",
