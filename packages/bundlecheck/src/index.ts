@@ -2,6 +2,7 @@
  * @node-cli/bundlecheck - Library API
  *
  * Programmatic interface for analyzing npm package bundle sizes.
+ *
  */
 
 import {
@@ -20,159 +21,264 @@ import { normalizePlatform, TREND_VERSION_COUNT } from "./defaults.js";
 import { analyzeTrend, selectTrendVersions } from "./trend.js";
 import { fetchPackageVersions as fetchVersions } from "./versions.js";
 
-// =============================================================================
-// Types
-// =============================================================================
+/**
+ * =============================================================================
+ * Types
+ * =============================================================================
+ */
 
 /**
- * Options for getting bundle stats of a single package
+ * Options for getting bundle stats of a single package.
  */
 export type GetBundleStatsOptions = {
-	/** Package name with optional version (e.g., "@mantine/core" or "@mantine/core@7.0.0") */
+	/**
+	 * Package name with optional version (e.g., "@mantine/core" or
+	 * "@mantine/core@7.0.0").
+	 */
 	package: string;
-	/** Specific exports to measure (e.g., ["Button", "Input"]) */
+	/**
+	 * Specific exports to measure (e.g., ["Button", "Input"]).
+	 */
 	exports?: string[];
-	/** Additional packages to mark as external (not bundled) */
+	/**
+	 * Additional packages to mark as external (not bundled).
+	 */
 	external?: string[];
-	/** Bundle everything including default externals (react, react-dom) */
+	/**
+	 * Bundle everything including default externals (react, react-dom).
+	 */
 	noExternal?: boolean;
-	/** Gzip compression level (1-9, default 5) */
+	/**
+	 * Gzip compression level (1-9, default 5).
+	 */
 	gzipLevel?: number;
-	/** Custom npm registry URL */
+	/**
+	 * Custom npm registry URL.
+	 */
 	registry?: string;
-	/** Target platform: "browser", "node", or "auto" (default: "auto" - auto-detect from package.json) */
+	/**
+	 * Target platform: "browser", "node", or "auto" (default: "auto" - auto-detect
+	 * from package.json).
+	 */
 	platform?: "browser" | "node" | "auto";
-	/** Bypass cache and force re-analysis */
+	/**
+	 * Bypass cache and force re-analysis.
+	 */
 	force?: boolean;
 };
 
 /**
- * Result from getBundleStats
+ * Result from getBundleStats.
  */
 export type BundleStats = {
-	/** Display name of the package (may include subpath) */
+	/**
+	 * Display name of the package (may include subpath).
+	 */
 	packageName: string;
-	/** Resolved package version */
+	/**
+	 * Resolved package version.
+	 */
 	packageVersion: string;
-	/** Exports that were analyzed */
+	/**
+	 * Exports that were analyzed.
+	 */
 	exports: string[];
-	/** Raw (minified) bundle size in bytes */
+	/**
+	 * Raw (minified) bundle size in bytes.
+	 */
 	rawSize: number;
-	/** Gzipped bundle size in bytes (null for node platform) */
+	/**
+	 * Gzipped bundle size in bytes (null for node platform).
+	 */
 	gzipSize: number | null;
-	/** Gzip compression level used */
+	/**
+	 * Gzip compression level used.
+	 */
 	gzipLevel: number;
-	/** Packages marked as external (not included in bundle) */
+	/**
+	 * Packages marked as external (not included in bundle).
+	 */
 	externals: string[];
-	/** Package dependencies */
+	/**
+	 * Package dependencies.
+	 */
 	dependencies: string[];
-	/** Target platform used for bundling */
+	/**
+	 * Target platform used for bundling.
+	 */
 	platform: "browser" | "node";
-	/** Human-readable raw size (e.g., "45.2 kB") */
+	/**
+	 * Human-readable raw size (e.g., "45.2 kB").
+	 */
 	rawSizeFormatted: string;
-	/** Human-readable gzip size (e.g., "12.3 kB") or null */
+	/**
+	 * Human-readable gzip size (e.g., "12.3 kB") or null.
+	 */
 	gzipSizeFormatted: string | null;
-	/** Whether the result was retrieved from cache */
+	/**
+	 * Whether the result was retrieved from cache.
+	 */
 	fromCache: boolean;
 };
 
 /**
- * Options for getting bundle size trend across versions
+ * Options for getting bundle size trend across versions.
  */
 export type GetBundleTrendOptions = {
-	/** Package name (e.g., "@mantine/core") - version is ignored if provided */
+	/**
+	 * Package name (e.g., "@mantine/core") - version is ignored if provided.
+	 */
 	package: string;
-	/** Number of versions to analyze (default 5) */
+	/**
+	 * Number of versions to analyze (default 5).
+	 */
 	versionCount?: number;
-	/** Specific exports to measure (e.g., ["Button", "Input"]) */
+	/**
+	 * Specific exports to measure (e.g., ["Button", "Input"]).
+	 */
 	exports?: string[];
-	/** Additional packages to mark as external (not bundled) */
+	/**
+	 * Additional packages to mark as external (not bundled).
+	 */
 	external?: string[];
-	/** Bundle everything including default externals (react, react-dom) */
+	/**
+	 * Bundle everything including default externals (react, react-dom).
+	 */
 	noExternal?: boolean;
-	/** Gzip compression level (1-9, default 5) */
+	/**
+	 * Gzip compression level (1-9, default 5).
+	 */
 	gzipLevel?: number;
-	/** Custom npm registry URL */
+	/**
+	 * Custom npm registry URL.
+	 */
 	registry?: string;
-	/** Target platform: "browser", "node", or "auto" (default: "auto" - auto-detect from package.json) */
+	/**
+	 * Target platform: "browser", "node", or "auto" (default: "auto" - auto-detect
+	 * from package.json).
+	 */
 	platform?: "browser" | "node" | "auto";
-	/** Bypass cache and force re-analysis */
+	/**
+	 * Bypass cache and force re-analysis.
+	 */
 	force?: boolean;
 };
 
 /**
- * Single version result in trend analysis
+ * Single version result in trend analysis.
  */
 export type TrendVersionResult = {
-	/** Package version */
+	/**
+	 * Package version.
+	 */
 	version: string;
-	/** Raw (minified) bundle size in bytes */
+	/**
+	 * Raw (minified) bundle size in bytes.
+	 */
 	rawSize: number;
-	/** Gzipped bundle size in bytes (null for node platform) */
+	/**
+	 * Gzipped bundle size in bytes (null for node platform).
+	 */
 	gzipSize: number | null;
-	/** Human-readable raw size (e.g., "45.2 kB") */
+	/**
+	 * Human-readable raw size (e.g., "45.2 kB").
+	 */
 	rawSizeFormatted: string;
-	/** Human-readable gzip size (e.g., "12.3 kB") or null */
+	/**
+	 * Human-readable gzip size (e.g., "12.3 kB") or null.
+	 */
 	gzipSizeFormatted: string | null;
 };
 
 /**
- * Size change information between oldest and newest versions
+ * Size change information between oldest and newest versions.
  */
 export type TrendChange = {
-	/** Oldest version analyzed */
+	/**
+	 * Oldest version analyzed.
+	 */
 	fromVersion: string;
-	/** Newest version analyzed */
+	/**
+	 * Newest version analyzed.
+	 */
 	toVersion: string;
-	/** Raw size difference in bytes (positive = increase, negative = decrease) */
+	/**
+	 * Raw size difference in bytes (positive = increase, negative = decrease).
+	 */
 	rawDiff: number;
-	/** Raw size percentage change */
+	/**
+	 * Raw size percentage change.
+	 */
 	rawPercent: number;
-	/** Human-readable raw size change (e.g., "+5.2 kB" or "-1.3 kB") */
+	/**
+	 * Human-readable raw size change (e.g., "+5.2 kB" or "-1.3 kB").
+	 */
 	rawDiffFormatted: string;
-	/** Gzip size difference in bytes (null if not applicable) */
+	/**
+	 * Gzip size difference in bytes (null if not applicable).
+	 */
 	gzipDiff: number | null;
-	/** Gzip size percentage change (null if not applicable) */
+	/**
+	 * Gzip size percentage change (null if not applicable).
+	 */
 	gzipPercent: number | null;
-	/** Human-readable gzip size change (e.g., "+1.5 kB" or "-0.8 kB") or null */
+	/**
+	 * Human-readable gzip size change (e.g., "+1.5 kB" or "-0.8 kB") or null.
+	 */
 	gzipDiffFormatted: string | null;
 };
 
 /**
- * Result from getBundleTrend
+ * Result from getBundleTrend.
  */
 export type BundleTrend = {
-	/** Package name */
+	/**
+	 * Package name.
+	 */
 	packageName: string;
-	/** Results for each version analyzed (newest first) */
+	/**
+	 * Results for each version analyzed (newest first).
+	 */
 	versions: TrendVersionResult[];
-	/** Size change between oldest and newest versions (null if only one version) */
+	/**
+	 * Size change between oldest and newest versions (null if only one version).
+	 */
 	change: TrendChange | null;
 };
 
 /**
- * Options for fetching package versions
+ * Options for fetching package versions.
  */
 export type GetPackageVersionsOptions = {
-	/** Package name (e.g., "@mantine/core") */
+	/**
+	 * Package name (e.g., "@mantine/core").
+	 */
 	package: string;
-	/** Custom npm registry URL */
+	/**
+	 * Custom npm registry URL.
+	 */
 	registry?: string;
 };
 
 /**
- * Result from getPackageVersions
+ * Result from getPackageVersions.
  */
 export type PackageVersions = {
-	/** All available versions (sorted newest first) */
+	/**
+	 * All available versions (sorted newest first).
+	 */
 	versions: string[];
-	/** Distribution tags (e.g., { latest: "7.0.0", next: "8.0.0-beta.1" }) */
+	/**
+	 * Distribution tags (e.g., { latest: "7.0.0", next: "8.0.0-beta.1" }).
+	 */
 	tags: Record<string, string>;
 };
 
-// =============================================================================
-// Library Functions
-// =============================================================================
+/**
+ * =============================================================================
+ * Library Functions
+ * =============================================================================
+ */
 
 /**
  * Get bundle size statistics for an npm package.
@@ -188,6 +294,7 @@ export type PackageVersions = {
  *
  * console.log(stats.gzipSizeFormatted); // "12.3 kB"
  * ```
+ *
  */
 export async function getBundleStats(
 	options: GetBundleStatsOptions,
@@ -203,16 +310,16 @@ export async function getBundleStats(
 		force = false,
 	} = options;
 
-	// Normalize platform
+	// Normalize platform.
 	const platform = normalizePlatform(
 		platformOption === "auto" ? undefined : platformOption,
 	);
 
-	// Parse package specifier
+	// Parse package specifier.
 	const { name: baseName, version: requestedVersion } =
 		parsePackageSpecifier(packageName);
 
-	// Resolve "latest" to actual version for cache key
+	// Resolve "latest" to actual version for cache key.
 	let resolvedVersion = requestedVersion;
 	if (requestedVersion === "latest") {
 		const { tags } = await fetchVersions({
@@ -222,10 +329,10 @@ export async function getBundleStats(
 		resolvedVersion = tags.latest || requestedVersion;
 	}
 
-	// Compute externals for cache key
+	// Compute externals for cache key.
 	const externals = getExternals(baseName, additionalExternals, noExternal);
 
-	// Build cache key
+	// Build cache key.
 	const cacheKey = normalizeCacheKey({
 		packageName: baseName,
 		version: resolvedVersion,
@@ -236,7 +343,7 @@ export async function getBundleStats(
 		noExternal: noExternal ?? false,
 	});
 
-	// Check cache (unless force is set)
+	// Check cache (unless force is set).
 	if (!force) {
 		const cached = getCachedResult(cacheKey);
 		if (cached) {
@@ -244,7 +351,7 @@ export async function getBundleStats(
 		}
 	}
 
-	// Perform the analysis
+	// Perform the analysis.
 	const result = await checkBundleSize({
 		packageName,
 		exports: exportsList,
@@ -255,7 +362,7 @@ export async function getBundleStats(
 		platform,
 	});
 
-	// Store in cache
+	// Store in cache.
 	setCachedResult(cacheKey, result);
 
 	return formatBundleStats(result, false);
@@ -275,6 +382,7 @@ export async function getBundleStats(
  *
  * console.log(trend.change?.rawDiffFormatted); // "+5.2 kB"
  * ```
+ *
  */
 export async function getBundleTrend(
 	options: GetBundleTrendOptions,
@@ -291,16 +399,16 @@ export async function getBundleTrend(
 		force = false,
 	} = options;
 
-	// Normalize platform
+	// Normalize platform.
 	const platform = normalizePlatform(
 		platformOption === "auto" ? undefined : platformOption,
 	);
 
-	// Parse package name (ignore version if provided)
+	// Parse package name (ignore version if provided).
 	const { name: baseName, subpath } = parsePackageSpecifier(packageName);
 	const fullPackagePath = subpath ? `${baseName}/${subpath}` : baseName;
 
-	// Fetch available versions
+	// Fetch available versions.
 	const { versions } = await fetchVersions({
 		packageName: baseName,
 		registry,
@@ -310,10 +418,10 @@ export async function getBundleTrend(
 		throw new Error(`No versions found for package: ${baseName}`);
 	}
 
-	// Select versions for trend
+	// Select versions for trend.
 	const trendVersions = selectTrendVersions(versions, versionCount);
 
-	// Analyze all versions (silently - no console output)
+	// Analyze all versions (silently - no console output).
 	const results = await analyzeTrend({
 		packageName: fullPackagePath,
 		versions: trendVersions,
@@ -331,7 +439,7 @@ export async function getBundleTrend(
 		throw new Error(`Failed to analyze any versions for package: ${baseName}`);
 	}
 
-	// Format results
+	// Format results.
 	const formattedVersions: TrendVersionResult[] = results.map((r) => ({
 		version: r.version,
 		rawSize: r.rawSize,
@@ -340,7 +448,7 @@ export async function getBundleTrend(
 		gzipSizeFormatted: r.gzipSize !== null ? formatBytes(r.gzipSize) : null,
 	}));
 
-	// Calculate change between oldest and newest
+	// Calculate change between oldest and newest.
 	let change: TrendChange | null = null;
 	if (results.length > 1) {
 		const newest = results[0];
@@ -398,6 +506,7 @@ export async function getBundleTrend(
  *
  * console.log(tags.latest); // "7.0.0"
  * ```
+ *
  */
 export async function getPackageVersions(
 	options: GetPackageVersionsOptions,
@@ -415,23 +524,36 @@ export async function getPackageVersions(
 	};
 }
 
-// =============================================================================
-// Re-exports for advanced usage
-// =============================================================================
-
-/** Format bytes to human-readable string (e.g., 1024 → "1 kB") */
-/** Parse a package specifier (e.g., "@scope/name@1.0.0" → { name, version, subpath }) */
-export { formatBytes, parsePackageSpecifier } from "./bundler.js";
-/** Clear the bundle cache */
-/** Get the number of cached entries */
-export { clearCache, getCacheCount } from "./cache.js";
-
-// =============================================================================
-// Internal Helpers
-// =============================================================================
+/**
+ * =============================================================================
+ * Re-exports for advanced usage
+ * =============================================================================
+ */
 
 /**
- * Format a BundleResult into a BundleStats object
+ * Format bytes to human-readable string (e.g., 1024 → "1 kB").
+ */
+/**
+ * Parse a package specifier (e.g., "@scope/name@1.0.0" → { name, version,
+ * subpath }).
+ */
+export { formatBytes, parsePackageSpecifier } from "./bundler.js";
+/**
+ * Clear the bundle cache.
+ */
+/**
+ * Get the number of cached entries.
+ */
+export { clearCache, getCacheCount } from "./cache.js";
+
+/**
+ * =============================================================================
+ * Internal Helpers
+ * =============================================================================
+ */
+
+/**
+ * Format a BundleResult into a BundleStats object.
  */
 function formatBundleStats(
 	result: BundleResult,

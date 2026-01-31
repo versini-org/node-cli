@@ -10,7 +10,7 @@ import { DEFAULT_EXTERNALS } from "./defaults.js";
 const gzipAsync = promisify(zlib.gzip);
 
 /**
- * Escape special regex characters in a string
+ * Escape special regex characters in a string.
  */
 function escapeRegExp(str: string): string {
 	return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -23,7 +23,7 @@ export type ParsedPackage = {
 };
 
 /**
- * Parse a package specifier to extract name, version, and subpath
+ * Parse a package specifier to extract name, version, and subpath.
  * Handles:
  * - @scope/package@1.0.0
  * - @scope/package/subpath@1.0.0
@@ -36,34 +36,36 @@ export function parsePackageSpecifier(specifier: string): ParsedPackage {
 
 	// Handle scoped packages (@scope/name...)
 	if (workingSpec.startsWith("@")) {
-		// Find the second @ which would separate version
+		// Find the second @ which would separate version.
 		const secondAtIndex = workingSpec.indexOf("@", 1);
 		if (secondAtIndex !== -1) {
 			version = workingSpec.substring(secondAtIndex + 1);
 			workingSpec = workingSpec.substring(0, secondAtIndex);
 		}
 
-		// Now workingSpec is like @scope/name or @scope/name/subpath
-		// Split by / and check if there are more than 2 parts
+		/**
+		 * Now workingSpec is like @scope/name or @scope/name/subpath Split by / and
+		 * check if there are more than 2 parts.
+		 */
 		const parts = workingSpec.split("/");
 		if (parts.length > 2) {
-			// Has subpath: @scope/name/subpath/more
+			// Has subpath: @scope/name/subpath/more.
 			const name = `${parts[0]}/${parts[1]}`;
 			const subpath = parts.slice(2).join("/");
 			return { name, version, subpath };
 		}
-		// No subpath: @scope/name
+		// No subpath: @scope/name.
 		return { name: workingSpec, version };
 	}
 
-	// Handle non-scoped packages (name@version or name/subpath@version)
+	// Handle non-scoped packages (name@version or name/subpath@version).
 	const atIndex = workingSpec.indexOf("@");
 	if (atIndex !== -1) {
 		version = workingSpec.substring(atIndex + 1);
 		workingSpec = workingSpec.substring(0, atIndex);
 	}
 
-	// Check for subpath in non-scoped packages
+	// Check for subpath in non-scoped packages.
 	const slashIndex = workingSpec.indexOf("/");
 	if (slashIndex !== -1) {
 		const name = workingSpec.substring(0, slashIndex);
@@ -81,7 +83,9 @@ export type BundleOptions = {
 	noExternal?: boolean;
 	gzipLevel?: number;
 	registry?: string;
-	/** Target platform. If undefined, auto-detects from package.json engines */
+	/**
+	 * Target platform. If undefined, auto-detects from package.json engines.
+	 */
 	platform?: "browser" | "node";
 };
 
@@ -90,7 +94,9 @@ export type BundleResult = {
 	packageVersion: string;
 	exports: string[];
 	rawSize: number;
-	/** Gzip size in bytes, or null for node platform (gzip not applicable) */
+	/**
+	 * Gzip size in bytes, or null for node platform (gzip not applicable).
+	 */
 	gzipSize: number | null;
 	gzipLevel: number;
 	externals: string[];
@@ -99,7 +105,7 @@ export type BundleResult = {
 };
 
 /**
- * Format bytes to human-readable string
+ * Format bytes to human-readable string.
  */
 export function formatBytes(bytes: number): string {
 	if (bytes === 0) {
@@ -112,7 +118,7 @@ export function formatBytes(bytes: number): string {
 }
 
 /**
- * Create a temporary directory for bundling
+ * Create a temporary directory for bundling.
  */
 function createTempDir(): string {
 	const tmpDir = path.join(os.tmpdir(), `bundlecheck-${Date.now()}`);
@@ -121,18 +127,18 @@ function createTempDir(): string {
 }
 
 /**
- * Clean up temporary directory
+ * Clean up temporary directory.
  */
 function cleanupTempDir(tmpDir: string): void {
 	try {
 		fs.rmSync(tmpDir, { recursive: true, force: true });
 	} catch {
-		// Ignore cleanup errors
+		// Ignore cleanup errors.
 	}
 }
 
 /**
- * Check if pnpm is available
+ * Check if pnpm is available.
  */
 function isPnpmAvailable(): boolean {
 	try {
@@ -143,17 +149,17 @@ function isPnpmAvailable(): boolean {
 	}
 }
 
-// Cache the result of pnpm availability check
+// Cache the result of pnpm availability check.
 let usePnpm: boolean | null = null;
 
 /**
- * Validate and sanitize a registry URL to prevent command injection
+ * Validate and sanitize a registry URL to prevent command injection.
  * @param registry - The registry URL to validate
  * @returns The sanitized URL or undefined if invalid
  * @throws Error if the URL is invalid or contains potentially malicious characters
  */
 function validateRegistryUrl(registry: string): string {
-	// Parse as URL to validate format
+	// Parse as URL to validate format.
 	let url: URL;
 	try {
 		url = new URL(registry);
@@ -163,19 +169,19 @@ function validateRegistryUrl(registry: string): string {
 		);
 	}
 
-	// Only allow http and https protocols
+	// Only allow http and https protocols.
 	if (url.protocol !== "http:" && url.protocol !== "https:") {
 		throw new Error(
 			`Invalid registry URL protocol: ${url.protocol}. Only http: and https: are allowed`,
 		);
 	}
 
-	// Return the sanitized URL (URL constructor normalizes it)
+	// Return the sanitized URL (URL constructor normalizes it).
 	return url.toString();
 }
 
 /**
- * Get the install command (pnpm preferred, npm fallback)
+ * Get the install command (pnpm preferred, npm fallback).
  * @param registry - Optional custom npm registry URL
  */
 function getInstallCommand(registry?: string): string {
@@ -185,9 +191,9 @@ function getInstallCommand(registry?: string): string {
 
 	let registryArg = "";
 	if (registry) {
-		// Validate and sanitize the registry URL to prevent command injection
+		// Validate and sanitize the registry URL to prevent command injection.
 		const sanitizedRegistry = validateRegistryUrl(registry);
-		// Quote the URL to handle any special characters safely
+		// Quote the URL to handle any special characters safely.
 		registryArg = ` --registry "${sanitizedRegistry}"`;
 	}
 
@@ -206,15 +212,15 @@ export type EntryContentOptions = {
 };
 
 /**
- * Generate the entry file content based on package, subpath, and exports
+ * Generate the entry file content based on package, subpath, and exports.
  */
 function generateEntryContent(options: EntryContentOptions): string {
 	const { packageName, subpath, exports, allSubpaths, exportToSubpath } =
 		options;
 
-	// If we have exports mapped to different subpaths
+	// If we have exports mapped to different subpaths.
 	if (exportToSubpath && exportToSubpath.size > 0) {
-		// Group exports by subpath
+		// Group exports by subpath.
 		const subpathToExports = new Map<string, string[]>();
 		for (const [exportName, sp] of exportToSubpath) {
 			const existing = subpathToExports.get(sp) || [];
@@ -222,7 +228,7 @@ function generateEntryContent(options: EntryContentOptions): string {
 			subpathToExports.set(sp, existing);
 		}
 
-		// Generate imports for each subpath
+		// Generate imports for each subpath.
 		const lines: string[] = [];
 		const allExportNames: string[] = [];
 
@@ -237,21 +243,21 @@ function generateEntryContent(options: EntryContentOptions): string {
 		return lines.join("\n") + "\n";
 	}
 
-	// If we have specific exports to import
+	// If we have specific exports to import.
 	if (exports && exports.length > 0) {
-		// Determine the import path
+		// Determine the import path.
 		const importPath = subpath ? `${packageName}/${subpath}` : packageName;
 		const importNames = exports.join(", ");
 		return `import { ${importNames} } from "${importPath}";\nexport { ${importNames} };\n`;
 	}
 
-	// If we have a specific subpath (but no specific exports)
+	// If we have a specific subpath (but no specific exports).
 	if (subpath) {
 		const importPath = `${packageName}/${subpath}`;
 		return `import * as pkg from "${importPath}";\nexport default pkg;\n`;
 	}
 
-	// If package has subpath exports only (no main entry), import all subpaths
+	// If package has subpath exports only (no main entry), import all subpaths.
 	if (allSubpaths && allSubpaths.length > 0) {
 		const imports = allSubpaths
 			.map(
@@ -262,12 +268,12 @@ function generateEntryContent(options: EntryContentOptions): string {
 		return imports + "\n";
 	}
 
-	// Default: import everything from main entry
+	// Default: import everything from main entry.
 	return `import * as pkg from "${packageName}";\nexport default pkg;\n`;
 }
 
 /**
- * Get externals list based on options
+ * Get externals list based on options.
  */
 export function getExternals(
 	packageName: string,
@@ -278,17 +284,17 @@ export function getExternals(
 		return [];
 	}
 
-	// Start with default externals (react, react-dom)
+	// Start with default externals (react, react-dom).
 	let result = [...DEFAULT_EXTERNALS];
 
-	// If checking react or react-dom themselves, don't mark them as external
+	// If checking react or react-dom themselves, don't mark them as external.
 	if (packageName === "react") {
 		result = result.filter((e) => e !== "react");
 	} else if (packageName === "react-dom") {
 		result = result.filter((e) => e !== "react-dom");
 	}
 
-	// Add any additional externals
+	// Add any additional externals.
 	if (externals && externals.length > 0) {
 		result = [...new Set([...result, ...externals])];
 	}
@@ -311,11 +317,12 @@ export type PackageInfo = {
 };
 
 /**
- * Get version, dependencies, peer dependencies, and exports from an installed package
+ * Get version, dependencies, peer dependencies, and exports from an installed
+ * package.
  */
 function getPackageInfo(tmpDir: string, packageName: string): PackageInfo {
 	try {
-		// Handle scoped packages - the package name in node_modules
+		// Handle scoped packages - the package name in node_modules.
 		const pkgJsonPath = path.join(
 			tmpDir,
 			"node_modules",
@@ -325,7 +332,7 @@ function getPackageInfo(tmpDir: string, packageName: string): PackageInfo {
 		if (fs.existsSync(pkgJsonPath)) {
 			const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, "utf-8"));
 
-			// Check if package has a main entry point
+			// Check if package has a main entry point.
 			const hasMainEntry = Boolean(
 				pkgJson.main ||
 					pkgJson.module ||
@@ -344,7 +351,7 @@ function getPackageInfo(tmpDir: string, packageName: string): PackageInfo {
 			};
 		}
 	} catch {
-		// Ignore errors reading package info
+		// Ignore errors reading package info.
 	}
 	return {
 		version: "unknown",
@@ -357,8 +364,8 @@ function getPackageInfo(tmpDir: string, packageName: string): PackageInfo {
 }
 
 /**
- * Extract subpath export names from package exports field
- * Returns array of subpaths like ["header", "body", "datagrid"]
+ * Extract subpath export names from package exports field Returns array of
+ * subpaths like ["header", "body", "datagrid"].
  */
 function getSubpathExports(exports: PackageExports | null): string[] {
 	if (!exports) {
@@ -367,11 +374,11 @@ function getSubpathExports(exports: PackageExports | null): string[] {
 
 	const subpaths: string[] = [];
 	for (const key of Object.keys(exports)) {
-		// Skip the main entry point and package.json
+		// Skip the main entry point and package.json.
 		if (key === "." || key === "./package.json") {
 			continue;
 		}
-		// Remove leading "./" to get subpath name
+		// Remove leading "./" to get subpath name.
 		if (key.startsWith("./")) {
 			subpaths.push(key.substring(2));
 		}
@@ -380,18 +387,18 @@ function getSubpathExports(exports: PackageExports | null): string[] {
 }
 
 /**
- * Result of finding subpaths for exports
+ * Result of finding subpaths for exports.
  */
 type SubpathMapping = {
-	// Single subpath if all exports are from the same subpath
+	// Single subpath if all exports are from the same subpath.
 	singleSubpath?: string;
-	// Map of export name to subpath for multiple subpaths
+	// Map of export name to subpath for multiple subpaths.
 	exportToSubpath?: Map<string, string>;
 };
 
 /**
- * Find which subpath(s) export the given component names
- * Reads type definition files or JS files to find the exports
+ * Find which subpath(s) export the given component names Reads type definition
+ * files or JS files to find the exports.
  */
 function findSubpathsForExports(
 	tmpDir: string,
@@ -403,15 +410,15 @@ function findSubpathsForExports(
 	const exportToSubpath = new Map<string, string>();
 
 	for (const [subpathKey, subpathValue] of Object.entries(exports)) {
-		// Skip main entry and package.json
+		// Skip main entry and package.json.
 		if (subpathKey === "." || subpathKey === "./package.json") {
 			continue;
 		}
 
-		// Get the types or import path
+		// Get the types or import path.
 		let filePath: string | undefined;
 		if (typeof subpathValue === "object" && subpathValue !== null) {
-			// Prefer types file for more accurate export detection
+			// Prefer types file for more accurate export detection.
 			filePath = subpathValue.types || subpathValue.import;
 		} else if (typeof subpathValue === "string") {
 			filePath = subpathValue;
@@ -421,7 +428,7 @@ function findSubpathsForExports(
 			continue;
 		}
 
-		// Resolve the file path
+		// Resolve the file path.
 		const fullPath = path.join(packageDir, filePath);
 
 		try {
@@ -431,17 +438,17 @@ function findSubpathsForExports(
 					? subpathKey.substring(2)
 					: subpathKey;
 
-				// Check each component name
+				// Check each component name.
 				for (const name of componentNames) {
-					// Skip if already found
+					// Skip if already found.
 					if (exportToSubpath.has(name)) {
 						continue;
 					}
 
-					// Escape regex special characters in the name to prevent injection
+					// Escape regex special characters in the name to prevent injection.
 					const escapedName = escapeRegExp(name);
 
-					// Look for various export patterns
+					// Look for various export patterns.
 					const patterns = [
 						new RegExp(`export\\s*\\{[^}]*\\b${escapedName}\\b[^}]*\\}`, "m"),
 						new RegExp(
@@ -460,27 +467,27 @@ function findSubpathsForExports(
 				}
 			}
 		} catch {
-			// Ignore read errors, continue to next subpath
+			// Ignore read errors, continue to next subpath.
 		}
 	}
 
-	// Check if all exports were found
+	// Check if all exports were found.
 	if (exportToSubpath.size !== componentNames.length) {
 		return {}; // Not all exports found
 	}
 
-	// Check if all exports are from the same subpath
+	// Check if all exports are from the same subpath.
 	const subpaths = new Set(exportToSubpath.values());
 	if (subpaths.size === 1) {
 		return { singleSubpath: [...subpaths][0] };
 	}
 
-	// Multiple subpaths needed
+	// Multiple subpaths needed.
 	return { exportToSubpath };
 }
 
 /**
- * Check the bundle size of an npm package
+ * Check the bundle size of an npm package.
  */
 export async function checkBundleSize(
 	options: BundleOptions,
@@ -495,7 +502,7 @@ export async function checkBundleSize(
 		platform: explicitPlatform,
 	} = options;
 
-	// Parse the package specifier to extract name, version, and subpath
+	// Parse the package specifier to extract name, version, and subpath.
 	const {
 		name: packageName,
 		version: requestedVersion,
@@ -505,7 +512,7 @@ export async function checkBundleSize(
 	const tmpDir = createTempDir();
 
 	try {
-		// Create initial package.json
+		// Create initial package.json.
 		const packageJson: {
 			name: string;
 			version: string;
@@ -525,39 +532,45 @@ export async function checkBundleSize(
 			JSON.stringify(packageJson, null, 2),
 		);
 
-		// Install the main package (try pnpm first, fallback to npm)
+		// Install the main package (try pnpm first, fallback to npm).
 		const installCmd = getInstallCommand(registry);
 		execSync(installCmd, {
 			cwd: tmpDir,
 			stdio: "pipe",
 		});
 
-		// Get package info (version, dependencies, peer dependencies, exports, engines)
+		/**
+		 * Get package info (version, dependencies, peer dependencies, exports,
+		 * engines).
+		 */
 		const pkgInfo = getPackageInfo(tmpDir, packageName);
 		const peerDepKeys = Object.keys(pkgInfo.peerDependencies);
 
-		// Determine platform: use explicit value if provided, otherwise auto-detect from engines
+		/**
+		 * Determine platform: use explicit value if provided, otherwise auto-detect
+		 * from engines.
+		 */
 		let platform: "browser" | "node" = "browser";
 		if (explicitPlatform) {
 			platform = explicitPlatform;
 		} else if (pkgInfo.engines?.node && !pkgInfo.engines?.browser) {
-			// Package specifies node engine without browser - likely a Node.js package
+			// Package specifies node engine without browser - likely a Node.js package.
 			platform = "node";
 		}
 
-		// Collect all dependency names (prod + peer)
+		// Collect all dependency names (prod + peer).
 		const allDependencies = [
 			...new Set([...Object.keys(pkgInfo.dependencies), ...peerDepKeys]),
 		].sort();
 
 		if (peerDepKeys.length > 0) {
-			// Add peer dependencies to package.json
+			// Add peer dependencies to package.json.
 			for (const dep of peerDepKeys) {
-				// Use the version range from peer dependencies
+				// Use the version range from peer dependencies.
 				packageJson.dependencies[dep] = pkgInfo.peerDependencies[dep];
 			}
 
-			// Update package.json and reinstall
+			// Update package.json and reinstall.
 			fs.writeFileSync(
 				path.join(tmpDir, "package.json"),
 				JSON.stringify(packageJson, null, 2),
@@ -569,14 +582,17 @@ export async function checkBundleSize(
 			});
 		}
 
-		// Determine if we need to use all subpath exports or find the right subpath(s)
+		/**
+		 * Determine if we need to use all subpath exports or find the right
+		 * subpath(s).
+		 */
 		let allSubpaths: string[] | undefined;
 		let resolvedSubpath = subpath;
 		let exportToSubpath: Map<string, string> | undefined;
 
 		if (!subpath && !pkgInfo.hasMainEntry && pkgInfo.exports) {
 			if (exports && exports.length > 0) {
-				// User specified exports but no subpath - try to find the right subpath(s)
+				// User specified exports but no subpath - try to find the right subpath(s).
 				const mapping = findSubpathsForExports(
 					tmpDir,
 					packageName,
@@ -585,21 +601,21 @@ export async function checkBundleSize(
 				);
 
 				if (mapping.singleSubpath) {
-					// All exports from the same subpath
+					// All exports from the same subpath.
 					resolvedSubpath = mapping.singleSubpath;
 				} else if (mapping.exportToSubpath) {
-					// Exports from multiple subpaths
+					// Exports from multiple subpaths.
 					exportToSubpath = mapping.exportToSubpath;
 				}
 			}
 
-			// If still no subpath resolved and no mapping, bundle all subpaths
+			// If still no subpath resolved and no mapping, bundle all subpaths.
 			if (!resolvedSubpath && !exportToSubpath) {
 				allSubpaths = getSubpathExports(pkgInfo.exports);
 			}
 		}
 
-		// Create entry file with appropriate content
+		// Create entry file with appropriate content.
 		const entryContent = generateEntryContent({
 			packageName,
 			subpath: resolvedSubpath,
@@ -610,14 +626,14 @@ export async function checkBundleSize(
 		const entryFile = path.join(tmpDir, "entry.js");
 		fs.writeFileSync(entryFile, entryContent);
 
-		// Get externals
+		// Get externals.
 		const externals = getExternals(
 			packageName,
 			additionalExternals,
 			noExternal,
 		);
 
-		// Bundle with esbuild
+		// Bundle with esbuild.
 		const result = await esbuild.build({
 			entryPoints: [entryFile],
 			bundle: true,
@@ -631,11 +647,11 @@ export async function checkBundleSize(
 			metafile: true,
 		});
 
-		// Get raw size
+		// Get raw size.
 		const bundleContent = result.outputFiles[0].contents;
 		const rawSize = bundleContent.length;
 
-		// Gzip the bundle (only for browser platform - not relevant for Node.js)
+		// Gzip the bundle (only for browser platform - not relevant for Node.js).
 		let gzipSize: number | null = null;
 		if (platform === "browser") {
 			const gzipped = await gzipAsync(Buffer.from(bundleContent), {
@@ -644,12 +660,12 @@ export async function checkBundleSize(
 			gzipSize = gzipped.length;
 		}
 
-		// Determine the display name
+		// Determine the display name.
 		let displayName = packageName;
 		if (resolvedSubpath) {
 			displayName = `${packageName}/${resolvedSubpath}`;
 		} else if (exportToSubpath && exportToSubpath.size > 0) {
-			// Multiple subpaths - show them all
+			// Multiple subpaths - show them all.
 			const uniqueSubpaths = [...new Set(exportToSubpath.values())].sort();
 			displayName = `${packageName}/{${uniqueSubpaths.join(", ")}}`;
 		}

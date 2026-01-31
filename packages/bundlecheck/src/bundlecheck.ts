@@ -27,7 +27,7 @@ import { fetchPackageVersions, promptForVersion } from "./versions.js";
 const flags = config.flags;
 const parameters = config.parameters;
 
-// Disable kleur colors when --boring flag is set
+// Disable kleur colors when --boring flag is set.
 kleur.enabled = !flags?.boring;
 
 const log = new Logger({
@@ -35,7 +35,7 @@ const log = new Logger({
 });
 
 /**
- * Display bundle result in a formatted box
+ * Display bundle result in a formatted box.
  */
 function displayResult(
 	result: {
@@ -93,7 +93,7 @@ async function main() {
 		process.exit(1);
 	}
 
-	// Parse additional externals if provided (comma-separated)
+	// Parse additional externals if provided (comma-separated).
 	let additionalExternals: string[] | undefined;
 	if (flags?.external) {
 		additionalExternals = flags.external
@@ -102,7 +102,7 @@ async function main() {
 			.filter(Boolean);
 	}
 
-	// Parse exports if provided (comma-separated)
+	// Parse exports if provided (comma-separated).
 	let exports: string[] | undefined;
 	const exportsArg = parameters?.["1"];
 	if (exportsArg) {
@@ -112,11 +112,13 @@ async function main() {
 			.filter(Boolean);
 	}
 
-	// Normalize platform from flag (handles aliases like "web" → "browser")
+	// Normalize platform from flag (handles aliases like "web" → "browser").
 	const platform = normalizePlatform(flags?.platform);
 
-	// If --trend flag is set, show bundle size trend across versions
-	// --trend alone uses default (5), --trend N uses N versions
+	/**
+	 * If --trend flag is set, show bundle size trend across versions --trend alone
+	 * uses default (5), --trend N uses N versions.
+	 */
 	const trendValue = flags?.trend;
 	if (trendValue !== undefined) {
 		const parsedCount = Number.parseInt(trendValue, 10);
@@ -127,7 +129,7 @@ async function main() {
 
 		try {
 			const { name, subpath } = parsePackageSpecifier(packageName);
-			// Construct the full package path including subpath if present
+			// Construct the full package path including subpath if present.
 			const fullPackagePath = subpath ? `${name}/${subpath}` : name;
 
 			log.info(`\nFetching available versions for ${name}...`);
@@ -142,7 +144,7 @@ async function main() {
 				process.exit(1);
 			}
 
-			// Select versions for trend
+			// Select versions for trend.
 			const trendVersions = selectTrendVersions(versions, versionCount);
 
 			log.info(
@@ -168,7 +170,7 @@ async function main() {
 				process.exit(1);
 			}
 
-			// Render and display the trend graph
+			// Render and display the trend graph.
 			const graphLines = renderTrendGraph(
 				fullPackagePath,
 				results,
@@ -187,7 +189,7 @@ async function main() {
 		}
 	}
 
-	// If --versions flag is set, fetch and prompt for version selection
+	// If --versions flag is set, fetch and prompt for version selection.
 	if (flags?.versions) {
 		try {
 			const { name, subpath } = parsePackageSpecifier(packageName);
@@ -204,7 +206,7 @@ async function main() {
 			}
 
 			const selectedVersion = await promptForVersion(name, versions, tags);
-			// Rebuild specifier preserving any subpath
+			// Rebuild specifier preserving any subpath.
 			packageName = subpath
 				? `${name}/${subpath}@${selectedVersion}`
 				: `${name}@${selectedVersion}`;
@@ -223,11 +225,11 @@ async function main() {
 	}
 
 	try {
-		// Parse package specifier to get name and version
+		// Parse package specifier to get name and version.
 		const { name: baseName, version: requestedVersion } =
 			parsePackageSpecifier(packageName);
 
-		// Resolve "latest" to actual version for cache key
+		// Resolve "latest" to actual version for cache key.
 		let resolvedVersion = requestedVersion;
 		if (requestedVersion === "latest") {
 			const { tags } = await fetchPackageVersions({
@@ -237,15 +239,17 @@ async function main() {
 			resolvedVersion = tags.latest || requestedVersion;
 		}
 
-		// Compute externals for cache key (same logic as bundler)
+		// Compute externals for cache key (same logic as bundler).
 		const externals = getExternals(
 			baseName,
 			additionalExternals,
 			flags?.noExternal,
 		);
 
-		// Build cache key
-		// Note: platform can be undefined (auto-detect), which is stored as "auto" in cache
+		/**
+		 * Build cache key.
+		 * NOTE: platform can be undefined (auto-detect), which is stored as "auto" in cache.
+		 */
 		const cacheKey = normalizeCacheKey({
 			packageName: baseName,
 			version: resolvedVersion,
@@ -256,7 +260,7 @@ async function main() {
 			noExternal: flags?.noExternal ?? false,
 		});
 
-		// Check cache (unless --force flag is set)
+		// Check cache (unless --force flag is set).
 		if (!flags?.force) {
 			const cached = getCachedResult(cacheKey);
 			if (cached) {
@@ -278,7 +282,7 @@ async function main() {
 			platform,
 		});
 
-		// Store result in cache
+		// Store result in cache.
 		setCachedResult(cacheKey, result);
 
 		displayResult(result, platform === undefined);
