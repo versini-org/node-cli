@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/versini-org/node-cli/compare/bundlecheck-v1.1.2...bundlecheck-v1.2.0) (2026-01-31)
+
+
+### Features
+
+* **bundlechecker:** Add custom npm registry support ([#482](https://github.com/versini-org/node-cli/issues/482)) ([d2cdd21](https://github.com/versini-org/node-cli/commit/d2cdd2122a319f2a53e708d60a4c7b0297a41628))
+
 ## [1.1.2](https://github.com/versini-org/node-cli/compare/bundlecheck-v1.1.1...bundlecheck-v1.1.2) (2026-01-31)
 
 

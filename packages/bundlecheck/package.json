@@ -1,6 +1,6 @@
 {
 	"name": "@node-cli/bundlecheck",
-	"version": "1.1.2",
+	"version": "1.2.0",
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "CLI tool to check the bundle size of npm packages (like bundlephobia)",
