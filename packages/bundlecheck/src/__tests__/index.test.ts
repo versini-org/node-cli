@@ -464,6 +464,22 @@ describe("Library API", () => {
 			expect(result.change?.gzipDiffFormatted).toBeNull();
 		});
 
+		it("should handle division by zero when oldest rawSize is 0", async () => {
+			vi.mocked(analyzeTrend).mockResolvedValue([
+				{ version: "2.0.0", rawSize: 50000, gzipSize: 10000 },
+				{ version: "1.0.0", rawSize: 0, gzipSize: 0 },
+			]);
+
+			const result = await getBundleTrend({
+				package: "some-package",
+			});
+
+			expect(result.change?.rawDiff).toBe(50000);
+			expect(result.change?.rawPercent).toBeNull();
+			expect(result.change?.gzipDiff).toBe(10000);
+			expect(result.change?.gzipPercent).toBeNull();
+		});
+
 		it("should handle subpath in package name", async () => {
 			await getBundleTrend({
 				package: "@mantine/core/Button",

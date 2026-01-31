@@ -305,10 +305,10 @@ type TrendChange = {
   fromVersion: string;
   toVersion: string;
   rawDiff: number;              // Positive = increase, negative = decrease
-  rawPercent: number;
+  rawPercent: number | null;    // null if oldest size was 0
   rawDiffFormatted: string;     // e.g., "+5.2 kB" or "-1.3 kB"
   gzipDiff: number | null;
-  gzipPercent: number | null;
+  gzipPercent: number | null;   // null if not applicable or oldest size was 0
   gzipDiffFormatted: string | null;
 };
 ```
