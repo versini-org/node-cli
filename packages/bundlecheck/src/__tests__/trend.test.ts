@@ -177,6 +177,52 @@ describe("renderTrendGraph", () => {
 		);
 	});
 
+	it("should use equal bar lengths when formatted values are the same", () => {
+		// These values differ by a few bytes but format to the same string
+		// 3295 bytes and 3297 bytes both format to "3.22 kB"
+		const results: TrendResult[] = [
+			{ version: "3.0.0", rawSize: 3297, gzipSize: 1650 },
+			{ version: "2.0.0", rawSize: 3296, gzipSize: 1649 },
+			{ version: "1.0.0", rawSize: 3295, gzipSize: 1648 },
+		];
+
+		const lines = renderTrendGraph("test-package", results, true);
+
+		// Find gzip size lines (between "Gzip Size:" and "Raw Size:")
+		const gzipStartIdx = lines.findIndex((l) => l.includes("Gzip Size:"));
+		const rawStartIdx = lines.findIndex((l) => l.includes("Raw Size:"));
+		const gzipLines = lines
+			.slice(gzipStartIdx + 1, rawStartIdx)
+			.filter((l) => l.includes("▇"));
+
+		// All bars should have the same number of bar characters
+		const barCounts = gzipLines.map((l) => (l.match(/▇/g) || []).length);
+		expect(new Set(barCounts).size).toBe(1); // All same length
+		expect(barCounts[0]).toBe(30); // Should be max bar width
+	});
+
+	it("should use different bar lengths when formatted values differ", () => {
+		// These values format to different strings
+		const results: TrendResult[] = [
+			{ version: "3.0.0", rawSize: 3000, gzipSize: 1500 },
+			{ version: "2.0.0", rawSize: 2000, gzipSize: 1000 },
+			{ version: "1.0.0", rawSize: 1000, gzipSize: 500 },
+		];
+
+		const lines = renderTrendGraph("test-package", results, true);
+
+		// Find gzip size lines
+		const gzipStartIdx = lines.findIndex((l) => l.includes("Gzip Size:"));
+		const rawStartIdx = lines.findIndex((l) => l.includes("Raw Size:"));
+		const gzipLines = lines
+			.slice(gzipStartIdx + 1, rawStartIdx)
+			.filter((l) => l.includes("▇"));
+
+		// Bars should have different lengths
+		const barCounts = gzipLines.map((l) => (l.match(/▇/g) || []).length);
+		expect(new Set(barCounts).size).toBeGreaterThan(1); // Different lengths
+	});
+
 	it("should include bar characters", () => {
 		const results: TrendResult[] = [
 			{ version: "2.0.0", rawSize: 2048, gzipSize: 1024 },
