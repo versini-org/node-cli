@@ -5,16 +5,18 @@ packages:
 ignoredBuiltDependencies:
   - nx
 
+minimumReleaseAge: 720
+
+minimumReleaseAgeExclude:
+  - '@versini/dev-dependencies-common'
+  - '@versini/dev-dependencies-server'
+  - '@versini/dev-dependencies-types'
+
 onlyBuiltDependencies:
   - '@swc/core'
+  - better-sqlite3
   - esbuild
 
 shamefullyHoist: true
 
 strictDepBuilds: true
-minimumReleaseAge: 720 # twelve hours in minutes
-minimumReleaseAgeExclude:
-  - "@versini/dev-dependencies-common"
-  - "@versini/dev-dependencies-server"
-  - "@versini/dev-dependencies-types"
-  
