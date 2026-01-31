@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.0](https://github.com/versini-org/node-cli/compare/bundlecheck-v1.3.0...bundlecheck-v1.4.0) (2026-01-31)
+
+
+### Features
+
+* **bundlecheck:** Add library API to access data programmatically ([#487](https://github.com/versini-org/node-cli/issues/487)) ([c1b2893](https://github.com/versini-org/node-cli/commit/c1b2893e19e51f09ffcc47f37971d66e739f0fe1))
+* **bundlecheck:** Increase cache max entries to 1000 ([#489](https://github.com/versini-org/node-cli/issues/489)) ([ae8b795](https://github.com/versini-org/node-cli/commit/ae8b795e88dad379902833643b66fc2db9d67a9b))
+
 ## [1.3.0](https://github.com/versini-org/node-cli/compare/bundlecheck-v1.2.0...bundlecheck-v1.3.0) (2026-01-31)
 
 
