@@ -1,5 +1,6 @@
 {
 	"packages": {
+		"packages/bundlecheck": {},
 		"packages/bundlesize": {},
 		"packages/envtools": {},
 		"packages/logger": {},
