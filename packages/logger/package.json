@@ -14,7 +14,7 @@
 	"dependencies": {
 		"boxen": "8.0.1",
 		"kleur": "4.1.5",
-		"ora": "9.0.0"
+		"ora": "9.1.0"
 	},
 	"scripts": {
 		"build": "npm-run-all --serial clean build:types build:js build:barrel",
@@ -35,7 +35,7 @@
 	},
 	"devDependencies": {
 		"@node-cli/comments": "workspace:*",
-		"@vitest/coverage-v8": "4.0.16",
-		"vitest": "4.0.16"
+		"@vitest/coverage-v8": "4.0.18",
+		"vitest": "4.0.18"
 	}
 }
