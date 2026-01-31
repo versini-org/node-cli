@@ -893,4 +893,150 @@ describe("checkBundleSize", () => {
 
 		expect(result).toBeDefined();
 	});
+
+	describe("platform option", () => {
+		it("should default to browser platform", async () => {
+			const result = await checkBundleSize({
+				packageName: "test-package",
+			});
+
+			expect(result.platform).toBe("browser");
+		});
+
+		it("should use explicit browser platform", async () => {
+			const result = await checkBundleSize({
+				packageName: "test-package",
+				platform: "browser",
+			});
+
+			expect(result.platform).toBe("browser");
+			expect(result.gzipSize).not.toBeNull();
+		});
+
+		it("should use explicit node platform", async () => {
+			const result = await checkBundleSize({
+				packageName: "test-package",
+				platform: "node",
+			});
+
+			expect(result.platform).toBe("node");
+		});
+
+		it("should return null gzipSize for node platform", async () => {
+			const result = await checkBundleSize({
+				packageName: "test-package",
+				platform: "node",
+			});
+
+			expect(result.gzipSize).toBeNull();
+		});
+
+		it("should return gzipSize for browser platform", async () => {
+			const result = await checkBundleSize({
+				packageName: "test-package",
+				platform: "browser",
+			});
+
+			expect(result.gzipSize).not.toBeNull();
+			expect(result.gzipSize).toBeGreaterThan(0);
+		});
+
+		it("should auto-detect node platform from engines.node", async () => {
+			vi.mocked(fs.readFileSync).mockReturnValue(
+				JSON.stringify({
+					name: "test-package",
+					version: "1.0.0",
+					main: "./dist/index.js",
+					dependencies: {},
+					peerDependencies: {},
+					engines: {
+						node: ">=18.0.0",
+					},
+				}),
+			);
+
+			const result = await checkBundleSize({
+				packageName: "test-package",
+			});
+
+			expect(result.platform).toBe("node");
+			expect(result.gzipSize).toBeNull();
+		});
+
+		it("should default to browser when no engines specified", async () => {
+			vi.mocked(fs.readFileSync).mockReturnValue(
+				JSON.stringify({
+					name: "test-package",
+					version: "1.0.0",
+					main: "./dist/index.js",
+					dependencies: {},
+					peerDependencies: {},
+				}),
+			);
+
+			const result = await checkBundleSize({
+				packageName: "test-package",
+			});
+
+			expect(result.platform).toBe("browser");
+		});
+
+		it("should use explicit platform even when engines.node is present", async () => {
+			vi.mocked(fs.readFileSync).mockReturnValue(
+				JSON.stringify({
+					name: "test-package",
+					version: "1.0.0",
+					main: "./dist/index.js",
+					dependencies: {},
+					peerDependencies: {},
+					engines: {
+						node: ">=18.0.0",
+					},
+				}),
+			);
+
+			const result = await checkBundleSize({
+				packageName: "test-package",
+				platform: "browser",
+			});
+
+			expect(result.platform).toBe("browser");
+			expect(result.gzipSize).not.toBeNull();
+		});
+
+		it("should pass platform to esbuild", async () => {
+			await checkBundleSize({
+				packageName: "test-package",
+				platform: "node",
+			});
+
+			expect(esbuild.build).toHaveBeenCalledWith(
+				expect.objectContaining({
+					platform: "node",
+				}),
+			);
+		});
+
+		it("should not auto-detect node when engines.browser is also present", async () => {
+			vi.mocked(fs.readFileSync).mockReturnValue(
+				JSON.stringify({
+					name: "test-package",
+					version: "1.0.0",
+					main: "./dist/index.js",
+					dependencies: {},
+					peerDependencies: {},
+					engines: {
+						node: ">=18.0.0",
+						browser: ">= ES2020",
+					},
+				}),
+			);
+
+			const result = await checkBundleSize({
+				packageName: "test-package",
+			});
+
+			expect(result.platform).toBe("browser");
+		});
+	});
 });

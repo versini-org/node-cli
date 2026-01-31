@@ -9,7 +9,7 @@ import {
 	formatBytes,
 	parsePackageSpecifier,
 } from "./bundler.js";
-import { TREND_VERSION_COUNT } from "./defaults.js";
+import { normalizePlatform, TREND_VERSION_COUNT } from "./defaults.js";
 import { config } from "./parse.js";
 import {
 	analyzeTrend,
@@ -56,6 +56,9 @@ async function main() {
 			.filter(Boolean);
 	}
 
+	// Normalize platform from flag (handles aliases like "web" → "browser")
+	const platform = normalizePlatform(flags?.platform);
+
 	// If --trend flag is set, show bundle size trend across versions
 	// --trend alone uses default (5), --trend N uses N versions
 	const trendValue = flags?.trend;
@@ -100,6 +103,7 @@ async function main() {
 				gzipLevel: flags?.gzipLevel,
 				boring: flags?.boring,
 				registry: flags?.registry,
+				platform,
 			});
 
 			if (results.length === 0) {
@@ -170,12 +174,16 @@ async function main() {
 			noExternal: flags?.noExternal,
 			gzipLevel: flags?.gzipLevel,
 			registry: flags?.registry,
+			platform,
 		});
 
 		const blue = kleur.blue;
 		const green = kleur.green;
 
 		// Display results
+		const platformLabel = result.platform === "node" ? "node" : "browser";
+		const platformNote = platform === undefined ? " (auto-detected)" : "";
+
 		log.printBox(
 			[
 				`${blue("Package:")} ${result.packageName} (${blue("version:")} ${result.packageVersion})`,
@@ -184,7 +192,9 @@ async function main() {
 					: `${blue("Exports:")} * (entire package)`,
 				"",
 				`${blue("Raw size:")}  ${formatBytes(result.rawSize)}`,
-				`${blue("Gzip size:")} ${formatBytes(result.gzipSize)} (level ${result.gzipLevel})`,
+				result.gzipSize !== null
+					? `${blue("Gzip size:")} ${formatBytes(result.gzipSize)} (level ${result.gzipLevel})`
+					: `${blue("Gzip size:")} N/A (not applicable for node platform)`,
 				"",
 				result.externals.length > 0
 					? `${blue("Externals:")} ${result.externals.join(", ")}`
@@ -192,6 +202,7 @@ async function main() {
 				result.dependencies.length > 0
 					? `${blue("Dependencies:")} ${result.dependencies.join(", ")}`
 					: `${blue("Dependencies:")} ${green("none")}`,
+				`${blue("Platform:")} ${platformLabel}${platformNote}`,
 			],
 			{
 				borderStyle: "round",

@@ -333,6 +333,70 @@ describe("renderTrendGraph", () => {
 		// Boring lines should not contain escape codes
 		expect(boringLines.some((l) => l.includes("\x1b["))).toBe(false);
 	});
+
+	describe("null gzipSize (node platform)", () => {
+		it("should skip gzip section when all gzipSize values are null", () => {
+			const results: TrendResult[] = [
+				{ version: "2.0.0", rawSize: 2048, gzipSize: null },
+				{ version: "1.0.0", rawSize: 1024, gzipSize: null },
+			];
+
+			const lines = renderTrendGraph("test-package", results, true);
+
+			// Should NOT contain Gzip Size section
+			expect(lines.some((l) => l.includes("Gzip Size:"))).toBe(false);
+			// Should still contain Raw Size section
+			expect(lines.some((l) => l.includes("Raw Size:"))).toBe(true);
+		});
+
+		it("should skip gzip change summary when gzipSize is null", () => {
+			const results: TrendResult[] = [
+				{ version: "2.0.0", rawSize: 2048, gzipSize: null },
+				{ version: "1.0.0", rawSize: 1024, gzipSize: null },
+			];
+
+			const lines = renderTrendGraph("test-package", results, true);
+
+			// Should show change summary
+			expect(lines.some((l) => l.includes("Change from"))).toBe(true);
+			// Should show raw change
+			expect(lines.some((l) => l.includes("Raw:"))).toBe(true);
+			// Should NOT show gzip change
+			expect(lines.some((l) => l.includes("Gzip:"))).toBe(false);
+		});
+
+		it("should show only raw size for single result with null gzipSize", () => {
+			const results: TrendResult[] = [
+				{ version: "1.0.0", rawSize: 1024, gzipSize: null },
+			];
+
+			const lines = renderTrendGraph("test-package", results, true);
+
+			expect(lines.some((l) => l.includes("Raw Size:"))).toBe(true);
+			expect(lines.some((l) => l.includes("Gzip Size:"))).toBe(false);
+			expect(lines.some((l) => l.includes("1.0.0"))).toBe(true);
+		});
+
+		it("should render raw size bars correctly when gzipSize is null", () => {
+			const results: TrendResult[] = [
+				{ version: "3.0.0", rawSize: 3000, gzipSize: null },
+				{ version: "2.0.0", rawSize: 2000, gzipSize: null },
+				{ version: "1.0.0", rawSize: 1000, gzipSize: null },
+			];
+
+			const lines = renderTrendGraph("test-package", results, true);
+
+			// Find raw size lines
+			const rawStartIdx = lines.findIndex((l) => l.includes("Raw Size:"));
+			const rawLines = lines
+				.slice(rawStartIdx + 1)
+				.filter((l) => l.includes("▇"));
+
+			// Should have bars with different lengths
+			const barCounts = rawLines.map((l) => (l.match(/▇/g) || []).length);
+			expect(new Set(barCounts).size).toBeGreaterThan(1);
+		});
+	});
 });
 
 describe("analyzeTrend", () => {
@@ -353,6 +417,7 @@ describe("analyzeTrend", () => {
 				gzipLevel: 9,
 				externals: [],
 				dependencies: [],
+				platform: "browser",
 			})
 			.mockResolvedValueOnce({
 				packageName: "test@1.0.0",
@@ -363,6 +428,7 @@ describe("analyzeTrend", () => {
 				gzipLevel: 9,
 				externals: [],
 				dependencies: [],
+				platform: "browser",
 			});
 
 		const results = await analyzeTrend({
@@ -395,6 +461,7 @@ describe("analyzeTrend", () => {
 				gzipLevel: 9,
 				externals: [],
 				dependencies: [],
+				platform: "browser",
 			})
 			.mockRejectedValueOnce(new Error("Version not found"))
 			.mockResolvedValueOnce({
@@ -406,6 +473,7 @@ describe("analyzeTrend", () => {
 				gzipLevel: 9,
 				externals: [],
 				dependencies: [],
+				platform: "browser",
 			});
 
 		const results = await analyzeTrend({
@@ -429,6 +497,7 @@ describe("analyzeTrend", () => {
 			gzipLevel: 5,
 			externals: ["lodash"],
 			dependencies: [],
+			platform: "browser",
 		});
 
 		await analyzeTrend({
@@ -439,6 +508,7 @@ describe("analyzeTrend", () => {
 			noExternal: false,
 			gzipLevel: 5,
 			boring: true,
+			platform: "browser",
 		});
 
 		expect(mockCheckBundleSize).toHaveBeenCalledWith({
@@ -447,7 +517,37 @@ describe("analyzeTrend", () => {
 			additionalExternals: ["lodash"],
 			noExternal: false,
 			gzipLevel: 5,
+			registry: undefined,
+			platform: "browser",
 		});
+	});
+
+	it("should pass platform option to checkBundleSize", async () => {
+		mockCheckBundleSize.mockResolvedValue({
+			packageName: "test@1.0.0",
+			packageVersion: "1.0.0",
+			exports: [],
+			rawSize: 1024,
+			gzipSize: null,
+			gzipLevel: 5,
+			externals: [],
+			dependencies: [],
+			platform: "node",
+		});
+
+		const results = await analyzeTrend({
+			packageName: "test",
+			versions: ["1.0.0"],
+			boring: true,
+			platform: "node",
+		});
+
+		expect(mockCheckBundleSize).toHaveBeenCalledWith(
+			expect.objectContaining({
+				platform: "node",
+			}),
+		);
+		expect(results[0].gzipSize).toBeNull();
 	});
 
 	it("should return empty array when all versions fail", async () => {
