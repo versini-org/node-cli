@@ -1,4 +1,5 @@
 {
+	"packages/bundlecheck": "1.0.0",
 	"packages/bundlesize": "4.6.0",
 	"packages/envtools": "4.2.2",
 	"packages/logger": "1.3.3",
