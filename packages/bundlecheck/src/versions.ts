@@ -1,4 +1,5 @@
 import select from "@inquirer/select";
+import { rsort } from "semver";
 import { parsePackageSpecifier } from "./bundler.js";
 
 export type NpmPackageInfo = {
@@ -30,7 +31,7 @@ export async function fetchPackageVersions(
 	const data = (await response.json()) as NpmRegistryResponse;
 
 	// Get all versions sorted by semver (newest first)
-	const versions = Object.keys(data.versions || {}).reverse();
+	const versions = rsort(Object.keys(data.versions || {}));
 
 	// Get dist-tags (latest, next, beta, etc.)
 	const tags = data["dist-tags"] || {};

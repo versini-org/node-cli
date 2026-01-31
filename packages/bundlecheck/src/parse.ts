@@ -75,7 +75,7 @@ export const config: Configuration = parser({
 		gzipLevel: {
 			shortFlag: "g",
 			default: defaultFlags.gzipLevel,
-			description: "Gzip compression level (1-9, default: 9)",
+			description: "Gzip compression level (1-9, default: 5)",
 			type: "number",
 		},
 		external: {

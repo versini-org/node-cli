@@ -98,7 +98,7 @@ bundlecheck lodash "debounce,throttle"
 | `--versions`        | `-V`        | Choose from available package versions interactively    |
 | `--trend [N]`       | `-t [N]`    | Show bundle size trend for N versions (default: 5)      |
 | `--boring`          | `-b`        | Do not use color output                                 |
-| `--gzipLevel <n>`   | `-g <n>`    | Gzip compression level (1-9, default: 9)                |
+| `--gzipLevel <n>`   | `-g <n>`    | Gzip compression level (1-9, default: 5)                |
 | `--external <pkgs>` | `-e <pkgs>` | Comma-separated additional packages to mark as external |
 | `--noExternal`      | `-n`        | Do not mark any packages as external                    |
 

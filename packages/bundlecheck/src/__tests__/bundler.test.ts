@@ -291,7 +291,7 @@ describe("checkBundleSize", () => {
 			packageName: "test-package",
 		});
 
-		expect(result.gzipLevel).toBe(9);
+		expect(result.gzipLevel).toBe(5);
 	});
 
 	it("should handle package with subpath", async () => {

@@ -445,7 +445,7 @@ export async function checkBundleSize(
 		exports,
 		additionalExternals,
 		noExternal,
-		gzipLevel = 9,
+		gzipLevel = 5,
 	} = options;
 
 	// Parse the package specifier to extract name, version, and subpath
