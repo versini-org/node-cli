@@ -1,6 +1,7 @@
 import select from "@inquirer/select";
 import { rsort } from "semver";
 import { parsePackageSpecifier } from "./bundler.js";
+import { DEFAULT_REGISTRY } from "./defaults.js";
 
 export type NpmPackageInfo = {
 	versions: string[];
@@ -15,13 +16,28 @@ type NpmRegistryResponse = {
 	"dist-tags"?: Record<string, string>;
 };
 
+export type FetchVersionsOptions = {
+	packageName: string;
+	registry?: string;
+};
+
 export async function fetchPackageVersions(
-	packageName: string,
+	packageNameOrOptions: string | FetchVersionsOptions,
 ): Promise<NpmPackageInfo> {
+	// Support both string (legacy) and options object
+	const { packageName, registry } =
+		typeof packageNameOrOptions === "string"
+			? { packageName: packageNameOrOptions, registry: undefined }
+			: packageNameOrOptions;
+
 	// Parse the package specifier to get just the name (without version)
 	const { name } = parsePackageSpecifier(packageName);
 
-	const url = `https://registry.npmjs.org/${name}`;
+	// Use custom registry or default
+	const registryUrl = registry || DEFAULT_REGISTRY;
+	// Ensure no trailing slash
+	const baseUrl = registryUrl.replace(/\/$/, "");
+	const url = `${baseUrl}/${name}`;
 	const response = await fetch(url);
 
 	if (!response.ok) {

@@ -18,6 +18,7 @@ export type TrendOptions = {
 	noExternal?: boolean;
 	gzipLevel?: number;
 	boring?: boolean;
+	registry?: string;
 };
 
 /**
@@ -48,6 +49,7 @@ export async function analyzeTrend(
 		noExternal,
 		gzipLevel,
 		boring,
+		registry,
 	} = options;
 
 	const log = new Logger({ boring });
@@ -64,6 +66,7 @@ export async function analyzeTrend(
 				additionalExternals,
 				noExternal,
 				gzipLevel,
+				registry,
 			});
 
 			results.push({

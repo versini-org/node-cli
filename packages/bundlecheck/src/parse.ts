@@ -11,6 +11,7 @@ export type Flags = {
 	gzipLevel?: number;
 	external?: string;
 	noExternal?: boolean;
+	registry?: string;
 };
 
 export type Parameters = {
@@ -70,6 +71,10 @@ export const config: Configuration = parser({
 			command: "bundlecheck lodash --trend 3",
 			comment: "## Show bundle size trend for 3 versions",
 		},
+		{
+			command: "bundlecheck lodash --registry https://registry.example.com",
+			comment: "## Use a custom npm registry",
+		},
 	],
 	flags: {
 		gzipLevel: {
@@ -116,6 +121,13 @@ export const config: Configuration = parser({
 		trend: {
 			shortFlag: "t",
 			description: "Show bundle size trend for N recent versions (default: 5)",
+			type: "string",
+		},
+		registry: {
+			shortFlag: "r",
+			default: defaultFlags.registry,
+			description:
+				"Custom npm registry URL (default: https://registry.npmjs.org)",
 			type: "string",
 		},
 	},

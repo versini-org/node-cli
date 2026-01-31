@@ -80,6 +80,7 @@ export type BundleOptions = {
 	additionalExternals?: string[];
 	noExternal?: boolean;
 	gzipLevel?: number;
+	registry?: string;
 };
 
 export type BundleResult = {
@@ -143,16 +144,19 @@ let usePnpm: boolean | null = null;
 
 /**
  * Get the install command (pnpm preferred, npm fallback)
+ * @param registry - Optional custom npm registry URL
  */
-function getInstallCommand(): string {
+function getInstallCommand(registry?: string): string {
 	if (usePnpm === null) {
 		usePnpm = isPnpmAvailable();
 	}
 
+	const registryArg = registry ? ` --registry ${registry}` : "";
+
 	if (usePnpm) {
-		return "pnpm install --ignore-scripts --no-frozen-lockfile";
+		return `pnpm install --ignore-scripts --no-frozen-lockfile${registryArg}`;
 	}
-	return "npm install --legacy-peer-deps --ignore-scripts";
+	return `npm install --legacy-peer-deps --ignore-scripts${registryArg}`;
 }
 
 export type EntryContentOptions = {
@@ -446,6 +450,7 @@ export async function checkBundleSize(
 		additionalExternals,
 		noExternal,
 		gzipLevel = 5,
+		registry,
 	} = options;
 
 	// Parse the package specifier to extract name, version, and subpath
@@ -479,7 +484,7 @@ export async function checkBundleSize(
 		);
 
 		// Install the main package (try pnpm first, fallback to npm)
-		const installCmd = getInstallCommand();
+		const installCmd = getInstallCommand(registry);
 		execSync(installCmd, {
 			cwd: tmpDir,
 			stdio: "pipe",
