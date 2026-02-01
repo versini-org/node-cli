@@ -103,7 +103,7 @@ export async function installPackage(
 	const tmpDir = createTempDir();
 
 	try {
-		// Create minimal package.json
+		// Create minimal package.json.
 		const packageJson = {
 			name: "bundlecheck-exports-temp",
 			version: "1.0.0",
@@ -118,14 +118,14 @@ export async function installPackage(
 			JSON.stringify(packageJson, null, 2),
 		);
 
-		// Install the package
+		// Install the package.
 		const installCmd = getInstallCommand(registry);
 		execSync(installCmd, {
 			cwd: tmpDir,
 			stdio: "pipe",
 		});
 
-		// Read the installed version
+		// Read the installed version.
 		const pkgJsonPath = path.join(
 			tmpDir,
 			"node_modules",
@@ -138,7 +138,7 @@ export async function installPackage(
 			installedVersion = pkgJson.version || version;
 		}
 
-		// Get named exports
+		// Get named exports.
 		const { exports, runtimeExports } = getNamedExports(tmpDir, packageName);
 
 		return {

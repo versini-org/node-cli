@@ -120,7 +120,8 @@ export type BundleStats = {
 	 */
 	fromCache: boolean;
 	/**
-	 * Total number of named exports in the package (when analyzing entire package).
+	 * Total number of named exports in the package (when analyzing entire
+	 * package).
 	 */
 	namedExportCount: number;
 };
@@ -592,8 +593,8 @@ export type PackageExports = {
 	 */
 	count: number;
 	/**
-	 * Array of runtime exports only (excluding types and interfaces).
-	 * These are the exports that can actually be imported at runtime.
+	 * Array of runtime exports only (excluding types and interfaces). These are
+	 * the exports that can actually be imported at runtime.
 	 */
 	runtimeExports: PackageExport[];
 	/**
@@ -623,7 +624,10 @@ export async function getPackageExports(
 ): Promise<PackageExports> {
 	const { package: packageName, registry } = options;
 
-	// Import the install utilities from bundler (we'll use a minimal bundle check)
+	/**
+	 * Import the install utilities from bundler (we'll use a minimal bundle
+	 * check).
+	 */
 	const { name: baseName, version: requestedVersion } =
 		parsePackageSpecifier(packageName);
 
@@ -637,8 +641,10 @@ export async function getPackageExports(
 		resolvedVersion = tags.latest || requestedVersion;
 	}
 
-	// Use a minimal bundle check to install the package and get exports
-	// We'll leverage the existing infrastructure
+	/**
+	 * Use a minimal bundle check to install the package and get exports We'll
+	 * leverage the existing infrastructure.
+	 */
 	const { installPackage } = await import("./exports-installer.js");
 
 	const { version, exports, runtimeExports } = await installPackage({

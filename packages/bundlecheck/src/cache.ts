@@ -99,7 +99,10 @@ export function initCache(): Database.Database {
 		CREATE INDEX IF NOT EXISTS idx_created_at ON bundle_cache(created_at);
 	`);
 
-	// Migration: Add named_export_count column if it doesn't exist (for existing databases).
+	/**
+	 * Migration: Add named_export_count column if it doesn't exist (for existing
+	 * databases).
+	 */
 	try {
 		db.exec(
 			`ALTER TABLE bundle_cache ADD COLUMN named_export_count INTEGER DEFAULT 0`,
@@ -108,7 +111,10 @@ export function initCache(): Database.Database {
 		// Column already exists, ignore error.
 	}
 
-	// Migration: Add actual_externals column if it doesn't exist (for existing databases).
+	/**
+	 * Migration: Add actual_externals column if it doesn't exist (for existing
+	 * databases).
+	 */
 	try {
 		db.exec(
 			`ALTER TABLE bundle_cache ADD COLUMN actual_externals TEXT NOT NULL DEFAULT ''`,
@@ -201,9 +207,9 @@ export function getCachedResult(key: CacheKey): CachedBundleResult | null {
 		}
 
 		/**
-		 * Convert row to BundleResult.
-		 * Use actual_externals (computed externals including auto-detected react/react-dom)
-		 * if available, otherwise fall back to externals (for old cache entries).
+		 * Convert row to BundleResult. Use actual_externals (computed externals
+		 * including auto-detected react/react-dom) if available, otherwise fall back
+		 * to externals (for old cache entries).
 		 */
 		const externalsStr = row.actual_externals || row.externals;
 		return {

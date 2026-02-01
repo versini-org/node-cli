@@ -58,7 +58,7 @@ function displayResult(
 	const platformLabel = result.platform === "node" ? "node" : "browser";
 	const platformNote = isAutoDetected ? " (auto-detected)" : "";
 
-	// Format exports display
+	// Format exports display.
 	let exportsDisplay: string;
 	if (result.exports.length > 0) {
 		exportsDisplay = `{ ${result.exports.join(", ")} }`;

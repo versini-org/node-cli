@@ -51,21 +51,24 @@ function resolveImportPath(
 	basePath: string,
 	importPath: string,
 ): string | null {
-	// Remove quotes and trim
+	// Remove quotes and trim.
 	let cleanPath = importPath.replace(/['"]/g, "").trim();
 
-	// Only handle relative imports
+	// Only handle relative imports.
 	if (!cleanPath.startsWith(".")) {
 		return null;
 	}
 
-	// Strip .js/.mjs extension if present (TypeScript uses .js in imports but .d.ts for types)
+	/**
+	 * Strip .js/.mjs extension if present (TypeScript uses .js in imports but
+	 * .d.ts for types).
+	 */
 	cleanPath = cleanPath.replace(/\.(m?js)$/, "");
 
 	const baseDir = path.dirname(basePath);
 	const resolved = path.resolve(baseDir, cleanPath);
 
-	// Try different extensions for the resolved path
+	// Try different extensions for the resolved path.
 	const extensions = [".d.ts", ".d.mts", ".ts", ""];
 	for (const ext of extensions) {
 		const tryPath = resolved + ext;
@@ -74,7 +77,7 @@ function resolveImportPath(
 		}
 	}
 
-	// Try index files in directory
+	// Try index files in directory.
 	for (const ext of [".d.ts", ".d.mts", ".ts"]) {
 		const indexPath = path.join(resolved, `index${ext}`);
 		if (fs.existsSync(indexPath) && fs.statSync(indexPath).isFile()) {
@@ -102,7 +105,7 @@ function parseDeclarationFile(
 		return [];
 	}
 
-	// Avoid circular imports
+	// Avoid circular imports.
 	const normalizedPath = path.resolve(filePath);
 	if (visited.has(normalizedPath)) {
 		return [];
@@ -113,7 +116,7 @@ function parseDeclarationFile(
 	const seenNames = new Set<string>();
 
 	const addExport = (name: string, kind: NamedExport["kind"]) => {
-		// Skip internal/private exports and TypeScript utility types
+		// Skip internal/private exports and TypeScript utility types.
 		if (name.startsWith("_") || name === "default" || seenNames.has(name)) {
 			return;
 		}
@@ -121,45 +124,48 @@ function parseDeclarationFile(
 		exports.push({ name, kind });
 	};
 
-	// Pattern for: export * from './path'
+	// Pattern for: export * from './path'.
 	const reExportAllPattern = /export\s+\*\s+from\s+['"]([^'"]+)['"]/g;
 
-	// Pattern for: export type { Name, Name2 } from './path' (type-only exports)
+	// Pattern for: export type { Name, Name2 } from './path' (type-only exports).
 	const reExportTypePattern =
 		/export\s+type\s+\{([^}]+)\}\s+from\s+['"]([^'"]+)['"]/g;
 
-	// Pattern for: export { Name, Name2 } from './path' (value exports - NOT type)
+	/**
+	 * Pattern for: export { Name, Name2 } from './path' (value exports - NOT
+	 * type).
+	 */
 	const reExportValuePattern =
 		/export\s+\{([^}]+)\}\s+from\s+['"]([^'"]+)['"]/g;
 
-	// Pattern for: export declare function Name
+	// Pattern for: export declare function Name.
 	const functionPattern = /export\s+declare\s+function\s+(\w+)/g;
-	// Pattern for: export declare class Name
+	// Pattern for: export declare class Name.
 	const classPattern = /export\s+declare\s+class\s+(\w+)/g;
-	// Pattern for: export declare const Name
+	// Pattern for: export declare const Name.
 	const constPattern = /export\s+declare\s+const\s+(\w+)/g;
-	// Pattern for: export declare type Name
+	// Pattern for: export declare type Name.
 	const typePattern = /export\s+declare\s+type\s+(\w+)/g;
-	// Pattern for: export type Name = ... (without declare)
+	// Pattern for: export type Name = ... (without declare).
 	const typePattern2 = /export\s+type\s+(\w+)\s*[=<]/g;
-	// Pattern for: export type { Name } (local re-export without from)
+	// Pattern for: export type { Name } (local re-export without from).
 	const typeExportPattern = /export\s+type\s+\{([^}]+)\}\s*;/g;
-	// Pattern for: export interface Name
+	// Pattern for: export interface Name.
 	const interfacePattern = /export\s+(?:declare\s+)?interface\s+(\w+)/g;
-	// Pattern for: export declare enum Name
+	// Pattern for: export declare enum Name.
 	const enumPattern = /export\s+declare\s+enum\s+(\w+)/g;
-	// Pattern for: export { Name, Name2 } (without from - local exports)
+	// Pattern for: export { Name, Name2 } (without from - local exports).
 	const namedExportPattern = /export\s+\{([^}]+)\}\s*;/g;
-	// Pattern for: export declare const Name: ... (component style)
+	// Pattern for: export declare const Name: ... (component style).
 	const componentPattern = /export\s+declare\s+const\s+(\w+)\s*:/g;
-	// Pattern for: export function Name (without declare)
+	// Pattern for: export function Name (without declare).
 	const functionPattern2 = /export\s+function\s+(\w+)/g;
-	// Pattern for: export class Name (without declare)
+	// Pattern for: export class Name (without declare).
 	const classPattern2 = /export\s+class\s+(\w+)/g;
-	// Pattern for: export const Name (without declare)
+	// Pattern for: export const Name (without declare).
 	const constPattern2 = /export\s+const\s+(\w+)/g;
 
-	// Helper to extract all matches from a regex
+	// Helper to extract all matches from a regex.
 	const extractMatches = (pattern: RegExp, text: string): RegExpExecArray[] => {
 		const matches: RegExpExecArray[] = [];
 		let result = pattern.exec(text);
@@ -170,7 +176,7 @@ function parseDeclarationFile(
 		return matches;
 	};
 
-	// Handle: export * from './path' - recursively parse
+	// Handle: export * from './path' - recursively parse.
 	for (const match of extractMatches(reExportAllPattern, content)) {
 		const importPath = match[1];
 		const resolvedPath = resolveImportPath(filePath, importPath);
@@ -187,17 +193,17 @@ function parseDeclarationFile(
 					addExport(exp.name, exp.kind);
 				}
 			} catch {
-				// Ignore read errors
+				// Ignore read errors.
 			}
 		}
 	}
 
-	// Handle: export type { Name } from './path' (type-only exports)
+	// Handle: export type { Name } from './path' (type-only exports).
 	for (const match of extractMatches(reExportTypePattern, content)) {
 		const exportList = match[1];
 		const names = exportList.split(",").map((s) => {
 			const trimmed = s.trim();
-			// Handle "Name as Alias"
+			// Handle "Name as Alias".
 			const asMatch = trimmed.match(/(\w+)\s+as\s+(\w+)/);
 			if (asMatch) {
 				return asMatch[2];
@@ -212,9 +218,9 @@ function parseDeclarationFile(
 		}
 	}
 
-	// Handle: export { Name } from './path' (value exports)
+	// Handle: export { Name } from './path' (value exports).
 	for (const match of extractMatches(reExportValuePattern, content)) {
-		// Skip if this is actually a type export (already handled above)
+		// Skip if this is actually a type export (already handled above).
 		const fullMatch = match[0];
 		if (fullMatch.includes("export type")) {
 			continue;
@@ -223,15 +229,18 @@ function parseDeclarationFile(
 		const exportList = match[1];
 		const names = exportList.split(",").map((s) => {
 			const trimmed = s.trim();
-			// Handle "Name as Alias"
+			// Handle "Name as Alias".
 			const asMatch = trimmed.match(/(\w+)\s+as\s+(\w+)/);
 			if (asMatch) {
 				return asMatch[2];
 			}
-			// Handle "type Name" syntax within the braces
+			// Handle "type Name" syntax within the braces.
 			const typeMatch = trimmed.match(/type\s+(\w+)/);
 			if (typeMatch) {
-				// This is a type being re-exported, skip it (will be handled by type pattern)
+				/**
+				 * This is a type being re-exported, skip it (will be handled by type
+				 * pattern).
+				 */
 				return null;
 			}
 			return trimmed;
@@ -244,7 +253,7 @@ function parseDeclarationFile(
 		}
 	}
 
-	// Extract functions
+	// Extract functions.
 	for (const match of extractMatches(functionPattern, content)) {
 		addExport(match[1], "function");
 	}
@@ -252,7 +261,7 @@ function parseDeclarationFile(
 		addExport(match[1], "function");
 	}
 
-	// Extract classes
+	// Extract classes.
 	for (const match of extractMatches(classPattern, content)) {
 		addExport(match[1], "class");
 	}
@@ -260,7 +269,7 @@ function parseDeclarationFile(
 		addExport(match[1], "class");
 	}
 
-	// Extract const (includes React components)
+	// Extract const (includes React components).
 	for (const match of extractMatches(constPattern, content)) {
 		addExport(match[1], "const");
 	}
@@ -268,22 +277,22 @@ function parseDeclarationFile(
 		addExport(match[1], "const");
 	}
 
-	// Also catch component-style declarations
+	// Also catch component-style declarations.
 	for (const match of extractMatches(componentPattern, content)) {
 		addExport(match[1], "const");
 	}
 
-	// Extract types (declare type)
+	// Extract types (declare type).
 	for (const match of extractMatches(typePattern, content)) {
 		addExport(match[1], "type");
 	}
 
-	// Extract types (export type X =)
+	// Extract types (export type X =).
 	for (const match of extractMatches(typePattern2, content)) {
 		addExport(match[1], "type");
 	}
 
-	// Extract type exports (export type { X })
+	// Extract type exports (export type { X }).
 	for (const match of extractMatches(typeExportPattern, content)) {
 		const exportList = match[1];
 		const names = exportList.split(",").map((s) => s.trim());
@@ -294,20 +303,23 @@ function parseDeclarationFile(
 		}
 	}
 
-	// Extract interfaces
+	// Extract interfaces.
 	for (const match of extractMatches(interfacePattern, content)) {
 		addExport(match[1], "interface");
 	}
 
-	// Extract enums
+	// Extract enums.
 	for (const match of extractMatches(enumPattern, content)) {
 		addExport(match[1], "enum");
 	}
 
-	// Extract named exports from export { ... } (without from - these are local exports)
+	/**
+	 * Extract named exports from export { ... } (without from - these are local
+	 * exports).
+	 */
 	for (const match of extractMatches(namedExportPattern, content)) {
 		const exportList = match[1];
-		// Skip if this looks like a type export (already handled above)
+		// Skip if this looks like a type export (already handled above).
 		if (content.substring(match.index - 5, match.index).includes("type")) {
 			continue;
 		}
@@ -340,6 +352,7 @@ function parseDeclarationFile(
  * @param tmpDir - The temporary directory where the package is installed
  * @param packageName - The package name (e.g., "@mantine/core")
  * @returns ParsedExports containing the list of exports and count
+ *
  */
 export function getNamedExports(
 	tmpDir: string,
@@ -354,7 +367,7 @@ export function getNamedExports(
 		runtimeCount: 0,
 	};
 
-	// Try to read package.json to find the types entry
+	// Try to read package.json to find the types entry.
 	const pkgJsonPath = path.join(packageDir, "package.json");
 	if (!fs.existsSync(pkgJsonPath)) {
 		return emptyResult;
@@ -364,7 +377,7 @@ export function getNamedExports(
 	try {
 		const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, "utf-8"));
 
-		// Look for types in order of preference
+		// Look for types in order of preference.
 		typesEntry =
 			pkgJson.types ||
 			pkgJson.typings ||
@@ -372,7 +385,7 @@ export function getNamedExports(
 			(typeof pkgJson.exports?.["."] === "object" &&
 				pkgJson.exports["."].types);
 
-		// If no types field, try common patterns
+		// If no types field, try common patterns.
 		if (!typesEntry) {
 			const commonPaths = [
 				"dist/index.d.ts",
@@ -395,7 +408,7 @@ export function getNamedExports(
 		return emptyResult;
 	}
 
-	// Read and parse the types file
+	// Read and parse the types file.
 	const typesPath = path.join(packageDir, typesEntry);
 	if (!fs.existsSync(typesPath)) {
 		return emptyResult;
@@ -405,10 +418,10 @@ export function getNamedExports(
 		const content = fs.readFileSync(typesPath, "utf-8");
 		const exports = parseDeclarationFile(typesPath, content);
 
-		// Sort exports by name for consistent output
+		// Sort exports by name for consistent output.
 		exports.sort((a, b) => a.name.localeCompare(b.name));
 
-		// Filter to runtime-only exports (exclude types and interfaces)
+		// Filter to runtime-only exports (exclude types and interfaces).
 		const runtimeExports = exports.filter(
 			(e) => e.kind !== "type" && e.kind !== "interface",
 		);
