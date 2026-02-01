@@ -411,6 +411,43 @@ describe("setCachedResult and getCachedResult", () => {
 		expect(getCachedResult(keyBrowser)?.rawSize).toBe(1000);
 		expect(getCachedResult(keyNode)?.rawSize).toBe(2000);
 	});
+
+	it("should preserve actual externals when key externals differ from result externals", () => {
+		/**
+		 * This tests the scenario where:
+		 * - User doesn't provide --external flag (key.externals = [])
+		 * - But the bundler auto-detects react/react-dom from package.json
+		 *   (result.externals = ["react", "react-dom"])
+		 * The cached result should return the actual computed externals, not the empty key externals.
+		 */
+		const key = normalizeCacheKey({
+			packageName: "@mantine/core",
+			version: "8.0.0",
+			exports: ["Button"],
+			platform: "browser",
+			gzipLevel: 5,
+			externals: [], // User didn't pass --external flag
+			noExternal: false,
+		});
+
+		const resultWithComputedExternals: BundleResult = {
+			packageName: "@mantine/core",
+			packageVersion: "8.0.0",
+			exports: ["Button"],
+			rawSize: 50000,
+			gzipSize: 12000,
+			gzipLevel: 5,
+			externals: ["react", "react-dom"], // Auto-detected from package dependencies
+			dependencies: ["@mantine/hooks", "react", "react-dom"],
+			platform: "browser",
+		};
+
+		setCachedResult(key, resultWithComputedExternals);
+		const cached = getCachedResult(key);
+
+		// The cached result should have the actual computed externals, not empty
+		expect(cached?.externals).toEqual(["react", "react-dom"]);
+	});
 });
 
 describe("clearCache", () => {
