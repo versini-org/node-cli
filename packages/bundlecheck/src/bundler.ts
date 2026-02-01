@@ -273,6 +273,75 @@ function generateEntryContent(options: EntryContentOptions): string {
 }
 
 /**
+ * Check if an error is an esbuild BuildFailure.
+ * BuildFailure has an `errors` array with structured error objects.
+ */
+function isEsbuildBuildFailure(
+	error: unknown,
+): error is { errors: Array<{ text: string; location?: unknown }> } {
+	return (
+		typeof error === "object" &&
+		error !== null &&
+		"errors" in error &&
+		Array.isArray((error as { errors: unknown }).errors)
+	);
+}
+
+/**
+ * Extract unresolved module paths from an esbuild BuildFailure error.
+ * Returns an object indicating which react-related modules failed to resolve.
+ *
+ * Uses esbuild's structured error objects (errors array) for reliable parsing.
+ * Falls back to string matching if the error format is unexpected.
+ *
+ * Tested against esbuild 0.27.x error format.
+ */
+function parseUnresolvedModules(error: unknown): {
+	hasUnresolvedReact: boolean;
+	hasUnresolvedReactDom: boolean;
+} {
+	const result = { hasUnresolvedReact: false, hasUnresolvedReactDom: false };
+
+	// Pattern to extract module path from "Could not resolve X" errors.
+	// Matches: Could not resolve "module-name" or Could not resolve 'module-name'
+	const resolveErrorPattern = /Could not resolve ["']([^"']+)["']/;
+
+	if (isEsbuildBuildFailure(error)) {
+		// Use structured error objects from esbuild BuildFailure.
+		for (const err of error.errors) {
+			const match = resolveErrorPattern.exec(err.text);
+			if (match) {
+				const modulePath = match[1];
+				// Check if it's a react or react-dom import (including subpaths).
+				if (modulePath === "react" || modulePath.startsWith("react/")) {
+					result.hasUnresolvedReact = true;
+				}
+				if (modulePath === "react-dom" || modulePath.startsWith("react-dom/")) {
+					result.hasUnresolvedReactDom = true;
+				}
+			}
+		}
+	} else {
+		// Fallback: parse error message string (less reliable).
+		const errorMessage = String(error);
+		const matches = errorMessage.matchAll(
+			/Could not resolve ["']([^"']+)["']/g,
+		);
+		for (const match of matches) {
+			const modulePath = match[1];
+			if (modulePath === "react" || modulePath.startsWith("react/")) {
+				result.hasUnresolvedReact = true;
+			}
+			if (modulePath === "react-dom" || modulePath.startsWith("react-dom/")) {
+				result.hasUnresolvedReactDom = true;
+			}
+		}
+	}
+
+	return result;
+}
+
+/**
  * Get externals list based on options and package dependencies. react and
  * react-dom are only marked as external if they are declared in the package's
  * dependencies or peerDependencies.
@@ -702,13 +771,12 @@ export async function checkBundleSize(
 				logLevel: "silent", // Suppress errors on first attempt (will retry if needed)
 			});
 		} catch (error) {
-			const errorMessage = String(error);
-			const hasUnresolvedReact =
-				errorMessage.includes('Could not resolve "react"') ||
-				errorMessage.includes('Could not resolve "react/');
-			const hasUnresolvedReactDom =
-				errorMessage.includes('Could not resolve "react-dom"') ||
-				errorMessage.includes('Could not resolve "react-dom/');
+			/**
+			 * Parse unresolved module errors using esbuild's structured error format.
+			 * This handles packages that don't properly declare react as a peer dependency.
+			 */
+			const { hasUnresolvedReact, hasUnresolvedReactDom } =
+				parseUnresolvedModules(error);
 
 			if (!noExternal && (hasUnresolvedReact || hasUnresolvedReactDom)) {
 				// Auto-add react and/or react-dom to externals and retry.
