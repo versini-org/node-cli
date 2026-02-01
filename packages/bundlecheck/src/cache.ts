@@ -49,6 +49,7 @@ type CacheRow = {
 	dependencies: string;
 	display_name: string;
 	created_at: number;
+	actual_externals: string;
 };
 
 let db: Database.Database | null = null;
@@ -89,11 +90,21 @@ export function initCache(): Database.Database {
 			dependencies TEXT NOT NULL DEFAULT '[]',
 			display_name TEXT NOT NULL,
 			created_at INTEGER NOT NULL,
+			actual_externals TEXT NOT NULL DEFAULT '',
 			UNIQUE(package_name, version, exports, platform, gzip_level, externals, no_external)
 		);
 
 		CREATE INDEX IF NOT EXISTS idx_created_at ON bundle_cache(created_at);
 	`);
+
+	// Migration: Add actual_externals column if it doesn't exist (for existing databases).
+	try {
+		db.exec(
+			`ALTER TABLE bundle_cache ADD COLUMN actual_externals TEXT NOT NULL DEFAULT ''`,
+		);
+	} catch {
+		// Column already exists, ignore error.
+	}
 
 	return db;
 }
@@ -178,7 +189,12 @@ export function getCachedResult(key: CacheKey): CachedBundleResult | null {
 			dependencies = [];
 		}
 
-		// Convert row to BundleResult.
+		/**
+		 * Convert row to BundleResult.
+		 * Use actual_externals (computed externals including auto-detected react/react-dom)
+		 * if available, otherwise fall back to externals (for old cache entries).
+		 */
+		const externalsStr = row.actual_externals || row.externals;
 		return {
 			packageName: row.display_name,
 			packageVersion: row.version,
@@ -186,7 +202,7 @@ export function getCachedResult(key: CacheKey): CachedBundleResult | null {
 			rawSize: row.raw_size,
 			gzipSize: row.gzip_size,
 			gzipLevel: row.gzip_level,
-			externals: row.externals ? row.externals.split(",").filter(Boolean) : [],
+			externals: externalsStr ? externalsStr.split(",").filter(Boolean) : [],
 			dependencies,
 			platform: row.platform as "browser" | "node",
 		};
@@ -214,8 +230,8 @@ export function setCachedResult(key: CacheKey, result: BundleResult): void {
 		const stmt = database.prepare(`
 			INSERT OR REPLACE INTO bundle_cache (
 				package_name, version, exports, platform, gzip_level, externals, no_external,
-				raw_size, gzip_size, dependencies, display_name, created_at
-			) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+				raw_size, gzip_size, dependencies, display_name, created_at, actual_externals
+			) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		`);
 
 		stmt.run(
@@ -231,6 +247,7 @@ export function setCachedResult(key: CacheKey, result: BundleResult): void {
 			JSON.stringify(result.dependencies),
 			result.packageName,
 			Date.now(),
+			result.externals.slice().sort().join(","),
 		);
 
 		// Enforce max entries (LRU-style eviction based on created_at).
