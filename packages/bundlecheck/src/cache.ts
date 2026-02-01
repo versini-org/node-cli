@@ -50,6 +50,7 @@ type CacheRow = {
 	display_name: string;
 	created_at: number;
 	named_export_count: number | null;
+	actual_externals: string;
 };
 
 let db: Database.Database | null = null;
@@ -91,6 +92,7 @@ export function initCache(): Database.Database {
 			display_name TEXT NOT NULL,
 			created_at INTEGER NOT NULL,
 			named_export_count INTEGER DEFAULT 0,
+			actual_externals TEXT NOT NULL DEFAULT '',
 			UNIQUE(package_name, version, exports, platform, gzip_level, externals, no_external)
 		);
 
@@ -101,6 +103,15 @@ export function initCache(): Database.Database {
 	try {
 		db.exec(
 			`ALTER TABLE bundle_cache ADD COLUMN named_export_count INTEGER DEFAULT 0`,
+		);
+	} catch {
+		// Column already exists, ignore error.
+	}
+
+	// Migration: Add actual_externals column if it doesn't exist (for existing databases).
+	try {
+		db.exec(
+			`ALTER TABLE bundle_cache ADD COLUMN actual_externals TEXT NOT NULL DEFAULT ''`,
 		);
 	} catch {
 		// Column already exists, ignore error.
@@ -189,7 +200,12 @@ export function getCachedResult(key: CacheKey): CachedBundleResult | null {
 			dependencies = [];
 		}
 
-		// Convert row to BundleResult.
+		/**
+		 * Convert row to BundleResult.
+		 * Use actual_externals (computed externals including auto-detected react/react-dom)
+		 * if available, otherwise fall back to externals (for old cache entries).
+		 */
+		const externalsStr = row.actual_externals || row.externals;
 		return {
 			packageName: row.display_name,
 			packageVersion: row.version,
@@ -197,7 +213,7 @@ export function getCachedResult(key: CacheKey): CachedBundleResult | null {
 			rawSize: row.raw_size,
 			gzipSize: row.gzip_size,
 			gzipLevel: row.gzip_level,
-			externals: row.externals ? row.externals.split(",").filter(Boolean) : [],
+			externals: externalsStr ? externalsStr.split(",").filter(Boolean) : [],
 			dependencies,
 			platform: row.platform as "browser" | "node",
 			namedExportCount: row.named_export_count ?? 0,
@@ -226,8 +242,8 @@ export function setCachedResult(key: CacheKey, result: BundleResult): void {
 		const stmt = database.prepare(`
 			INSERT OR REPLACE INTO bundle_cache (
 				package_name, version, exports, platform, gzip_level, externals, no_external,
-				raw_size, gzip_size, dependencies, display_name, created_at, named_export_count
-			) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+				raw_size, gzip_size, dependencies, display_name, created_at, named_export_count, actual_externals
+			) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		`);
 
 		stmt.run(
@@ -244,6 +260,7 @@ export function setCachedResult(key: CacheKey, result: BundleResult): void {
 			result.packageName,
 			Date.now(),
 			result.namedExportCount,
+			result.externals.slice().sort().join(","),
 		);
 
 		// Enforce max entries (LRU-style eviction based on created_at).
