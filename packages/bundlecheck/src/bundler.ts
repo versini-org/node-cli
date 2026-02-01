@@ -5,7 +5,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 import zlib from "node:zlib";
 import * as esbuild from "esbuild";
-import { DEFAULT_EXTERNALS } from "./defaults.js";
+import { DEFAULT_EXTERNALS, EXTERNAL_SUBPATHS } from "./defaults.js";
 
 const gzipAsync = promisify(zlib.gzip);
 
@@ -276,6 +276,8 @@ function generateEntryContent(options: EntryContentOptions): string {
  * Get externals list based on options and package dependencies. react and
  * react-dom are only marked as external if they are declared in the package's
  * dependencies or peerDependencies.
+ *
+ * Returns the base package names (e.g., ["react", "react-dom"]) for display purposes.
  */
 export function getExternals(
 	packageName: string,
@@ -315,6 +317,26 @@ export function getExternals(
 	}
 
 	return result;
+}
+
+/**
+ * Expand externals to include subpaths for esbuild.
+ * For example, "react" expands to ["react", "react/jsx-runtime", "react/jsx-dev-runtime"].
+ * This is needed because esbuild doesn't automatically externalize subpaths.
+ */
+export function expandExternalsForEsbuild(externals: string[]): string[] {
+	const expanded: string[] = [];
+
+	for (const ext of externals) {
+		expanded.push(ext);
+		// Add subpaths if this is a known package with subpath exports.
+		const subpaths = EXTERNAL_SUBPATHS[ext];
+		if (subpaths) {
+			expanded.push(...subpaths);
+		}
+	}
+
+	return [...new Set(expanded)];
 }
 
 export type PackageExports = Record<
@@ -645,26 +667,82 @@ export async function checkBundleSize(
 		 * Get externals based on package dependencies. Only include react/react-dom
 		 * if they're in the package's dependencies or peerDependencies.
 		 */
-		const externals = getExternals(
+		let externals = getExternals(
 			packageName,
 			additionalExternals,
 			noExternal,
 			allDependencies,
 		);
 
-		// Bundle with esbuild.
-		const result = await esbuild.build({
-			entryPoints: [entryFile],
-			bundle: true,
-			write: false,
-			format: "esm",
-			platform,
-			target: "es2020",
-			minify: true,
-			treeShaking: true,
-			external: externals,
-			metafile: true,
-		});
+		/**
+		 * Expand externals to include subpaths for esbuild.
+		 * e.g., "react" -> ["react", "react/jsx-runtime", "react/jsx-dev-runtime"]
+		 */
+		let esbuildExternals = expandExternalsForEsbuild(externals);
+
+		/**
+		 * Bundle with esbuild. We use a two-phase approach:
+		 * 1. First attempt with logLevel: "silent" to suppress errors
+		 * 2. If it fails due to unresolved react imports, auto-add react to externals and retry
+		 * This handles packages that don't properly declare react as a peer dependency.
+		 */
+		let result: esbuild.BuildResult<{ write: false; metafile: true }>;
+		try {
+			result = await esbuild.build({
+				entryPoints: [entryFile],
+				bundle: true,
+				write: false,
+				format: "esm",
+				platform,
+				target: "es2020",
+				minify: true,
+				treeShaking: true,
+				external: esbuildExternals,
+				metafile: true,
+				logLevel: "silent", // Suppress errors on first attempt (will retry if needed)
+			});
+		} catch (error) {
+			const errorMessage = String(error);
+			const hasUnresolvedReact =
+				errorMessage.includes('Could not resolve "react"') ||
+				errorMessage.includes('Could not resolve "react/');
+			const hasUnresolvedReactDom =
+				errorMessage.includes('Could not resolve "react-dom"') ||
+				errorMessage.includes('Could not resolve "react-dom/');
+
+			if (!noExternal && (hasUnresolvedReact || hasUnresolvedReactDom)) {
+				// Auto-add react and/or react-dom to externals and retry.
+				const autoExternals: string[] = [];
+				if (hasUnresolvedReact && !externals.includes("react")) {
+					autoExternals.push("react");
+				}
+				if (hasUnresolvedReactDom && !externals.includes("react-dom")) {
+					autoExternals.push("react-dom");
+				}
+
+				if (autoExternals.length > 0) {
+					externals = [...externals, ...autoExternals];
+					esbuildExternals = expandExternalsForEsbuild(externals);
+
+					result = await esbuild.build({
+						entryPoints: [entryFile],
+						bundle: true,
+						write: false,
+						format: "esm",
+						platform,
+						target: "es2020",
+						minify: true,
+						treeShaking: true,
+						external: esbuildExternals,
+						metafile: true,
+					});
+				} else {
+					throw error;
+				}
+			} else {
+				throw error;
+			}
+		}
 
 		// Get raw size.
 		const bundleContent = result.outputFiles[0].contents;

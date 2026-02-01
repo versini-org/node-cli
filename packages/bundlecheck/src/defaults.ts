@@ -79,6 +79,20 @@ export function isValidPlatform(platform: string | undefined): boolean {
 
 export const TREND_VERSION_COUNT = 5;
 
+/**
+ * Base packages to auto-detect for externalization.
+ * These are checked against the package's dependencies/peerDependencies.
+ */
 export const DEFAULT_EXTERNALS = ["react", "react-dom"];
+
+/**
+ * Subpath externals to add when a base package is detected.
+ * When "react" is in dependencies, we also need to externalize "react/jsx-runtime" etc.
+ * because esbuild doesn't automatically externalize subpaths.
+ */
+export const EXTERNAL_SUBPATHS: Record<string, string[]> = {
+	react: ["react/jsx-runtime", "react/jsx-dev-runtime"],
+	"react-dom": ["react-dom/client", "react-dom/server"],
+};
 
 export const DEFAULT_REGISTRY = "https://registry.npmjs.org";
