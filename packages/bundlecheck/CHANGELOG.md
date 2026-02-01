@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.5.0](https://github.com/versini-org/node-cli/compare/bundlecheck-v1.4.1...bundlecheck-v1.5.0) (2026-02-01)
+
+
+### Features
+
+* **bundlecheck:** Add package exports analysis and installer ([#496](https://github.com/versini-org/node-cli/issues/496)) ([316fd03](https://github.com/versini-org/node-cli/commit/316fd032eb224952c62c14f9f9beec3fd16ae49e))
+
+
+### Bug Fixes
+
+* **bundlechecker:** Only externalize React/react-dom when declared ([#492](https://github.com/versini-org/node-cli/issues/492)) ([1f9ae9f](https://github.com/versini-org/node-cli/commit/1f9ae9f12018a21784a346ebe3258b7b7404b261))
+* **bundlecheck:** Expand externals for esbuild and retry bundling ([#495](https://github.com/versini-org/node-cli/issues/495)) ([f50ed40](https://github.com/versini-org/node-cli/commit/f50ed40cc8238219457a9fa52a2b6e86e3073720))
+* **bundlecheck:** Store and use actual_externals in cache ([#494](https://github.com/versini-org/node-cli/issues/494)) ([98bd42b](https://github.com/versini-org/node-cli/commit/98bd42b2cb8df2e018193209e8669486a0d09710))
+
 ## [1.4.1](https://github.com/versini-org/node-cli/compare/bundlecheck-v1.4.0...bundlecheck-v1.4.1) (2026-01-31)
 
 
