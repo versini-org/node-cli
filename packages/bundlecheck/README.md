@@ -166,7 +166,7 @@ npm install @node-cli/bundlecheck
 ### Basic Usage
 
 ```js
-import { getBundleStats, getBundleTrend, getPackageVersions } from "@node-cli/bundlecheck";
+import { getBundleStats, getBundleTrend, getPackageVersions, getPackageExports } from "@node-cli/bundlecheck";
 
 // Get bundle stats for a single package
 const stats = await getBundleStats({
@@ -226,6 +226,13 @@ const versions = await getPackageVersions({
 });
 console.log(versions.tags.latest); // "7.0.0"
 console.log(versions.versions.slice(0, 5)); // ["7.0.0", "6.0.21", "6.0.20", ...]
+
+// Get named exports from a package
+const exports = await getPackageExports({
+  package: "date-fns@3.6.0",
+});
+console.log(`Found ${exports.count} exports`);
+console.log(exports.exports.slice(0, 5).map(e => e.name)); // ["add", "addBusinessDays", "addDays", ...]
 ```
 
 ### API Reference
@@ -263,6 +270,7 @@ type BundleStats = {
   rawSizeFormatted: string;   // Human-readable (e.g., "45.2 kB")
   gzipSizeFormatted: string | null;
   fromCache: boolean;         // Whether result was from cache
+  namedExportCount: number;   // Total named exports in package
 };
 ```
 
@@ -331,6 +339,47 @@ type PackageVersions = {
   versions: string[];              // All versions (newest first)
   tags: Record<string, string>;    // Dist tags (e.g., { latest: "7.0.0" })
 };
+```
+
+#### `getPackageExports(options)`
+
+Get the named exports of an npm package by analyzing its TypeScript declarations.
+
+**Options:**
+
+| Option     | Type     | Default    | Description                                      |
+| ---------- | -------- | ---------- | ------------------------------------------------ |
+| `package`  | `string` | (required) | Package name with optional version               |
+| `registry` | `string` | `undefined`| Custom npm registry URL                          |
+
+**Returns:** `Promise<PackageExports>`
+
+```ts
+type PackageExports = {
+  packageName: string;            // Package name
+  packageVersion: string;         // Resolved version
+  exports: PackageExport[];       // All named exports (including types)
+  count: number;                  // Total count (including types)
+  runtimeExports: PackageExport[]; // Runtime exports only (no types/interfaces)
+  runtimeCount: number;           // Count of runtime exports
+};
+
+type PackageExport = {
+  name: string;                // Export name (e.g., "Button")
+  kind: "function" | "class" | "const" | "type" | "interface" | "enum" | "unknown";
+};
+```
+
+**Example:**
+
+```js
+const result = await getPackageExports({
+  package: "@mantine/core",
+});
+
+console.log(result.count);        // 1056 (all exports including types)
+console.log(result.runtimeCount); // 365 (only importable exports)
+console.log(result.runtimeExports[0]); // { name: "Accordion", kind: "unknown" }
 ```
 
 ### Utility Functions

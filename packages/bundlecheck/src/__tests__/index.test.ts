@@ -37,6 +37,10 @@ vi.mock("../trend.js", async (importOriginal) => {
 	};
 });
 
+vi.mock("../exports-installer.js", () => ({
+	installPackage: vi.fn(),
+}));
+
 import { checkBundleSize } from "../bundler.js";
 import {
 	clearCache as clearCacheMock,
@@ -44,12 +48,14 @@ import {
 	getCachedResult,
 	setCachedResult,
 } from "../cache.js";
+import { installPackage } from "../exports-installer.js";
 import {
 	clearCache,
 	formatBytes,
 	getBundleStats,
 	getBundleTrend,
 	getCacheCount,
+	getPackageExports,
 	getPackageVersions,
 	parsePackageSpecifier,
 } from "../index.js";
@@ -534,6 +540,117 @@ describe("Library API", () => {
 			expect(fetchPackageVersions).toHaveBeenCalledWith({
 				packageName: "@myorg/private-pkg",
 				registry: "https://npm.mycompany.com",
+			});
+		});
+	});
+
+	describe("getPackageExports", () => {
+		const mockExportsResult = {
+			version: "7.0.0",
+			exports: [
+				{ name: "Button", kind: "const" as const },
+				{ name: "Input", kind: "const" as const },
+				{ name: "ButtonProps", kind: "interface" as const },
+			],
+			runtimeExports: [
+				{ name: "Button", kind: "const" as const },
+				{ name: "Input", kind: "const" as const },
+			],
+		};
+
+		beforeEach(() => {
+			vi.mocked(installPackage).mockResolvedValue(mockExportsResult);
+		});
+
+		it("should return exports for a package", async () => {
+			const result = await getPackageExports({
+				package: "@mantine/core@7.0.0",
+			});
+
+			expect(result.packageName).toBe("@mantine/core");
+			expect(result.packageVersion).toBe("7.0.0");
+			expect(result.count).toBe(3);
+			expect(result.runtimeCount).toBe(2);
+			expect(result.exports).toHaveLength(3);
+			expect(result.runtimeExports).toHaveLength(2);
+		});
+
+		it("should resolve latest version when not specified", async () => {
+			vi.mocked(fetchPackageVersions).mockResolvedValue({
+				versions: ["7.0.0", "6.0.0"],
+				tags: { latest: "7.0.0" },
+			});
+
+			await getPackageExports({
+				package: "@mantine/core",
+			});
+
+			expect(fetchPackageVersions).toHaveBeenCalledWith({
+				packageName: "@mantine/core",
+				registry: undefined,
+			});
+			expect(installPackage).toHaveBeenCalledWith({
+				packageName: "@mantine/core",
+				version: "7.0.0",
+				registry: undefined,
+			});
+		});
+
+		it("should pass registry option", async () => {
+			vi.mocked(fetchPackageVersions).mockResolvedValue({
+				versions: ["1.0.0"],
+				tags: { latest: "1.0.0" },
+			});
+
+			await getPackageExports({
+				package: "@myorg/private-pkg",
+				registry: "https://npm.mycompany.com",
+			});
+
+			expect(installPackage).toHaveBeenCalledWith({
+				packageName: "@myorg/private-pkg",
+				version: "1.0.0",
+				registry: "https://npm.mycompany.com",
+			});
+		});
+
+		it("should use specified version directly", async () => {
+			await getPackageExports({
+				package: "lodash@4.17.21",
+			});
+
+			expect(installPackage).toHaveBeenCalledWith({
+				packageName: "lodash",
+				version: "4.17.21",
+				registry: undefined,
+			});
+		});
+
+		it("should map exports correctly", async () => {
+			const result = await getPackageExports({
+				package: "@mantine/core@7.0.0",
+			});
+
+			expect(result.exports[0]).toEqual({ name: "Button", kind: "const" });
+			expect(result.exports[1]).toEqual({ name: "Input", kind: "const" });
+			expect(result.exports[2]).toEqual({
+				name: "ButtonProps",
+				kind: "interface",
+			});
+		});
+
+		it("should map runtimeExports correctly", async () => {
+			const result = await getPackageExports({
+				package: "@mantine/core@7.0.0",
+			});
+
+			expect(result.runtimeExports[0]).toEqual({
+				name: "Button",
+				kind: "const",
+			});
+			expect(result.runtimeExports[1]).toEqual({
+				name: "Input",
+				kind: "const",
 			});
 		});
 	});

@@ -49,6 +49,7 @@ type CacheRow = {
 	dependencies: string;
 	display_name: string;
 	created_at: number;
+	named_export_count: number | null;
 	actual_externals: string;
 };
 
@@ -90,6 +91,7 @@ export function initCache(): Database.Database {
 			dependencies TEXT NOT NULL DEFAULT '[]',
 			display_name TEXT NOT NULL,
 			created_at INTEGER NOT NULL,
+			named_export_count INTEGER DEFAULT 0,
 			actual_externals TEXT NOT NULL DEFAULT '',
 			UNIQUE(package_name, version, exports, platform, gzip_level, externals, no_external)
 		);
@@ -97,7 +99,22 @@ export function initCache(): Database.Database {
 		CREATE INDEX IF NOT EXISTS idx_created_at ON bundle_cache(created_at);
 	`);
 
-	// Migration: Add actual_externals column if it doesn't exist (for existing databases).
+	/**
+	 * Migration: Add named_export_count column if it doesn't exist (for existing
+	 * databases).
+	 */
+	try {
+		db.exec(
+			`ALTER TABLE bundle_cache ADD COLUMN named_export_count INTEGER DEFAULT 0`,
+		);
+	} catch {
+		// Column already exists, ignore error.
+	}
+
+	/**
+	 * Migration: Add actual_externals column if it doesn't exist (for existing
+	 * databases).
+	 */
 	try {
 		db.exec(
 			`ALTER TABLE bundle_cache ADD COLUMN actual_externals TEXT NOT NULL DEFAULT ''`,
@@ -190,9 +207,9 @@ export function getCachedResult(key: CacheKey): CachedBundleResult | null {
 		}
 
 		/**
-		 * Convert row to BundleResult.
-		 * Use actual_externals (computed externals including auto-detected react/react-dom)
-		 * if available, otherwise fall back to externals (for old cache entries).
+		 * Convert row to BundleResult. Use actual_externals (computed externals
+		 * including auto-detected react/react-dom) if available, otherwise fall back
+		 * to externals (for old cache entries).
 		 */
 		const externalsStr = row.actual_externals || row.externals;
 		return {
@@ -205,6 +222,7 @@ export function getCachedResult(key: CacheKey): CachedBundleResult | null {
 			externals: externalsStr ? externalsStr.split(",").filter(Boolean) : [],
 			dependencies,
 			platform: row.platform as "browser" | "node",
+			namedExportCount: row.named_export_count ?? 0,
 		};
 	} catch {
 		/**
@@ -230,8 +248,8 @@ export function setCachedResult(key: CacheKey, result: BundleResult): void {
 		const stmt = database.prepare(`
 			INSERT OR REPLACE INTO bundle_cache (
 				package_name, version, exports, platform, gzip_level, externals, no_external,
-				raw_size, gzip_size, dependencies, display_name, created_at, actual_externals
-			) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+				raw_size, gzip_size, dependencies, display_name, created_at, named_export_count, actual_externals
+			) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		`);
 
 		stmt.run(
@@ -247,6 +265,7 @@ export function setCachedResult(key: CacheKey, result: BundleResult): void {
 			JSON.stringify(result.dependencies),
 			result.packageName,
 			Date.now(),
+			result.namedExportCount,
 			result.externals.slice().sort().join(","),
 		);
 

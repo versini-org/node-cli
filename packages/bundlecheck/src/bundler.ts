@@ -6,6 +6,7 @@ import { promisify } from "node:util";
 import zlib from "node:zlib";
 import * as esbuild from "esbuild";
 import { DEFAULT_EXTERNALS, EXTERNAL_SUBPATHS } from "./defaults.js";
+import { getNamedExports } from "./exports.js";
 
 const gzipAsync = promisify(zlib.gzip);
 
@@ -102,6 +103,11 @@ export type BundleResult = {
 	externals: string[];
 	dependencies: string[];
 	platform: "browser" | "node";
+	/**
+	 * Total number of named exports in the package (when analyzing entire
+	 * package).
+	 */
+	namedExportCount: number;
 };
 
 /**
@@ -273,8 +279,8 @@ function generateEntryContent(options: EntryContentOptions): string {
 }
 
 /**
- * Check if an error is an esbuild BuildFailure.
- * BuildFailure has an `errors` array with structured error objects.
+ * Check if an error is an esbuild BuildFailure. BuildFailure has an `errors`
+ * array with structured error objects.
  */
 function isEsbuildBuildFailure(
 	error: unknown,
@@ -288,13 +294,14 @@ function isEsbuildBuildFailure(
 }
 
 /**
- * Extract unresolved module paths from an esbuild BuildFailure error.
- * Returns an object indicating which react-related modules failed to resolve.
+ * Extract unresolved module paths from an esbuild BuildFailure error. Returns
+ * an object indicating which react-related modules failed to resolve.
  *
  * Uses esbuild's structured error objects (errors array) for reliable parsing.
  * Falls back to string matching if the error format is unexpected.
  *
  * Tested against esbuild 0.27.x error format.
+ *
  */
 function parseUnresolvedModules(error: unknown): {
 	hasUnresolvedReact: boolean;
@@ -302,8 +309,10 @@ function parseUnresolvedModules(error: unknown): {
 } {
 	const result = { hasUnresolvedReact: false, hasUnresolvedReactDom: false };
 
-	// Pattern to extract module path from "Could not resolve X" errors.
-	// Matches: Could not resolve "module-name" or Could not resolve 'module-name'
+	/**
+	 * Pattern to extract module path from "Could not resolve X" errors. Matches:
+	 * Could not resolve "module-name" or Could not resolve 'module-name'.
+	 */
 	const resolveErrorPattern = /Could not resolve ["']([^"']+)["']/;
 
 	if (isEsbuildBuildFailure(error)) {
@@ -346,7 +355,9 @@ function parseUnresolvedModules(error: unknown): {
  * react-dom are only marked as external if they are declared in the package's
  * dependencies or peerDependencies.
  *
- * Returns the base package names (e.g., ["react", "react-dom"]) for display purposes.
+ * Returns the base package names (e.g., ["react", "react-dom"]) for display
+ * purposes.
+ *
  */
 export function getExternals(
 	packageName: string,
@@ -389,9 +400,9 @@ export function getExternals(
 }
 
 /**
- * Expand externals to include subpaths for esbuild.
- * For example, "react" expands to ["react", "react/jsx-runtime", "react/jsx-dev-runtime"].
- * This is needed because esbuild doesn't automatically externalize subpaths.
+ * Expand externals to include subpaths for esbuild. For example, "react"
+ * expands to ["react", "react/jsx-runtime", "react/jsx-dev-runtime"]. This is
+ * needed because esbuild doesn't automatically externalize subpaths.
  */
 export function expandExternalsForEsbuild(externals: string[]): string[] {
 	const expanded: string[] = [];
@@ -753,7 +764,8 @@ export async function checkBundleSize(
 		 * Bundle with esbuild. We use a two-phase approach:
 		 * 1. First attempt with logLevel: "silent" to suppress errors
 		 * 2. If it fails due to unresolved react imports, auto-add react to externals and retry
-		 * This handles packages that don't properly declare react as a peer dependency.
+		 * This handles packages that don't properly declare react as a peer
+		 * dependency.
 		 */
 		let result: esbuild.BuildResult<{ write: false; metafile: true }>;
 		try {
@@ -773,7 +785,8 @@ export async function checkBundleSize(
 		} catch (error) {
 			/**
 			 * Parse unresolved module errors using esbuild's structured error format.
-			 * This handles packages that don't properly declare react as a peer dependency.
+			 * This handles packages that don't properly declare react as a peer
+			 * dependency.
 			 */
 			const { hasUnresolvedReact, hasUnresolvedReactDom } =
 				parseUnresolvedModules(error);
@@ -835,6 +848,15 @@ export async function checkBundleSize(
 			displayName = `${packageName}/{${uniqueSubpaths.join(", ")}}`;
 		}
 
+		/**
+		 * Get named export count from the package's type definitions. Use
+		 * runtimeCount to exclude type-only exports (types, interfaces).
+		 */
+		const { runtimeCount: namedExportCount } = getNamedExports(
+			tmpDir,
+			packageName,
+		);
+
 		return {
 			packageName: displayName,
 			packageVersion: pkgInfo.version,
@@ -845,6 +867,7 @@ export async function checkBundleSize(
 			externals,
 			dependencies: allDependencies,
 			platform,
+			namedExportCount,
 		};
 	} finally {
 		cleanupTempDir(tmpDir);

@@ -17,6 +17,7 @@ import {
 	setCachedResult,
 } from "./cache.js";
 import { normalizePlatform, TREND_VERSION_COUNT } from "./defaults.js";
+import type { NamedExport } from "./exports.js";
 import { analyzeTrend, selectTrendVersions } from "./trend.js";
 import { fetchPackageVersions as fetchVersions } from "./versions.js";
 
@@ -118,6 +119,11 @@ export type BundleStats = {
 	 * Whether the result was retrieved from cache.
 	 */
 	fromCache: boolean;
+	/**
+	 * Total number of named exports in the package (when analyzing entire
+	 * package).
+	 */
+	namedExportCount: number;
 };
 
 /**
@@ -531,6 +537,139 @@ export async function getPackageVersions(
 }
 
 /**
+ * Options for getting package exports.
+ */
+export type GetPackageExportsOptions = {
+	/**
+	 * Package name with optional version (e.g., "@mantine/core" or
+	 * "@mantine/core@7.0.0").
+	 */
+	package: string;
+	/**
+	 * Custom npm registry URL.
+	 */
+	registry?: string;
+};
+
+/**
+ * A named export from a package.
+ */
+export type PackageExport = {
+	/**
+	 * The export name (e.g., "Button", "useState").
+	 */
+	name: string;
+	/**
+	 * The type of export.
+	 */
+	kind:
+		| "function"
+		| "class"
+		| "const"
+		| "type"
+		| "interface"
+		| "enum"
+		| "unknown";
+};
+
+/**
+ * Result from getPackageExports.
+ */
+export type PackageExports = {
+	/**
+	 * Package name.
+	 */
+	packageName: string;
+	/**
+	 * Resolved package version.
+	 */
+	packageVersion: string;
+	/**
+	 * Array of all named exports found in the package (including types).
+	 */
+	exports: PackageExport[];
+	/**
+	 * Total count of all named exports (including types).
+	 */
+	count: number;
+	/**
+	 * Array of runtime exports only (excluding types and interfaces). These are
+	 * the exports that can actually be imported at runtime.
+	 */
+	runtimeExports: PackageExport[];
+	/**
+	 * Count of runtime exports only (functions, classes, const, enums).
+	 */
+	runtimeCount: number;
+};
+
+/**
+ * Get the named exports of an npm package by analyzing its type definitions.
+ *
+ * @example
+ * ```js
+ * import { getPackageExports } from "@node-cli/bundlecheck";
+ *
+ * const { exports, count } = await getPackageExports({
+ *   package: "@mantine/core@7.0.0",
+ * });
+ *
+ * console.log(`Found ${count} exports`);
+ * console.log(exports.map(e => e.name)); // ["Accordion", "ActionIcon", "Alert", ...]
+ * ```
+ *
+ */
+export async function getPackageExports(
+	options: GetPackageExportsOptions,
+): Promise<PackageExports> {
+	const { package: packageName, registry } = options;
+
+	/**
+	 * Import the install utilities from bundler (we'll use a minimal bundle
+	 * check).
+	 */
+	const { name: baseName, version: requestedVersion } =
+		parsePackageSpecifier(packageName);
+
+	// Resolve "latest" to actual version.
+	let resolvedVersion = requestedVersion;
+	if (requestedVersion === "latest") {
+		const { tags } = await fetchVersions({
+			packageName: baseName,
+			registry,
+		});
+		resolvedVersion = tags.latest || requestedVersion;
+	}
+
+	/**
+	 * Use a minimal bundle check to install the package and get exports We'll
+	 * leverage the existing infrastructure.
+	 */
+	const { installPackage } = await import("./exports-installer.js");
+
+	const { version, exports, runtimeExports } = await installPackage({
+		packageName: baseName,
+		version: resolvedVersion,
+		registry,
+	});
+
+	return {
+		packageName: baseName,
+		packageVersion: version,
+		exports: exports.map((e: NamedExport) => ({
+			name: e.name,
+			kind: e.kind,
+		})),
+		count: exports.length,
+		runtimeExports: runtimeExports.map((e: NamedExport) => ({
+			name: e.name,
+			kind: e.kind,
+		})),
+		runtimeCount: runtimeExports.length,
+	};
+}
+
+/**
  * =============================================================================
  * Re-exports for advanced usage
  * =============================================================================
@@ -575,5 +714,6 @@ function formatBundleStats(
 		gzipSizeFormatted:
 			result.gzipSize !== null ? formatBytes(result.gzipSize) : null,
 		fromCache,
+		namedExportCount: result.namedExportCount,
 	};
 }
