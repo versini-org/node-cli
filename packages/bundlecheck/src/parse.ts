@@ -1,10 +1,6 @@
 /* istanbul ignore file */
 import { parser } from "@node-cli/parser";
-import {
-	DEFAULT_EXTERNALS,
-	defaultFlags,
-	isValidPlatform,
-} from "./defaults.js";
+import { defaultFlags, isValidPlatform } from "./defaults.js";
 
 export type Flags = {
 	boring?: boolean;
@@ -101,7 +97,8 @@ export const config: Configuration = parser({
 		external: {
 			shortFlag: "e",
 			default: defaultFlags.external,
-			description: `Comma-separated additional externals (default externals: ${DEFAULT_EXTERNALS.join(", ")})`,
+			description:
+				"Comma-separated additional externals (react, react-dom auto-external when in package deps)",
 			type: "string",
 		},
 		noExternal: {

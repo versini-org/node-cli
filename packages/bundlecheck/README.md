@@ -11,7 +11,7 @@ A CLI tool to check the bundle size of npm packages, similar to [bundlephobia.co
 - Interactive version selection with `--versions` flag
 - Bundle size trend analysis with `--trend` flag (bar graph across versions)
 - Support for checking specific exports (tree-shaking)
-- Automatic externalization of React and React-DOM
+- Smart externalization of React and React-DOM (only when declared as dependencies)
 - Raw and gzip sizes with configurable compression level
 - **Platform support**: target `browser` (default) or `node` with smart auto-detection
 - Custom npm registry support (for private registries)
@@ -122,7 +122,7 @@ bundlecheck @versini/ui-panel@1.0.0
 # Check specific exports from @mantine/core
 bundlecheck @mantine/core "ScrollArea,Button"
 
-# Check react itself (without marking it as external)
+# Check react with all dependencies bundled (no externals)
 bundlecheck react -n
 
 # Add vue and svelte as additional externals
@@ -181,7 +181,7 @@ console.log(stats);
 //   rawSizeFormatted: "229.07 kB",
 //   gzipSizeFormatted: "44.61 kB",
 //   exports: [],
-//   externals: ["react", "react-dom"],
+//   externals: ["react", "react-dom"],  // Only present because @mantine/core has these as peerDependencies
 //   dependencies: ["@floating-ui/react", ...],
 //   platform: "browser",
 //   gzipLevel: 5,
@@ -241,7 +241,7 @@ Get bundle size statistics for a single package.
 | `package`    | `string`                      | (required) | Package name with optional version (e.g., `lodash@4.17.0`) |
 | `exports`    | `string[]`                    | `undefined`| Specific exports to measure (tree-shaking)               |
 | `external`   | `string[]`                    | `undefined`| Additional packages to mark as external                  |
-| `noExternal` | `boolean`                     | `false`    | Bundle everything including default externals            |
+| `noExternal` | `boolean`                     | `false`    | Bundle everything (no externals, even react/react-dom)   |
 | `gzipLevel`  | `number`                      | `5`        | Gzip compression level (1-9)                             |
 | `registry`   | `string`                      | `undefined`| Custom npm registry URL                                  |
 | `platform`   | `"browser" \| "node" \| "auto"` | `"auto"`   | Target platform                                          |
@@ -386,9 +386,11 @@ bundlecheck fastify -p server  # "server" is an alias for "node"
 
 ## Default Externals
 
-By default, `react` and `react-dom` are marked as external (not included in the bundle size) since most React-based packages expect these as peer dependencies. This matches how these packages would typically be used in a real application.
+When a package declares `react` or `react-dom` in its `dependencies` or `peerDependencies`, they are automatically marked as external (not included in the bundle size). This matches how these packages would typically be used in a real application where React is provided by the host application.
 
-To include React/React-DOM in the bundle size calculation, use the `--no-external` flag.
+For packages that don't depend on React, these are not automatically externalized.
+
+To include all dependencies (including React when present) in the bundle size calculation, use the `--no-external` flag.
 
 ## Custom Registry
 
