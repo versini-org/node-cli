@@ -49,6 +49,7 @@ type CacheRow = {
 	dependencies: string;
 	display_name: string;
 	created_at: number;
+	named_export_count: number | null;
 };
 
 let db: Database.Database | null = null;
@@ -89,11 +90,21 @@ export function initCache(): Database.Database {
 			dependencies TEXT NOT NULL DEFAULT '[]',
 			display_name TEXT NOT NULL,
 			created_at INTEGER NOT NULL,
+			named_export_count INTEGER DEFAULT 0,
 			UNIQUE(package_name, version, exports, platform, gzip_level, externals, no_external)
 		);
 
 		CREATE INDEX IF NOT EXISTS idx_created_at ON bundle_cache(created_at);
 	`);
+
+	// Migration: Add named_export_count column if it doesn't exist (for existing databases).
+	try {
+		db.exec(
+			`ALTER TABLE bundle_cache ADD COLUMN named_export_count INTEGER DEFAULT 0`,
+		);
+	} catch {
+		// Column already exists, ignore error.
+	}
 
 	return db;
 }
@@ -189,6 +200,7 @@ export function getCachedResult(key: CacheKey): CachedBundleResult | null {
 			externals: row.externals ? row.externals.split(",").filter(Boolean) : [],
 			dependencies,
 			platform: row.platform as "browser" | "node",
+			namedExportCount: row.named_export_count ?? 0,
 		};
 	} catch {
 		/**
@@ -214,8 +226,8 @@ export function setCachedResult(key: CacheKey, result: BundleResult): void {
 		const stmt = database.prepare(`
 			INSERT OR REPLACE INTO bundle_cache (
 				package_name, version, exports, platform, gzip_level, externals, no_external,
-				raw_size, gzip_size, dependencies, display_name, created_at
-			) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+				raw_size, gzip_size, dependencies, display_name, created_at, named_export_count
+			) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		`);
 
 		stmt.run(
@@ -231,6 +243,7 @@ export function setCachedResult(key: CacheKey, result: BundleResult): void {
 			JSON.stringify(result.dependencies),
 			result.packageName,
 			Date.now(),
+			result.namedExportCount,
 		);
 
 		// Enforce max entries (LRU-style eviction based on created_at).

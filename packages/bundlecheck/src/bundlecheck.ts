@@ -48,6 +48,7 @@ function displayResult(
 		externals: string[];
 		dependencies: string[];
 		platform: "browser" | "node";
+		namedExportCount: number;
 	},
 	isAutoDetected: boolean,
 ): void {
@@ -57,12 +58,20 @@ function displayResult(
 	const platformLabel = result.platform === "node" ? "node" : "browser";
 	const platformNote = isAutoDetected ? " (auto-detected)" : "";
 
+	// Format exports display
+	let exportsDisplay: string;
+	if (result.exports.length > 0) {
+		exportsDisplay = `{ ${result.exports.join(", ")} }`;
+	} else if (result.namedExportCount > 0) {
+		exportsDisplay = `${result.namedExportCount} named exports (entire package)`;
+	} else {
+		exportsDisplay = "* (entire package)";
+	}
+
 	log.printBox(
 		[
 			`${blue("Package:")} ${result.packageName} (${blue("version:")} ${result.packageVersion})`,
-			result.exports.length > 0
-				? `${blue("Exports:")} { ${result.exports.join(", ")} }`
-				: `${blue("Exports:")} * (entire package)`,
+			`${blue("Exports:")} ${exportsDisplay}`,
 			"",
 			`${blue("Raw size:")}  ${formatBytes(result.rawSize)}`,
 			result.gzipSize !== null

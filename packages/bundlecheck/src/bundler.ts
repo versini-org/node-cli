@@ -6,6 +6,7 @@ import { promisify } from "node:util";
 import zlib from "node:zlib";
 import * as esbuild from "esbuild";
 import { DEFAULT_EXTERNALS } from "./defaults.js";
+import { getNamedExports } from "./exports.js";
 
 const gzipAsync = promisify(zlib.gzip);
 
@@ -102,6 +103,10 @@ export type BundleResult = {
 	externals: string[];
 	dependencies: string[];
 	platform: "browser" | "node";
+	/**
+	 * Total number of named exports in the package (when analyzing entire package).
+	 */
+	namedExportCount: number;
 };
 
 /**
@@ -689,6 +694,13 @@ export async function checkBundleSize(
 			displayName = `${packageName}/{${uniqueSubpaths.join(", ")}}`;
 		}
 
+		// Get named export count from the package's type definitions.
+		// Use runtimeCount to exclude type-only exports (types, interfaces)
+		const { runtimeCount: namedExportCount } = getNamedExports(
+			tmpDir,
+			packageName,
+		);
+
 		return {
 			packageName: displayName,
 			packageVersion: pkgInfo.version,
@@ -699,6 +711,7 @@ export async function checkBundleSize(
 			externals,
 			dependencies: allDependencies,
 			platform,
+			namedExportCount,
 		};
 	} finally {
 		cleanupTempDir(tmpDir);
