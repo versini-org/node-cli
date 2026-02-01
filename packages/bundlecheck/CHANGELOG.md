@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1](https://github.com/versini-org/node-cli/compare/bundlecheck-v1.5.0...bundlecheck-v1.5.1) (2026-02-01)
+
+
+### Bug Fixes
+
+* **bundlecheck:** Update README: externals, cache, retry ([#497](https://github.com/versini-org/node-cli/issues/497)) ([9791163](https://github.com/versini-org/node-cli/commit/9791163c42cf2cef004ab6cdbf6130b81d6fddd1))
+
 ## [1.5.0](https://github.com/versini-org/node-cli/compare/bundlecheck-v1.4.1...bundlecheck-v1.5.0) (2026-02-01)
 
 
