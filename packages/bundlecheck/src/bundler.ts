@@ -273,9 +273,9 @@ function generateEntryContent(options: EntryContentOptions): string {
 }
 
 /**
- * Get externals list based on options and package dependencies.
- * react and react-dom are only marked as external if they are declared
- * in the package's dependencies or peerDependencies.
+ * Get externals list based on options and package dependencies. react and
+ * react-dom are only marked as external if they are declared in the package's
+ * dependencies or peerDependencies.
  */
 export function getExternals(
 	packageName: string,
@@ -287,10 +287,16 @@ export function getExternals(
 		return [];
 	}
 
-	// Start with empty result - we'll only add react/react-dom if they're in package deps.
+	/**
+	 * Start with empty result - we'll only add react/react-dom if they're in
+	 * package deps.
+	 */
 	let result: string[] = [];
 
-	// Only include react/react-dom if they're in the package's dependencies or peerDependencies.
+	/**
+	 * Only include react/react-dom if they're in the package's dependencies or
+	 * peerDependencies.
+	 */
 	if (packageDependencies && packageDependencies.length > 0) {
 		for (const dep of DEFAULT_EXTERNALS) {
 			// Don't mark as external if we're checking the package itself.
@@ -635,8 +641,10 @@ export async function checkBundleSize(
 		const entryFile = path.join(tmpDir, "entry.js");
 		fs.writeFileSync(entryFile, entryContent);
 
-		// Get externals based on package dependencies.
-		// Only include react/react-dom if they're in the package's dependencies or peerDependencies.
+		/**
+		 * Get externals based on package dependencies. Only include react/react-dom
+		 * if they're in the package's dependencies or peerDependencies.
+		 */
 		const externals = getExternals(
 			packageName,
 			additionalExternals,

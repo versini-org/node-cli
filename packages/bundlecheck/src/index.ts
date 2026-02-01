@@ -328,12 +328,12 @@ export async function getBundleStats(
 		resolvedVersion = tags.latest || requestedVersion;
 	}
 
-	// Build cache key.
-	// Note: We use additionalExternals here, not computed externals, because
-	// the default externals (react, react-dom) are determined at bundle time
-	// based on the package's dependencies. The cache key captures the user's intent
-	// (additionalExternals + noExternal flag), and the actual externals are stored
-	// in the cached result.
+	/**
+	 * Build cache key.
+	 * NOTE: We use additionalExternals here, not computed externals, because the default externals (react, react-dom) are determined at bundle time based on the package's dependencies.
+	 * The cache key captures the user's intent (additionalExternals + noExternal
+	 * flag), and the actual externals are stored in the cached result.
+	 */
 	const cacheKey = normalizeCacheKey({
 		packageName: baseName,
 		version: resolvedVersion,
