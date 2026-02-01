@@ -9,7 +9,6 @@ import {
 	type BundleResult,
 	checkBundleSize,
 	formatBytes,
-	getExternals,
 	parsePackageSpecifier,
 } from "./bundler.js";
 import {
@@ -45,7 +44,7 @@ export type GetBundleStatsOptions = {
 	 */
 	external?: string[];
 	/**
-	 * Bundle everything including default externals (react, react-dom).
+	 * Bundle everything including dependencies that would normally be external.
 	 */
 	noExternal?: boolean;
 	/**
@@ -142,7 +141,7 @@ export type GetBundleTrendOptions = {
 	 */
 	external?: string[];
 	/**
-	 * Bundle everything including default externals (react, react-dom).
+	 * Bundle everything including dependencies that would normally be external.
 	 */
 	noExternal?: boolean;
 	/**
@@ -329,17 +328,19 @@ export async function getBundleStats(
 		resolvedVersion = tags.latest || requestedVersion;
 	}
 
-	// Compute externals for cache key.
-	const externals = getExternals(baseName, additionalExternals, noExternal);
-
 	// Build cache key.
+	// Note: We use additionalExternals here, not computed externals, because
+	// the default externals (react, react-dom) are determined at bundle time
+	// based on the package's dependencies. The cache key captures the user's intent
+	// (additionalExternals + noExternal flag), and the actual externals are stored
+	// in the cached result.
 	const cacheKey = normalizeCacheKey({
 		packageName: baseName,
 		version: resolvedVersion,
 		exports: exportsList,
 		platform,
 		gzipLevel,
-		externals,
+		externals: additionalExternals || [],
 		noExternal: noExternal ?? false,
 	});
 

@@ -199,8 +199,9 @@ describe("checkBundleSize", () => {
 		});
 		expect(result.rawSize).toBeGreaterThan(0);
 		expect(result.gzipSize).toBeGreaterThan(0);
-		expect(result.externals).toContain("react");
-		expect(result.externals).toContain("react-dom");
+		// react and react-dom are NOT external since the package doesn't have them as dependencies
+		expect(result.externals).not.toContain("react");
+		expect(result.externals).not.toContain("react-dom");
 	});
 
 	it("should respect noExternal option", async () => {
@@ -218,27 +219,61 @@ describe("checkBundleSize", () => {
 			additionalExternals: ["lodash", "dayjs"],
 		});
 
-		expect(result.externals).toContain("react");
-		expect(result.externals).toContain("react-dom");
+		// react and react-dom are NOT external since the package doesn't have them as dependencies
+		expect(result.externals).not.toContain("react");
+		expect(result.externals).not.toContain("react-dom");
+		// Additional externals are added
 		expect(result.externals).toContain("lodash");
 		expect(result.externals).toContain("dayjs");
 	});
 
-	it("should exclude react from externals when checking react itself", async () => {
+	it("should not mark react as external when checking react itself", async () => {
 		const result = await checkBundleSize({
 			packageName: "react",
 		});
 
+		// When checking react, it should never be external (even if it were somehow in deps)
 		expect(result.externals).not.toContain("react");
+	});
+
+	it("should include react/react-dom as external when package has them as peer dependencies", async () => {
+		vi.mocked(fs.readFileSync).mockReturnValue(
+			JSON.stringify({
+				name: "test-package",
+				version: "1.0.0",
+				main: "./dist/index.js",
+				dependencies: {},
+				peerDependencies: { react: "^18.0.0", "react-dom": "^18.0.0" },
+			}),
+		);
+
+		const result = await checkBundleSize({
+			packageName: "test-package",
+		});
+
+		// react and react-dom ARE external since they're in peerDependencies
+		expect(result.externals).toContain("react");
 		expect(result.externals).toContain("react-dom");
 	});
 
-	it("should exclude react-dom from externals when checking react-dom itself", async () => {
+	it("should include react as external when package has it as prod dependency", async () => {
+		vi.mocked(fs.readFileSync).mockReturnValue(
+			JSON.stringify({
+				name: "test-package",
+				version: "1.0.0",
+				main: "./dist/index.js",
+				dependencies: { react: "^18.0.0" },
+				peerDependencies: {},
+			}),
+		);
+
 		const result = await checkBundleSize({
-			packageName: "react-dom",
+			packageName: "test-package",
 		});
 
+		// react IS external since it's in dependencies
 		expect(result.externals).toContain("react");
+		// react-dom is NOT external since it's not in dependencies
 		expect(result.externals).not.toContain("react-dom");
 	});
 
@@ -275,6 +310,8 @@ describe("checkBundleSize", () => {
 		});
 
 		expect(result.dependencies).toContain("react");
+		// react should be external since it's in peerDependencies
+		expect(result.externals).toContain("react");
 	});
 
 	it("should respect custom gzip level", async () => {
