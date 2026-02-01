@@ -11,12 +11,12 @@ A CLI tool to check the bundle size of npm packages, similar to [bundlephobia.co
 - Interactive version selection with `--versions` flag
 - Bundle size trend analysis with `--trend` flag (bar graph across versions)
 - Support for checking specific exports (tree-shaking)
-- Smart externalization of React and React-DOM (only when declared as dependencies)
+- Smart externalization of React and React-DOM (including subpaths like `jsx-runtime`)
 - Raw and gzip sizes with configurable compression level
 - **Platform support**: target `browser` (default) or `node` with smart auto-detection
 - Custom npm registry support (for private registries)
 - Fast bundling using esbuild (with pnpm support)
-- **Local caching** for faster repeated lookups (SQLite-based, max 100 entries)
+- **Local caching** for faster repeated lookups (SQLite-based, max 1000 entries)
 - **Library API** for programmatic usage in Node.js applications
 
 ## Installation
@@ -406,11 +406,13 @@ clearCache();     // Clears all cached results
 ## How It Works
 
 1. Creates a temporary directory
-2. Installs the specified npm package
+2. Installs the specified npm package (and its peer dependencies)
 3. Creates an entry file importing the package/exports
 4. Bundles with esbuild (minified, tree-shaken)
-5. Reports raw and gzip sizes
-6. Cleans up temporary files
+5. If bundling fails due to unresolved React imports, automatically adds React to externals and retries
+6. Reports raw and gzip sizes
+7. Caches the result for faster future lookups
+8. Cleans up temporary files
 
 ## Platform Support
 
@@ -437,9 +439,37 @@ bundlecheck fastify -p server  # "server" is an alias for "node"
 
 When a package declares `react` or `react-dom` in its `dependencies` or `peerDependencies`, they are automatically marked as external (not included in the bundle size). This matches how these packages would typically be used in a real application where React is provided by the host application.
 
-For packages that don't depend on React, these are not automatically externalized.
+### Subpath externalization
 
-To include all dependencies (including React when present) in the bundle size calculation, use the `--no-external` flag.
+When `react` is externalized, the following subpaths are also automatically externalized:
+
+- `react/jsx-runtime`
+- `react/jsx-dev-runtime`
+
+When `react-dom` is externalized:
+
+- `react-dom/client`
+- `react-dom/server`
+
+This ensures that modern JSX transform imports and React 18+ APIs work correctly.
+
+### Auto-detection for improperly packaged libraries
+
+Some npm packages import from `react` without declaring it in their `peerDependencies`. Bundlecheck automatically detects this scenario: if the initial bundle fails due to unresolved React imports, it will automatically add `react` and/or `react-dom` to externals and retry.
+
+This means commands like the following work out of the box, even when the package doesn't properly declare its peer dependencies:
+
+```bash
+bundlecheck @versini/ui-button  # Works even though react is not in peerDependencies
+```
+
+### Disabling externals
+
+To include all dependencies (including React when present) in the bundle size calculation, use the `--no-external` flag:
+
+```bash
+bundlecheck react --no-external  # Include React itself in the bundle
+```
 
 ## Custom Registry
 
@@ -463,7 +493,7 @@ Bundle size results are cached locally to speed up repeated lookups. The cache i
 ### How it works
 
 - Results are cached based on: package name, version, exports, platform, gzip level, and externals configuration
-- The cache holds up to **100 entries** (least recently used entries are evicted first)
+- The cache holds up to **1000 entries** (least recently used entries are evicted first)
 - When you check a package, the CLI first looks for a cached result with matching parameters
 
 ### Smart version matching
