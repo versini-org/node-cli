@@ -5,6 +5,7 @@ import * as esbuild from "esbuild";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	checkBundleSize,
+	expandExternalsForEsbuild,
 	formatBytes,
 	parsePackageSpecifier,
 } from "../bundler.js";
@@ -130,6 +131,56 @@ describe("formatBytes", () => {
 
 	it("should format gigabytes correctly", () => {
 		expect(formatBytes(1073741824)).toBe("1 GB");
+	});
+});
+
+describe("expandExternalsForEsbuild", () => {
+	it("should return empty array for empty input", () => {
+		expect(expandExternalsForEsbuild([])).toEqual([]);
+	});
+
+	it("should expand react to include jsx-runtime subpaths", () => {
+		const result = expandExternalsForEsbuild(["react"]);
+		expect(result).toContain("react");
+		expect(result).toContain("react/jsx-runtime");
+		expect(result).toContain("react/jsx-dev-runtime");
+	});
+
+	it("should expand react-dom to include client and server subpaths", () => {
+		const result = expandExternalsForEsbuild(["react-dom"]);
+		expect(result).toContain("react-dom");
+		expect(result).toContain("react-dom/client");
+		expect(result).toContain("react-dom/server");
+	});
+
+	it("should expand both react and react-dom", () => {
+		const result = expandExternalsForEsbuild(["react", "react-dom"]);
+		expect(result).toContain("react");
+		expect(result).toContain("react/jsx-runtime");
+		expect(result).toContain("react/jsx-dev-runtime");
+		expect(result).toContain("react-dom");
+		expect(result).toContain("react-dom/client");
+		expect(result).toContain("react-dom/server");
+	});
+
+	it("should pass through packages without known subpaths", () => {
+		const result = expandExternalsForEsbuild(["lodash", "dayjs"]);
+		expect(result).toEqual(["lodash", "dayjs"]);
+	});
+
+	it("should handle mixed packages with and without subpaths", () => {
+		const result = expandExternalsForEsbuild(["react", "lodash"]);
+		expect(result).toContain("react");
+		expect(result).toContain("react/jsx-runtime");
+		expect(result).toContain("react/jsx-dev-runtime");
+		expect(result).toContain("lodash");
+		expect(result).not.toContain("lodash/fp"); // lodash has no subpath mapping
+	});
+
+	it("should deduplicate results", () => {
+		const result = expandExternalsForEsbuild(["react", "react"]);
+		const reactCount = result.filter((r) => r === "react").length;
+		expect(reactCount).toBe(1);
 	});
 });
 
