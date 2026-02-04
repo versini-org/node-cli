@@ -15,7 +15,11 @@ import {
 	normalizeCacheKey,
 	setCachedResult,
 } from "./cache.js";
-import { normalizePlatform, TREND_VERSION_COUNT } from "./defaults.js";
+import {
+	normalizePlatform,
+	normalizeTarget,
+	TREND_VERSION_COUNT,
+} from "./defaults.js";
 import { config } from "./parse.js";
 import {
 	analyzeTrend,
@@ -124,6 +128,9 @@ async function main() {
 	// Normalize platform from flag (handles aliases like "web" → "browser").
 	const platform = normalizePlatform(flags?.platform);
 
+	// Normalize target (e.g., lowercase).
+	const target = normalizeTarget(flags?.target);
+
 	/**
 	 * If --trend flag is set, show bundle size trend across versions --trend alone
 	 * uses default (5), --trend N uses N versions.
@@ -172,6 +179,7 @@ async function main() {
 				registry: flags?.registry,
 				platform,
 				force: flags?.force,
+				target,
 			});
 
 			if (results.length === 0) {
@@ -289,6 +297,7 @@ async function main() {
 			gzipLevel: flags?.gzipLevel,
 			registry: flags?.registry,
 			platform,
+			target,
 		});
 
 		// Store result in cache.

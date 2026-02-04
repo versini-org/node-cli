@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 import { parser } from "@node-cli/parser";
-import { defaultFlags, isValidPlatform } from "./defaults.js";
+import { defaultFlags, isValidPlatform, isValidTarget } from "./defaults.js";
 
 export type Flags = {
 	boring?: boolean;
@@ -14,6 +14,7 @@ export type Flags = {
 	registry?: string;
 	platform?: string;
 	force?: boolean;
+	target?: string;
 };
 
 export type Parameters = {
@@ -86,6 +87,10 @@ export const config: Configuration = parser({
 			command: "bundlecheck lodash --force",
 			comment: "## Bypass cache and force re-fetch/re-calculation",
 		},
+		{
+			command: "bundlecheck lodash --target es2020",
+			comment: "## Use a specific esbuild target (default: es2022)",
+		},
 	],
 	flags: {
 		gzipLevel: {
@@ -155,6 +160,13 @@ export const config: Configuration = parser({
 			description: "Bypass cache and force re-fetch/re-calculation",
 			type: "boolean",
 		},
+		target: {
+			shortFlag: "T",
+			default: defaultFlags.target,
+			description:
+				'esbuild target for bundling (e.g., "es2022", "es2020"). Default: "es2022"',
+			type: "string",
+		},
 	},
 	parameters: {
 		package: {
@@ -183,6 +195,12 @@ export const config: Configuration = parser({
 			message: () =>
 				'Error: Invalid platform. Use "browser" (or web, desktop, client) or "node" (or server, nodejs, backend)',
 			test: (flags) => !isValidPlatform(flags.platform),
+		},
+		{
+			exit: 1,
+			message: () =>
+				'Error: Invalid target. Use an ECMAScript version (e.g., "es2022", "es2020", "esnext")',
+			test: (flags) => !isValidTarget(flags.target),
 		},
 	],
 	usage: true,
