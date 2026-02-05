@@ -40,6 +40,10 @@ export type TrendOptions = {
 	 * Bypass cache and force re-fetch/re-calculation.
 	 */
 	force?: boolean;
+	/**
+	 * esbuild target (e.g., "es2022", "es2020"). Defaults to "es2022".
+	 */
+	target?: string;
 };
 
 /**
@@ -73,6 +77,7 @@ export async function analyzeTrend(
 		registry,
 		platform,
 		force,
+		target,
 	} = options;
 
 	const log = new Logger({ boring });
@@ -126,6 +131,7 @@ export async function analyzeTrend(
 				gzipLevel,
 				registry,
 				platform,
+				target,
 			});
 
 			// Store result in cache.

@@ -108,6 +108,7 @@ bundlecheck lodash "debounce,throttle"
 | `--registry <url>`  | `-r <url>`  | Custom npm registry URL (default: registry.npmjs.org)            |
 | `--platform <name>` | `-p <name>` | Target platform: `auto` (default), `browser`, or `node`          |
 | `--force`           | `-f`        | Bypass cache and force re-fetch/re-calculation                   |
+| `--target <target>` | `-T <target>` | esbuild target (e.g., "es2022", "es2020"). Default: "es2022"     |
 
 ### Examples
 
@@ -151,6 +152,9 @@ bundlecheck express  # auto-detects "node" from package.json engines
 
 # Bypass cache and force re-fetch
 bundlecheck lodash --force
+
+# Use a specific esbuild target (default: es2022)
+bundlecheck lodash --target es2020
 ```
 
 ## Programmatic Usage (Library API)
@@ -253,6 +257,7 @@ Get bundle size statistics for a single package.
 | `registry`   | `string`                      | `undefined`| Custom npm registry URL                                  |
 | `platform`   | `"browser" \| "node" \| "auto"` | `"auto"`   | Target platform                                          |
 | `force`      | `boolean`                     | `false`    | Bypass cache                                             |
+| `target`     | `string`                      | `"es2022"` | esbuild target (e.g., "es2022", "es2020")                |
 
 **Returns:** `Promise<BundleStats>`
 
@@ -291,6 +296,7 @@ Get bundle size trend across multiple versions.
 | `registry`     | `string`                      | `undefined`| Custom npm registry URL                                  |
 | `platform`     | `"browser" \| "node" \| "auto"` | `"auto"`   | Target platform                                          |
 | `force`        | `boolean`                     | `false`    | Bypass cache                                             |
+| `target`       | `string`                      | `"es2022"` | esbuild target (e.g., "es2022", "es2020")                |
 
 **Returns:** `Promise<BundleTrend>`
 

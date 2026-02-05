@@ -9,6 +9,7 @@ export const defaultFlags = {
 	registry: "",
 	platform: "auto",
 	force: false,
+	target: "es2022",
 };
 
 /**
@@ -78,6 +79,57 @@ export function isValidPlatform(platform: string | undefined): boolean {
 }
 
 export const TREND_VERSION_COUNT = 5;
+
+/**
+ * Default esbuild target for bundling.
+ */
+export const DEFAULT_TARGET = "es2022";
+
+/**
+ * Valid esbuild target values.
+ * Includes ECMAScript versions (es2015-es2024, esnext) and browser/runtime targets.
+ */
+export const VALID_TARGETS = [
+	"es2015",
+	"es2016",
+	"es2017",
+	"es2018",
+	"es2019",
+	"es2020",
+	"es2021",
+	"es2022",
+	"es2023",
+	"es2024",
+	"esnext",
+];
+
+/**
+ * Check if a target value is valid.
+ */
+export function isValidTarget(target: string | undefined): boolean {
+	if (target === undefined) {
+		return true;
+	}
+
+	const normalized = target.toLowerCase().trim();
+
+	// Empty string after trim is invalid.
+	if (normalized === "") {
+		return false;
+	}
+
+	return VALID_TARGETS.includes(normalized);
+}
+
+/**
+ * Normalize target to lowercase.
+ */
+export function normalizeTarget(target: string | undefined): string {
+	if (!target) {
+		return DEFAULT_TARGET;
+	}
+	return target.toLowerCase().trim();
+}
 
 /**
  * Base packages to auto-detect for externalization. These are checked against

@@ -5,7 +5,11 @@ import path from "node:path";
 import { promisify } from "node:util";
 import zlib from "node:zlib";
 import * as esbuild from "esbuild";
-import { DEFAULT_EXTERNALS, EXTERNAL_SUBPATHS } from "./defaults.js";
+import {
+	DEFAULT_EXTERNALS,
+	DEFAULT_TARGET,
+	EXTERNAL_SUBPATHS,
+} from "./defaults.js";
 import { getNamedExports } from "./exports.js";
 
 const gzipAsync = promisify(zlib.gzip);
@@ -88,6 +92,10 @@ export type BundleOptions = {
 	 * Target platform. If undefined, auto-detects from package.json engines.
 	 */
 	platform?: "browser" | "node";
+	/**
+	 * esbuild target (e.g., "es2022", "es2020"). Defaults to "es2022".
+	 */
+	target?: string;
 };
 
 export type BundleResult = {
@@ -617,6 +625,7 @@ export async function checkBundleSize(
 		gzipLevel = 5,
 		registry,
 		platform: explicitPlatform,
+		target = DEFAULT_TARGET,
 	} = options;
 
 	// Parse the package specifier to extract name, version, and subpath.
@@ -775,7 +784,7 @@ export async function checkBundleSize(
 				write: false,
 				format: "esm",
 				platform,
-				target: "es2020",
+				target,
 				minify: true,
 				treeShaking: true,
 				external: esbuildExternals,
@@ -811,7 +820,7 @@ export async function checkBundleSize(
 						write: false,
 						format: "esm",
 						platform,
-						target: "es2020",
+						target,
 						minify: true,
 						treeShaking: true,
 						external: esbuildExternals,

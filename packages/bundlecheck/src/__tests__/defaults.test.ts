@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { isValidPlatform, normalizePlatform } from "../defaults.js";
+import {
+	DEFAULT_TARGET,
+	isValidPlatform,
+	isValidTarget,
+	normalizePlatform,
+	normalizeTarget,
+} from "../defaults.js";
 
 describe("normalizePlatform", () => {
 	describe("auto detection", () => {
@@ -135,6 +141,83 @@ describe("isValidPlatform", () => {
 		it("should reject misspellings", () => {
 			expect(isValidPlatform("browsr")).toBe(false); // cSpell:ignore browsr
 			expect(isValidPlatform("nod")).toBe(false);
+		});
+	});
+});
+
+describe("normalizeTarget", () => {
+	describe("default value", () => {
+		it("should return DEFAULT_TARGET for undefined input", () => {
+			expect(normalizeTarget(undefined)).toBe(DEFAULT_TARGET);
+		});
+
+		it("should return DEFAULT_TARGET for empty string", () => {
+			expect(normalizeTarget("")).toBe(DEFAULT_TARGET);
+		});
+	});
+
+	describe("normalization", () => {
+		it("should normalize to lowercase", () => {
+			expect(normalizeTarget("ES2022")).toBe("es2022");
+			expect(normalizeTarget("ES2020")).toBe("es2020");
+			expect(normalizeTarget("ESNext")).toBe("esnext");
+		});
+
+		it("should trim whitespace", () => {
+			expect(normalizeTarget("  es2022  ")).toBe("es2022");
+			expect(normalizeTarget(" es2020 ")).toBe("es2020");
+		});
+	});
+});
+
+describe("isValidTarget", () => {
+	describe("valid values", () => {
+		it("should accept undefined", () => {
+			expect(isValidTarget(undefined)).toBe(true);
+		});
+
+		it("should accept ECMAScript versions", () => {
+			expect(isValidTarget("es2015")).toBe(true);
+			expect(isValidTarget("es2016")).toBe(true);
+			expect(isValidTarget("es2017")).toBe(true);
+			expect(isValidTarget("es2018")).toBe(true);
+			expect(isValidTarget("es2019")).toBe(true);
+			expect(isValidTarget("es2020")).toBe(true);
+			expect(isValidTarget("es2021")).toBe(true);
+			expect(isValidTarget("es2022")).toBe(true);
+			expect(isValidTarget("es2023")).toBe(true);
+			expect(isValidTarget("es2024")).toBe(true);
+			expect(isValidTarget("esnext")).toBe(true);
+		});
+
+		it("should be case insensitive", () => {
+			expect(isValidTarget("ES2022")).toBe(true);
+			expect(isValidTarget("ES2020")).toBe(true);
+			expect(isValidTarget("ESNEXT")).toBe(true);
+		});
+
+		it("should handle whitespace", () => {
+			expect(isValidTarget("  es2022  ")).toBe(true);
+			expect(isValidTarget(" es2020 ")).toBe(true);
+		});
+	});
+
+	describe("invalid values", () => {
+		it("should reject invalid target names", () => {
+			expect(isValidTarget("invalid")).toBe(false);
+			expect(isValidTarget("es5")).toBe(false);
+			expect(isValidTarget("es6")).toBe(false);
+			expect(isValidTarget("es2014")).toBe(false);
+			expect(isValidTarget("es2025")).toBe(false);
+		});
+
+		it("should reject empty string", () => {
+			expect(isValidTarget("")).toBe(false);
+		});
+
+		it("should reject misspellings", () => {
+			expect(isValidTarget("es202")).toBe(false);
+			expect(isValidTarget("esnex")).toBe(false);
 		});
 	});
 });

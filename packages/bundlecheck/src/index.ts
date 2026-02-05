@@ -16,7 +16,11 @@ import {
 	normalizeCacheKey,
 	setCachedResult,
 } from "./cache.js";
-import { normalizePlatform, TREND_VERSION_COUNT } from "./defaults.js";
+import {
+	normalizePlatform,
+	normalizeTarget,
+	TREND_VERSION_COUNT,
+} from "./defaults.js";
 import type { NamedExport } from "./exports.js";
 import { analyzeTrend, selectTrendVersions } from "./trend.js";
 import { fetchPackageVersions as fetchVersions } from "./versions.js";
@@ -65,6 +69,10 @@ export type GetBundleStatsOptions = {
 	 * Bypass cache and force re-analysis.
 	 */
 	force?: boolean;
+	/**
+	 * esbuild target (e.g., "es2022", "es2020"). Defaults to "es2022".
+	 */
+	target?: string;
 };
 
 /**
@@ -167,6 +175,10 @@ export type GetBundleTrendOptions = {
 	 * Bypass cache and force re-analysis.
 	 */
 	force?: boolean;
+	/**
+	 * esbuild target (e.g., "es2022", "es2020"). Defaults to "es2022".
+	 */
+	target?: string;
 };
 
 /**
@@ -313,12 +325,16 @@ export async function getBundleStats(
 		registry,
 		platform: platformOption = "auto",
 		force = false,
+		target: targetOption,
 	} = options;
 
 	// Normalize platform.
 	const platform = normalizePlatform(
 		platformOption === "auto" ? undefined : platformOption,
 	);
+
+	// Normalize target.
+	const target = normalizeTarget(targetOption);
 
 	// Parse package specifier.
 	const { name: baseName, version: requestedVersion } =
@@ -367,6 +383,7 @@ export async function getBundleStats(
 		gzipLevel,
 		registry,
 		platform,
+		target,
 	});
 
 	// Store in cache.
@@ -404,12 +421,16 @@ export async function getBundleTrend(
 		registry,
 		platform: platformOption = "auto",
 		force = false,
+		target: targetOption,
 	} = options;
 
 	// Normalize platform.
 	const platform = normalizePlatform(
 		platformOption === "auto" ? undefined : platformOption,
 	);
+
+	// Normalize target.
+	const target = normalizeTarget(targetOption);
 
 	// Parse package name (ignore version if provided).
 	const { name: baseName, subpath } = parsePackageSpecifier(packageName);
@@ -440,6 +461,7 @@ export async function getBundleTrend(
 		registry,
 		platform,
 		force,
+		target,
 	});
 
 	if (results.length === 0) {
