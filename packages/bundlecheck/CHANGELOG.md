@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/versini-org/node-cli/compare/bundlecheck-v1.5.1...bundlecheck-v1.6.0) (2026-02-05)
+
+
+### Features
+
+* **bundlecheck:** update default esbuild target to es2022 and add target option ([#501](https://github.com/versini-org/node-cli/issues/501)) ([512a646](https://github.com/versini-org/node-cli/commit/512a6464a1c2e46fc2caf9a268b9d3708fa9774e))
+
 ## [1.5.1](https://github.com/versini-org/node-cli/compare/bundlecheck-v1.5.0...bundlecheck-v1.5.1) (2026-02-01)
 
 
