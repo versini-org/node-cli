@@ -95,20 +95,20 @@ bundlecheck lodash "debounce,throttle"
 
 ### Options
 
-| Flag                | Short       | Description                                                      |
-| ------------------- | ----------- | ---------------------------------------------------------------- |
-| `--help`            | `-h`        | Display help instructions                                        |
-| `--version`         | `-v`        | Output the current version                                       |
-| `--versions`        | `-V`        | Choose from available package versions interactively             |
-| `--trend [N]`       | `-t [N]`    | Show bundle size trend for N versions (default: 5)               |
-| `--boring`          | `-b`        | Do not use color output                                          |
-| `--gzipLevel <n>`   | `-g <n>`    | Gzip compression level (1-9, default: 5)                         |
-| `--external <pkgs>` | `-e <pkgs>` | Comma-separated additional packages to mark as external          |
-| `--noExternal`      | `-n`        | Do not mark any packages as external                             |
-| `--registry <url>`  | `-r <url>`  | Custom npm registry URL (default: registry.npmjs.org)            |
-| `--platform <name>` | `-p <name>` | Target platform: `auto` (default), `browser`, or `node`          |
-| `--force`           | `-f`        | Bypass cache and force re-fetch/re-calculation                   |
-| `--target <target>` | `-T <target>` | esbuild target (e.g., "es2022", "es2020"). Default: "es2022"     |
+| Flag                | Short         | Description                                                  |
+| ------------------- | ------------- | ------------------------------------------------------------ |
+| `--help`            | `-h`          | Display help instructions                                    |
+| `--version`         | `-v`          | Output the current version                                   |
+| `--versions`        | `-V`          | Choose from available package versions interactively         |
+| `--trend [N]`       | `-t [N]`      | Show bundle size trend for N versions (default: 5)           |
+| `--boring`          | `-b`          | Do not use color output                                      |
+| `--gzipLevel <n>`   | `-g <n>`      | Gzip compression level (1-9, default: 5)                     |
+| `--external <pkgs>` | `-e <pkgs>`   | Comma-separated additional packages to mark as external      |
+| `--noExternal`      | `-n`          | Do not mark any packages as external                         |
+| `--registry <url>`  | `-r <url>`    | Custom npm registry URL (default: registry.npmjs.org)        |
+| `--platform <name>` | `-p <name>`   | Target platform: `auto` (default), `browser`, or `node`      |
+| `--force`           | `-f`          | Bypass cache and force re-fetch/re-calculation               |
+| `--target <target>` | `-T <target>` | esbuild target (e.g., "es2022", "es2020"). Default: "es2022" |
 
 ### Examples
 
@@ -170,11 +170,16 @@ npm install @node-cli/bundlecheck
 ### Basic Usage
 
 ```js
-import { getBundleStats, getBundleTrend, getPackageVersions, getPackageExports } from "@node-cli/bundlecheck";
+import {
+  getBundleStats,
+  getBundleTrend,
+  getPackageVersions,
+  getPackageExports
+} from "@node-cli/bundlecheck";
 
 // Get bundle stats for a single package
 const stats = await getBundleStats({
-  package: "@mantine/core@7.0.0",
+  package: "@mantine/core@7.0.0"
 });
 console.log(stats);
 // {
@@ -195,14 +200,14 @@ console.log(stats);
 // Check specific exports (tree-shaking)
 const buttonStats = await getBundleStats({
   package: "@mantine/core",
-  exports: ["Button", "Input"],
+  exports: ["Button", "Input"]
 });
 console.log(buttonStats.gzipSizeFormatted); // "12.3 kB"
 
 // Get bundle size trend across versions
 const trend = await getBundleTrend({
   package: "@mantine/core",
-  versionCount: 5,
+  versionCount: 5
 });
 console.log(trend);
 // {
@@ -226,17 +231,17 @@ console.log(trend);
 
 // Get available versions for a package
 const versions = await getPackageVersions({
-  package: "@mantine/core",
+  package: "@mantine/core"
 });
 console.log(versions.tags.latest); // "7.0.0"
 console.log(versions.versions.slice(0, 5)); // ["7.0.0", "6.0.21", "6.0.20", ...]
 
 // Get named exports from a package
 const exports = await getPackageExports({
-  package: "date-fns@3.6.0",
+  package: "date-fns@3.6.0"
 });
 console.log(`Found ${exports.count} exports`);
-console.log(exports.exports.slice(0, 5).map(e => e.name)); // ["add", "addBusinessDays", "addDays", ...]
+console.log(exports.exports.slice(0, 5).map((e) => e.name)); // ["add", "addBusinessDays", "addDays", ...]
 ```
 
 ### API Reference
@@ -247,35 +252,35 @@ Get bundle size statistics for a single package.
 
 **Options:**
 
-| Option       | Type                          | Default    | Description                                              |
-| ------------ | ----------------------------- | ---------- | -------------------------------------------------------- |
-| `package`    | `string`                      | (required) | Package name with optional version (e.g., `lodash@4.17.0`) |
-| `exports`    | `string[]`                    | `undefined`| Specific exports to measure (tree-shaking)               |
-| `external`   | `string[]`                    | `undefined`| Additional packages to mark as external                  |
-| `noExternal` | `boolean`                     | `false`    | Bundle everything (no externals, even react/react-dom)   |
-| `gzipLevel`  | `number`                      | `5`        | Gzip compression level (1-9)                             |
-| `registry`   | `string`                      | `undefined`| Custom npm registry URL                                  |
-| `platform`   | `"browser" \| "node" \| "auto"` | `"auto"`   | Target platform                                          |
-| `force`      | `boolean`                     | `false`    | Bypass cache                                             |
-| `target`     | `string`                      | `"es2022"` | esbuild target (e.g., "es2022", "es2020")                |
+| Option       | Type                            | Default     | Description                                                |
+| ------------ | ------------------------------- | ----------- | ---------------------------------------------------------- |
+| `package`    | `string`                        | (required)  | Package name with optional version (e.g., `lodash@4.17.0`) |
+| `exports`    | `string[]`                      | `undefined` | Specific exports to measure (tree-shaking)                 |
+| `external`   | `string[]`                      | `undefined` | Additional packages to mark as external                    |
+| `noExternal` | `boolean`                       | `false`     | Bundle everything (no externals, even react/react-dom)     |
+| `gzipLevel`  | `number`                        | `5`         | Gzip compression level (1-9)                               |
+| `registry`   | `string`                        | `undefined` | Custom npm registry URL                                    |
+| `platform`   | `"browser" \| "node" \| "auto"` | `"auto"`    | Target platform                                            |
+| `force`      | `boolean`                       | `false`     | Bypass cache                                               |
+| `target`     | `string`                        | `"es2022"`  | esbuild target (e.g., "es2022", "es2020")                  |
 
 **Returns:** `Promise<BundleStats>`
 
 ```ts
 type BundleStats = {
-  packageName: string;        // Display name (may include subpath)
-  packageVersion: string;     // Resolved version
-  exports: string[];          // Exports analyzed
-  rawSize: number;            // Raw size in bytes
-  gzipSize: number | null;    // Gzip size in bytes (null for node platform)
-  gzipLevel: number;          // Compression level used
-  externals: string[];        // External packages
-  dependencies: string[];     // Package dependencies
+  packageName: string; // Display name (may include subpath)
+  packageVersion: string; // Resolved version
+  exports: string[]; // Exports analyzed
+  rawSize: number; // Raw size in bytes
+  gzipSize: number | null; // Gzip size in bytes (null for node platform)
+  gzipLevel: number; // Compression level used
+  externals: string[]; // External packages
+  dependencies: string[]; // Package dependencies
   platform: "browser" | "node";
-  rawSizeFormatted: string;   // Human-readable (e.g., "45.2 kB")
+  rawSizeFormatted: string; // Human-readable (e.g., "45.2 kB")
   gzipSizeFormatted: string | null;
-  fromCache: boolean;         // Whether result was from cache
-  namedExportCount: number;   // Total named exports in package
+  fromCache: boolean; // Whether result was from cache
+  namedExportCount: number; // Total named exports in package
 };
 ```
 
@@ -285,26 +290,26 @@ Get bundle size trend across multiple versions.
 
 **Options:**
 
-| Option         | Type                          | Default    | Description                                              |
-| -------------- | ----------------------------- | ---------- | -------------------------------------------------------- |
-| `package`      | `string`                      | (required) | Package name (version ignored if provided)               |
-| `versionCount` | `number`                      | `5`        | Number of versions to analyze                            |
-| `exports`      | `string[]`                    | `undefined`| Specific exports to measure                              |
-| `external`     | `string[]`                    | `undefined`| Additional packages to mark as external                  |
-| `noExternal`   | `boolean`                     | `false`    | Bundle everything including default externals            |
-| `gzipLevel`    | `number`                      | `5`        | Gzip compression level (1-9)                             |
-| `registry`     | `string`                      | `undefined`| Custom npm registry URL                                  |
-| `platform`     | `"browser" \| "node" \| "auto"` | `"auto"`   | Target platform                                          |
-| `force`        | `boolean`                     | `false`    | Bypass cache                                             |
-| `target`       | `string`                      | `"es2022"` | esbuild target (e.g., "es2022", "es2020")                |
+| Option         | Type                            | Default     | Description                                   |
+| -------------- | ------------------------------- | ----------- | --------------------------------------------- |
+| `package`      | `string`                        | (required)  | Package name (version ignored if provided)    |
+| `versionCount` | `number`                        | `5`         | Number of versions to analyze                 |
+| `exports`      | `string[]`                      | `undefined` | Specific exports to measure                   |
+| `external`     | `string[]`                      | `undefined` | Additional packages to mark as external       |
+| `noExternal`   | `boolean`                       | `false`     | Bundle everything including default externals |
+| `gzipLevel`    | `number`                        | `5`         | Gzip compression level (1-9)                  |
+| `registry`     | `string`                        | `undefined` | Custom npm registry URL                       |
+| `platform`     | `"browser" \| "node" \| "auto"` | `"auto"`    | Target platform                               |
+| `force`        | `boolean`                       | `false`     | Bypass cache                                  |
+| `target`       | `string`                        | `"es2022"`  | esbuild target (e.g., "es2022", "es2020")     |
 
 **Returns:** `Promise<BundleTrend>`
 
 ```ts
 type BundleTrend = {
   packageName: string;
-  versions: TrendVersionResult[];  // Results for each version (newest first)
-  change: TrendChange | null;      // Change between oldest and newest
+  versions: TrendVersionResult[]; // Results for each version (newest first)
+  change: TrendChange | null; // Change between oldest and newest
 };
 
 type TrendVersionResult = {
@@ -318,11 +323,11 @@ type TrendVersionResult = {
 type TrendChange = {
   fromVersion: string;
   toVersion: string;
-  rawDiff: number;              // Positive = increase, negative = decrease
-  rawPercent: number | null;    // null if oldest size was 0
-  rawDiffFormatted: string;     // e.g., "+5.2 kB" or "-1.3 kB"
+  rawDiff: number; // Positive = increase, negative = decrease
+  rawPercent: number | null; // null if oldest size was 0
+  rawDiffFormatted: string; // e.g., "+5.2 kB" or "-1.3 kB"
   gzipDiff: number | null;
-  gzipPercent: number | null;   // null if not applicable or oldest size was 0
+  gzipPercent: number | null; // null if not applicable or oldest size was 0
   gzipDiffFormatted: string | null;
 };
 ```
@@ -333,17 +338,17 @@ Get available versions for an npm package.
 
 **Options:**
 
-| Option     | Type     | Default    | Description                  |
-| ---------- | -------- | ---------- | ---------------------------- |
-| `package`  | `string` | (required) | Package name                 |
-| `registry` | `string` | `undefined`| Custom npm registry URL      |
+| Option     | Type     | Default     | Description             |
+| ---------- | -------- | ----------- | ----------------------- |
+| `package`  | `string` | (required)  | Package name            |
+| `registry` | `string` | `undefined` | Custom npm registry URL |
 
 **Returns:** `Promise<PackageVersions>`
 
 ```ts
 type PackageVersions = {
-  versions: string[];              // All versions (newest first)
-  tags: Record<string, string>;    // Dist tags (e.g., { latest: "7.0.0" })
+  versions: string[]; // All versions (newest first)
+  tags: Record<string, string>; // Dist tags (e.g., { latest: "7.0.0" })
 };
 ```
 
@@ -353,26 +358,33 @@ Get the named exports of an npm package by analyzing its TypeScript declarations
 
 **Options:**
 
-| Option     | Type     | Default    | Description                                      |
-| ---------- | -------- | ---------- | ------------------------------------------------ |
-| `package`  | `string` | (required) | Package name with optional version               |
-| `registry` | `string` | `undefined`| Custom npm registry URL                          |
+| Option     | Type     | Default     | Description                        |
+| ---------- | -------- | ----------- | ---------------------------------- |
+| `package`  | `string` | (required)  | Package name with optional version |
+| `registry` | `string` | `undefined` | Custom npm registry URL            |
 
 **Returns:** `Promise<PackageExports>`
 
 ```ts
 type PackageExports = {
-  packageName: string;            // Package name
-  packageVersion: string;         // Resolved version
-  exports: PackageExport[];       // All named exports (including types)
-  count: number;                  // Total count (including types)
+  packageName: string; // Package name
+  packageVersion: string; // Resolved version
+  exports: PackageExport[]; // All named exports (including types)
+  count: number; // Total count (including types)
   runtimeExports: PackageExport[]; // Runtime exports only (no types/interfaces)
-  runtimeCount: number;           // Count of runtime exports
+  runtimeCount: number; // Count of runtime exports
 };
 
 type PackageExport = {
-  name: string;                // Export name (e.g., "Button")
-  kind: "function" | "class" | "const" | "type" | "interface" | "enum" | "unknown";
+  name: string; // Export name (e.g., "Button")
+  kind:
+    | "function"
+    | "class"
+    | "const"
+    | "type"
+    | "interface"
+    | "enum"
+    | "unknown";
 };
 ```
 
@@ -380,10 +392,10 @@ type PackageExport = {
 
 ```js
 const result = await getPackageExports({
-  package: "@mantine/core",
+  package: "@mantine/core"
 });
 
-console.log(result.count);        // 1056 (all exports including types)
+console.log(result.count); // 1056 (all exports including types)
 console.log(result.runtimeCount); // 365 (only importable exports)
 console.log(result.runtimeExports[0]); // { name: "Accordion", kind: "unknown" }
 ```
@@ -391,11 +403,16 @@ console.log(result.runtimeExports[0]); // { name: "Accordion", kind: "unknown" }
 ### Utility Functions
 
 ```js
-import { formatBytes, parsePackageSpecifier, clearCache, getCacheCount } from "@node-cli/bundlecheck";
+import {
+  formatBytes,
+  parsePackageSpecifier,
+  clearCache,
+  getCacheCount
+} from "@node-cli/bundlecheck";
 
 // Format bytes to human-readable string
-formatBytes(1024);        // "1 kB"
-formatBytes(1536);        // "1.5 kB"
+formatBytes(1024); // "1 kB"
+formatBytes(1536); // "1.5 kB"
 
 // Parse a package specifier
 parsePackageSpecifier("@scope/name@1.0.0");
@@ -405,8 +422,8 @@ parsePackageSpecifier("@scope/name/subpath@2.0.0");
 // { name: "@scope/name", version: "2.0.0", subpath: "subpath" }
 
 // Cache management
-getCacheCount();  // Returns number of cached entries
-clearCache();     // Clears all cached results
+getCacheCount(); // Returns number of cached entries
+clearCache(); // Clears all cached results
 ```
 
 ## How It Works
@@ -429,6 +446,7 @@ The `--platform` flag controls how the bundle is built:
 - **`node`**: Builds for Node.js environments (also accepts aliases: `server`, `nodejs`, `backend`)
 
 When targeting **node** platform:
+
 - Gzip size is not calculated (shows "N/A") since server-side code isn't typically served compressed over HTTP
 - The bundle is optimized for Node.js built-ins
 
