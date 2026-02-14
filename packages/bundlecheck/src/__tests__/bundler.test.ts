@@ -1126,5 +1126,118 @@ describe("checkBundleSize", () => {
 
 			expect(result.platform).toBe("browser");
 		});
+
+		it("should detect browser platform when engines.node is present but react is in peerDependencies", async () => {
+			vi.mocked(fs.readFileSync).mockReturnValue(
+				JSON.stringify({
+					name: "test-package",
+					version: "1.0.0",
+					main: "./dist/index.js",
+					dependencies: {},
+					peerDependencies: {
+						react: "^18.0.0",
+						"react-dom": "^18.0.0",
+					},
+					engines: {
+						node: ">=18.17.0",
+					},
+				}),
+			);
+
+			const result = await checkBundleSize({
+				packageName: "test-package",
+			});
+
+			expect(result.platform).toBe("browser");
+			expect(result.gzipSize).not.toBeNull();
+		});
+
+		it("should detect browser platform when engines.node is present but react is in dependencies", async () => {
+			vi.mocked(fs.readFileSync).mockReturnValue(
+				JSON.stringify({
+					name: "test-package",
+					version: "1.0.0",
+					main: "./dist/index.js",
+					dependencies: { react: "^18.0.0" },
+					peerDependencies: {},
+					engines: {
+						node: ">=18.0.0",
+					},
+				}),
+			);
+
+			const result = await checkBundleSize({
+				packageName: "test-package",
+			});
+
+			expect(result.platform).toBe("browser");
+			expect(result.gzipSize).not.toBeNull();
+		});
+
+		it("should detect browser platform when engines.node is present but vue is in dependencies", async () => {
+			vi.mocked(fs.readFileSync).mockReturnValue(
+				JSON.stringify({
+					name: "test-package",
+					version: "1.0.0",
+					main: "./dist/index.js",
+					dependencies: { vue: "^3.0.0" },
+					peerDependencies: {},
+					engines: {
+						node: ">=16.0.0",
+					},
+				}),
+			);
+
+			const result = await checkBundleSize({
+				packageName: "test-package",
+			});
+
+			expect(result.platform).toBe("browser");
+			expect(result.gzipSize).not.toBeNull();
+		});
+
+		it("should detect browser platform when engines.node is present but svelte is in peerDependencies", async () => {
+			vi.mocked(fs.readFileSync).mockReturnValue(
+				JSON.stringify({
+					name: "test-package",
+					version: "1.0.0",
+					main: "./dist/index.js",
+					dependencies: {},
+					peerDependencies: { svelte: "^4.0.0" },
+					engines: {
+						node: ">=18.0.0",
+					},
+				}),
+			);
+
+			const result = await checkBundleSize({
+				packageName: "test-package",
+			});
+
+			expect(result.platform).toBe("browser");
+			expect(result.gzipSize).not.toBeNull();
+		});
+
+		it("should still auto-detect node when engines.node is present and no browser framework deps", async () => {
+			vi.mocked(fs.readFileSync).mockReturnValue(
+				JSON.stringify({
+					name: "test-package",
+					version: "1.0.0",
+					main: "./dist/index.js",
+					dependencies: { lodash: "^4.0.0" },
+					peerDependencies: {},
+					engines: {
+						node: ">=18.0.0",
+					},
+				}),
+			);
+
+			const result = await checkBundleSize({
+				packageName: "test-package",
+			});
+
+			expect(result.platform).toBe("node");
+			expect(result.gzipSize).toBeNull();
+		});
 	});
 });
