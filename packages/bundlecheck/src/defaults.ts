@@ -132,6 +132,22 @@ export function normalizeTarget(target: string | undefined): string {
 }
 
 /**
+ * Browser framework packages used for platform auto-detection. If a package has
+ * any of these in its dependencies or peerDependencies, it's treated as a
+ * browser package even if it specifies engines.node (many browser packages set
+ * engines.node for build tooling or SSR compatibility).
+ */
+export const BROWSER_FRAMEWORK_DEPS = [
+	"react",
+	"react-dom",
+	"vue",
+	"svelte",
+	"@angular/core",
+	"preact",
+	"solid-js",
+];
+
+/**
  * Base packages to auto-detect for externalization. These are checked against
  * the package's dependencies/peerDependencies.
  */

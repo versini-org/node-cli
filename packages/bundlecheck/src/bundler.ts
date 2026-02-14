@@ -6,6 +6,7 @@ import { promisify } from "node:util";
 import zlib from "node:zlib";
 import * as esbuild from "esbuild";
 import {
+	BROWSER_FRAMEWORK_DEPS,
 	DEFAULT_EXTERNALS,
 	DEFAULT_TARGET,
 	EXTERNAL_SUBPATHS,
@@ -680,8 +681,23 @@ export async function checkBundleSize(
 		if (explicitPlatform) {
 			platform = explicitPlatform;
 		} else if (pkgInfo.engines?.node && !pkgInfo.engines?.browser) {
-			// Package specifies node engine without browser - likely a Node.js package.
-			platform = "node";
+			/**
+			 * Package specifies node engine without browser - potentially a Node.js
+			 * package. However, many browser packages also specify engines.node for
+			 * build tooling or SSR compatibility (e.g., @clerk/clerk-react). Check
+			 * if the package has browser-framework dependencies which indicate it's
+			 * a browser package despite having engines.node.
+			 */
+			const allDepNames = [
+				...Object.keys(pkgInfo.dependencies),
+				...Object.keys(pkgInfo.peerDependencies),
+			];
+			const hasBrowserFrameworkDep = allDepNames.some((dep) =>
+				BROWSER_FRAMEWORK_DEPS.includes(dep),
+			);
+			if (!hasBrowserFrameworkDep) {
+				platform = "node";
+			}
 		}
 
 		// Collect all dependency names (prod + peer).
