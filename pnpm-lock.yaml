@@ -8,6 +8,9 @@ importers:
 
   .:
     devDependencies:
+      '@node-cli/comments':
+        specifier: workspace:*
+        version: link:packages/comments
       '@versini/dev-dependencies-common':
         specifier: 9.2.4
         version: 9.2.4(@swc/core@1.15.11(@swc/helpers@0.5.18))(@types/node@25.0.6)
@@ -66,9 +69,6 @@ importers:
         specifier: 7.7.4
         version: 7.7.4
     devDependencies:
-      '@node-cli/comments':
-        specifier: workspace:*
-        version: link:../comments
       '@types/better-sqlite3':
         specifier: 7.6.13
         version: 7.6.13
@@ -100,9 +100,6 @@ importers:
         specifier: 7.7.3
         version: 7.7.3
     devDependencies:
-      '@node-cli/comments':
-        specifier: workspace:*
-        version: link:../comments
       '@vitest/coverage-v8':
         specifier: 4.0.18
         version: 4.0.18(vitest@4.0.18(@types/node@25.0.6)(happy-dom@20.1.0)(jsdom@27.4.0)(tsx@4.21.0)(yaml@2.8.1))
@@ -146,9 +143,6 @@ importers:
         specifier: 9.1.0
         version: 9.1.0
     devDependencies:
-      '@node-cli/comments':
-        specifier: workspace:*
-        version: link:../comments
       '@vitest/coverage-v8':
         specifier: 4.0.18
         version: 4.0.18(vitest@4.0.18(@types/node@25.0.6)(happy-dom@20.1.0)(jsdom@27.4.0)(tsx@4.21.0)(yaml@2.8.1))
@@ -174,9 +168,6 @@ importers:
         specifier: 4.1.5
         version: 4.1.5
     devDependencies:
-      '@node-cli/comments':
-        specifier: workspace:*
-        version: link:../comments
       '@vitest/coverage-v8':
         specifier: 4.0.18
         version: 4.0.18(vitest@4.0.18(@types/node@25.0.6)(happy-dom@20.1.0)(jsdom@27.4.0)(tsx@4.21.0)(yaml@2.8.1))
@@ -202,9 +193,6 @@ importers:
         specifier: 14.0.0
         version: 14.0.0
     devDependencies:
-      '@node-cli/comments':
-        specifier: workspace:*
-        version: link:../comments
       '@vitest/coverage-v8':
         specifier: 4.0.18
         version: 4.0.18(vitest@4.0.18(@types/node@25.0.6)(happy-dom@20.1.0)(jsdom@27.4.0)(tsx@4.21.0)(yaml@2.8.1))
@@ -221,9 +209,6 @@ importers:
         specifier: workspace:*
         version: link:../utilities
     devDependencies:
-      '@node-cli/comments':
-        specifier: workspace:*
-        version: link:../comments
       '@vitest/coverage-v8':
         specifier: 4.0.18
         version: 4.0.18(vitest@4.0.18(@types/node@25.0.6)(happy-dom@20.1.0)(jsdom@27.4.0)(tsx@4.21.0)(yaml@2.8.1))
@@ -240,9 +225,6 @@ importers:
         specifier: 4.1.5
         version: 4.1.5
     devDependencies:
-      '@node-cli/comments':
-        specifier: workspace:*
-        version: link:../comments
       '@vitest/coverage-v8':
         specifier: 4.0.18
         version: 4.0.18(vitest@4.0.18(@types/node@25.0.6)(happy-dom@20.1.0)(jsdom@27.4.0)(tsx@4.21.0)(yaml@2.8.1))
@@ -283,9 +265,6 @@ importers:
         specifier: 13.0.0
         version: 13.0.0
     devDependencies:
-      '@node-cli/comments':
-        specifier: workspace:*
-        version: link:../comments
       '@vitest/coverage-v8':
         specifier: 4.0.18
         version: 4.0.18(vitest@4.0.18(@types/node@25.0.6)(happy-dom@20.1.0)(jsdom@27.4.0)(tsx@4.21.0)(yaml@2.8.1))
@@ -308,9 +287,6 @@ importers:
         specifier: 13.2.2
         version: 13.2.2(@types/node@25.0.6)
     devDependencies:
-      '@node-cli/comments':
-        specifier: workspace:*
-        version: link:../comments
       '@vitest/coverage-v8':
         specifier: 4.0.18
         version: 4.0.18(vitest@4.0.18(@types/node@25.0.6)(happy-dom@20.1.0)(jsdom@27.4.0)(tsx@4.21.0)(yaml@2.8.1))
@@ -360,9 +336,6 @@ importers:
         specifier: 1.0.38
         version: 1.0.38
     devDependencies:
-      '@node-cli/comments':
-        specifier: workspace:*
-        version: link:../comments
       '@vitest/coverage-v8':
         specifier: 4.0.18
         version: 4.0.18(vitest@4.0.18(@types/node@25.0.6)(happy-dom@20.1.0)(jsdom@27.4.0)(tsx@4.21.0)(yaml@2.8.1))
@@ -385,9 +358,6 @@ importers:
         specifier: 10.0.1
         version: 10.0.1
     devDependencies:
-      '@node-cli/comments':
-        specifier: workspace:*
-        version: link:../comments
       '@vitest/coverage-v8':
         specifier: 4.0.18
         version: 4.0.18(vitest@4.0.18(@types/node@25.0.6)(happy-dom@20.1.0)(jsdom@27.4.0)(tsx@4.21.0)(yaml@2.8.1))
@@ -401,9 +371,6 @@ importers:
         specifier: 4.17.23
         version: 4.17.23
     devDependencies:
-      '@node-cli/comments':
-        specifier: workspace:*
-        version: link:../comments
       '@vitest/coverage-v8':
         specifier: 4.0.18
         version: 4.0.18(vitest@4.0.18(@types/node@25.0.6)(happy-dom@20.1.0)(jsdom@27.4.0)(tsx@4.21.0)(yaml@2.8.1))

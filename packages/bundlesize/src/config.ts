@@ -5,21 +5,20 @@ import type { FooterProperties } from "./utilities.js";
  */
 export interface SizeEntry {
 	/**
-	 * Path to the file to check. Supports glob patterns.
-	 * Special placeholders:
+	 * Path to the file to check. Supports glob patterns. Special placeholders:
 	 * - `<hash>`: matches content hashes (e.g., `bundle-<hash>.js`)
 	 * - `<semver>`: matches semantic versions (e.g., `lib-<semver>.js`)
 	 */
 	path: string;
 	/**
-	 * Maximum allowed size for the file (gzipped).
-	 * Format: number followed by unit (B, kB, KB, MB, GB, TB, PB)
+	 * Maximum allowed size for the file (gzipped). Format: number followed by unit
+	 * (B, kB, KB, MB, GB, TB, PB).
 	 * @example "10 kB", "1.5 MB", "500 B"
 	 */
 	limit: string;
 	/**
-	 * Optional alias for the file in reports.
-	 * Useful for giving meaningful names to files with hash patterns.
+	 * Optional alias for the file in reports. Useful for giving meaningful names
+	 * to files with hash patterns.
 	 */
 	alias?: string;
 }
@@ -50,7 +49,8 @@ export interface ReportConfiguration {
 	 */
 	current: string;
 	/**
-	 * Path to the previous stats JSON file for comparison (relative to config file).
+	 * Path to the previous stats JSON file for comparison (relative to config
+	 * file).
 	 */
 	previous: string;
 	/**
@@ -59,8 +59,8 @@ export interface ReportConfiguration {
 	 */
 	header?: string;
 	/**
-	 * Custom footer function for the report.
-	 * Receives an object with limitReached, overallDiff, and totalGzipSize.
+	 * Custom footer function for the report. Receives an object with limitReached,
+	 * overallDiff, and totalGzipSize.
 	 */
 	footer?: (args: FooterProperties) => string;
 	/**
@@ -69,8 +69,8 @@ export interface ReportConfiguration {
 	 */
 	columns?: ColumnDefinition[];
 	/**
-	 * Minimum gzip size change in bytes to consider as a change.
-	 * Changes below this threshold are treated as no change.
+	 * Minimum gzip size change in bytes to consider as a change. Changes below
+	 * this threshold are treated as no change.
 	 * @default 0
 	 */
 	threshold?: number;
@@ -81,8 +81,8 @@ export interface ReportConfiguration {
  */
 export interface BundlesizeConfig {
 	/**
-	 * Array of file size entries to check.
-	 * Each entry can be either a SizeEntry (file to check) or HeaderEntry (group separator).
+	 * Array of file size entries to check. Each entry can be either a SizeEntry
+	 * (file to check) or HeaderEntry (group separator).
 	 */
 	sizes?: (SizeEntry | HeaderEntry)[];
 	/**
@@ -105,6 +105,7 @@ export interface BundlesizeConfig {
  *   ]
  * });
  * ```
+ *
  */
 /* v8 ignore start */
 export function defineConfig(config: BundlesizeConfig): BundlesizeConfig {

@@ -17,6 +17,7 @@
 		"test:coverage": "lerna run test:coverage"
 	},
 	"devDependencies": {
+		"@node-cli/comments": "workspace:*",
 		"@versini/dev-dependencies-common": "9.2.4",
 		"@versini/dev-dependencies-server": "8.0.27",
 		"@versini/dev-dependencies-types": "4.1.3"
