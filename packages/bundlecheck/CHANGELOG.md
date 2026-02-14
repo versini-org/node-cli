@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.1](https://github.com/versini-org/node-cli/compare/bundlecheck-v1.6.0...bundlecheck-v1.6.1) (2026-02-14)
+
+
+### Bug Fixes
+
+* **bundlecheck:** treat browser framework deps as browser platform ([#509](https://github.com/versini-org/node-cli/issues/509)) ([eabf3aa](https://github.com/versini-org/node-cli/commit/eabf3aaf50b44d3714bbc2498b2ef09d3bd943b8))
+
 ## [1.6.0](https://github.com/versini-org/node-cli/compare/bundlecheck-v1.5.1...bundlecheck-v1.6.0) (2026-02-05)
 
 
