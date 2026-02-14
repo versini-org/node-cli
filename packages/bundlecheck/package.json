@@ -37,9 +37,9 @@
 		"@node-cli/logger": "workspace:*",
 		"@node-cli/parser": "workspace:*",
 		"better-sqlite3": "12.6.2",
-		"esbuild": "0.27.2",
+		"esbuild": "0.27.3",
 		"kleur": "4.1.5",
-		"semver": "7.7.3"
+		"semver": "7.7.4"
 	},
 	"publishConfig": {
 		"access": "public"
