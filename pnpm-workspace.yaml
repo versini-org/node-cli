@@ -5,18 +5,18 @@ packages:
 ignoredBuiltDependencies:
   - nx
 
-minimumReleaseAge: 720
-
+strictDepBuilds: true
+minimumReleaseAge: 420 # 7 hours in minutes
 minimumReleaseAgeExclude:
-  - '@versini/dev-dependencies-common'
-  - '@versini/dev-dependencies-server'
-  - '@versini/dev-dependencies-types'
+  - "@node-cli/*"
+  - "@versini/*"
+  - "@ai-sdk/*"
+  - "ai"
+  - npm-check-updates
 
 onlyBuiltDependencies:
-  - '@swc/core'
+  - "@swc/core"
   - better-sqlite3
   - esbuild
 
 shamefullyHoist: true
-
-strictDepBuilds: true
