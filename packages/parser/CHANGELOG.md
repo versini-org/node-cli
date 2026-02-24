@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.6](https://github.com/versini-org/node-cli/compare/parser-v2.4.5...parser-v2.4.6) (2026-02-24)
+
+
+### Bug Fixes
+
+* bump non-breaking dependencies to latest ([#520](https://github.com/versini-org/node-cli/issues/520)) ([3bed3aa](https://github.com/versini-org/node-cli/commit/3bed3aa1d8f0e5bdd017d51f684ae5ba02f90c82))
+
 ## [2.4.5](https://github.com/versini-org/node-cli/compare/parser-v2.4.4...parser-v2.4.5) (2026-01-31)
 
 
