@@ -32,7 +32,7 @@
 		"@node-cli/parser": "workspace:*",
 		"@node-cli/perf": "workspace:*",
 		"@node-cli/run": "workspace:*",
-		"fs-extra": "11.3.3",
+		"fs-extra": "11.3.4",
 		"kleur": "4.1.5",
 		"micromatch": "4.0.8",
 		"plur": "6.0.0",

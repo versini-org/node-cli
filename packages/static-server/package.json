@@ -33,7 +33,7 @@
 		"@node-cli/parser": "workspace:*",
 		"fastify": "5.7.4",
 		"fastify-plugin": "5.1.0",
-		"fs-extra": "11.3.3",
+		"fs-extra": "11.3.4",
 		"kleur": "4.1.5",
 		"open": "11.0.0",
 		"pino-pretty": "13.1.3",
