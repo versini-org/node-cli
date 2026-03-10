@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.7](https://github.com/versini-org/node-cli/compare/search-v3.1.6...search-v3.1.7) (2026-03-10)
+
+
+### Bug Fixes
+
+* bump non-breaking dependencies to latest ([#528](https://github.com/versini-org/node-cli/issues/528)) ([779a76e](https://github.com/versini-org/node-cli/commit/779a76ebb97b1a41fcfc89e97b5eaccdb755d5d4))
+
 ## [3.1.6](https://github.com/versini-org/node-cli/compare/search-v3.1.5...search-v3.1.6) (2026-01-31)
 
 
