@@ -51,6 +51,7 @@ type CacheRow = {
 	created_at: number;
 	named_export_count: number | null;
 	actual_externals: string;
+	actual_platform: string | null;
 };
 
 let db: Database.Database | null = null;
@@ -119,6 +120,17 @@ export function initCache(): Database.Database {
 		db.exec(
 			`ALTER TABLE bundle_cache ADD COLUMN actual_externals TEXT NOT NULL DEFAULT ''`,
 		);
+	} catch {
+		// Column already exists, ignore error.
+	}
+
+	/**
+	 * Migration: Add actual_platform column if it doesn't exist (for existing
+	 * databases). Stores the real platform from BundleResult, which may differ
+	 * from the cache key platform (e.g., "auto" key but "node" actual).
+	 */
+	try {
+		db.exec(`ALTER TABLE bundle_cache ADD COLUMN actual_platform TEXT`);
 	} catch {
 		// Column already exists, ignore error.
 	}
@@ -210,8 +222,20 @@ export function getCachedResult(key: CacheKey): CachedBundleResult | null {
 		 * Convert row to BundleResult. Use actual_externals (computed externals
 		 * including auto-detected react/react-dom) if available, otherwise fall back
 		 * to externals (for old cache entries).
+		 *
+		 * Use actual_platform if available (stores the real detected platform),
+		 * otherwise fall back to the cache key platform. For old entries where
+		 * platform is "auto" and no actual_platform exists, default to "browser".
 		 */
 		const externalsStr = row.actual_externals || row.externals;
+		let platform: "browser" | "node";
+		if (row.actual_platform === "browser" || row.actual_platform === "node") {
+			platform = row.actual_platform;
+		} else if (row.platform === "browser" || row.platform === "node") {
+			platform = row.platform;
+		} else {
+			platform = "browser";
+		}
 		return {
 			packageName: row.display_name,
 			packageVersion: row.version,
@@ -221,7 +245,7 @@ export function getCachedResult(key: CacheKey): CachedBundleResult | null {
 			gzipLevel: row.gzip_level,
 			externals: externalsStr ? externalsStr.split(",").filter(Boolean) : [],
 			dependencies,
-			platform: row.platform as "browser" | "node",
+			platform,
 			namedExportCount: row.named_export_count ?? 0,
 		};
 	} catch {
@@ -248,8 +272,9 @@ export function setCachedResult(key: CacheKey, result: BundleResult): void {
 		const stmt = database.prepare(`
 			INSERT OR REPLACE INTO bundle_cache (
 				package_name, version, exports, platform, gzip_level, externals, no_external,
-				raw_size, gzip_size, dependencies, display_name, created_at, named_export_count, actual_externals
-			) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+				raw_size, gzip_size, dependencies, display_name, created_at, named_export_count, actual_externals,
+				actual_platform
+			) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		`);
 
 		stmt.run(
@@ -267,6 +292,7 @@ export function setCachedResult(key: CacheKey, result: BundleResult): void {
 			Date.now(),
 			result.namedExportCount,
 			result.externals.slice().sort().join(","),
+			result.platform,
 		);
 
 		// Enforce max entries (LRU-style eviction based on created_at).
