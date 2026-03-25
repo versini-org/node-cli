@@ -42,8 +42,7 @@
 			"Read(./.env.*)",
 			"Read(./secrets/**)"
 		],
-		"defaultMode": "acceptEdits",
-		"additionalDirectories": ["~/projects/sassysaint", "~/projects/perso"]
+		"defaultMode": "acceptEdits"
 	},
 
 	"enabledPlugins": {
