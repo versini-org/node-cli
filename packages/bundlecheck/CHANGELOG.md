@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.4](https://github.com/versini-org/node-cli/compare/bundlecheck-v1.6.3...bundlecheck-v1.6.4) (2026-03-25)
+
+
+### Bug Fixes
+
+* **bundlecheck:** auto-detect node platform for packages using Node.js built-in modules ([#537](https://github.com/versini-org/node-cli/issues/537)) ([dbd4a25](https://github.com/versini-org/node-cli/commit/dbd4a255dac637709a985d30bc6faed12fcb8434))
+
 ## [1.6.3](https://github.com/versini-org/node-cli/compare/bundlecheck-v1.6.2...bundlecheck-v1.6.3) (2026-02-24)
 
 
