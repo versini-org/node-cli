@@ -1218,6 +1218,89 @@ describe("checkBundleSize", () => {
 			expect(result.gzipSize).not.toBeNull();
 		});
 
+		it("should auto-retry with node platform when browser build fails on Node.js built-ins", async () => {
+			// Package has no engines field, so auto-detection defaults to browser.
+			vi.mocked(fs.readFileSync).mockReturnValue(
+				JSON.stringify({
+					name: "test-package",
+					version: "1.0.0",
+					main: "./dist/index.js",
+					dependencies: {},
+					peerDependencies: {},
+				}),
+			);
+
+			// First call (browser) fails with unresolved Node.js built-ins.
+			// Second call (node) succeeds.
+			let callCount = 0;
+			vi.mocked(esbuild.build).mockImplementation(async (options) => {
+				callCount++;
+				if (callCount === 1) {
+					// Simulate esbuild BuildFailure with unresolved "path" and "fs".
+					const error = new Error("Build failed") as Error & {
+						errors: Array<{ text: string }>;
+					};
+					error.errors = [
+						{ text: 'Could not resolve "path"' },
+						{ text: 'Could not resolve "fs"' },
+					];
+					throw error;
+				}
+				// Second call should use node platform.
+				expect(options?.platform).toBe("node");
+				return {
+					outputFiles: [
+						{
+							contents: new Uint8Array(Buffer.from("minified code")),
+							path: "entry.js",
+							text: "minified code",
+							hash: "abc123",
+						},
+					],
+					errors: [],
+					warnings: [],
+					metafile: { inputs: {}, outputs: {} },
+					mangleCache: {},
+				} as esbuild.BuildResult<{ write: false; metafile: true }>;
+			});
+
+			const result = await checkBundleSize({
+				packageName: "test-package",
+			});
+
+			expect(result.platform).toBe("node");
+			expect(result.gzipSize).toBeNull();
+			expect(esbuild.build).toHaveBeenCalledTimes(2);
+		});
+
+		it("should not auto-retry with node platform when explicit browser platform is set", async () => {
+			vi.mocked(fs.readFileSync).mockReturnValue(
+				JSON.stringify({
+					name: "test-package",
+					version: "1.0.0",
+					main: "./dist/index.js",
+					dependencies: {},
+					peerDependencies: {},
+				}),
+			);
+
+			const error = new Error("Build failed") as Error & {
+				errors: Array<{ text: string }>;
+			};
+			error.errors = [
+				{ text: 'Could not resolve "path"' },
+				{ text: 'Could not resolve "fs"' },
+			];
+			vi.mocked(esbuild.build).mockRejectedValue(error);
+
+			await expect(
+				checkBundleSize({
+					packageName: "test-package",
+					platform: "browser",
+				}),
+			).rejects.toThrow("Build failed");
+		});
+
 		it("should still auto-detect node when engines.node is present and no browser framework deps", async () => {
 			vi.mocked(fs.readFileSync).mockReturnValue(
 				JSON.stringify({

@@ -1,0 +1,61 @@
+{
+	"$schema": "https://json.schemastore.org/claude-code-settings.json",
+	"env": {
+		"ENABLE_TOOL_SEARCH": "true"
+	},
+	"permissions": {
+		"allow": [
+			"Bash(cd:*)",
+			"Bash(done)",
+			"Bash(find:*)",
+			"Bash(gh auth status:*)",
+			"Bash(gh pr checks:*)",
+			"Bash(gh pr list:*)",
+			"Bash(gh pr view:*)",
+			"Bash(git log:*)",
+			"Bash(grep:*)",
+			"Bash(ls:*)",
+			"Bash(npx vitest:*)",
+			"Bash(pnpm --filter * lint:*)",
+			"Bash(pnpm --filter * test:*)",
+			"Bash(pnpm add:*)",
+			"Bash(pnpm build:*)",
+			"Bash(pnpm info:*)",
+			"Bash(pnpm lint:*)",
+			"Bash(pnpm list:*)",
+			"Bash(pnpm remove:*)",
+			"Bash(pnpm test:*)",
+			"Bash(pnpm why:*)",
+			"Bash(xxd:*)",
+			"mcp__Control_Chrome__get_page_content",
+			"mcp__Control_Chrome__list_tabs",
+			"mcp__Control_Chrome__switch_to_tab",
+			"WebFetch(domain:ai-sdk.dev)",
+			"WebFetch(domain:github.com)",
+			"WebFetch(domain:google.com)",
+			"WebFetch(domain:gizmette.com)",
+			"WebFetch(domain:npmjs.com)"
+		],
+		"deny": [
+			"Bash(rm -rf:*)",
+			"Read(./.env)",
+			"Read(./.env.*)",
+			"Read(./secrets/**)"
+		],
+		"defaultMode": "acceptEdits",
+		"additionalDirectories": ["~/projects/sassysaint", "~/projects/perso"]
+	},
+
+	"enabledPlugins": {
+		"claude-md-management@claude-plugins-official": true,
+		"code-review@claude-plugins-official": true,
+		"code-simplifier@claude-plugins-official": true,
+		"pr-review-toolkit@claude-plugins-official": true,
+		"typescript-lsp@claude-plugins-official": true
+	},
+	"spinnerTipsEnabled": false,
+	"spinnerVerbs": {
+		"mode": "replace",
+		"verbs": ["Working"]
+	}
+}

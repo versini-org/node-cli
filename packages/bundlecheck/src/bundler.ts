@@ -312,17 +312,70 @@ function isEsbuildBuildFailure(
  * Tested against esbuild 0.27.x error format.
  *
  */
+/**
+ * Node.js built-in modules that indicate a package is meant for Node.js.
+ * When these fail to resolve during browser bundling, we auto-retry with
+ * platform: "node".
+ */
+const NODE_BUILTIN_MODULES = new Set([
+	"assert",
+	"buffer",
+	"child_process",
+	"cluster",
+	"crypto",
+	"dgram",
+	"dns",
+	"events",
+	"fs",
+	"http",
+	"http2",
+	"https",
+	"module",
+	"net",
+	"os",
+	"path",
+	"perf_hooks",
+	"process",
+	"querystring",
+	"readline",
+	"stream",
+	"string_decoder",
+	"tls",
+	"tty",
+	"url",
+	"util",
+	"v8",
+	"vm",
+	"worker_threads",
+	"zlib",
+]);
+
 function parseUnresolvedModules(error: unknown): {
 	hasUnresolvedReact: boolean;
 	hasUnresolvedReactDom: boolean;
+	hasUnresolvedNodeBuiltins: boolean;
 } {
-	const result = { hasUnresolvedReact: false, hasUnresolvedReactDom: false };
+	const result = {
+		hasUnresolvedReact: false,
+		hasUnresolvedReactDom: false,
+		hasUnresolvedNodeBuiltins: false,
+	};
 
 	/**
 	 * Pattern to extract module path from "Could not resolve X" errors. Matches:
 	 * Could not resolve "module-name" or Could not resolve 'module-name'.
 	 */
 	const resolveErrorPattern = /Could not resolve ["']([^"']+)["']/;
+
+	/**
+	 * Check if a module path is a Node.js built-in (with or without "node:" prefix).
+	 */
+	const isNodeBuiltin = (modulePath: string): boolean => {
+		const bare = modulePath.startsWith("node:")
+			? modulePath.slice(5)
+			: modulePath;
+		return NODE_BUILTIN_MODULES.has(bare);
+	};
 
 	if (isEsbuildBuildFailure(error)) {
 		// Use structured error objects from esbuild BuildFailure.
@@ -336,6 +389,9 @@ function parseUnresolvedModules(error: unknown): {
 				}
 				if (modulePath === "react-dom" || modulePath.startsWith("react-dom/")) {
 					result.hasUnresolvedReactDom = true;
+				}
+				if (isNodeBuiltin(modulePath)) {
+					result.hasUnresolvedNodeBuiltins = true;
 				}
 			}
 		}
@@ -352,6 +408,9 @@ function parseUnresolvedModules(error: unknown): {
 			}
 			if (modulePath === "react-dom" || modulePath.startsWith("react-dom/")) {
 				result.hasUnresolvedReactDom = true;
+			}
+			if (isNodeBuiltin(modulePath)) {
+				result.hasUnresolvedNodeBuiltins = true;
 			}
 		}
 	}
@@ -792,31 +851,60 @@ export async function checkBundleSize(
 		 * This handles packages that don't properly declare react as a peer
 		 * dependency.
 		 */
+		/**
+		 * Common esbuild options shared across all build attempts.
+		 * Native .node addons cannot be bundled by esbuild, so we treat them
+		 * as empty files to avoid loader errors.
+		 */
+		const commonBuildOptions = {
+			entryPoints: [entryFile],
+			bundle: true,
+			write: false as const,
+			format: "esm" as const,
+			target,
+			minify: true,
+			treeShaking: true,
+			metafile: true as const,
+			loader: { ".node": "empty" as const },
+		};
+
 		let result: esbuild.BuildResult<{ write: false; metafile: true }>;
 		try {
 			result = await esbuild.build({
-				entryPoints: [entryFile],
-				bundle: true,
-				write: false,
-				format: "esm",
+				...commonBuildOptions,
 				platform,
-				target,
-				minify: true,
-				treeShaking: true,
 				external: esbuildExternals,
-				metafile: true,
 				logLevel: "silent", // Suppress errors on first attempt (will retry if needed)
 			});
 		} catch (error) {
 			/**
 			 * Parse unresolved module errors using esbuild's structured error format.
 			 * This handles packages that don't properly declare react as a peer
-			 * dependency.
+			 * dependency, and Node.js packages incorrectly bundled for the browser.
 			 */
-			const { hasUnresolvedReact, hasUnresolvedReactDom } =
-				parseUnresolvedModules(error);
+			const {
+				hasUnresolvedReact,
+				hasUnresolvedReactDom,
+				hasUnresolvedNodeBuiltins,
+			} = parseUnresolvedModules(error);
 
-			if (!noExternal && (hasUnresolvedReact || hasUnresolvedReactDom)) {
+			if (
+				hasUnresolvedNodeBuiltins &&
+				platform === "browser" &&
+				!explicitPlatform
+			) {
+				/**
+				 * Node.js built-in modules failed to resolve during browser bundling.
+				 * This means the package is a Node.js package that wasn't detected by
+				 * the engines-based auto-detection. Retry with platform: "node".
+				 */
+				platform = "node";
+				result = await esbuild.build({
+					...commonBuildOptions,
+					platform,
+					external: esbuildExternals,
+				});
+			} else if (!noExternal && (hasUnresolvedReact || hasUnresolvedReactDom)) {
 				// Auto-add react and/or react-dom to externals and retry.
 				const autoExternals: string[] = [];
 				if (hasUnresolvedReact && !externals.includes("react")) {
@@ -831,16 +919,9 @@ export async function checkBundleSize(
 					esbuildExternals = expandExternalsForEsbuild(externals);
 
 					result = await esbuild.build({
-						entryPoints: [entryFile],
-						bundle: true,
-						write: false,
-						format: "esm",
+						...commonBuildOptions,
 						platform,
-						target,
-						minify: true,
-						treeShaking: true,
 						external: esbuildExternals,
-						metafile: true,
 					});
 				} else {
 					throw error;
