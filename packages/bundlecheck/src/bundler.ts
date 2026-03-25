@@ -371,10 +371,11 @@ function parseUnresolvedModules(error: unknown): {
 	 * Check if a module path is a Node.js built-in (with or without "node:" prefix).
 	 */
 	const isNodeBuiltin = (modulePath: string): boolean => {
-		const bare = modulePath.startsWith("node:")
+		const withoutPrefix = modulePath.startsWith("node:")
 			? modulePath.slice(5)
 			: modulePath;
-		return NODE_BUILTIN_MODULES.has(bare);
+		const [root] = withoutPrefix.split("/");
+		return NODE_BUILTIN_MODULES.has(root);
 	};
 
 	if (isEsbuildBuildFailure(error)) {

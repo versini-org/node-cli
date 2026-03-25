@@ -1242,7 +1242,7 @@ describe("checkBundleSize", () => {
 					};
 					error.errors = [
 						{ text: 'Could not resolve "path"' },
-						{ text: 'Could not resolve "fs"' },
+						{ text: 'Could not resolve "fs/promises"' },
 					];
 					throw error;
 				}
