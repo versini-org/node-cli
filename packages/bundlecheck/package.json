@@ -33,11 +33,11 @@
 		"watch": "swc --strip-leading-paths --watch --out-dir dist src"
 	},
 	"dependencies": {
-		"@inquirer/select": "5.1.0",
+		"@inquirer/select": "5.1.2",
 		"@node-cli/logger": "workspace:*",
 		"@node-cli/parser": "workspace:*",
-		"better-sqlite3": "12.6.2",
-		"esbuild": "0.27.3",
+		"better-sqlite3": "12.8.0",
+		"esbuild": "0.27.4",
 		"kleur": "4.1.5",
 		"semver": "7.7.4"
 	},
@@ -46,7 +46,7 @@
 	},
 	"devDependencies": {
 		"@types/better-sqlite3": "7.6.13",
-		"@vitest/coverage-v8": "4.0.18",
-		"vitest": "4.0.18"
+		"@vitest/coverage-v8": "4.1.1",
+		"vitest": "4.1.1"
 	}
 }
