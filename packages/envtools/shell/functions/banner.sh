@@ -1,44 +1,52 @@
 #
 # Call this function to display a welcome banner
+# $1 - load time in milliseconds (optional)
 #
 function printBanner {
-  if [ -f "${EVTLS_RUNTIME_DIR}/envtools-banner" ]; then
-    if [ "$ATOM_TERMINAL" = "" ] || [ "$VSCODE_CLI" = "" ]; then
-      if [ "$EVTLS_INIT_PARAM" != "reload" ]; then
-        local HEADER="┌─────────────────────────────────────┐"
-        local FOOTER="└─────────────────────────────────────┘"
-        local SEP="│"
-        local MAX_STRING="$HEADER"
-        local MAX_SIZE=${#MAX_STRING}
+	if [ "$ATOM_TERMINAL" = "" ] || [ "$VSCODE_CLI" = "" ]; then
+		if [ "$EVTLS_INIT_PARAM" != "reload" ]; then
+			local HEADER="┌─────────────────────────────────────┐"
+			local FOOTER="└─────────────────────────────────────┘"
+			local SEP="│"
+			local INNER_WIDTH=37
 
-        txtCyan "$HEADER" "nl"
-        txtCyan "$SEP"
-        if isMac; then
-          txtDefault "       "
-          txtRed "★"
-          txtDefault " Welcome to Envtools "
-          txtRed "★"
-          txtDefault "       "
-        else
-          txtDefault "         Welcome to Envtools         "
-        fi
-        txtCyan "$SEP" "nl"
+			txtCyan "$HEADER" "nl"
+			txtCyan "$SEP"
+			if isMac; then
+				txtDefault "       "
+				txtRed "★"
+				txtDefault " Welcome to Envtools "
+				txtRed "★"
+				txtDefault "       "
+			else
+				txtDefault "         Welcome to Envtools         "
+			fi
+			txtCyan "$SEP" "nl"
 
-        if [ "$EVTLS_VERSION" != "" ]; then
-          local VERSION_STRING="v${EVTLS_VERSION}"
-          local VERSION_SIZE=${#VERSION_STRING}
-          local PADDING=$(($MAX_SIZE - $VERSION_SIZE - 3))
+			txtCyan "$SEP                                     $SEP" "nl"
 
-          txtCyan "$SEP                                     $SEP" "nl"
-          txtCyan "$SEP"
-          printf %${PADDING}s | tr " " " "
-          txtDefault "$VERSION_STRING "
-          txtCyan "$SEP" "nl"
-        else
-          txtCyan "$SEP                                     $SEP" "nl"
-        fi
-        txtCyan "$FOOTER" "nl"
-      fi
-    fi
-  fi
+			# Bottom info line: version left, load time right
+			local LEFT=""
+			local RIGHT=""
+			if [ -n "$EVTLS_VERSION" ]; then
+				LEFT=" v${EVTLS_VERSION}"
+			fi
+			if [ -n "$1" ]; then
+				RIGHT="Load: ${1}ms "
+			fi
+
+			if [ -n "$LEFT" ] || [ -n "$RIGHT" ]; then
+				local PAD=$((INNER_WIDTH - ${#LEFT} - ${#RIGHT}))
+				txtCyan "$SEP"
+				txtDefault "$LEFT"
+				printf "%${PAD}s" ""
+				txtDefault "$RIGHT"
+				txtCyan "$SEP" "nl"
+			else
+				txtCyan "$SEP                                     $SEP" "nl"
+			fi
+
+			txtCyan "$FOOTER" "nl"
+		fi
+	fi
 }
