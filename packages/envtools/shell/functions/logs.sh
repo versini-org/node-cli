@@ -1,14 +1,12 @@
 # GLOBAL DEFINITIONS
 EVTLS_GLOBAL_LOG_VERBOSE=true
-EVTLS_GLOBAL_ERROR_MSG=""
-EVTLS_GLOBAL_CONTINUE=true
 
 # Color definitions to be used in anything else than
 # prompt command
 EVTLS_RAW_COLOR_RED="\e[0;31m"
 EVTLS_RAW_COLOR_BLUE="\e[0;34m"
 if isWindows; then
-  EVTLS_RAW_COLOR_BLUE="\e[0;36m"
+	EVTLS_RAW_COLOR_BLUE="\e[0;36m"
 fi
 EVTLS_RAW_COLOR_GREEN="\e[0;32m"
 EVTLS_RAW_COLOR_YELLOW="\e[0;33m"
@@ -32,67 +30,73 @@ EVTLS_RAW_COLOR_DEFAULT="\e[00m"
 # is true or unset return 1 otherwise
 #
 function shouldLog {
-  if isValid $EVTLS_GLOBAL_LOG_VERBOSE; then
-    if $EVTLS_GLOBAL_LOG_VERBOSE = true; then
-      return 0
-    else
-      return 1
-    fi
-  else
-    return 0
-  fi
+	if isValid $EVTLS_GLOBAL_LOG_VERBOSE; then
+		if [ "$EVTLS_GLOBAL_LOG_VERBOSE" = true ]; then
+			return 0
+		else
+			return 1
+		fi
+	else
+		return 0
+	fi
 }
 
 # functions to change prompt text color
 function txtRed {
-  txtColor "$EVTLS_RAW_COLOR_RED" "$@"
+	txtColor "$EVTLS_RAW_COLOR_RED" "$@"
 }
 function txtBlue {
-  txtColor "$EVTLS_RAW_COLOR_BLUE" "$@"
+	txtColor "$EVTLS_RAW_COLOR_BLUE" "$@"
 }
 function txtGreen {
-  txtColor "$EVTLS_RAW_COLOR_GREEN" "$@"
+	txtColor "$EVTLS_RAW_COLOR_GREEN" "$@"
 }
 function txtYellow {
-  txtColor "$EVTLS_RAW_COLOR_YELLOW" "$@"
+	txtColor "$EVTLS_RAW_COLOR_YELLOW" "$@"
 }
 function txtMagenta {
-  txtColor "$EVTLS_RAW_COLOR_MAGENTA" "$@"
+	txtColor "$EVTLS_RAW_COLOR_MAGENTA" "$@"
 }
 function txtCyan {
-  txtColor "$EVTLS_RAW_COLOR_CYAN" "$@"
+	txtColor "$EVTLS_RAW_COLOR_CYAN" "$@"
+}
+function txtGray {
+	txtColor "$EVTLS_RAW_COLOR_GRAY" "$@"
 }
 function txtDefault {
-  txtColor "$EVTLS_RAW_COLOR_DEFAULT" "$@"
+	txtColor "$EVTLS_RAW_COLOR_DEFAULT" "$@"
 }
 
 function txtBoldRed {
-  txtColor "$EVTLS_RAW_COLOR_B_RED" "$@"
+	txtColor "$EVTLS_RAW_COLOR_B_RED" "$@"
 }
 function txtBoldBlue {
-  txtColor "$EVTLS_RAW_COLOR_B_BLUE" "$@"
+	txtColor "$EVTLS_RAW_COLOR_B_BLUE" "$@"
 }
 function txtBoldGreen {
-  txtColor "$EVTLS_RAW_COLOR_B_GREEN" "$@"
+	txtColor "$EVTLS_RAW_COLOR_B_GREEN" "$@"
 }
 function txtBoldYellow {
-  txtColor "$EVTLS_RAW_COLOR_B_YELLOW" "$@"
+	txtColor "$EVTLS_RAW_COLOR_B_YELLOW" "$@"
 }
 function txtBoldMagenta {
-  txtColor "$EVTLS_RAW_COLOR_B_MAGENTA" "$@"
+	txtColor "$EVTLS_RAW_COLOR_B_MAGENTA" "$@"
 }
 function txtBoldCyan {
-  txtColor "$EVTLS_RAW_COLOR_B_CYAN" "$@"
+	txtColor "$EVTLS_RAW_COLOR_B_CYAN" "$@"
+}
+function txtBoldGray {
+	txtColor "$EVTLS_RAW_COLOR_B_GRAY" "$@"
 }
 function txtBoldWhite {
-  txtColor "$EVTLS_RAW_COLOR_B_WHITE" "$@"
+	txtColor "$EVTLS_RAW_COLOR_B_WHITE" "$@"
 }
 
 function txtColor {
-  if shouldLog; then
-    printf "$1%s$EVTLS_RAW_COLOR_DEFAULT" "$2"
-    if [ $# -eq 3 ] && [ "$3" = "nl" ]; then
-      echo
-    fi
-  fi
+	if shouldLog; then
+		printf "$1%s$EVTLS_RAW_COLOR_DEFAULT" "$2"
+		if [ $# -eq 3 ] && [ "$3" = "nl" ]; then
+			echo
+		fi
+	fi
 }

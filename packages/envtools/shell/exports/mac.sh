@@ -3,14 +3,15 @@ ulimit -n 7168 >/dev/null 2>&1
 
 # Java
 if [ -f "/usr/libexec/java_home" ]; then
-  if [ "$JAVA_HOME" = "" ]; then
-    export JAVA_HOME="$(/usr/libexec/java_home 2>/dev/null)"
-  fi
+	if [ "$JAVA_HOME" = "" ]; then
+		JAVA_HOME="$(/usr/libexec/java_home 2>/dev/null)"
+		export JAVA_HOME
+	fi
 fi
 
 # Brew, node
 if [ "$EVTLS_INIT_PARAM" != "reload" ]; then
-  export PATH=$PATH:/usr/local/bin
+	export PATH=$PATH:/usr/local/bin
 fi
 
 # Araxis

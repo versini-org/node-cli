@@ -1,3 +1,5 @@
+# cSpell:disable
+
 # ls and all its variant
 alias l=ls
 alias ll='ls -lo'
@@ -20,8 +22,8 @@ alias tailf='tail -f'
 alias grep='grep --color'
 
 # vim as default editor
-if [ -f /usr/local/bin/vim -o -f /usr/bin/vim ]; then
-  alias vi=vim
+if [ -f /usr/local/bin/vim ] || [ -f /usr/bin/vim ]; then
+	alias vi=vim
 fi
 
 # sort environment aliases output
@@ -33,9 +35,11 @@ alias down='cd $HOME/Downloads; tit "~/Downloads"'
 alias dow='down'
 
 if isMac; then
-  source "${EVTLS_SCRIPTPATH}/aliases/mac.sh"
+	# shellcheck source=/dev/null
+	source "${EVTLS_SCRIPTPATH}/aliases/mac.sh"
 fi
 
 if isLinux; then
-  source "${EVTLS_SCRIPTPATH}/aliases/linux.sh"
+	# shellcheck source=/dev/null
+	source "${EVTLS_SCRIPTPATH}/aliases/linux.sh"
 fi

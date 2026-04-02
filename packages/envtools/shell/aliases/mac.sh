@@ -1,8 +1,11 @@
+# cSpell:disable
+
 # ls in color
 alias ls='ls -G'
 
-# Chrome
+# Open in Chrome and Safari
 alias openc='open -a "Google Chrome"'
+alias opens='open -a "Safari"'
 
 # Trying to reproduce the Linux top
 alias top='top -s1 -o cpu -R -F'

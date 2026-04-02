@@ -2,20 +2,25 @@
 # Test for shell types
 #
 function isBash {
-  [[ "$SHELL" = *"bash"* ]]
+	[[ "$SHELL" = *"bash"* ]]
 }
 function isZsh {
-  [[ "$SHELL" = *"zsh"* ]]
+	[[ "$SHELL" = *"zsh"* ]]
 }
 
 #
-# returns true if a variable is defined (set) and value's length > 0
+# Returns true if a variable is defined (set) and value's length > 0
 # returns false otherwise
+# Example
+#   if isValid "$MY_VAR"; then
+#     echo "MY_VAR is set and not empty"
+#   fi
 #
 function isValid {
-  ! [[ -z "$1" ]]
+	! [[ -z "$1" ]]
 }
 
 if isMac; then
-  source "${EVTLS_SCRIPTPATH}/functions/mac.sh"
+	# shellcheck source=/dev/null
+	source "${EVTLS_SCRIPTPATH}/functions/mac.sh"
 fi
