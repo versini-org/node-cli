@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.3.0](https://github.com/versini-org/node-cli/compare/envtools-v4.2.2...envtools-v4.3.0) (2026-04-02)
+
+
+### Features
+
+* **envtools:** faster shell startup with load time displayed in welcome banner ([#543](https://github.com/versini-org/node-cli/issues/543)) ([e2555d2](https://github.com/versini-org/node-cli/commit/e2555d2097a075b1b14c6d0dc312fcf5971eea01))
+
 ## [4.2.2](https://github.com/versini-org/node-cli/compare/envtools-v4.2.1...envtools-v4.2.2) (2025-08-23)
 
 
