@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.4.0](https://github.com/versini-org/node-cli/compare/envtools-v4.3.0...envtools-v4.4.0) (2026-04-03)
+
+
+### Features
+
+* **envtools:** add reload command to re-source shell environment in-place ([#545](https://github.com/versini-org/node-cli/issues/545)) ([fcc7f9d](https://github.com/versini-org/node-cli/commit/fcc7f9d1510f6c8dbf4d80bb2e68f146f3a5e57e))
+
 ## [4.3.0](https://github.com/versini-org/node-cli/compare/envtools-v4.2.2...envtools-v4.3.0) (2026-04-02)
 
 
