@@ -1,3 +1,12 @@
+# Reload the shell environment in-place (re-sources the entire envtools chain)
+function reload() {
+	# shellcheck source=/dev/null
+	EVTLS_INIT_PARAM="reload" source "${EVTLS_SCRIPTPATH}/load.sh"
+	unset EVTLS_INIT_PARAM
+	echo
+	echo "Envtools reloaded!"
+}
+
 #
 # Test for shell types
 #
