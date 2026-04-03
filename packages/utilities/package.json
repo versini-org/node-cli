@@ -13,7 +13,7 @@
 	],
 	"node": ">=16",
 	"dependencies": {
-		"lodash-es": "4.17.23"
+		"lodash-es": "4.18.1"
 	},
 	"scripts": {
 		"build": "npm-run-all --serial clean build:types build:js build:barrel",
