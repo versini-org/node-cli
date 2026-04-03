@@ -1,5 +1,4 @@
 # shellcheck source=/dev/null
-
 if [ -f "${EVTLS_RUNTIME_DIR}/custom/functions.sh" ]; then
 	source "${EVTLS_RUNTIME_DIR}/custom/functions.sh"
 fi
