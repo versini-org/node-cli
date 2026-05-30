@@ -4,6 +4,11 @@
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "A wrapper for child_process for nodejs CLI apps",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/versini-org/node-cli.git",
+		"directory": "packages/run"
+	},
 	"type": "module",
 	"types": "./dist/index.d.ts",
 	"exports": "./dist/run.js",

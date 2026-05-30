@@ -4,6 +4,11 @@
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "Search for files in a directory",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/versini-org/node-cli.git",
+		"directory": "packages/search"
+	},
 	"type": "module",
 	"types": "./dist/index.d.ts",
 	"exports": "./dist/core.js",

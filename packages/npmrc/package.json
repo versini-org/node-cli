@@ -4,6 +4,11 @@
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "Toggle different npmrc configuration files on the fly",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/versini-org/node-cli.git",
+		"directory": "packages/npmrc"
+	},
 	"type": "module",
 	"types": "./dist/index.d.ts",
 	"exports": "./dist/npmrc.js",

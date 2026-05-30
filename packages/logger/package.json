@@ -4,6 +4,11 @@
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "A tiny console logger for nodejs CLI apps",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/versini-org/node-cli.git",
+		"directory": "packages/logger"
+	},
 	"type": "module",
 	"exports": "./dist/Logger.js",
 	"files": [

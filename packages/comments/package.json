@@ -4,6 +4,11 @@
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "CLI tool to reflow and normalize JSDoc and line comments in source files",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/versini-org/node-cli.git",
+		"directory": "packages/comments"
+	},
 	"type": "module",
 	"types": "./dist/index.d.ts",
 	"exports": "./dist/lib.js",
