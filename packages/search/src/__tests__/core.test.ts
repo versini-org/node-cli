@@ -396,7 +396,7 @@ describe("when testing for utilities with logging side-effects", () => {
 
 		const search = new Search(config);
 		await search.start();
-		expect(mockLog).toHaveBeenCalledWith(" package.json (5 occurrences)");
+		expect(mockLog).toHaveBeenCalledWith(" package.json (6 occurrences)");
 	});
 
 	it("should exit in error if the grep pattern is invalid", async () => {
