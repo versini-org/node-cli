@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.12](https://github.com/versini-org/node-cli/compare/comments-v0.2.11...comments-v0.2.12) (2026-05-30)
+
+
+### Bug Fixes
+
+* bump non-breaking dependencies to latest ([#560](https://github.com/versini-org/node-cli/issues/560)) ([dee2e10](https://github.com/versini-org/node-cli/commit/dee2e10641ef0ac9b41a1d0de280de766a913f12))
+
 ## [0.2.11](https://github.com/versini-org/node-cli/compare/comments-v0.2.10...comments-v0.2.11) (2026-04-06)
 
 
