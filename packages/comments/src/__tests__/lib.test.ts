@@ -95,6 +95,37 @@ describe("parseAndTransformComments", () => {
 		expect(/@returns something/.test(res)).toBe(true);
 	});
 
+	it("does not treat a scoped package name as a JSDoc tag", () => {
+		const input =
+			[
+				"/**",
+				" * We match on the error code. If a future",
+				" * @auth0/auth0-react release reshapes the description, the check still fires.",
+				" */",
+			].join("\n") + "\n";
+		const { transformed } = parseAndTransformComments(input, {
+			width: 80,
+			wrapLineComments: true,
+			mergeLineComments: true,
+		});
+		// No period injected mid-sentence.
+		expect(transformed).not.toMatch(/future\./);
+		// Sentence joined, scoped package kept inline as prose.
+		expect(transformed).toMatch(/future @auth0\/auth0-react/);
+	});
+
+	it("still treats real JSDoc tags as tags after the scoped-package fix", () => {
+		const input =
+			"/**\n * Does a thing.\n * @param x in\n * @returns out\n */\n";
+		const { transformed } = parseAndTransformComments(input, {
+			width: 80,
+			wrapLineComments: true,
+			mergeLineComments: true,
+		});
+		expect(transformed).toMatch(/^ \* @param x in$/m);
+		expect(transformed).toMatch(/^ \* @returns out$/m);
+	});
+
 	it("handles heading-like lines with colon and visually indented code & numeric lists", () => {
 		const input = [
 			"/**",

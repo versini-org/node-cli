@@ -165,7 +165,14 @@ function isListLike(line: string): boolean {
 }
 
 function isTagLine(line: string): boolean {
-	return /^@/.test(line.trim());
+	/**
+	 * A JSDoc/TSDoc tag is `@name` (optionally hyphenated) and is never
+	 * immediately followed by `/`. The negative lookahead excludes scoped npm
+	 * package specifiers like `@auth0/auth0-react` or `@versini/ui-main` that can
+	 * legitimately open a wrapped prose line; treating those as tags severs the
+	 * sentence and injects a spurious period.
+	 */
+	return /^@[A-Za-z][\w-]*(?![\w/-])/.test(line.trim());
 }
 
 function isHeadingLike(line: string): boolean {
