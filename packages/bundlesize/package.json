@@ -4,6 +4,11 @@
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "Simple CLI tool that checks file(s) size and report if limits have been reached",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/versini-org/node-cli.git",
+		"directory": "packages/bundlesize"
+	},
 	"type": "module",
 	"types": "./dist/index.d.ts",
 	"exports": {

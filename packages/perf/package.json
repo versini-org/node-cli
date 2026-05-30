@@ -4,6 +4,11 @@
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "Set of performance tools for Node.js",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/versini-org/node-cli.git",
+		"directory": "packages/perf"
+	},
 	"type": "module",
 	"types": "./dist/index.d.ts",
 	"exports": "./dist/performance.js",

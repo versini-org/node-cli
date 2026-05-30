@@ -4,6 +4,11 @@
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "Dead simpler CLI timer",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/versini-org/node-cli.git",
+		"directory": "packages/timer"
+	},
 	"type": "module",
 	"types": "./dist/index.d.ts",
 	"exports": "./dist/timer.js",

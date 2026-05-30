@@ -4,6 +4,11 @@
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "Command line helper for software developers",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/versini-org/node-cli.git",
+		"directory": "packages/envtools"
+	},
 	"files": [
 		"dist",
 		"README.md",

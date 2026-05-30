@@ -4,6 +4,11 @@
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "CLI tool to check the bundle size of npm packages (like bundlephobia)",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/versini-org/node-cli.git",
+		"directory": "packages/bundlecheck"
+	},
 	"type": "module",
 	"types": "./dist/index.d.ts",
 	"main": "./dist/index.js",
