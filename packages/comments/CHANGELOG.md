@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.13](https://github.com/versini-org/node-cli/compare/comments-v0.2.12...comments-v0.2.13) (2026-05-30)
+
+
+### Bug Fixes
+
+* **comments:** prevent scoped package names from corrupting wrapped prose ([#562](https://github.com/versini-org/node-cli/issues/562)) ([52ba9d9](https://github.com/versini-org/node-cli/commit/52ba9d9d5b083c04a8b999ae3c284c0f093115a9))
+
 ## [0.2.12](https://github.com/versini-org/node-cli/compare/comments-v0.2.11...comments-v0.2.12) (2026-05-30)
 
 
