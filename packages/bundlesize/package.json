@@ -38,15 +38,15 @@
 		"@node-cli/logger": "workspace:*",
 		"@node-cli/parser": "workspace:*",
 		"bytes": "3.1.2",
-		"fs-extra": "11.3.4",
+		"fs-extra": "11.3.5",
 		"glob": "13.0.6",
-		"semver": "7.7.4"
+		"semver": "7.8.1"
 	},
 	"publishConfig": {
 		"access": "public"
 	},
 	"devDependencies": {
-		"@vitest/coverage-v8": "4.1.2",
-		"vitest": "4.1.2"
+		"@vitest/coverage-v8": "4.1.7",
+		"vitest": "4.1.7"
 	}
 }
