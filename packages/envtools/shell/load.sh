@@ -4,7 +4,7 @@
 # reload, get out of here quietly...
 if [ "$EVTLS_INIT_PARAM" != "reload" ] && [ "$EVTLS_RUNTIME_DIR" != "" ]; then
 	if [ "$VSCODE_CLI" = "" ] && [ "$VSC_TERMINAL" = "" ]; then
-		exit 0
+		return 0
 	fi
 fi
 
