@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.4.1](https://github.com/versini-org/node-cli/compare/envtools-v4.4.0...envtools-v4.4.1) (2026-06-22)
+
+
+### Bug Fixes
+
+* **envtools:** replace exit with return to allow tmux to work ([#573](https://github.com/versini-org/node-cli/issues/573)) ([2d4c395](https://github.com/versini-org/node-cli/commit/2d4c395559e12873d63bf55d18d07df307614bb8))
+
 ## [4.4.0](https://github.com/versini-org/node-cli/compare/envtools-v4.3.0...envtools-v4.4.0) (2026-04-03)
 
 
