@@ -39,7 +39,7 @@
 		"access": "public"
 	},
 	"devDependencies": {
-		"@vitest/coverage-v8": "4.1.7",
+		"@vitest/coverage-v8": "4.1.9",
 		"vitest": "4.1.7"
 	}
 }
