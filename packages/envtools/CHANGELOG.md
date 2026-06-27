@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.4.2](https://github.com/versini-org/node-cli/compare/envtools-v4.4.1...envtools-v4.4.2) (2026-06-27)
+
+
+### Bug Fixes
+
+* **envtools:** load custom aliases and functions in tmux and nested shells ([#575](https://github.com/versini-org/node-cli/issues/575)) ([74f7dfb](https://github.com/versini-org/node-cli/commit/74f7dfbe83f10b1bbbb49247d64cc0559ddd44d2))
+
 ## [4.4.1](https://github.com/versini-org/node-cli/compare/envtools-v4.4.0...envtools-v4.4.1) (2026-06-22)
 
 
