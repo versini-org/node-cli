@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.15](https://github.com/versini-org/node-cli/compare/perf-v1.0.14...perf-v1.0.15) (2026-06-27)
+
+
+### Bug Fixes
+
+* bump non-breaking dependencies to latest ([#577](https://github.com/versini-org/node-cli/issues/577)) ([3f6c9a3](https://github.com/versini-org/node-cli/commit/3f6c9a3a712b7e77ff23162a3177efa39bf1ee12))
+
 ## [1.0.14](https://github.com/versini-org/node-cli/compare/perf-v1.0.13...perf-v1.0.14) (2026-05-30)
 
 
