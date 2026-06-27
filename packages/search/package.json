@@ -42,13 +42,13 @@
 		"micromatch": "4.0.8",
 		"plur": "6.0.0",
 		"pretty-ms": "9.3.0",
-		"uuid": "13.0.0"
+		"uuid": "14.0.1"
 	},
 	"publishConfig": {
 		"access": "public"
 	},
 	"devDependencies": {
-		"@vitest/coverage-v8": "4.1.7",
-		"vitest": "4.1.7"
+		"@vitest/coverage-v8": "4.1.9",
+		"vitest": "4.1.9"
 	}
 }
