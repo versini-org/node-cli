@@ -1,11 +1,23 @@
 #!/bin/bash
 
-# If not VSCode, or already loaded and it's not a manual
-# reload, get out of here quietly...
-if [ "$EVTLS_INIT_PARAM" != "reload" ] && [ "$EVTLS_RUNTIME_DIR" != "" ]; then
-	if [ "$VSCODE_CLI" = "" ] && [ "$VSC_TERMINAL" = "" ]; then
-		return 0
-	fi
+# Bail out early if Envtools is already loaded in *this* shell, unless this
+# is a manual `reload`.
+#
+# Detection is keyed off EVTLS_LOADED, a plain (non-exported) shell variable.
+# This is deliberate: an exported variable (like EVTLS_RUNTIME_DIR, which we
+# used to test here) leaks into every child process's environment, so a child
+# shell would think Envtools was already loaded and skip setup -- even though
+# shell functions and aliases are NOT inherited across processes. That is
+# exactly what broke tmux panes (and ssh sessions, plain sub-shells, etc.):
+# the env var was inherited, the aliases were not. VSCode terminals hit the
+# same issue, which is why they used to need a dedicated carve-out here.
+#
+# A non-exported variable persists across re-sourcing within the same shell
+# (e.g. `source ~/.zshrc`) but is never inherited by child shells, so its
+# lifetime matches that of the functions/aliases we set up. Any new shell
+# therefore re-loads Envtools cleanly, with no per-environment special-casing.
+if [ "$EVTLS_INIT_PARAM" != "reload" ] && [ -n "$EVTLS_LOADED" ]; then
+	return 0
 fi
 
 # Envtools only works in bash or zsh
@@ -90,6 +102,12 @@ if isWindows || isLinux || isMac; then
 	EVTLS_STOP_TIME=$(__envtools_ms)
 	EVTLS_LOAD_TIME=$((EVTLS_STOP_TIME - EVTLS_START_TIME))
 	printBanner "$EVTLS_LOAD_TIME"
+
+	# Mark Envtools as loaded for *this* shell. Intentionally NOT exported, so
+	# child shells (tmux panes, ssh sessions, sub-shells, ...) re-load instead
+	# of inheriting this flag. See the early-return guard at the top of this
+	# file for the full rationale.
+	EVTLS_LOADED=true
 else
 	echo "OS not supported/recognized... ($EVTLS_OS)"
 fi
