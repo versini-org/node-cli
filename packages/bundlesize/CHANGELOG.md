@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.6.9](https://github.com/versini-org/node-cli/compare/bundlesize-v4.6.8...bundlesize-v4.6.9) (2026-07-01)
+
+
+### Bug Fixes
+
+* bump non-breaking dependencies to latest ([#585](https://github.com/versini-org/node-cli/issues/585)) ([cb32ef6](https://github.com/versini-org/node-cli/commit/cb32ef6b1afc3a34d054451ec5df04a982ee8c12))
+
 ## [4.6.8](https://github.com/versini-org/node-cli/compare/bundlesize-v4.6.7...bundlesize-v4.6.8) (2026-06-27)
 
 
