@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.12](https://github.com/versini-org/node-cli/compare/npmrc-v1.2.11...npmrc-v1.2.12) (2026-07-01)
+
+
+### Bug Fixes
+
+* bump non-breaking dependencies to latest ([#585](https://github.com/versini-org/node-cli/issues/585)) ([cb32ef6](https://github.com/versini-org/node-cli/commit/cb32ef6b1afc3a34d054451ec5df04a982ee8c12))
+
 ## [1.2.11](https://github.com/versini-org/node-cli/compare/npmrc-v1.2.10...npmrc-v1.2.11) (2026-06-27)
 
 

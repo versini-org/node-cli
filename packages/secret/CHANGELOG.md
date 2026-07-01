@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.16](https://github.com/versini-org/node-cli/compare/secret-v1.2.15...secret-v1.2.16) (2026-07-01)
+
+
+### Bug Fixes
+
+* bump non-breaking dependencies to latest ([#585](https://github.com/versini-org/node-cli/issues/585)) ([cb32ef6](https://github.com/versini-org/node-cli/commit/cb32ef6b1afc3a34d054451ec5df04a982ee8c12))
+
 ## [1.2.15](https://github.com/versini-org/node-cli/compare/secret-v1.2.14...secret-v1.2.15) (2026-06-27)
 
 
