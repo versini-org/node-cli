@@ -32,11 +32,11 @@
 	"dependencies": {
 		"@fastify/caching": "9.0.3",
 		"@fastify/compress": "9.0.0",
-		"@fastify/cors": "11.2.0",
-		"@fastify/static": "9.1.3",
+		"@fastify/cors": "11.3.0",
+		"@fastify/static": "9.3.0",
 		"@node-cli/logger": "workspace:*",
 		"@node-cli/parser": "workspace:*",
-		"fastify": "5.9.0",
+		"fastify": "5.10.0",
 		"fastify-plugin": "6.0.0",
 		"fs-extra": "11.3.6",
 		"kleur": "4.1.5",
@@ -48,7 +48,7 @@
 		"access": "public"
 	},
 	"devDependencies": {
-		"@vitest/coverage-v8": "4.1.9",
-		"vitest": "4.1.9"
+		"@vitest/coverage-v8": "4.1.10",
+		"vitest": "4.1.10"
 	}
 }
