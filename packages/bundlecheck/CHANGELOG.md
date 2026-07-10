@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.9](https://github.com/versini-org/node-cli/compare/bundlecheck-v1.6.8...bundlecheck-v1.6.9) (2026-07-10)
+
+
+### Bug Fixes
+
+* bump non-breaking dependencies to latest ([#590](https://github.com/versini-org/node-cli/issues/590)) ([760fb3d](https://github.com/versini-org/node-cli/commit/760fb3d1c9b3f6bd9e335960c69437ff4e1205a6))
+
 ## [1.6.8](https://github.com/versini-org/node-cli/compare/bundlecheck-v1.6.7...bundlecheck-v1.6.8) (2026-06-27)
 
 
