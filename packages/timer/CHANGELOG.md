@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.15](https://github.com/versini-org/node-cli/compare/timer-v1.0.14...timer-v1.0.15) (2026-07-10)
+
+
+### Bug Fixes
+
+* bump non-breaking dependencies to latest ([#590](https://github.com/versini-org/node-cli/issues/590)) ([760fb3d](https://github.com/versini-org/node-cli/commit/760fb3d1c9b3f6bd9e335960c69437ff4e1205a6))
+
 ## [1.0.14](https://github.com/versini-org/node-cli/compare/timer-v1.0.13...timer-v1.0.14) (2026-06-27)
 
 
