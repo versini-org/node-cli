@@ -8,7 +8,7 @@
 	"packages/run": "1.1.11",
 	"packages/search": "3.1.13",
 	"packages/secret": "1.2.17",
-	"packages/static-server": "3.1.16",
+	"packages/static-server": "3.1.17",
 	"packages/timer": "1.0.15",
 	"packages/utilities": "1.0.11",
 	"packages/npmrc": "1.2.13",
