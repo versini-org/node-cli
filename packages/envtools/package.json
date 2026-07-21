@@ -1,6 +1,6 @@
 {
 	"name": "@node-cli/envtools",
-	"version": "4.4.2",
+	"version": "5.0.0",
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "Command line helper for software developers",
