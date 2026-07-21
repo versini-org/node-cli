@@ -16,9 +16,11 @@
 		"dist",
 		"README.md"
 	],
-	"node": ">=16",
+	"engines": {
+		"node": ">=22"
+	},
 	"dependencies": {
-		"execa": "9.6.1",
+		"execa": "10.0.0",
 		"kleur": "4.1.5"
 	},
 	"scripts": {
