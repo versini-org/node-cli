@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/versini-org/node-cli/compare/secret-v1.2.17...secret-v2.0.0) (2026-07-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* all @node-cli/* packages now require Node.js 22 or later.
+
+### Features
+
+* declare real engines.node across all packages ([#603](https://github.com/versini-org/node-cli/issues/603)) ([7d2859e](https://github.com/versini-org/node-cli/commit/7d2859ecd06c90373714f4fa73b689c0b3b92c6e))
+
 ## [1.2.17](https://github.com/versini-org/node-cli/compare/secret-v1.2.16...secret-v1.2.17) (2026-07-10)
 
 
