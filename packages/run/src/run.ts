@@ -1,4 +1,4 @@
-import { execa, execaCommand } from "execa";
+import { execa } from "execa";
 import kleur from "kleur";
 import { parseCommandString } from "./utilities.js";
 
@@ -57,7 +57,7 @@ export const run = async (
 
 	try {
 		if (execaOptions.shell) {
-			const { stdout, stderr } = await execaCommand(command, execaOptions);
+			const { stdout, stderr } = await execa(execaOptions)`${command}`;
 			return { stderr, stdout };
 		} else {
 			const commandArray = parseCommandString(command);
