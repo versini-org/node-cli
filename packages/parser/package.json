@@ -16,7 +16,9 @@
 		"dist",
 		"README.md"
 	],
-	"node": ">=16",
+	"engines": {
+		"node": ">=22"
+	},
 	"dependencies": {
 		"@node-cli/logger": "workspace:*",
 		"@node-cli/utilities": "workspace:*",

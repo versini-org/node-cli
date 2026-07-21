@@ -16,7 +16,9 @@
 		"dist",
 		"README.md"
 	],
-	"node": ">=16",
+	"engines": {
+		"node": ">=22"
+	},
 	"dependencies": {
 		"lodash-es": "4.18.1"
 	},

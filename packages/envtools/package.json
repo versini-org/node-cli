@@ -14,7 +14,9 @@
 		"README.md",
 		"shell"
 	],
-	"node": ">=18",
+	"engines": {
+		"node": ">=22"
+	},
 	"scripts": {
 		"build": "mkdir -p dist; echo \"export EVTLS_VERSION='$npm_package_version' \" > dist/version.sh",
 		"lint:fix": "biome check src --write --no-errors-on-unmatched"
