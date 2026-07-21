@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/versini-org/node-cli/compare/run-v1.1.11...run-v2.0.0) (2026-07-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* @node-cli/run now requires Node.js 22 or later.
+
+### Features
+
+* upgrade execa to v10 and require Node 22 ([#601](https://github.com/versini-org/node-cli/issues/601)) ([feceb6e](https://github.com/versini-org/node-cli/commit/feceb6ea3631d324f17413ac032f62a0d8c2ed8f))
+
 ## [1.1.11](https://github.com/versini-org/node-cli/compare/run-v1.1.10...run-v1.1.11) (2026-07-10)
 
 
