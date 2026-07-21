@@ -15,7 +15,9 @@
 		"dist",
 		"README.md"
 	],
-	"node": ">=16",
+	"engines": {
+		"node": ">=22"
+	},
 	"dependencies": {
 		"boxen": "8.0.1",
 		"kleur": "4.1.5",

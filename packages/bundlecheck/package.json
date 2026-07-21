@@ -23,7 +23,9 @@
 		"dist",
 		"README.md"
 	],
-	"node": ">=20",
+	"engines": {
+		"node": ">=22"
+	},
 	"scripts": {
 		"build": "npm-run-all --serial clean build:types build:js",
 		"build:js": "swc --strip-leading-paths --source-maps --out-dir dist src",
