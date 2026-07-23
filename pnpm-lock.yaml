@@ -15,8 +15,8 @@ importers:
         specifier: 9.2.24
         version: 9.2.24(@swc/core@1.15.46(@swc/helpers@0.5.23))(@types/node@26.1.1)(debug@4.4.3(supports-color@5.5.0))(supports-color@5.5.0)
       '@versini/dev-dependencies-server':
-        specifier: 9.0.12
-        version: 9.0.12(chokidar@5.0.0)(postcss@8.5.16)(supports-color@5.5.0)(typescript@5.9.3)(yaml@2.9.0)
+        specifier: 9.0.13
+        version: 9.0.13(chokidar@5.0.0)(postcss@8.5.16)(supports-color@5.5.0)(typescript@5.9.3)(yaml@2.9.0)
       '@versini/dev-dependencies-types':
         specifier: 4.1.15
         version: 4.1.15
@@ -2060,8 +2060,8 @@ packages:
   '@versini/dev-dependencies-common@9.2.24':
     resolution: {integrity: sha512-yw8uGVEnfQW3QfqjNACmORLM9H+ckO7mKzJe4FakDgx6rbgzt7amlsnpTsh2bGzTi6SWxSw9Djt48gGbPngVmA==}
 
-  '@versini/dev-dependencies-server@9.0.12':
-    resolution: {integrity: sha512-BwOHaht5+4NbsPvgfmOVMfvzG+V/L7qTpkrkYlrZizB84yu6iLCRKNoauPqHhSIEdxO8VOOkI/2izzmt6eyfVg==}
+  '@versini/dev-dependencies-server@9.0.13':
+    resolution: {integrity: sha512-V/H4BEYZGhEScOAz0Cw+aA+zXeesRL8AJuSNEoAPqf2RoUvxvfw04Rta80rqu1JtmTTww0WdZd0B1aju9tA+3g==}
 
   '@versini/dev-dependencies-types@4.1.15':
     resolution: {integrity: sha512-cJ8DvJG/WhvEmtfrr6SdpidvknDd9h+tNRhBxI7wLVcIMIhCTD4vY6dMpxcg8aoliVqX7XjWZ8BGJUKts1vN+g==}
@@ -3676,8 +3676,8 @@ packages:
     resolution: {integrity: sha512-cNOjgCnLB+FnvWWtyRTzmB3POJ+cXxTA81LoW7u8JdmhfXzriropYwpjShnz1QLLWsQwY7nIxoDmcPTwphDK9w==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
-  lint-staged@17.1.1:
-    resolution: {integrity: sha512-FnHWpSe5cPRtrDG+soOuNdBxb4XQb2gN5EqpEWKdweyqyOfpl4QSjbrz3ilcIf0WXmkiNQGZZRQ23R5YtB3TEw==}
+  lint-staged@17.2.0:
+    resolution: {integrity: sha512-FchGnFe4i4B1C/a35SPU9bNGPEHSC1+1iV0plLjzBmKVe9klZrlRfSgK6Cw4VeHyqOXbJUXP0vON61uRftNQ0A==}
     engines: {node: '>=22.22.1'}
     hasBin: true
 
@@ -6755,7 +6755,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@versini/dev-dependencies-server@9.0.12(chokidar@5.0.0)(postcss@8.5.16)(supports-color@5.5.0)(typescript@5.9.3)(yaml@2.9.0)':
+  '@versini/dev-dependencies-server@9.0.13(chokidar@5.0.0)(postcss@8.5.16)(supports-color@5.5.0)(typescript@5.9.3)(yaml@2.9.0)':
     dependencies:
       '@swc/cli': 0.8.1(@swc/core@1.15.46(@swc/helpers@0.5.23))(chokidar@5.0.0)(supports-color@5.5.0)
       '@swc/core': 1.15.46(@swc/helpers@0.5.23)
@@ -6764,7 +6764,7 @@ snapshots:
       barrelsby: 2.8.1
       cross-env: 10.1.0
       husky: 9.1.7
-      lint-staged: 17.1.1
+      lint-staged: 17.2.0
       nodemon: 3.1.14
       npm-run-all2: 9.0.2
       prettier: 3.9.6
@@ -8547,7 +8547,7 @@ snapshots:
 
   lines-and-columns@2.0.3: {}
 
-  lint-staged@17.1.1:
+  lint-staged@17.2.0:
     dependencies:
       picomatch: 4.0.5
       string-argv: 0.3.2

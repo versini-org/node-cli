@@ -19,7 +19,7 @@
 	"devDependencies": {
 		"@node-cli/comments": "workspace:*",
 		"@versini/dev-dependencies-common": "9.2.24",
-		"@versini/dev-dependencies-server": "9.0.12",
+		"@versini/dev-dependencies-server": "9.0.13",
 		"@versini/dev-dependencies-types": "4.1.15"
 	},
 	"packageManager": "pnpm@11.15.1",
