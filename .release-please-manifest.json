@@ -8,7 +8,7 @@
 	"packages/run": "2.0.0",
 	"packages/search": "4.0.0",
 	"packages/secret": "2.0.0",
-	"packages/static-server": "4.0.0",
+	"packages/static-server": "4.0.1",
 	"packages/timer": "2.0.0",
 	"packages/utilities": "2.0.0",
 	"packages/npmrc": "2.0.0",
