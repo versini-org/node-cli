@@ -1,6 +1,6 @@
 {
 	"name": "@node-cli/perf",
-	"version": "2.0.0",
+	"version": "2.1.0",
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "Set of performance tools for Node.js",
