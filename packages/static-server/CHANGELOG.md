@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.0](https://github.com/versini-org/node-cli/compare/static-server-v4.0.1...static-server-v4.1.0) (2026-07-23)
+
+
+### Features
+
+* migrate to TypeScript 6.0 ([#611](https://github.com/versini-org/node-cli/issues/611)) ([c72b2d8](https://github.com/versini-org/node-cli/commit/c72b2d83b21fbd61101ba6d2776c82c7b27887d9))
+
 ## [4.0.1](https://github.com/versini-org/node-cli/compare/static-server-v4.0.0...static-server-v4.0.1) (2026-07-23)
 
 

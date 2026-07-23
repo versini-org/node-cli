@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/versini-org/node-cli/compare/secret-v2.0.0...secret-v2.1.0) (2026-07-23)
+
+
+### Features
+
+* migrate to TypeScript 6.0 ([#611](https://github.com/versini-org/node-cli/issues/611)) ([c72b2d8](https://github.com/versini-org/node-cli/commit/c72b2d83b21fbd61101ba6d2776c82c7b27887d9))
+
 ## [2.0.0](https://github.com/versini-org/node-cli/compare/secret-v1.2.17...secret-v2.0.0) (2026-07-21)
 
 
