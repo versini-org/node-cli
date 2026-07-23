@@ -4,6 +4,10 @@
 		"swc": true
 	},
 	"compilerOptions": {
+		/** Silence TS6.0 deprecation hard-errors (e.g. esModuleInterop=false)
+		 * that will stop functioning in TS7.0.
+		 */
+		"ignoreDeprecations": "6.0",
 		/** Allow JavaScript files to be imported inside your project,
 		 * instead of just .ts and .tsx files.
 		 */
@@ -63,6 +67,12 @@
 		 * Set the JavaScript language version for emitted JavaScript
 		 * and include compatible library declarations.
 		 */
-		"target": "ESNext"
+		"target": "ESNext",
+		/**
+		 * Explicitly scope global type definitions to Node. TS6.0 no longer
+		 * auto-includes @types packages during declaration emit, so the Node
+		 * globals these CLI tools rely on must be requested here.
+		 */
+		"types": ["node"]
 	}
 }

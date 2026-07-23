@@ -12,11 +12,11 @@ importers:
         specifier: workspace:*
         version: link:packages/comments
       '@versini/dev-dependencies-common':
-        specifier: 9.2.24
-        version: 9.2.24(@swc/core@1.15.46(@swc/helpers@0.5.23))(@types/node@26.1.1)(debug@4.4.3(supports-color@5.5.0))(supports-color@5.5.0)
+        specifier: 10.0.0
+        version: 10.0.0(@swc/core@1.15.46(@swc/helpers@0.5.23))(@types/node@26.1.1)(debug@4.4.3(supports-color@5.5.0))(supports-color@5.5.0)
       '@versini/dev-dependencies-server':
-        specifier: 9.0.13
-        version: 9.0.13(chokidar@5.0.0)(postcss@8.5.16)(supports-color@5.5.0)(typescript@5.9.3)(yaml@2.9.0)
+        specifier: 9.0.14
+        version: 9.0.14(chokidar@5.0.0)(postcss@8.5.16)(supports-color@5.5.0)(typescript@5.9.3)(yaml@2.9.0)
       '@versini/dev-dependencies-types':
         specifier: 4.1.15
         version: 4.1.15
@@ -2057,11 +2057,11 @@ packages:
   '@types/yargs@17.0.35':
     resolution: {integrity: sha512-qUHkeCyQFxMXg79wQfTtfndEC+N9ZZg76HJftDJp+qH2tV7Gj4OJi7l+PiWwJ+pWtW8GwSmqsDj/oymhrTWXjg==}
 
-  '@versini/dev-dependencies-common@9.2.24':
-    resolution: {integrity: sha512-yw8uGVEnfQW3QfqjNACmORLM9H+ckO7mKzJe4FakDgx6rbgzt7amlsnpTsh2bGzTi6SWxSw9Djt48gGbPngVmA==}
+  '@versini/dev-dependencies-common@10.0.0':
+    resolution: {integrity: sha512-+xGB5mRPdBxBB7415EhDtx4z08VNn30CiVYhxxHyJc45TXK7APx1fszQ1ovw+wlb5AfHZqbSKae2EGUmDMhroQ==}
 
-  '@versini/dev-dependencies-server@9.0.13':
-    resolution: {integrity: sha512-V/H4BEYZGhEScOAz0Cw+aA+zXeesRL8AJuSNEoAPqf2RoUvxvfw04Rta80rqu1JtmTTww0WdZd0B1aju9tA+3g==}
+  '@versini/dev-dependencies-server@9.0.14':
+    resolution: {integrity: sha512-3pO/kP8i1xBJCaMV2Fjpj5M3lFvCYA3EUmpJqlSVupB/ryQ2xGME0/TOqN2vulbo9KyLd9ip5UB6QNipwa9iBw==}
 
   '@versini/dev-dependencies-types@4.1.15':
     resolution: {integrity: sha512-cJ8DvJG/WhvEmtfrr6SdpidvknDd9h+tNRhBxI7wLVcIMIhCTD4vY6dMpxcg8aoliVqX7XjWZ8BGJUKts1vN+g==}
@@ -5036,6 +5036,11 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
+  typescript@6.0.3:
+    resolution: {integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
   ufo@1.6.4:
     resolution: {integrity: sha512-JFNbkD1Svwe0KvGi8GOeLcP4kAWQ609twvCdcHxq1oSL8svv39ZuSvajcD8B+5D0eL4+s1Is2D/O6KN3qcTeRA==}
 
@@ -6729,7 +6734,7 @@ snapshots:
     dependencies:
       '@types/yargs-parser': 21.0.3
 
-  '@versini/dev-dependencies-common@9.2.24(@swc/core@1.15.46(@swc/helpers@0.5.23))(@types/node@26.1.1)(debug@4.4.3(supports-color@5.5.0))(supports-color@5.5.0)':
+  '@versini/dev-dependencies-common@10.0.0(@swc/core@1.15.46(@swc/helpers@0.5.23))(@types/node@26.1.1)(debug@4.4.3(supports-color@5.5.0))(supports-color@5.5.0)':
     dependencies:
       '@biomejs/biome': 2.5.5
       chokidar: 5.0.0
@@ -6741,7 +6746,7 @@ snapshots:
       jsdom: 29.1.1
       lerna: 9.0.7(@swc/core@1.15.46(@swc/helpers@0.5.23))(@types/node@26.1.1)(debug@4.4.3(supports-color@5.5.0))(supports-color@5.5.0)
       npm-check-updates: 22.2.9
-      typescript: 5.9.3
+      typescript: 6.0.3
       uuid: 14.0.1
     transitivePeerDependencies:
       - '@noble/hashes'
@@ -6755,7 +6760,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@versini/dev-dependencies-server@9.0.13(chokidar@5.0.0)(postcss@8.5.16)(supports-color@5.5.0)(typescript@5.9.3)(yaml@2.9.0)':
+  '@versini/dev-dependencies-server@9.0.14(chokidar@5.0.0)(postcss@8.5.16)(supports-color@5.5.0)(typescript@5.9.3)(yaml@2.9.0)':
     dependencies:
       '@swc/cli': 0.8.1(@swc/core@1.15.46(@swc/helpers@0.5.23))(chokidar@5.0.0)(supports-color@5.5.0)
       '@swc/core': 1.15.46(@swc/helpers@0.5.23)
@@ -10099,6 +10104,8 @@ snapshots:
   typedarray@0.0.6: {}
 
   typescript@5.9.3: {}
+
+  typescript@6.0.3: {}
 
   ufo@1.6.4: {}
 
