@@ -3,10 +3,6 @@ packages:
   - examples/*
 
 overrides:
-  # TEMPORARY: pull TypeScript forward to 6.0 (transitional JS release that keeps
-  # the compiler API) ahead of the @versini/dev-dependencies-common bump.
-  # Remove once dev-dependencies-common ships typescript@6.x and is repinned.
-  typescript: "6.0.3"
 
 strictDepBuilds: true
 minimumReleaseAge: 420 # 7 hours in minutes
