@@ -1,5 +1,5 @@
 {
-	"packages/bundlecheck": "2.0.0",
+	"packages/bundlecheck": "2.0.1",
 	"packages/bundlesize": "5.0.0",
 	"packages/envtools": "5.0.0",
 	"packages/logger": "2.0.0",

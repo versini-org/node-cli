@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/versini-org/node-cli/compare/bundlecheck-v2.0.0...bundlecheck-v2.0.1) (2026-07-23)
+
+
+### Bug Fixes
+
+* **bundlecheck:** upgrade better-sqlite3 to v13 ([#608](https://github.com/versini-org/node-cli/issues/608)) ([ae329e4](https://github.com/versini-org/node-cli/commit/ae329e442e75e4e6e645db00001a0832be08507d))
+
 ## [2.0.0](https://github.com/versini-org/node-cli/compare/bundlecheck-v1.6.9...bundlecheck-v2.0.0) (2026-07-21)
 
 
