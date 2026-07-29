@@ -2,8 +2,6 @@ packages:
   - packages/*
   - examples/*
 
-overrides:
-
 strictDepBuilds: true
 minimumReleaseAge: 420 # 7 hours in minutes
 minimumReleaseAgeExclude:
