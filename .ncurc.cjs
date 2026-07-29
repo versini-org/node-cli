@@ -6,7 +6,7 @@ const { defineConfig } = require("npm-check-updates");
  *
  * This configuration file is used by the `ncu` command to check for package updates.
  * It enables interactive mode, workspace support, and root package updates for
- * major and minor versions that have been released at least 1 day ago.
+ * major and minor versions that have been released at least 7 hours ago.
  *
  */
 module.exports = defineConfig({
@@ -27,15 +27,17 @@ module.exports = defineConfig({
 	},
 
 	/**
-	 * Set cooldown to 1 day but skip it for our packages.
+	 * Mirror pnpm-workspace.yaml's `minimumReleaseAge: 420` (7 hours), skipping it
+	 * for our own packages. Keep this a duration STRING: ncu reads a bare number
+	 * as days, so `1` here would silently gate at 24h instead of 7h.
 	 * @param packageName     The name of the dependency.
-	 * @returns               Cooldown days restriction for given package.
+	 * @returns               Cooldown restriction for given package.
 	 */
 	cooldown: (packageName) => {
 		return packageName.startsWith("@versini") ||
 			packageName.startsWith("@node-cli") ||
 			packageName.startsWith("@sassysaint")
 			? 0
-			: 1;
+			: "7h";
 	},
 });
