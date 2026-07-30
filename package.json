@@ -18,10 +18,10 @@
 	},
 	"devDependencies": {
 		"@node-cli/comments": "workspace:*",
-		"@versini/dev-dependencies-common": "13.0.1",
+		"@versini/dev-dependencies-common": "13.0.2",
 		"barrelsby": "2.8.1"
 	},
-	"packageManager": "pnpm@11.17.0",
+	"packageManager": "pnpm@11.18.0",
 	"engines": {
 		"node": ">=22"
 	}
