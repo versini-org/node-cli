@@ -21,7 +21,7 @@
 		"@versini/dev-dependencies-common": "13.0.2",
 		"barrelsby": "2.8.1"
 	},
-	"packageManager": "pnpm@11.18.0",
+	"packageManager": "pnpm@11.19.0",
 	"engines": {
 		"node": ">=22"
 	}
