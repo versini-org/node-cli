@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/versini-org/node-cli/compare/run-v2.1.0...run-v2.1.1) (2026-07-31)
+
+
+### Bug Fixes
+
+* bump non-breaking dependencies to latest ([#624](https://github.com/versini-org/node-cli/issues/624)) ([c165a47](https://github.com/versini-org/node-cli/commit/c165a47f7e66ba3f3a3462822e124213a2e4376d))
+
 ## [2.1.0](https://github.com/versini-org/node-cli/compare/run-v2.0.0...run-v2.1.0) (2026-07-23)
 
 
