@@ -18,7 +18,7 @@
 	},
 	"devDependencies": {
 		"@node-cli/comments": "workspace:*",
-		"@versini/dev-dependencies-common": "13.0.3",
+		"@versini/dev-dependencies-common": "14.0.0",
 		"barrelsby": "2.8.1",
 		"lerna": "10.0.0"
 	},
