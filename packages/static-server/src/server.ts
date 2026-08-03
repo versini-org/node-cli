@@ -6,7 +6,7 @@ import fastifyCompress from "@fastify/compress";
 import fastifyCors from "@fastify/cors";
 import fastifyStatic, { FastifyStaticOptions } from "@fastify/static";
 import { Logger } from "@node-cli/logger";
-import Fastify from "fastify";
+import Fastify, { FastifyServerOptions } from "fastify";
 import fs from "fs-extra";
 import kleur from "kleur";
 import open from "open";
@@ -28,11 +28,9 @@ if (fs.pathExistsSync(customPath)) {
 	logger.printErrorsAndExit([`Folder ${customPath} does not exist!`], 0);
 }
 
-const fastifyOptions: {
-	disableRequestLogging?: boolean;
+const fastifyOptions: FastifyServerOptions & {
 	http2?: boolean;
 	https?: any;
-	logger?: any;
 } = {
 	disableRequestLogging: true,
 };
@@ -56,7 +54,13 @@ if (config.flags.http2) {
 	fastifyOptions.https = { key, cert };
 }
 
-const fastify = Fastify(fastifyOptions);
+/*
+ * fastify@5.11.2 narrowed its HTTP overloads with `http2?: false`, so an
+ * options object carrying a `boolean` http2 no longer matches any of them.
+ * Build the server through the plain HTTP signature - as it has always
+ * resolved - and let the http2/https options through at runtime.
+ */
+const fastify = Fastify(fastifyOptions as FastifyServerOptions);
 
 if (config.flags.logs) {
 	fastify.register(fastifyLogs);
