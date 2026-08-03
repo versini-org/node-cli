@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.1.3](https://github.com/versini-org/node-cli/compare/static-server-v4.1.2...static-server-v4.1.3) (2026-08-03)
+
+
+### Bug Fixes
+
+* accept fastify 5.x in the static-server logging plugin ([#633](https://github.com/versini-org/node-cli/issues/633)) ([e519c25](https://github.com/versini-org/node-cli/commit/e519c251bf11ea96ef9ae69d6384c1a3945b571d))
+* bump non-breaking dependencies to latest ([#631](https://github.com/versini-org/node-cli/issues/631)) ([ea6e7d8](https://github.com/versini-org/node-cli/commit/ea6e7d80867d64a3f4675b8c457dc158559bd16d))
+
 ## [4.1.2](https://github.com/versini-org/node-cli/compare/static-server-v4.1.1...static-server-v4.1.2) (2026-07-31)
 
 
