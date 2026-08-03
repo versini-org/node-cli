@@ -11,6 +11,6 @@ const plugin: FastifyPluginAsync = async (fastify): Promise<void> => {
 };
 
 export default fastifyPlugin(plugin, {
-	fastify: "4.x",
+	fastify: "5.x",
 	name: "fastify-simple-logger",
 });
