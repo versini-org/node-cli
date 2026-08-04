@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/versini-org/node-cli/compare/timer-v2.1.0...timer-v2.1.1) (2026-08-04)
+
+
+### Bug Fixes
+
+* **timer:** stop crashing when the timer expires on Apple Silicon ([#634](https://github.com/versini-org/node-cli/issues/634)) ([d9e5c78](https://github.com/versini-org/node-cli/commit/d9e5c7841e884eb2e147d6cc25c52c0bc8d760a6))
+
 ## [2.1.0](https://github.com/versini-org/node-cli/compare/timer-v2.0.0...timer-v2.1.0) (2026-07-23)
 
 

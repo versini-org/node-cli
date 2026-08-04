@@ -9,7 +9,7 @@
 	"packages/search": "4.1.1",
 	"packages/secret": "2.1.1",
 	"packages/static-server": "4.1.3",
-	"packages/timer": "2.1.0",
+	"packages/timer": "2.1.1",
 	"packages/utilities": "2.1.0",
 	"packages/npmrc": "2.1.1",
 	"packages/comments": "1.1.0"
