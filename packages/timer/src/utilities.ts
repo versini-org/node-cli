@@ -1,7 +1,7 @@
 import { Logger, Spinner } from "@node-cli/logger";
 import moment, { Duration } from "moment";
 
-import notifier from "node-notifier";
+import { notify } from "./notify.js";
 import { Configuration } from "./parse.js";
 
 const logger = new Logger();
@@ -48,7 +48,7 @@ export const extractDuration = (config: Configuration): Duration => {
 	}
 };
 
-/* v8 ignore next 60 */
+/* v8 ignore start */
 export class Timer {
 	config: Configuration;
 	startTime: number;
@@ -80,19 +80,31 @@ export class Timer {
 			const timer = setInterval(this.printRemainingTime, 1000);
 
 			// kill the spinner when the timer is done.
-			setTimeout(() => {
+			setTimeout(async () => {
 				const message = "Time's up!";
-				if (this.config.flags.notification) {
-					notifier.notify({
-						message,
-						sound: "Funk",
-						title: "Timer Notification",
-						wait: true,
-					});
-				}
 				clearInterval(timer);
 				this.printRemainingTime(message);
 				spinner.stop();
+
+				/**
+				 * notifying last, and never fatally: a desktop notification that cannot be
+				 * displayed must not take the timer down with it.
+				 */
+				if (this.config.flags.notification) {
+					try {
+						await notify({
+							message,
+							sound: "Funk",
+							title: "Timer Notification",
+						});
+					} catch {
+						/**
+						 * notify is already total, so this only ever catches a future regression
+						 * in it. Rejecting here would be fatal: an async setTimeout callback has
+						 * nothing to attach a handler to.
+						 */
+					}
+				}
 			}, this.timerDurationMilliSeconds);
 		}
 	};
@@ -109,3 +121,4 @@ export class Timer {
 		}
 	};
 }
+/* v8 ignore stop */
