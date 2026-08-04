@@ -1,23 +1,59 @@
 import { execFile } from "node:child_process";
 import { vi } from "vitest";
-import { buildNotifyCommand, notify } from "../notify.js";
+import { buildNotifyCommand, type Notification, notify } from "../notify.js";
 
-vi.mock("node:child_process", () => ({
-	execFile: vi.fn(),
-}));
+/**
+ * Node's own execFile defines promisify.custom, and that implementation calls
+ * execFile outside a promise executor, which is what lets a spawn failure throw
+ * synchronously. A bare mock has no such property, so promisify would fall back
+ * to wrapping the call in `new Promise`, quietly turning every synchronous
+ * throw into a rejection and hiding the very failure mode these tests exist to
+ * pin down.
+ */
+vi.mock("node:child_process", () => {
+	const execFile = vi.fn();
+	/**
+	 * vi.mock factories are hoisted, so the symbol is resolved inline rather than
+	 * through a top-level `promisify` import.
+	 */
+	execFile[Symbol.for("nodejs.util.promisify.custom")] = (
+		...args: unknown[]
+	) => {
+		let resolve: (value: unknown) => void;
+		let reject: (reason: Error) => void;
+		const promise = new Promise((res, rej) => {
+			resolve = res;
+			reject = rej;
+		});
+		/**
+		 * deliberately outside the executor above, mirroring Node, so that a
+		 * synchronous throw stays synchronous instead of becoming a rejection.
+		 */
+		execFile(...args, (error: Error | null) =>
+			error ? reject(error) : resolve({ stderr: "", stdout: "" }),
+		);
+		return promise;
+	};
+	return { execFile };
+});
 
 const mockedExecFile = vi.mocked(execFile);
+
+type ExecFileCallback = (error: NodeJS.ErrnoException | null) => void;
+
+/**
+ * execFile is called with an optional options argument, so the callback is
+ * whatever lands last rather than a fixed position.
+ */
+const lastArgument = (args: unknown[]): ExecFileCallback =>
+	args.at(-1) as ExecFileCallback;
 
 /**
  * Mimics a notifier that spawns successfully and exits cleanly.
  */
 const spawnSucceeds = () => {
-	mockedExecFile.mockImplementation(((
-		_command: string,
-		_args: string[],
-		callback: (error: null, stdout: string, stderr: string) => void,
-	) => {
-		callback(null, "", "");
+	mockedExecFile.mockImplementation(((...args: unknown[]) => {
+		lastArgument(args)(null);
 	}) as unknown as typeof execFile);
 };
 
@@ -42,14 +78,10 @@ const spawnThrowsBadArch = () => {
  * Mimics a notifier that is simply not installed on the host.
  */
 const spawnFailsNotFound = () => {
-	mockedExecFile.mockImplementation(((
-		_command: string,
-		_args: string[],
-		callback: (error: NodeJS.ErrnoException) => void,
-	) => {
+	mockedExecFile.mockImplementation(((...args: unknown[]) => {
 		const error: NodeJS.ErrnoException = new Error("spawn ENOENT");
 		error.code = "ENOENT";
-		callback(error);
+		lastArgument(args)(error);
 	}) as unknown as typeof execFile);
 };
 
@@ -143,6 +175,32 @@ describe("when displaying a notification", () => {
 	it("should resolve to false when the notifier is not installed", async () => {
 		spawnFailsNotFound();
 		await expect(notify(notification, "linux")).resolves.toBe(false);
+	});
+
+	/**
+	 * A notifier that spawns but never exits would otherwise keep the CLI alive
+	 * indefinitely, since the pending child is the last thing holding the event
+	 * loop open once the spinner has stopped.
+	 */
+	it("should bound the spawn so a hung notifier cannot keep the CLI alive", async () => {
+		spawnSucceeds();
+		await notify(notification, "darwin");
+		expect(mockedExecFile).toHaveBeenCalledWith(
+			"osascript",
+			expect.any(Array),
+			expect.objectContaining({ killSignal: "SIGKILL", timeout: 5000 }),
+			expect.any(Function),
+		);
+	});
+
+	it("should resolve to false when a malformed notification is passed", async () => {
+		await expect(
+			notify(
+				{ message: undefined, title: "t" } as unknown as Notification,
+				"darwin",
+			),
+		).resolves.toBe(false);
+		expect(mockedExecFile).not.toHaveBeenCalled();
 	});
 
 	it("should resolve to false without spawning on an unsupported platform", async () => {

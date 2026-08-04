@@ -48,7 +48,7 @@ export const extractDuration = (config: Configuration): Duration => {
 	}
 };
 
-/* v8 ignore next 60 */
+/* v8 ignore start */
 export class Timer {
 	config: Configuration;
 	startTime: number;
@@ -91,11 +91,19 @@ export class Timer {
 				 * displayed must not take the timer down with it.
 				 */
 				if (this.config.flags.notification) {
-					await notify({
-						message,
-						sound: "Funk",
-						title: "Timer Notification",
-					});
+					try {
+						await notify({
+							message,
+							sound: "Funk",
+							title: "Timer Notification",
+						});
+					} catch {
+						/**
+						 * notify is already total, so this only ever catches a future regression
+						 * in it. Rejecting here would be fatal: an async setTimeout callback has
+						 * nothing to attach a handler to.
+						 */
+					}
 				}
 			}, this.timerDurationMilliSeconds);
 		}
@@ -113,3 +121,4 @@ export class Timer {
 		}
 	};
 }
+/* v8 ignore stop */

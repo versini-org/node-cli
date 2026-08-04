@@ -3,6 +3,13 @@ import { promisify } from "node:util";
 
 const execFileAsync = promisify(execFile);
 
+/**
+ * A notifier that spawns but never exits would keep the CLI alive forever, so
+ * it is killed outright rather than merely asked to stop: a wedged child can
+ * ignore SIGTERM.
+ */
+const NOTIFIER_TIMEOUT_MS = 5000;
+
 export type Notification = {
 	message: string;
 	sound?: string;
@@ -96,14 +103,17 @@ export const notify = async (
 	notification: Notification,
 	platform: string = process.platform,
 ): Promise<boolean> => {
-	const notifyCommand = buildNotifyCommand(platform, notification);
-
-	if (notifyCommand === null) {
-		return false;
-	}
-
 	try {
-		await execFileAsync(notifyCommand.command, notifyCommand.args);
+		const notifyCommand = buildNotifyCommand(platform, notification);
+
+		if (notifyCommand === null) {
+			return false;
+		}
+
+		await execFileAsync(notifyCommand.command, notifyCommand.args, {
+			killSignal: "SIGKILL",
+			timeout: NOTIFIER_TIMEOUT_MS,
+		});
 		return true;
 	} catch {
 		return false;
