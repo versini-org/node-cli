@@ -1,7 +1,7 @@
 import { Logger, Spinner } from "@node-cli/logger";
 import moment, { Duration } from "moment";
 
-import notifier from "node-notifier";
+import { notify } from "./notify.js";
 import { Configuration } from "./parse.js";
 
 const logger = new Logger();
@@ -80,19 +80,23 @@ export class Timer {
 			const timer = setInterval(this.printRemainingTime, 1000);
 
 			// kill the spinner when the timer is done.
-			setTimeout(() => {
+			setTimeout(async () => {
 				const message = "Time's up!";
-				if (this.config.flags.notification) {
-					notifier.notify({
-						message,
-						sound: "Funk",
-						title: "Timer Notification",
-						wait: true,
-					});
-				}
 				clearInterval(timer);
 				this.printRemainingTime(message);
 				spinner.stop();
+
+				/**
+				 * notifying last, and never fatally: a desktop notification that cannot be
+				 * displayed must not take the timer down with it.
+				 */
+				if (this.config.flags.notification) {
+					await notify({
+						message,
+						sound: "Funk",
+						title: "Timer Notification",
+					});
+				}
 			}, this.timerDurationMilliSeconds);
 		}
 	};
