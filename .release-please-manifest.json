@@ -1,5 +1,5 @@
 {
-	"packages/bundlecheck": "2.1.1",
+	"packages/bundlecheck": "2.1.2",
 	"packages/bundlesize": "5.1.1",
 	"packages/envtools": "5.0.0",
 	"packages/logger": "2.1.0",
@@ -8,7 +8,7 @@
 	"packages/run": "2.1.1",
 	"packages/search": "4.1.1",
 	"packages/secret": "2.1.1",
-	"packages/static-server": "4.1.3",
+	"packages/static-server": "4.1.4",
 	"packages/timer": "2.1.1",
 	"packages/utilities": "2.1.0",
 	"packages/npmrc": "2.1.1",
