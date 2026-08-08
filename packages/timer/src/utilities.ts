@@ -5,7 +5,18 @@ import { notify } from "./notify.js";
 import { Configuration } from "./parse.js";
 
 const logger = new Logger();
-const spinner = new Spinner();
+
+/**
+ * discardStdin must stay off. When it is on, ora puts stdin in raw mode, which
+ * stops the tty from turning Ctrl+C into SIGINT and delivers a bare 0x03 byte
+ * instead. stdin-discarder means to re-send the signal itself, but it attaches
+ * its reader with prependListener (which, unlike on("data"), does not start a
+ * paused stream flowing) and only calls resume() when stdin.isPaused() was true
+ * beforehand. On a fresh process.stdin, flowing is null, so isPaused() is false
+ * and the resume never happens: the byte is never read, the signal is never
+ * re-sent, and Ctrl+C is swallowed for the life of the spinner.
+ */
+const spinner = new Spinner({ discardStdin: false });
 
 const UNITS = {
 	ms: 1000,
