@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.2](https://github.com/versini-org/node-cli/compare/timer-v2.1.1...timer-v2.1.2) (2026-08-08)
+
+
+### Bug Fixes
+
+* **timer:** restore Ctrl+C cancellation while the timer runs ([#642](https://github.com/versini-org/node-cli/issues/642)) ([36ae6e2](https://github.com/versini-org/node-cli/commit/36ae6e22c10739bf1df225903c95617c3e64990b))
+
 ## [2.1.1](https://github.com/versini-org/node-cli/compare/timer-v2.1.0...timer-v2.1.1) (2026-08-04)
 
 
