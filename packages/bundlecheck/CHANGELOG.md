@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.3](https://github.com/versini-org/node-cli/compare/bundlecheck-v2.1.2...bundlecheck-v2.1.3) (2026-08-09)
+
+
+### Bug Fixes
+
+* bump non-breaking dependencies to latest ([#644](https://github.com/versini-org/node-cli/issues/644)) ([e9ecf4f](https://github.com/versini-org/node-cli/commit/e9ecf4f90cdc67cabcb3ce5d0cec4d7cffe761e6))
+
 ## [2.1.2](https://github.com/versini-org/node-cli/compare/bundlecheck-v2.1.1...bundlecheck-v2.1.2) (2026-08-07)
 
 
