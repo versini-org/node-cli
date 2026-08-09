@@ -32,7 +32,7 @@
 		"watch": "swc --strip-leading-paths --watch --out-dir dist src"
 	},
 	"dependencies": {
-		"@fastify/caching": "9.0.3",
+		"@fastify/caching": "9.0.4",
 		"@fastify/compress": "9.2.0",
 		"@fastify/cors": "11.3.0",
 		"@fastify/static": "10.1.3",
