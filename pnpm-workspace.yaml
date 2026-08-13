@@ -2,6 +2,18 @@ packages:
   - packages/*
   - examples/*
 
+# Dependabot security remediations. pnpm 10+/11 reads `overrides` from
+# pnpm-workspace.yaml (NOT package.json). Each key is scoped to the vulnerable
+# range so unaffected coexisting copies are left untouched. Every entry below
+# exists because a parent holds the vulnerable version and a plain refresh
+# cannot move it.
+overrides:
+  "brace-expansion@>=5.0.0 <5.0.9": "5.0.9" # CVE-2026-13149/14257/69152 (dev: nx)
+  "js-yaml@>=4.0.0 <4.3.1": "4.3.1" # GHSA-5p4m-2wfm-xmqj (dev: lerna pins exact)
+  "postcss@<=8.5.22": "8.5.26" # CVE-2026-69153/73646 (dev: vite); also lifts nanoid
+  "tar@<=7.5.20": "7.5.22" # GHSA-r292-9mhp-454m (dev: lerna pins exact)
+  "undici@>=7.0.0 <7.29.0": "7.29.0" # CVE-2026-13697 + 4 more (dev: jsdom)
+
 strictDepBuilds: true
 minimumReleaseAge: 420 # 7 hours in minutes
 minimumReleaseAgeExclude:
