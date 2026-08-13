@@ -2,6 +2,15 @@ packages:
   - packages/*
   - examples/*
 
+# No `overrides` block, deliberately. Every security override this repo used to
+# carry existed because a tool we did not need was dragging in a vulnerable
+# transitive: lerna/nx (brace-expansion, js-yaml, tar) and a phantom jsdom
+# (undici). Both root causes are gone -- lerna is replaced by turbo, and
+# `autoInstallPeers: false` stops vitest's optional jsdom peer being installed
+# for a suite that runs on happy-dom. Prefer removing the cause over pinning
+# the symptom: an override is invisible maintenance that goes stale and then
+# blocks the very fix it was added for.
+
 strictDepBuilds: true
 minimumReleaseAge: 420 # 7 hours in minutes
 minimumReleaseAgeExclude:
@@ -11,9 +20,13 @@ minimumReleaseAgeExclude:
   - "ai"
   - npm-check-updates
 
+# Optional peers are not installed. vitest declares jsdom as an optional peer;
+# this suite runs on happy-dom and nothing here imports jsdom, so installing it
+# only added a vulnerable undici to the tree.
+autoInstallPeers: false
+
 shamefullyHoist: true
 allowBuilds:
   '@swc/core': true
   better-sqlite3: true
   esbuild: true
-  nx: false

@@ -66,13 +66,13 @@ jobs:
         run: pnpm install
 
       - name: Run lint
-        run: npx lerna run lint
+        run: pnpm turbo run lint
 
       - name: Run build
-        run: npx lerna run build --ignore="@sassysaint/tauri"
+        run: pnpm turbo run build --filter=!@sassysaint/tauri
 
       - name: Run tests
-        run: npx lerna run test
+        run: pnpm turbo run test
 
   deploy-staging:
     runs-on: ubuntu-latest
