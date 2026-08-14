@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/versini-org/node-cli/compare/timer-v2.1.2...timer-v2.2.0) (2026-08-14)
+
+
+### Features
+
+* **timer:** show a branded alert that stays until dismissed ([#648](https://github.com/versini-org/node-cli/issues/648)) ([49cdf39](https://github.com/versini-org/node-cli/commit/49cdf3965ae0d5c646a3be8ad4a7d8f57a13f102))
+
 ## [2.1.2](https://github.com/versini-org/node-cli/compare/timer-v2.1.1...timer-v2.1.2) (2026-08-08)
 
 
