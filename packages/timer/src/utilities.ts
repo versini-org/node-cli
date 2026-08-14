@@ -104,6 +104,7 @@ export class Timer {
 				if (this.config.flags.notification) {
 					try {
 						await notify({
+							banner: this.config.flags.banner,
 							message,
 							sound: "Funk",
 							title: "Timer Notification",

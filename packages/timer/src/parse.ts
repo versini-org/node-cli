@@ -25,6 +25,12 @@ export const config: Configuration = parser({
 		},
 	],
 	flags: {
+		banner: {
+			default: defaultFlags.banner,
+			description:
+				"Show a passive banner instead of a dialog that waits to be dismissed (macOS only)",
+			type: "boolean",
+		},
 		boring: {
 			shortFlag: "b",
 			default: defaultFlags.boring,
