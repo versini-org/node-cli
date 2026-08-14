@@ -1,4 +1,4 @@
-import { execFile } from "node:child_process";
+import { execFile, spawn } from "node:child_process";
 import { vi } from "vitest";
 import { buildNotifyCommand, type Notification, notify } from "../notify.js";
 
@@ -34,10 +34,20 @@ vi.mock("node:child_process", () => {
 		);
 		return promise;
 	};
-	return { execFile };
+	return { execFile, spawn: vi.fn() };
 });
 
 const mockedExecFile = vi.mocked(execFile);
+const mockedSpawn = vi.mocked(spawn);
+
+/**
+ * Mimics the subset of ChildProcess that the detached path touches.
+ */
+const spawnReturnsChild = () => {
+	const child = { on: vi.fn(), unref: vi.fn() };
+	mockedSpawn.mockReturnValue(child as unknown as ReturnType<typeof spawn>);
+	return child;
+};
 
 type ExecFileCallback = (error: NodeJS.ErrnoException | null) => void;
 
@@ -91,10 +101,46 @@ const notification = {
 	title: "Timer Notification",
 };
 
+const bannerNotification = { ...notification, banner: true };
+
 describe("when building the platform-native notification command", () => {
-	it("should use osascript on macOS", async () => {
-		expect(buildNotifyCommand("darwin", notification)).toStrictEqual({
+	/**
+	 * The dialog is the macOS default because a banner cannot carry the timer's
+	 * own icon and disappears on its own, which loses the alarm entirely when
+	 * nobody is watching the screen.
+	 */
+	it("should default to an alert dialog on macOS", async () => {
+		const { args, command, detached } = buildNotifyCommand(
+			"darwin",
+			notification,
+		);
+
+		expect(command).toBe("osascript");
+		expect(detached).toBe(true);
+		expect(args.at(-1)).toContain('display dialog "Time\'s up!"');
+		expect(args.at(-1)).toContain('with title "Timer Notification"');
+		expect(args.at(-1)).toContain("hourglass.png");
+		expect(args.at(-1)).toContain('buttons {"OK"} default button "OK"');
+	});
+
+	it("should play the sound alongside the alert dialog on macOS", async () => {
+		const { args } = buildNotifyCommand("darwin", notification);
+
+		expect(args[0]).toBe("-e");
+		expect(args[1]).toContain("afplay /System/Library/Sounds/Funk.aiff");
+	});
+
+	it("should omit the sound script when the alert has no sound", async () => {
+		const { args } = buildNotifyCommand("darwin", { message: "a", title: "b" });
+
+		expect(args).toHaveLength(2);
+		expect(args[1]).not.toContain("afplay");
+	});
+
+	it("should use a banner on macOS when one is asked for", async () => {
+		expect(buildNotifyCommand("darwin", bannerNotification)).toStrictEqual({
 			command: "osascript",
+			detached: false,
 			args: [
 				"-e",
 				'display notification "Time\'s up!" with title "Timer Notification" sound name "Funk"',
@@ -104,15 +150,17 @@ describe("when building the platform-native notification command", () => {
 
 	it("should omit the sound on macOS when none is requested", async () => {
 		expect(
-			buildNotifyCommand("darwin", { message: "a", title: "b" }),
+			buildNotifyCommand("darwin", { banner: true, message: "a", title: "b" }),
 		).toStrictEqual({
 			command: "osascript",
+			detached: false,
 			args: ["-e", 'display notification "a" with title "b"'],
 		});
 	});
 
 	it("should escape quotes and backslashes in the AppleScript literal", async () => {
 		const { args } = buildNotifyCommand("darwin", {
+			banner: true,
 			message: 'say "hi" \\ bye',
 			title: 'a "quoted" title',
 		});
@@ -121,9 +169,23 @@ describe("when building the platform-native notification command", () => {
 		);
 	});
 
+	it("should escape quotes and backslashes in the alert dialog literal", async () => {
+		const { args } = buildNotifyCommand("darwin", {
+			message: 'say "hi" \\ bye',
+			title: 'a "quoted" title',
+		});
+		expect(args.at(-1)).toContain('display dialog "say \\"hi\\" \\\\ bye"');
+		expect(args.at(-1)).toContain('with title "a \\"quoted\\" title"');
+	});
+
+	/**
+	 * The alert is macOS-only: the other two platforms get their native banner
+	 * whether or not one was asked for.
+	 */
 	it("should use notify-send on Linux", async () => {
 		expect(buildNotifyCommand("linux", notification)).toStrictEqual({
 			command: "notify-send",
+			detached: false,
 			args: ["Timer Notification", "Time's up!"],
 		});
 	});
@@ -153,11 +215,12 @@ describe("when building the platform-native notification command", () => {
 describe("when displaying a notification", () => {
 	beforeEach(() => {
 		mockedExecFile.mockReset();
+		mockedSpawn.mockReset();
 	});
 
 	it("should resolve to true when the notifier runs", async () => {
 		spawnSucceeds();
-		await expect(notify(notification, "darwin")).resolves.toBe(true);
+		await expect(notify(bannerNotification, "darwin")).resolves.toBe(true);
 		expect(mockedExecFile).toHaveBeenCalledTimes(1);
 	});
 
@@ -169,7 +232,7 @@ describe("when displaying a notification", () => {
 	 */
 	it("should resolve to false when the notifier cannot run on this CPU", async () => {
 		spawnThrowsBadArch();
-		await expect(notify(notification, "darwin")).resolves.toBe(false);
+		await expect(notify(bannerNotification, "darwin")).resolves.toBe(false);
 	});
 
 	it("should resolve to false when the notifier is not installed", async () => {
@@ -184,13 +247,51 @@ describe("when displaying a notification", () => {
 	 */
 	it("should bound the spawn so a hung notifier cannot keep the CLI alive", async () => {
 		spawnSucceeds();
-		await notify(notification, "darwin");
+		await notify(bannerNotification, "darwin");
 		expect(mockedExecFile).toHaveBeenCalledWith(
 			"osascript",
 			expect.any(Array),
 			expect.objectContaining({ killSignal: "SIGKILL", timeout: 5000 }),
 			expect.any(Function),
 		);
+	});
+
+	/**
+	 * The alert waits for a human, so awaiting it would hold the timer open until
+	 * the dialog is clicked and stall anything chained behind it.
+	 */
+	it("should detach the alert instead of waiting for it to be dismissed", async () => {
+		const child = spawnReturnsChild();
+
+		await expect(notify(notification, "darwin")).resolves.toBe(true);
+		expect(mockedExecFile).not.toHaveBeenCalled();
+		expect(mockedSpawn).toHaveBeenCalledWith(
+			"osascript",
+			expect.any(Array),
+			expect.objectContaining({ detached: true, stdio: "ignore" }),
+		);
+		expect(child.unref).toHaveBeenCalledTimes(1);
+	});
+
+	/**
+	 * An unhandled "error" event on a child process is thrown, so a notifier that
+	 * cannot spawn at all would otherwise take the timer down with it.
+	 */
+	it("should swallow a spawn failure on the detached alert", async () => {
+		const child = spawnReturnsChild();
+
+		await notify(notification, "darwin");
+		expect(child.on).toHaveBeenCalledWith("error", expect.any(Function));
+
+		const handler = child.on.mock.calls[0][1] as () => void;
+		expect(handler).not.toThrow();
+	});
+
+	it("should resolve to false when the alert cannot be spawned at all", async () => {
+		mockedSpawn.mockImplementation(() => {
+			throw new Error("spawn EACCES");
+		});
+		await expect(notify(notification, "darwin")).resolves.toBe(false);
 	});
 
 	it("should resolve to false when a malformed notification is passed", async () => {
