@@ -20,7 +20,7 @@
 		"@node-cli/comments": "workspace:*",
 		"@versini/dev-dependencies-common": "14.0.4",
 		"barrelsby": "2.8.1",
-		"turbo": "2.10.9"
+		"turbo": "2.10.10"
 	},
 	"packageManager": "pnpm@11.21.0",
 	"engines": {
