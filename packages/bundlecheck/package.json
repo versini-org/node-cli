@@ -40,7 +40,7 @@
 		"watch": "swc --strip-leading-paths --watch --out-dir dist src"
 	},
 	"dependencies": {
-		"@inquirer/select": "5.2.2",
+		"@inquirer/select": "5.2.3",
 		"@node-cli/logger": "workspace:*",
 		"@node-cli/parser": "workspace:*",
 		"better-sqlite3": "13.0.3",
