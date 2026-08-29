@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.3](https://github.com/versini-org/node-cli/compare/search-v4.1.2...search-v4.1.3) (2026-08-29)
+
+
+### Bug Fixes
+
+* bump non-breaking dependencies to latest ([#662](https://github.com/versini-org/node-cli/issues/662)) ([1f1aa6b](https://github.com/versini-org/node-cli/commit/1f1aa6ba0d58aff3f22c0c3e3a5733b69efa3907))
+
 ## [4.1.2](https://github.com/versini-org/node-cli/compare/search-v4.1.1...search-v4.1.2) (2026-08-19)
 
 
