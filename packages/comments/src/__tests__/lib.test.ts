@@ -114,6 +114,77 @@ describe("parseAndTransformComments", () => {
 		expect(transformed).toMatch(/future @auth0\/auth0-react/);
 	});
 
+	it("does not treat a CSS at-rule as a JSDoc tag", () => {
+		const cases: [string, RegExp, RegExp][] = [
+			[
+				[
+					"/**",
+					" * Global styles for the UI. Animations are registered through the",
+					" * @keyframes rule and referenced by name in each component.",
+					" */",
+				].join("\n") + "\n",
+				/through the\./,
+				/through the @keyframes/,
+			],
+			[
+				[
+					"/**",
+					" * Fade the panel in. Uses",
+					" * @media (prefers-reduced-motion) to disable the transition entirely.",
+					" */",
+				].join("\n") + "\n",
+				/Uses\./,
+				/Uses @media \(prefers-reduced-motion\)/,
+			],
+			[
+				[
+					"/**",
+					" * Layout tokens live under the",
+					" * @layer base so they can be overridden by utilities.",
+					" */",
+				].join("\n") + "\n",
+				/under the\./,
+				/under the @layer/,
+			],
+		];
+		for (const [input, spuriousPeriod, joined] of cases) {
+			const { transformed } = parseAndTransformComments(input, {
+				width: 80,
+				wrapLineComments: true,
+				mergeLineComments: true,
+			});
+			// No period injected mid-sentence.
+			expect(transformed).not.toMatch(spuriousPeriod);
+			// Sentence joined, at-rule kept inline as prose.
+			expect(transformed).toMatch(joined);
+		}
+	});
+
+	it("still treats JSDoc tags that share a name with a CSS at-rule as tags", () => {
+		const input =
+			[
+				"/**",
+				" * Describes a thing",
+				" * @property {string} name The display name",
+				" * @function",
+				" * @namespace Foo",
+				" * @return {number} the result",
+				" */",
+			].join("\n") + "\n";
+		const { transformed } = parseAndTransformComments(input, {
+			width: 80,
+			wrapLineComments: true,
+			mergeLineComments: true,
+		});
+		expect(transformed).toMatch(/^ \* Describes a thing\.$/m);
+		expect(transformed).toMatch(
+			/^ \* @property \{string\} name The display name$/m,
+		);
+		expect(transformed).toMatch(/^ \* @function$/m);
+		expect(transformed).toMatch(/^ \* @namespace Foo$/m);
+		expect(transformed).toMatch(/^ \* @return \{number\} the result$/m);
+	});
+
 	it("still treats real JSDoc tags as tags after the scoped-package fix", () => {
 		const input =
 			"/**\n * Does a thing.\n * @param x in\n * @returns out\n */\n";

@@ -116,6 +116,7 @@ interface FileResult {
 ## Heuristics Overview
 
 - Adds a terminal period to sentences lacking final punctuation (unless ending with a colon, tag line, list marker, or detected continuation).
+- Treats `@tag` lines as JSDoc tags, except scoped package names (`@auth0/auth0-react`) and CSS at-rules (`@keyframes`, `@media`, `@layer`, ...) that open a wrapped prose line; those stay part of the sentence.
 - Normalizes `NOTE:` capitalization and splits multiple NOTE sentences safely.
 - Skips wrapping/merging for linter and tool directive comments, including:
   - ESLint (`eslint-disable`, `eslint-enable`, `eslint-disable-next-line`, etc.)

@@ -164,15 +164,51 @@ function isListLike(line: string): boolean {
 	return /^(?:[-*+] |\d+\. )/.test(line.trim());
 }
 
+/**
+ * CSS at-rules that can legitimately open a wrapped prose line in a comment
+ * describing styles (e.g. "... are registered through the" followed by
+ * "@keyframes rule and referenced by name"). None of these names doubles as a
+ * JSDoc/TSDoc tag, so a line starting with one of them is sentence
+ * continuation, not a tag. At-rules whose name IS also a JSDoc tag (@function,
+ * @import, @mixin, @namespace, @property, @return) are deliberately absent so
+ * real tags keep working.
+ */
+const CSS_AT_RULES = new Set([
+	"apply",
+	"charset",
+	"color-profile",
+	"container",
+	"counter-style",
+	"font-face",
+	"font-feature-values",
+	"font-palette-values",
+	"keyframes",
+	"layer",
+	"media",
+	"page",
+	"position-try",
+	"scope",
+	"screen",
+	"starting-style",
+	"supports",
+	"tailwind",
+	"view-transition",
+]);
+
 function isTagLine(line: string): boolean {
 	/**
 	 * A JSDoc/TSDoc tag is `@name` (optionally hyphenated) and is never
 	 * immediately followed by `/`. The negative lookahead excludes scoped npm
 	 * package specifiers like `@auth0/auth0-react` or `@versini/ui-main` that can
 	 * legitimately open a wrapped prose line; treating those as tags severs the
-	 * sentence and injects a spurious period.
+	 * sentence and injects a spurious period. CSS at-rules (see CSS_AT_RULES) are
+	 * excluded for the same reason.
 	 */
-	return /^@[A-Za-z][\w-]*(?![\w/-])/.test(line.trim());
+	const m = /^@([A-Za-z][\w-]*)(?![\w/-])/.exec(line.trim());
+	if (!m) {
+		return false;
+	}
+	return !CSS_AT_RULES.has(m[1].toLowerCase());
 }
 
 function isHeadingLike(line: string): boolean {
