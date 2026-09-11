@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/versini-org/node-cli/compare/comments-v1.1.1...comments-v1.1.2) (2026-09-11)
+
+
+### Bug Fixes
+
+* **comments:** keep CSS at-rules like [@keyframes](https://github.com/keyframes) inline instead of treating them as JSDoc tags ([#672](https://github.com/versini-org/node-cli/issues/672)) ([e0e04b2](https://github.com/versini-org/node-cli/commit/e0e04b28aae05abc86fe8ebc8f3eb6edc2ad17ae))
+
 ## [1.1.1](https://github.com/versini-org/node-cli/compare/comments-v1.1.0...comments-v1.1.1) (2026-08-19)
 
 
