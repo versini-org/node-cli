@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.2](https://github.com/versini-org/node-cli/compare/timer-v2.2.1...timer-v2.2.2) (2026-09-15)
+
+
+### Bug Fixes
+
+* bump non-breaking dependencies to latest ([#676](https://github.com/versini-org/node-cli/issues/676)) ([6671381](https://github.com/versini-org/node-cli/commit/6671381ac2d337d6db37676e544cec3d8b3097b3))
+
 ## [2.2.1](https://github.com/versini-org/node-cli/compare/timer-v2.2.0...timer-v2.2.1) (2026-08-19)
 
 
