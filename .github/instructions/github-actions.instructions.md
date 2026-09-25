@@ -53,7 +53,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup PNPM
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6.1.0
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
