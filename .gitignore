@@ -78,3 +78,6 @@ types
 
 # Turbo
 .turbo
+
+# Claude Code agent worktrees
+.claude/worktrees
