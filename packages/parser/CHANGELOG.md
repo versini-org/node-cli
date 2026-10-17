@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.2](https://github.com/versini-org/node-cli/compare/parser-v3.1.1...parser-v3.1.2) (2026-10-17)
+
+
+### Bug Fixes
+
+* bump non-breaking dependencies to latest ([#689](https://github.com/versini-org/node-cli/issues/689)) ([d35be1b](https://github.com/versini-org/node-cli/commit/d35be1bec82b1ae5cd440656bf2d84cec0a487e9))
+
 ## [3.1.1](https://github.com/versini-org/node-cli/compare/parser-v3.1.0...parser-v3.1.1) (2026-08-19)
 
 

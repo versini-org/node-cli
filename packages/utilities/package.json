@@ -1,6 +1,6 @@
 {
 	"name": "@node-cli/utilities",
-	"version": "2.1.1",
+	"version": "2.1.2",
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "A few utilities for Node CLI applications",
