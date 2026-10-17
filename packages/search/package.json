@@ -1,6 +1,6 @@
 {
 	"name": "@node-cli/search",
-	"version": "4.1.5",
+	"version": "4.1.6",
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "Search for files in a directory",
