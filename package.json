@@ -18,11 +18,11 @@
 	},
 	"devDependencies": {
 		"@node-cli/comments": "workspace:*",
-		"@versini/dev-dependencies-common": "14.0.18",
+		"@versini/dev-dependencies-common": "14.0.19",
 		"barrelsby": "2.8.1",
-		"turbo": "2.11.8"
+		"turbo": "2.11.9"
 	},
-	"packageManager": "pnpm@12.13.0",
+	"packageManager": "pnpm@12.14.0",
 	"engines": {
 		"node": ">=22"
 	}
