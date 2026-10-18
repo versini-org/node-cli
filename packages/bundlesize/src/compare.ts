@@ -1,3 +1,5 @@
+import { DEFAULT_HEADER, DEFAULT_THRESHOLD } from "./defaults.js";
+
 /**
  * One measured entry, in the shape `size-limit --json` prints. Any tool can
  * produce it: `size` and `sizeLimit` are in bytes, and `passed` falls back to
@@ -47,6 +49,10 @@ export interface CompareOptions {
 	 * @default 0
 	 */
 	threshold?: number;
+	/**
+	 * Why there is no baseline, appended to the "no baseline" note.
+	 */
+	missingReason?: string;
 }
 
 export interface CompareResult {
@@ -56,15 +62,21 @@ export interface CompareResult {
 
 const UNITS = ["B", "kB", "MB"];
 
+const round = (value: number): number => Number.parseFloat(value.toFixed(2));
+
 export const formatSize = (size: number, kilo: number): string => {
-	if (size === 0) {
-		return "0 B";
+	if (size < 1) {
+		return `${round(size)} B`;
 	}
-	const exponent = Math.min(
+	let exponent = Math.min(
 		Math.floor(Math.log(size) / Math.log(kilo)),
 		UNITS.length - 1,
 	);
-	return `${Number.parseFloat((size / kilo ** exponent).toFixed(2))} ${UNITS[exponent]}`;
+	// Rounding can land on a whole next unit, e.g. 1048575 B is "1024 kB".
+	if (round(size / kilo ** exponent) >= kilo && exponent < UNITS.length - 1) {
+		exponent += 1;
+	}
+	return `${round(size / kilo ** exponent)} ${UNITS[exponent]}`;
 };
 
 export const formatDelta = ({
@@ -95,10 +107,28 @@ export const formatDelta = ({
 	return `${arrow} ${sign}${amount} (${sign}${percent}%)`;
 };
 
-const escapeCell = (text: string): string => text.replaceAll("|", "\\|");
+/**
+ * Keep untrusted text inside its table cell: a newline would end the table and
+ * let the rest render as markdown, `<` opens HTML or a comment, and `@` pings,
+ * which a zero-width space after it prevents.
+ */
+const escapeCell = (text: string): string =>
+	text
+		.replace(/\p{Cc}+/gu, " ")
+		.replaceAll("\\", "\\\\")
+		.replaceAll("|", "\\|")
+		.replaceAll("<", "&lt;")
+		.replaceAll(">", "&gt;")
+		.replaceAll("@", "@&#8203;");
 
-const formatRef = (baseRef: string, baseSha?: string): string =>
-	baseSha ? `\`${baseRef}\` @ \`${baseSha.slice(0, 7)}\`` : `\`${baseRef}\``;
+// Keep a value on one line inside its code span.
+const toCodeSpan = (text: string): string =>
+	text.replace(/\p{Cc}+/gu, " ").replaceAll("`", "");
+
+const formatRef = (baseRef: string, baseSha?: string): string => {
+	const ref = `\`${toCodeSpan(baseRef)}\``;
+	return baseSha ? `${ref} @ \`${toCodeSpan(baseSha.slice(0, 7))}\`` : ref;
+};
 
 /**
  * Render a markdown size report with a "vs <baseRef>" column comparing each
@@ -107,12 +137,13 @@ const formatRef = (baseRef: string, baseSha?: string): string =>
 export const compareSizes = ({
 	current,
 	baseline = null,
-	header = "## Bundle Size",
+	header = DEFAULT_HEADER,
 	baseRef = "main",
 	baseSha,
 	footer,
 	kilo = 1024,
-	threshold = 0,
+	threshold = DEFAULT_THRESHOLD,
+	missingReason,
 }: CompareOptions): CompareResult => {
 	const previousSizes = new Map(
 		(baseline ?? []).map((entry) => [entry.name, entry.size]),
@@ -121,7 +152,7 @@ export const compareSizes = ({
 
 	const rows = current.map((entry) => {
 		const entryPassed =
-			entry.passed ??
+			entry.passed !== false &&
 			(entry.sizeLimit === undefined || entry.size <= entry.sizeLimit);
 		if (!entryPassed) {
 			passed = false;
@@ -139,10 +170,19 @@ export const compareSizes = ({
 		return `| ${entryPassed ? "✅" : "❌"} | ${escapeCell(entry.name)} | ${formatSize(entry.size, kilo)} | ${delta} | ${limit} |`;
 	});
 
+	const currentNames = new Set(current.map((entry) => entry.name));
+	const removed = (baseline ?? [])
+		.filter((entry) => !currentNames.has(entry.name))
+		.map(
+			(entry) =>
+				`| ➖ | ${escapeCell(entry.name)} | — | removed (−${formatSize(entry.size, kilo)}) | — |`,
+		);
+
 	const reference = formatRef(baseRef, baseSha);
+	const reason = missingReason ? ` (${missingReason})` : "";
 	const note = baseline
 		? `<sub>Compared with ${reference}.</sub>`
-		: `<sub>⚠️ No baseline found for ${reference}, so no change is shown.</sub>`;
+		: `<sub>⚠️ No baseline found for ${reference}${reason}, so no change is shown.</sub>`;
 
 	const lines = [
 		header,
@@ -150,6 +190,7 @@ export const compareSizes = ({
 		`| Status | Section | Size (gzip) | vs ${escapeCell(baseRef)} | Limit (gzip) |`,
 		"| --- | --- | --- | --- | --- |",
 		...rows,
+		...removed,
 		"",
 		note,
 	];

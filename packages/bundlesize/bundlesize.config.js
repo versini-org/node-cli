@@ -14,5 +14,13 @@ export default {
 			path: "dist/parse.js",
 			limit: "1.5 kB",
 		},
+		{
+			path: "dist/compare.js",
+			limit: "2 kB",
+		},
+		{
+			path: "dist/compareStats.js",
+			limit: "2 kB",
+		},
 	],
 };

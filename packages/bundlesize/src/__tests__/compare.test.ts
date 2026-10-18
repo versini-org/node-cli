@@ -8,6 +8,13 @@ describe("formatSize", () => {
 		expect(formatSize(266076, 1024)).toBe("259.84 kB");
 	});
 
+	it("never prints an undefined unit or a whole next unit", () => {
+		expect(formatSize(0.5, 1024)).toBe("0.5 B");
+		expect(formatSize(1048575, 1024)).toBe("1 MB");
+		expect(formatSize(999999, 1000)).toBe("1 MB");
+		expect(formatSize(1023.999, 1024)).toBe("1 kB");
+	});
+
 	it("handles zero, bytes and megabytes", () => {
 		expect(formatSize(0, 1024)).toBe("0 B");
 		expect(formatSize(512, 1024)).toBe("512 B");
@@ -56,13 +63,15 @@ describe("formatDelta", () => {
 	});
 
 	it("never points the arrow against the direction of change", () => {
-		for (let i = 0; i < 500; i++) {
-			const previous = Math.floor(Math.random() * 500000);
-			const size = Math.floor(Math.random() * 500000);
-			const threshold = Math.floor(Math.random() * 50);
-			const delta = formatDelta({ kilo: 1000, threshold, size, previous });
-			const diff = size - previous;
-			if (Math.abs(diff) < threshold || diff === 0) {
+		const threshold = 15;
+		for (const diff of [-1000, -16, -15, -14, -1, 0, 1, 14, 15, 16, 1000]) {
+			const delta = formatDelta({
+				kilo: 1000,
+				threshold,
+				size: 5000 + diff,
+				previous: 5000,
+			});
+			if (Math.abs(diff) < threshold) {
 				expect(delta).toBe("= no change");
 			} else if (diff > 0) {
 				expect(delta.startsWith("▲ +")).toBe(true);
@@ -130,6 +139,36 @@ describe("compareSizes", () => {
 		).toBe(true);
 	});
 
+	it("fails an entry over its limit even when it says it passed", () => {
+		const result = compareSizes({
+			current: [{ name: "a", size: 11, sizeLimit: 10, passed: true }],
+		});
+		expect(result.passed).toBe(false);
+		expect(result.data).toContain("| ❌ | a |");
+	});
+
+	it("lists baseline entries that are gone from this run", () => {
+		const { data } = compareSizes({
+			current: [{ name: "a", size: 1 }],
+			baseline: [
+				{ name: "a", size: 1 },
+				{ name: "gone", size: 12288 },
+			],
+		});
+		expect(data).toContain("| ➖ | gone | — | removed (−12 kB) | — |");
+	});
+
+	it("says why the baseline is missing when a reason is given", () => {
+		const { data } = compareSizes({
+			current: [{ name: "a", size: 1 }],
+			baseSha: "abc1234",
+			missingReason: "the baseline file could not be read",
+		});
+		expect(data).toContain(
+			"<sub>⚠️ No baseline found for `main` @ `abc1234` (the baseline file could not be read), so no change is shown.</sub>",
+		);
+	});
+
 	it("fails when an entry is over its limit, with or without passed", () => {
 		expect(
 			compareSizes({ current: [{ name: "a", size: 11, sizeLimit: 10 }] })
@@ -154,8 +193,52 @@ describe("compareSizes", () => {
 		expect(data).toContain("| ✅ | free | 5 B | n/a | — |");
 	});
 
+	it("escapes the base ref in the header and keeps the note on one line", () => {
+		const { data } = compareSizes({
+			current: [{ name: "x>y", size: 1 }],
+			baseline: [],
+			baseRef: "a|b\n\n## Forged",
+		});
+		expect(data).toContain("| vs a\\|b ## Forged | Limit (gzip) |");
+		expect(data).toContain("Compared with `a|b ## Forged`.");
+		expect(data).toContain("| x&gt;y |");
+		expect(data.split("\n").some((line) => line.startsWith("## Forged"))).toBe(
+			false,
+		);
+	});
+
+	it("keeps backticks in the base ref from breaking the code span", () => {
+		const { data } = compareSizes({
+			current: [{ name: "a", size: 1 }],
+			baseline: [],
+			baseRef: "ma`in",
+			baseSha: "ab`c1234",
+		});
+		expect(data).toContain("Compared with `main` @ `abc123`.");
+	});
+
 	it("escapes pipes in names so the table keeps its columns", () => {
 		const { data } = compareSizes({ current: [{ name: "a|b", size: 1 }] });
 		expect(data).toContain("| a\\|b |");
+	});
+
+	it("keeps every name inside its own table row", () => {
+		const { data } = compareSizes({
+			current: [
+				{ name: "a\n\n## Injected\n<!--", size: 999999, sizeLimit: 10 },
+				{ name: "b\\|extra", size: 1 },
+				{ name: "ping @someone", size: 1 },
+			],
+		});
+		const rows = data.split("\n").filter((line) => line.startsWith("| "));
+		// Header, separator and one line per entry: nothing escaped the table.
+		expect(rows).toHaveLength(5);
+		expect(
+			data.split("\n").some((line) => line.startsWith("## Injected")),
+		).toBe(false);
+		expect(data).not.toContain("<!--");
+		expect(data).toContain("| ❌ | a ## Injected &lt;!-- |");
+		expect(data).toContain("| b\\\\\\|extra |");
+		expect(data).toContain("ping @&#8203;someone");
 	});
 });

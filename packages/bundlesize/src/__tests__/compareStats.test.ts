@@ -1,7 +1,13 @@
-import { mkdtempSync, writeFileSync } from "node:fs";
+import {
+	chmodSync,
+	mkdirSync,
+	mkdtempSync,
+	rmSync,
+	writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { compareStats } from "../compareStats.js";
 import { STDOUT } from "../utilities.js";
 
@@ -19,6 +25,10 @@ beforeEach(() => {
 	dir = mkdtempSync(join(tmpdir(), "bundlesize-compare-"));
 });
 
+afterEach(() => {
+	rmSync(dir, { recursive: true, force: true });
+});
+
 describe("compareStats", () => {
 	it("compares size-limit JSON against a baseline file", () => {
 		const current = write("current.json", [
@@ -28,7 +38,7 @@ describe("compareStats", () => {
 			{ name: "first-paint", size: 1024 },
 		]);
 		const result = compareStats({
-			flags: { current, baseline, baseSha: "abc1234" },
+			flags: { kilo: 1024, current, baseline, baseSha: "abc1234" },
 		});
 		expect(result.exitCode).toBe(0);
 		expect(result.exitMessage).toBe("");
@@ -40,7 +50,7 @@ describe("compareStats", () => {
 	it("renders the no-baseline note when the baseline file is missing", () => {
 		const current = write("current.json", [{ name: "a", size: 1 }]);
 		const result = compareStats({
-			flags: { current, baseline: join(dir, "missing.json") },
+			flags: { kilo: 1024, current, baseline: join(dir, "missing.json") },
 		});
 		expect(result.exitCode).toBe(0);
 		expect(result.data).toContain("No baseline found");
@@ -72,14 +82,59 @@ describe("compareStats", () => {
 		const current = write("current.json", [
 			{ name: "a", size: 11, sizeLimit: 10 },
 		]);
-		expect(compareStats({ flags: { current } }).exitCode).toBe(1);
-		expect(compareStats({ flags: { current, silent: true } }).exitCode).toBe(0);
+		expect(compareStats({ flags: { kilo: 1024, current } }).exitCode).toBe(1);
+		expect(
+			compareStats({ flags: { kilo: 1024, current, silent: true } }).exitCode,
+		).toBe(0);
 	});
 
 	it("resolves the output file", () => {
 		const current = write("current.json", [{ name: "a", size: 1 }]);
-		const result = compareStats({ flags: { current, output: "tmp/out.md" } });
+		const result = compareStats({
+			flags: { kilo: 1024, current, output: "tmp/out.md" },
+		});
 		expect(result.outputFile).toBe(join(process.cwd(), "tmp/out.md"));
+	});
+
+	it("requires --kilo so size-limit sizes are not read as 1024-based", () => {
+		const current = write("current.json", [{ name: "a", size: 1 }]);
+		const result = compareStats({ flags: { current } });
+		expect(result.exitCode).toBe(1);
+		expect(result.exitMessage).toContain("--kilo is required");
+	});
+
+	it("rejects duplicate entry names", () => {
+		const result = compareStats({
+			flags: {
+				current: write("dupes.json", [
+					{ name: "a", size: 1 },
+					{ name: "a", size: 2 },
+				]),
+				kilo: 1000,
+			},
+		});
+		expect(result.exitCode).toBe(1);
+		expect(result.exitMessage).toContain('Duplicate entry name "a"');
+	});
+
+	it("falls back to no baseline, with a warning, when the baseline is bad", () => {
+		const current = write("current.json", [{ name: "a", size: 1 }]);
+		for (const content of [
+			"{oops",
+			{ error: "Build not found" },
+			[{ name: 1 }],
+		]) {
+			const baseline = write("baseline.json", content);
+			const result = compareStats({
+				flags: { current, baseline, kilo: 1000, silent: true },
+			});
+			expect(result.exitCode).toBe(0);
+			expect(result.exitMessage).toBe("");
+			expect(result.warning).toContain(baseline);
+			expect(result.data).toContain(
+				"No baseline found for `main` (the baseline file could not be read)",
+			);
+		}
 	});
 
 	it("requires --current", () => {
@@ -95,37 +150,101 @@ describe("compareStats", () => {
 		expect(result.exitMessage).toBe("--kilo must be 1000 or 1024");
 	});
 
-	it("reports unreadable and malformed files", () => {
+	it("rejects a threshold that is not a byte count", () => {
 		const current = write("current.json", [{ name: "a", size: 1 }]);
+		for (const threshold of [Number.NaN, -1, Number.POSITIVE_INFINITY]) {
+			const result = compareStats({
+				flags: { kilo: 1024, current, threshold },
+			});
+			expect(result.exitCode).toBe(1);
+			expect(result.exitMessage).toBe(
+				"--threshold must be a number of bytes, 0 or more",
+			);
+		}
+	});
+
+	it("rejects an infinite size", () => {
+		// JSON has no Infinity literal, but 1e999 overflows to it when parsed.
+		const current = write("inf.json", '[{"name":"a","size":1e999}]');
 		expect(
-			compareStats({ flags: { current: join(dir, "nope.json") } }).exitMessage,
-		).toContain("Failed to read JSON file");
+			compareStats({ flags: { kilo: 1024, current } }).exitMessage,
+		).toContain("Invalid sizes file");
+	});
+
+	it("warns when the baseline cannot even be checked for", () => {
+		const current = write("current.json", [{ name: "a", size: 1 }]);
+		const locked = join(dir, "locked");
+		mkdirSync(locked);
+		writeFileSync(join(locked, "baseline.json"), "[]");
+		chmodSync(locked, 0o000);
+		try {
+			const result = compareStats({
+				flags: { kilo: 1024, current, baseline: join(locked, "baseline.json") },
+			});
+			expect(result.exitCode).toBe(0);
+			expect(result.warning).toContain("Ignoring the baseline");
+			expect(result.data).toContain("(the baseline file could not be read)");
+		} finally {
+			chmodSync(locked, 0o700);
+		}
+	});
+
+	it("rejects negative sizes and limits", () => {
+		for (const entry of [
+			{ name: "a", size: -5 },
+			{ name: "a", size: 5, sizeLimit: -1 },
+		]) {
+			expect(
+				compareStats({
+					flags: { kilo: 1024, current: write("neg.json", [entry]) },
+				}).exitMessage,
+			).toContain("Invalid sizes file");
+		}
+	});
+
+	it("surfaces the error size-limit printed instead of sizes", () => {
+		const result = compareStats({
+			flags: {
+				kilo: 1024,
+				current: write("error.json", { error: "Build not found" }),
+			},
+		});
+		expect(result.exitCode).toBe(1);
+		expect(result.exitMessage).toContain("reports an error: Build not found");
+	});
+
+	it("reports unreadable and malformed files", () => {
 		expect(
-			compareStats({ flags: { current: write("bad.json", "{oops") } })
+			compareStats({ flags: { kilo: 1024, current: join(dir, "nope.json") } })
 				.exitMessage,
 		).toContain("Failed to read JSON file");
-		// size-limit --json prints an object, not an array, when it errors.
 		expect(
 			compareStats({
-				flags: { current: write("error.json", { error: "boom" }) },
+				flags: { kilo: 1024, current: write("bad.json", "{oops") },
+			}).exitMessage,
+		).toContain("Failed to read JSON file");
+		expect(
+			compareStats({
+				flags: { kilo: 1024, current: write("object.json", { sizes: [] }) },
 			}).exitMessage,
 		).toContain("expected an array");
 		expect(
 			compareStats({
 				flags: {
-					current,
-					baseline: write("wrong.json", [{ name: "a", size: "1" }]),
+					kilo: 1024,
+					current: write("wrong.json", [{ name: "a", size: "1" }]),
 				},
 			}).exitMessage,
 		).toContain("Invalid sizes file");
 		expect(
 			compareStats({
-				flags: { current: write("nulls.json", [null]) },
+				flags: { kilo: 1024, current: write("nulls.json", [null]) },
 			}).exitMessage,
 		).toContain("Invalid sizes file");
 		expect(
 			compareStats({
 				flags: {
+					kilo: 1024,
 					current: write("types.json", [
 						{ name: "a", size: 1, sizeLimit: "10", passed: "yes" },
 					]),

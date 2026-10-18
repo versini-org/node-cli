@@ -9,3 +9,5 @@ export const defaultFlags = {
 };
 
 export const DEFAULT_THRESHOLD = 0;
+
+export const DEFAULT_HEADER = "## Bundle Size";

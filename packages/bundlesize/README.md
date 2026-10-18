@@ -418,7 +418,7 @@ Notes:
 `--type compare` needs no configuration file. It reads a sizes file in the shape `size-limit --json` prints, an array of `{ name, size, sizeLimit?, passed? }` with sizes in bytes, and renders a markdown table with a "vs main" column showing each change in kB and percent:
 
 ```sh
-> size-limit --json > tmp/sizes.json
+> size-limit --json > tmp/sizes.json || true
 > bundlesize --type compare --current tmp/sizes.json --baseline tmp/baseline/sizes.json --base-sha "$BASE_SHA" --kilo 1000 --silent -o tmp/pr-stats.md
 ```
 
@@ -426,13 +426,13 @@ Notes:
 | ------ | ----------- | ----------- | ------------------- | ------------ |
 | ✅     | first-paint | 150.43 kB   | ▼ −717 B (−0.47%)   | 153 kB       |
 
-A missing `--baseline` file is not an error: the table shows `n/a` and a note says no baseline was found. Other flags:
+`size-limit` exits 1 when a limit is exceeded, which is exactly when the report matters, hence the `|| true`: let `compare` own the exit code. A missing `--baseline` file is not an error: the table shows `n/a` and a note says no baseline was found. An unreadable or malformed one is treated the same way, with a warning, so a broken artifact on main cannot fail every pull request. Entries in the baseline that are gone from this run are listed as removed. Entry names must be unique, so give each size-limit check its own `name`. Other flags:
 
 - `--header`: markdown heading above the table (default `## Bundle Size`).
-- `--footer`: markdown appended after the table.
+- `--footer`: markdown appended after the table. Pass it as `--footer="..."`: a value starting with `-`, such as a list item, is otherwise read as a flag.
 - `--base-ref`: branch the baseline was measured on (default `main`).
-- `--base-sha`: commit the baseline was measured on, shown in the note.
-- `--kilo`: bytes per kB, `1000` (size-limit's units) or `1024` (default).
+- `--base-sha`: commit the baseline was measured on, shown in the note. Pass the commit of the run that produced the baseline file, which is not always the pull request's base commit.
+- `--kilo` (required): bytes per kB, `1000` for size-limit's units or `1024` for rsbuild's.
 - `--threshold`: changes under this many bytes are shown as no change.
 - `--silent`: exit 0 even when an entry is over its limit.
 

@@ -1,26 +1,35 @@
 import fs from "fs-extra";
 import { compareSizes, type SizeResult } from "./compare.js";
-import { getOutputFile } from "./utilities.js";
+import type { Flags } from "./parse.js";
+import { getOutputFile, readJSONFile } from "./utilities.js";
 
-type CompareFlags = {
-	current?: string;
-	baseline?: string;
-	header?: string;
-	baseRef?: string;
-	baseSha?: string;
-	footer?: string;
-	kilo?: number;
-	threshold?: number;
-	output?: string;
-	silent?: boolean;
-};
+type CompareFlags = Pick<
+	Flags,
+	| "current"
+	| "baseline"
+	| "header"
+	| "baseRef"
+	| "baseSha"
+	| "footer"
+	| "kilo"
+	| "threshold"
+	| "output"
+	| "silent"
+>;
 
 type CompareStatsResult = {
 	data: string;
 	exitCode: number;
 	exitMessage: string;
 	outputFile: string;
+	/**
+	 * Something worth printing that did not stop the report.
+	 */
+	warning: string;
 };
+
+const isByteCount = (value: unknown): boolean =>
+	typeof value === "number" && Number.isFinite(value) && value >= 0;
 
 const isSizeResult = (value: unknown): value is SizeResult => {
 	if (typeof value !== "object" || value === null) {
@@ -29,10 +38,22 @@ const isSizeResult = (value: unknown): value is SizeResult => {
 	const entry = value as Record<string, unknown>;
 	return (
 		typeof entry.name === "string" &&
-		typeof entry.size === "number" &&
-		(entry.sizeLimit === undefined || typeof entry.sizeLimit === "number") &&
+		isByteCount(entry.size) &&
+		(entry.sizeLimit === undefined || isByteCount(entry.sizeLimit)) &&
 		(entry.passed === undefined || typeof entry.passed === "boolean")
 	);
+};
+
+/**
+ * False only when the file is certainly absent: a stat that fails for another
+ * reason, such as a denied parent directory, must still surface as a warning.
+ */
+const baselineMayExist = (file: string): boolean => {
+	try {
+		return fs.statSync(file, { throwIfNoEntry: false }) !== undefined;
+	} catch {
+		return true;
+	}
 };
 
 /**
@@ -42,24 +63,45 @@ const isSizeResult = (value: unknown): value is SizeResult => {
 export const readSizes = (
 	file: string,
 ): { sizes: SizeResult[]; error: string } => {
-	let data: unknown;
-	try {
-		data = fs.readJsonSync(file);
-	} catch (error) {
-		return { sizes: [], error: `Failed to read JSON file: ${error.message}` };
+	const json = readJSONFile(file);
+	if (json.exitMessage !== "") {
+		return { sizes: [], error: json.exitMessage };
+	}
+	const data: unknown = json.data;
+	if (
+		typeof data === "object" &&
+		data !== null &&
+		typeof (data as { error?: unknown }).error === "string"
+	) {
+		// What `size-limit --json` prints when its own run fails.
+		return {
+			sizes: [],
+			error: `Sizes file ${file} reports an error: ${(data as { error: string }).error}`,
+		};
 	}
 	if (!Array.isArray(data) || !data.every(isSizeResult)) {
 		return {
 			sizes: [],
-			error: `Invalid sizes file ${file}: expected an array of { name, size, sizeLimit?, passed? }`,
+			error: `Invalid sizes file ${file}: expected an array of { name, size, sizeLimit?, passed? } with non-negative sizes`,
 		};
+	}
+	const names = new Set<string>();
+	for (const entry of data) {
+		if (names.has(entry.name)) {
+			return {
+				sizes: [],
+				error: `Duplicate entry name "${entry.name}" in sizes file ${file}: give each size-limit check its own \`name\``,
+			};
+		}
+		names.add(entry.name);
 	}
 	return { sizes: data, error: "" };
 };
 
 /**
- * CLI entry for `--type compare`: a missing baseline file is not an error, it
- * renders the "no baseline" note instead.
+ * CLI entry for `--type compare`. Only a bad --current fails the run: a missing
+ * baseline renders the "no baseline" note, and an unreadable one does too, plus
+ * a warning, so a broken artifact on main cannot block every PR.
  */
 export const compareStats = ({
 	flags,
@@ -71,35 +113,47 @@ export const compareStats = ({
 		exitCode: 0,
 		exitMessage: "",
 		outputFile: getOutputFile(flags.output),
+		warning: "",
 	};
+	const fail = (exitMessage: string): CompareStatsResult => ({
+		...result,
+		exitCode: 1,
+		exitMessage,
+	});
 
 	if (!flags.current) {
-		return {
-			...result,
-			exitCode: 1,
-			exitMessage: "Please provide the current sizes file with --current",
-		};
+		return fail("Please provide the current sizes file with --current");
 	}
-	if (flags.kilo !== undefined && flags.kilo !== 1000 && flags.kilo !== 1024) {
-		return {
-			...result,
-			exitCode: 1,
-			exitMessage: "--kilo must be 1000 or 1024",
-		};
+	if (flags.kilo === undefined) {
+		return fail(
+			"--kilo is required: 1000 for size-limit sizes, 1024 for rsbuild sizes",
+		);
+	}
+	if (flags.kilo !== 1000 && flags.kilo !== 1024) {
+		return fail("--kilo must be 1000 or 1024");
+	}
+	if (
+		flags.threshold !== undefined &&
+		!(Number.isFinite(flags.threshold) && flags.threshold >= 0)
+	) {
+		return fail("--threshold must be a number of bytes, 0 or more");
 	}
 
 	const current = readSizes(flags.current);
 	if (current.error) {
-		return { ...result, exitCode: 1, exitMessage: current.error };
+		return fail(current.error);
 	}
 
 	let baseline: SizeResult[] | null = null;
-	if (flags.baseline && fs.existsSync(flags.baseline)) {
+	let missingReason: string | undefined;
+	if (flags.baseline && baselineMayExist(flags.baseline)) {
 		const previous = readSizes(flags.baseline);
 		if (previous.error) {
-			return { ...result, exitCode: 1, exitMessage: previous.error };
+			result.warning = `Ignoring the baseline: ${previous.error}`;
+			missingReason = "the baseline file could not be read";
+		} else {
+			baseline = previous.sizes;
 		}
-		baseline = previous.sizes;
 	}
 
 	const { data, passed } = compareSizes({
@@ -109,8 +163,9 @@ export const compareStats = ({
 		baseRef: flags.baseRef || undefined,
 		baseSha: flags.baseSha || undefined,
 		footer: flags.footer || undefined,
-		kilo: flags.kilo as 1000 | 1024 | undefined,
+		kilo: flags.kilo as 1000 | 1024,
 		threshold: flags.threshold,
+		missingReason,
 	});
 
 	return {
