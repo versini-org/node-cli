@@ -6,6 +6,7 @@ export {
 	compareSizes,
 	type SizeResult,
 } from "./compare.js";
+export { readSizes } from "./compareStats.js";
 
 /**
  * Configuration for a single file size entry.
