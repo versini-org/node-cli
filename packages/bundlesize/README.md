@@ -444,6 +444,16 @@ import { compareSizes } from "@node-cli/bundlesize";
 const { data, passed } = compareSizes({ current, baseline, baseSha });
 ```
 
+So is the reader `--type compare` uses for both files, to load a stored baseline with the same checks:
+
+```js
+import { readSizes } from "@node-cli/bundlesize";
+
+const { sizes, error } = readSizes("tmp/baseline/sizes.json");
+```
+
+It never throws. On success `error` is `""`; otherwise `sizes` is `[]` and `error` says what was wrong: the file could not be read or parsed, it holds the `{ error }` object `size-limit --json` prints when its own run fails, it is not an array of `{ name, size, sizeLimit?, passed? }` with non-negative sizes, or two entries share a `name`.
+
 ## Get help
 
 ```sh
