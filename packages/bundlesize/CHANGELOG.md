@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.2.0](https://github.com/versini-org/node-cli/compare/bundlesize-v5.1.4...bundlesize-v5.2.0) (2026-10-18)
+
+
+### Features
+
+* **bundlesize:** add a compare mode that shows size changes against a baseline ([#693](https://github.com/versini-org/node-cli/issues/693)) ([eafb20e](https://github.com/versini-org/node-cli/commit/eafb20e7de5c4ea9ce7ea1a06a3f21ce3857dbdc))
+
 ## [5.1.4](https://github.com/versini-org/node-cli/compare/bundlesize-v5.1.3...bundlesize-v5.1.4) (2026-10-17)
 
 
