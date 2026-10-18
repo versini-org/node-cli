@@ -4,6 +4,7 @@
 
 import { Logger } from "@node-cli/logger";
 import fs from "fs-extra";
+import { compareStats } from "./compareStats.js";
 import { getRawStats } from "./getRawStats.js";
 import { config } from "./parse.js";
 import { reportStats } from "./reportStats.js";
@@ -76,5 +77,26 @@ if (flags.type === "report") {
 	}
 }
 
-log.error("Invalid type, please use 'size' or 'report'");
+if (flags.type === "compare") {
+	const result = compareStats({ flags });
+
+	if (result.exitMessage !== "") {
+		log.error(result.exitMessage);
+		process.exit(result.exitCode);
+	}
+
+	if (result.outputFile === STDOUT) {
+		log.log(result.data);
+	} else {
+		try {
+			fs.outputFileSync(result.outputFile, result.data);
+		} catch (error) {
+			log.error(`Failed to write to file: ${error.message}`);
+			process.exit(1);
+		}
+	}
+	process.exit(result.exitCode);
+}
+
+log.error("Invalid type, please use 'size', 'report' or 'compare'");
 process.exit(1);

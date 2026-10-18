@@ -413,6 +413,37 @@ Notes:
 }
 ```
 
+### Compare sizes measured by another tool against a baseline
+
+`--type compare` needs no configuration file. It reads a sizes file in the shape `size-limit --json` prints, an array of `{ name, size, sizeLimit?, passed? }` with sizes in bytes, and renders a markdown table with a "vs main" column showing each change in kB and percent:
+
+```sh
+> size-limit --json > tmp/sizes.json
+> bundlesize --type compare --current tmp/sizes.json --baseline tmp/baseline/sizes.json --base-sha "$BASE_SHA" --kilo 1000 --silent -o tmp/pr-stats.md
+```
+
+| Status | Section     | Size (gzip) | vs main             | Limit (gzip) |
+| ------ | ----------- | ----------- | ------------------- | ------------ |
+| ✅     | first-paint | 150.43 kB   | ▼ −717 B (−0.47%)   | 153 kB       |
+
+A missing `--baseline` file is not an error: the table shows `n/a` and a note says no baseline was found. Other flags:
+
+- `--header`: markdown heading above the table (default `## Bundle Size`).
+- `--footer`: markdown appended after the table.
+- `--base-ref`: branch the baseline was measured on (default `main`).
+- `--base-sha`: commit the baseline was measured on, shown in the note.
+- `--kilo`: bytes per kB, `1000` (size-limit's units) or `1024` (default).
+- `--threshold`: changes under this many bytes are shown as no change.
+- `--silent`: exit 0 even when an entry is over its limit.
+
+The same renderer is exported for scripts that measure sizes themselves:
+
+```js
+import { compareSizes } from "@node-cli/bundlesize";
+
+const { data, passed } = compareSizes({ current, baseline, baseSha });
+```
+
 ## Get help
 
 ```sh

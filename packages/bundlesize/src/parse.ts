@@ -10,8 +10,16 @@ export type Flags = {
 	output?: string;
 	prefix?: string;
 	silent?: boolean;
-	type?: "size" | "report";
+	type?: "size" | "report" | "compare";
 	force?: boolean;
+	current?: string;
+	baseline?: string;
+	header?: string;
+	baseRef?: string;
+	baseSha?: string;
+	footer?: string;
+	kilo?: number;
+	threshold?: number;
 };
 
 export type Configuration = {
@@ -32,7 +40,7 @@ export const config: Configuration = parser({
 		},
 		type: {
 			shortFlag: "t",
-			description: "Specify the type of output: size or report",
+			description: "Specify the type of output: size, report or compare",
 			type: "string",
 			default: defaultFlags.type,
 		},
@@ -50,6 +58,38 @@ export const config: Configuration = parser({
 			shortFlag: "p",
 			description: "Specify a prefix to use in the output file",
 			type: "string",
+		},
+		current: {
+			description: "compare: sizes JSON measured by this run",
+			type: "string",
+		},
+		baseline: {
+			description: "compare: sizes JSON measured on the base branch",
+			type: "string",
+		},
+		header: {
+			description: "compare: markdown heading above the table",
+			type: "string",
+		},
+		baseRef: {
+			description: "compare: branch the baseline was measured on",
+			type: "string",
+		},
+		baseSha: {
+			description: "compare: commit the baseline was measured on",
+			type: "string",
+		},
+		footer: {
+			description: "compare: markdown appended after the table",
+			type: "string",
+		},
+		kilo: {
+			description: "compare: bytes per kB, 1000 or 1024",
+			type: "number",
+		},
+		threshold: {
+			description: "compare: changes under this many bytes count as none",
+			type: "number",
 		},
 		silent: {
 			shortFlag: "s",
