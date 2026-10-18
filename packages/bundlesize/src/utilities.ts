@@ -1,4 +1,4 @@
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import zlib from "node:zlib";
 import bytes from "bytes";
 import fs from "fs-extra";
@@ -18,7 +18,7 @@ export const gzipSizeFromFileSync = (file: string): number => {
 };
 
 export const getOutputFile = (file: string): string => {
-	return file === "" || file === undefined ? STDOUT : join(CWD, file);
+	return file === "" || file === undefined ? STDOUT : resolve(CWD, file);
 };
 
 export const validateConfigurationFile = (file: string): any => {

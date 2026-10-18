@@ -4,6 +4,7 @@
 
 import { Logger } from "@node-cli/logger";
 import fs from "fs-extra";
+import { compareStats } from "./compareStats.js";
 import { getRawStats } from "./getRawStats.js";
 import { config } from "./parse.js";
 import { reportStats } from "./reportStats.js";
@@ -14,6 +15,15 @@ const flags = config.flags;
 const log = new Logger({
 	boring: flags.boring,
 });
+
+const writeTextOutput = (outputFile: string, data: string) => {
+	try {
+		fs.outputFileSync(outputFile, data);
+	} catch (error) {
+		log.error(`Failed to write to file: ${error.message}`);
+		process.exit(1);
+	}
+};
 
 if (flags.type === "size") {
 	try {
@@ -62,12 +72,7 @@ if (flags.type === "report") {
 			log.info(`Output: ${result.outputFile}`);
 			log.log(result.data);
 		} else {
-			try {
-				fs.outputFileSync(result.outputFile, result.data);
-			} catch (error) {
-				log.error(`Failed to write to file: ${error.message}`);
-				process.exit(1);
-			}
+			writeTextOutput(result.outputFile, result.data);
 		}
 		process.exit(result.exitCode);
 	} catch (error) {
@@ -76,5 +81,24 @@ if (flags.type === "report") {
 	}
 }
 
-log.error("Invalid type, please use 'size' or 'report'");
+if (flags.type === "compare") {
+	const result = compareStats({ flags });
+
+	if (result.exitMessage !== "") {
+		log.error(result.exitMessage);
+		process.exit(result.exitCode);
+	}
+	if (result.warning !== "") {
+		log.warn(result.warning);
+	}
+
+	if (result.outputFile === STDOUT) {
+		log.log(result.data);
+	} else {
+		writeTextOutput(result.outputFile, result.data);
+	}
+	process.exit(result.exitCode);
+}
+
+log.error("Invalid type, please use 'size', 'report' or 'compare'");
 process.exit(1);

@@ -1,5 +1,12 @@
 import type { FooterProperties } from "./utilities.js";
 
+export {
+	type CompareOptions,
+	type CompareResult,
+	compareSizes,
+	type SizeResult,
+} from "./compare.js";
+
 /**
  * Configuration for a single file size entry.
  */

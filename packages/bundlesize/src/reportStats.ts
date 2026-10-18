@@ -1,6 +1,6 @@
 import { basename, dirname, join } from "node:path";
 import bytes from "bytes";
-import { DEFAULT_THRESHOLD } from "./defaults.js";
+import { DEFAULT_HEADER, DEFAULT_THRESHOLD } from "./defaults.js";
 import type { FooterProperties } from "./utilities.js";
 import {
 	addMDrow,
@@ -91,7 +91,7 @@ export const reportStats = async ({ flags }): Promise<ReportCompare> => {
 	let totalGzipSize = 0;
 
 	const threshold = configuration.report.threshold ?? DEFAULT_THRESHOLD;
-	const headerString = configuration.report.header || "## Bundle Size";
+	const headerString = configuration.report.header || DEFAULT_HEADER;
 	const footerFormatter = configuration.report.footer || formatFooter;
 	const columns = configuration.report.columns || [
 		{ status: "Status" },
