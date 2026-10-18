@@ -20,7 +20,7 @@
 		"node": ">=22"
 	},
 	"dependencies": {
-		"execa": "10.1.1",
+		"execa": "10.2.0",
 		"kleur": "4.1.5"
 	},
 	"scripts": {
