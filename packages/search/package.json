@@ -50,6 +50,7 @@
 		"access": "public"
 	},
 	"devDependencies": {
+		"@types/fs-extra": "11.0.4",
 		"@vitest/coverage-v8": "4.1.12",
 		"vitest": "4.1.12"
 	}
