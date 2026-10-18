@@ -22,7 +22,7 @@
 		"@swc/cli": "0.8.1",
 		"@swc/core": "1.16.18",
 		"@types/node": "26.6.5",
-		"@versini/dev-dependencies-common": "14.0.19",
+		"@versini/dev-dependencies-common": "15.0.0",
 		"barrelsby": "2.8.1",
 		"husky": "9.1.7",
 		"lint-staged": "17.6.0",
