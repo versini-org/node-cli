@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.3.0](https://github.com/versini-org/node-cli/compare/bundlesize-v5.2.0...bundlesize-v5.3.0) (2026-10-18)
+
+
+### Features
+
+* **bundlesize:** export readSizes from the package entry ([#697](https://github.com/versini-org/node-cli/issues/697)) ([f45fa9c](https://github.com/versini-org/node-cli/commit/f45fa9c2100c24e4ab2b8d0752fada455c3e3cb5))
+
 ## [5.2.0](https://github.com/versini-org/node-cli/compare/bundlesize-v5.1.4...bundlesize-v5.2.0) (2026-10-18)
 
 
