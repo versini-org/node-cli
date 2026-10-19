@@ -3,6 +3,7 @@ import { basename, dirname, join } from "node:path";
 import bytes from "bytes";
 import fs from "fs-extra";
 import { glob } from "glob";
+import type { SizeResult } from "./compare.js";
 import {
 	GLOB_HASH,
 	GLOB_SEMVER,
@@ -26,7 +27,11 @@ type HeaderEntry = { header: string };
 type SizesConfiguration = SizeEntry | HeaderEntry;
 
 type ReportStats = {
-	data: Record<string, unknown>;
+	/**
+	 * Stats keyed by prefix, or with --format sizes, the sizes array that `--type
+	 * compare` reads.
+	 */
+	data: Record<string, unknown> | SizeResult[];
 	exitCode: number;
 	exitMessage: string;
 	outputFile: string;
@@ -44,6 +49,12 @@ export const getRawStats = async ({ flags }): Promise<ReportStats> => {
 		data: {},
 	};
 	let failed = false;
+	const format = flags.format ?? "stats";
+	if (format !== "stats" && format !== "sizes") {
+		result.exitCode = 1;
+		result.exitMessage = `Invalid format: ${format}. Please use 'stats' or 'sizes'`;
+		return result;
+	}
 	const isValidConfigResult = validateConfigurationFile(flags.configuration);
 	if (isValidConfigResult.exitMessage !== "") {
 		return {
@@ -55,6 +66,7 @@ export const getRawStats = async ({ flags }): Promise<ReportStats> => {
 	const outputFile = getOutputFile(flags.output);
 	const prefix = flags.prefix || "0.0.0";
 	const currentResults = {};
+	const sizes: SizeResult[] = [];
 
 	const configuration: { sizes: SizesConfiguration[] } = await import(
 		configurationFile
@@ -67,8 +79,10 @@ export const getRawStats = async ({ flags }): Promise<ReportStats> => {
 	}
 
 	for (const artifact of configuration.sizes) {
-		// Support header-only entries (group markers) that do not contribute to raw
-		// stats.
+		/**
+		 * Support header-only entries (group markers) that do not contribute to raw
+		 * stats.
+		 */
 		if ((artifact as HeaderEntry).header) {
 			continue;
 		}
@@ -112,7 +126,8 @@ export const getRawStats = async ({ flags }): Promise<ReportStats> => {
 		for (const file of files) {
 			const fileSize = statSync(file).size;
 			const fileSizeGzip = gzipSizeFromFileSync(file);
-			const passed = fileSizeGzip < bytes(sizeArtifact.limit);
+			const sizeLimit = bytes(sizeArtifact.limit);
+			const passed = fileSizeGzip < sizeLimit;
 
 			if (passed === false) {
 				result.pass = false;
@@ -127,6 +142,24 @@ export const getRawStats = async ({ flags }): Promise<ReportStats> => {
 				index = sizeArtifact.alias;
 			}
 
+			if (format === "sizes") {
+				/**
+				 * Two entries with the same name, or a limit `bytes` cannot parse, would
+				 * give `--type compare` a file it rejects: fail here and name the entry.
+				 */
+				if (sizeLimit === null) {
+					result.exitCode = 1;
+					result.exitMessage = `Invalid limit "${sizeArtifact.limit}" for: ${index}`;
+					return result;
+				}
+				if (sizes.some((entry) => entry.name === index)) {
+					result.exitCode = 1;
+					result.exitMessage = `Duplicate entry name: ${index}.\nGive each size its own alias.`;
+					return result;
+				}
+				sizes.push({ name: index, size: fileSizeGzip, sizeLimit, passed });
+			}
+
 			currentResults[index] = {
 				fileSize,
 				fileSizeGzip,
@@ -134,6 +167,14 @@ export const getRawStats = async ({ flags }): Promise<ReportStats> => {
 				passed,
 			};
 		}
+	}
+
+	// Sizes describe this run only: no prefix, and the output is overwritten.
+	if (format === "sizes") {
+		result.outputFile = outputFile;
+		result.exitCode = flags.silent === true ? 0 : Number(failed);
+		result.data = sizes;
+		return result;
 	}
 
 	let existingResults = {};

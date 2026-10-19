@@ -38,7 +38,13 @@ if (flags.type === "size") {
 			process.exit(result.exitCode);
 		}
 
-		if (result.outputFile === STDOUT) {
+		if (result.outputFile === STDOUT && flags.format === "sizes") {
+			/**
+			 * Bypass the logger, which colors its output under FORCE_COLOR, so the JSON
+			 * stays valid when redirected to a file.
+			 */
+			process.stdout.write(`${JSON.stringify(result.data, null, 2)}\n`);
+		} else if (result.outputFile === STDOUT) {
 			log.info(`Configuration: ${flags.configuration}`);
 			log.info(`Output: ${result.outputFile}`);
 			log.info(`Output prefix: ${result.prefix}`);

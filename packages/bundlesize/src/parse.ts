@@ -11,6 +11,7 @@ export type Flags = {
 	prefix?: string;
 	silent?: boolean;
 	type?: "size" | "report" | "compare";
+	format?: "stats" | "sizes";
 	force?: boolean;
 	current?: string;
 	baseline?: string;
@@ -43,6 +44,12 @@ export const config: Configuration = parser({
 			description: "Specify the type of output: size, report or compare",
 			type: "string",
 			default: defaultFlags.type,
+		},
+		format: {
+			description:
+				"size: write stats keyed by prefix, or sizes for --type compare",
+			type: "string",
+			default: defaultFlags.format,
 		},
 		configuration: {
 			shortFlag: "c",

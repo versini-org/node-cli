@@ -454,6 +454,20 @@ const { sizes, error } = readSizes("tmp/baseline/sizes.json");
 
 It never throws. On success `error` is `""`; otherwise `sizes` is `[]` and `error` says what was wrong: the file could not be read or parsed, it holds the `{ error }` object `size-limit --json` prints when its own run fails, it is not an array of `{ name, size, sizeLimit?, passed? }` with non-negative sizes, or two entries share a `name`.
 
+### Compare sizes measured by bundlesize against a baseline
+
+`--format sizes` makes the size mode write that same array instead of stats keyed by prefix, so a configuration file can feed `--type compare` with no other tool. Each entry is named after its `alias`, or its `path` when there is none, and `size` is the gzip size:
+
+```sh
+> bundlesize -c bundlesize.config.js --format sizes -o tmp/sizes.json --silent
+> bundlesize --type compare --current tmp/sizes.json --baseline tmp/baseline/sizes.json --base-sha "$BASE_SHA" --kilo 1024 --silent -o tmp/pr-stats.md
+```
+
+- `--kilo 1024`: limits such as `"15.5 KB"` are parsed with 1024 bytes per kB.
+- `--prefix` and `--force` do not apply: the file holds this run only and is overwritten.
+- Without `-o`, the JSON alone is printed, so it can be redirected to a file.
+- Two entries with the same name, or a limit that cannot be parsed, fail the run with a message naming the entry, since `--type compare` would reject the file.
+
 ## Get help
 
 ```sh
