@@ -43,7 +43,7 @@
 		"kleur": "4.1.5",
 		"micromatch": "4.0.8",
 		"plur": "6.0.0",
-		"pretty-ms": "9.3.1",
+		"pretty-ms": "10.0.0",
 		"uuid": "14.0.3"
 	},
 	"publishConfig": {
@@ -51,7 +51,7 @@
 	},
 	"devDependencies": {
 		"@types/fs-extra": "11.0.4",
-		"@vitest/coverage-v8": "4.1.12",
-		"vitest": "4.1.12"
+		"@vitest/coverage-v8": "5.0.5",
+		"vitest": "5.0.5"
 	}
 }
