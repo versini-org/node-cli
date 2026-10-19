@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.3.1](https://github.com/versini-org/node-cli/compare/bundlesize-v5.3.0...bundlesize-v5.3.1) (2026-10-19)
+
+
+### Bug Fixes
+
+* **deps:** bump boxen to 9, pretty-ms to 10, and vitest to 5 ([#699](https://github.com/versini-org/node-cli/issues/699)) ([8bf360d](https://github.com/versini-org/node-cli/commit/8bf360d1bb8baf62da8962a5cee3d8275f3a223a))
+
 ## [5.3.0](https://github.com/versini-org/node-cli/compare/bundlesize-v5.2.0...bundlesize-v5.3.0) (2026-10-18)
 
 

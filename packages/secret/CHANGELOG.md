@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.10](https://github.com/versini-org/node-cli/compare/secret-v2.1.9...secret-v2.1.10) (2026-10-19)
+
+
+### Bug Fixes
+
+* **deps:** bump boxen to 9, pretty-ms to 10, and vitest to 5 ([#699](https://github.com/versini-org/node-cli/issues/699)) ([8bf360d](https://github.com/versini-org/node-cli/commit/8bf360d1bb8baf62da8962a5cee3d8275f3a223a))
+
 ## [2.1.9](https://github.com/versini-org/node-cli/compare/secret-v2.1.8...secret-v2.1.9) (2026-10-17)
 
 
