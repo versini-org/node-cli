@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.18](https://github.com/versini-org/node-cli/compare/static-server-v4.1.17...static-server-v4.1.18) (2026-10-19)
+
+
+### Bug Fixes
+
+* **deps:** bump boxen to 9, pretty-ms to 10, and vitest to 5 ([#699](https://github.com/versini-org/node-cli/issues/699)) ([8bf360d](https://github.com/versini-org/node-cli/commit/8bf360d1bb8baf62da8962a5cee3d8275f3a223a))
+
 ## [4.1.17](https://github.com/versini-org/node-cli/compare/static-server-v4.1.16...static-server-v4.1.17) (2026-10-17)
 
 
