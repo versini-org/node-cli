@@ -1,6 +1,6 @@
 {
 	"name": "@node-cli/biome-config",
-	"version": "0.0.0",
+	"version": "1.0.0",
 	"license": "MIT",
 	"author": "Arno Versini",
 	"description": "The biome config shared across the @versini and @node-cli repos",
