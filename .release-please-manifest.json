@@ -1,5 +1,5 @@
 {
-	"packages/biome-config": "0.0.0",
+	"packages/biome-config": "1.0.0",
 	"packages/bundlecheck": "2.1.12",
 	"packages/bundlesize": "5.3.1",
 	"packages/envtools": "5.0.0",
