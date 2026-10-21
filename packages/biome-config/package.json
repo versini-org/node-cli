@@ -1,0 +1,26 @@
+{
+	"name": "@node-cli/biome-config",
+	"version": "0.0.0",
+	"license": "MIT",
+	"author": "Arno Versini",
+	"description": "The biome config shared across the @versini and @node-cli repos",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/versini-org/node-cli.git",
+		"directory": "packages/biome-config"
+	},
+	"type": "module",
+	"files": [
+		"biome.json",
+		"README.md"
+	],
+	"exports": {
+		"./biome": "./biome.json"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"peerDependencies": {
+		"@biomejs/biome": "^2.5.15"
+	}
+}
