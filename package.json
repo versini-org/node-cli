@@ -21,7 +21,7 @@
 		"@node-cli/biome-config": "workspace:*",
 		"@node-cli/comments": "workspace:*",
 		"@swc/cli": "0.8.1",
-		"@swc/core": "1.16.18",
+		"@swc/core": "1.16.20",
 		"@types/node": "26.6.5",
 		"barrelsby": "2.8.1",
 		"husky": "9.1.7",
