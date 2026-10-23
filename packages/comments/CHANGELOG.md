@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.5](https://github.com/versini-org/node-cli/compare/comments-v1.1.4...comments-v1.1.5) (2026-10-23)
+
+
+### Bug Fixes
+
+* **comments:** make reflow settle in one pass and keep URLs and sentences intact ([#715](https://github.com/versini-org/node-cli/issues/715)) ([ba55900](https://github.com/versini-org/node-cli/commit/ba55900e5a2810337ba6db70464af6a4f0a807e8))
+
 ## [1.1.4](https://github.com/versini-org/node-cli/compare/comments-v1.1.3...comments-v1.1.4) (2026-10-19)
 
 
