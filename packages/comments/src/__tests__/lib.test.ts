@@ -356,8 +356,10 @@ describe("parseAndTransformComments", () => {
 		expect(out).not.toMatch(/merged\./);
 		expect(out).not.toMatch(/spurious\./);
 		expect(out).not.toMatch(/introducing a\./);
-		// Should still retain existing legitimate period after 'wraps).' and final
-		// 'list.'
+		/**
+		 * Should still retain existing legitimate period after 'wraps).' and final
+		 * 'list.'
+		 */
 		expect(out).toMatch(/wraps\)\./);
 		expect(out).toMatch(/list\./);
 	});
@@ -380,8 +382,10 @@ describe("parseAndTransformComments", () => {
 		// Expect merged into a JSDoc immediately after the statement.
 		const re = /compute\(\);\n\/\*\*[\s\S]*?\n\s*\*\//;
 		expect(re.test(out)).toBe(true);
-		// Ensure only one sentence-final period appended (present on final 'list.'
-		// already).
+		/**
+		 * Ensure only one sentence-final period appended (present on final 'list.'
+		 * already).
+		 */
 		expect(out.match(/merged\./)).toBeNull();
 	});
 
@@ -400,8 +404,10 @@ describe("parseAndTransformComments", () => {
 		}).transformed;
 		// The 3-line group should have been converted to a JSDoc block.
 		expect(/compute\(\);\n\/\*\*/.test(out)).toBe(true);
-		// Ensure original lines no longer start with // (inside block now) and period
-		// appended once.
+		/**
+		 * Ensure original lines no longer start with // (inside block now) and period
+		 * appended once.
+		 */
 		expect(out).toMatch(/First explanatory line that starts with a capital/);
 		expect(out).not.toMatch(/third line completes it\n\/\//); // no stray // after
 	});
@@ -473,9 +479,11 @@ describe("parseAndTransformComments", () => {
 				out,
 			),
 		).toBe(true);
-		// Preceding sentence fragments present and end with period somewhere before
-		// NOTE line.
-		expect(out).toMatch(/This operation performs work and may take time\n/);
+		/**
+		 * Preceding sentence fragments present and end with period somewhere before
+		 * NOTE line.
+		 */
+		expect(out).toMatch(/This operation performs work and may take time\.\n/);
 		// Trailing sentence appears after NOTE line with terminal period.
 		expect(/NOTE: use with caution[\s\S]*It returns a result\./.test(out)).toBe(
 			true,
@@ -564,11 +572,11 @@ describe("parseAndTransformComments", () => {
 			mergeLineComments: true,
 		}).transformed;
 
-		// First comment group after array should be merged
+		// First comment group after array should be merged.
 		expect(out).toMatch(/];\n\/\*\*/);
 		expect(out).toMatch(/Comments after array with trailing comma/);
 
-		// Second comment group after function should be merged
+		// Second comment group after function should be merged.
 		expect(out).toMatch(/}\n\/\*\*/);
 		expect(out).toMatch(/Comments after function ending with }/);
 	});
@@ -585,7 +593,7 @@ describe("parseAndTransformComments", () => {
 			mergeLineComments: true,
 		}).transformed;
 
-		// Single comment should remain as line comment, not merged to JSDoc
+		// Single comment should remain as line comment, not merged to JSDoc.
 		expect(out).toMatch(/\/\/ single comment that should not be merged/);
 		expect(out).not.toMatch(/\/\*\*/);
 	});
@@ -635,8 +643,10 @@ describe("parseAndTransformComments", () => {
 			...baseOpts,
 			width: 100,
 		}).transformed;
-		// New structural policy: first NOTE line always gets period even if followed
-		// by prose.
+		/**
+		 * New structural policy: first NOTE line always gets period even if followed
+		 * by prose.
+		 */
 		expect(out).toMatch(/when the code is not in\./);
 		// Ensure final sentence has period.
 		expect(/completely random\./.test(out)).toBe(true);
@@ -664,7 +674,10 @@ describe("parseAndTransformComments", () => {
 			...baseOpts,
 			width: 100,
 		}).transformed;
-		// Test that NOTE content is processed properly (without making assumptions about splitting)
+		/**
+		 * Test that NOTE content is processed properly (without making assumptions
+		 * about splitting).
+		 */
 		expect(out).toMatch(/This performs work/);
 		expect(out).toMatch(/NOTE: first note without period/);
 		expect(out).toMatch(/NOTE: second note/);
