@@ -113,9 +113,11 @@ function splitNoteSentences(text: string): string[] {
 		return [text];
 	}
 	const segments: string[] = [];
+	// `i` is where the current segment starts; `search` skips past non-boundaries.
 	let i = 0;
+	let search = 0;
 	while (i < text.length) {
-		const idx = text.indexOf("NOTE: ", i);
+		const idx = text.indexOf("NOTE: ", search);
 		if (idx === -1) {
 			const tail = text.slice(i).trim();
 			if (tail) {
@@ -133,20 +135,21 @@ function splitNoteSentences(text: string): string[] {
 			/[.!?] /.test(text.slice(Math.max(0, idx - 2), idx + 1)) ||
 			text[idx - 1] === " ";
 		if (!boundary) {
-			i = idx + 6; // skip this occurrence
+			search = idx + 6; // skip this occurrence, keep the text before it
 			continue;
 		}
 		const before = text.slice(i, idx).trim();
 		if (before) {
 			segments.push(before);
 		}
-		let end = idx;
-		while (end < text.length && !/[.!?]/.test(text[end])) {
-			end++;
-		}
-		if (end < text.length && /[.!?]/.test(text[end])) {
-			end++;
-		}
+		/**
+		 * The NOTE sentence ends at terminal punctuation followed by a space or the
+		 * end of text, so a "." or "?" inside a URL or a regex token does not cut it.
+		 */
+		const terminator = /(?<=\S)[.!?]['")\]]*(?= |$)/g;
+		terminator.lastIndex = idx;
+		const stop = terminator.exec(text);
+		const end = stop ? stop.index + stop[0].length : text.length;
 		let note = text.slice(idx, end).trim();
 		if (!/[.!?]$/.test(note)) {
 			note += ".";
@@ -156,6 +159,7 @@ function splitNoteSentences(text: string): string[] {
 		if (text[i] === " ") {
 			i++;
 		}
+		search = i;
 	}
 	return segments.filter(Boolean);
 }
@@ -235,9 +239,9 @@ function isVisuallyIndentedCode(line: string): boolean {
 }
 
 /**
- * Detects linter/tool directive comments that should be left untouched.
- * These include ESLint, Biome, Prettier, TypeScript, StyleLint, and coverage
- * tool directives.
+ * Detects linter/tool directive comments that should be left untouched. These
+ * include ESLint, Biome, Prettier, TypeScript, StyleLint, and coverage tool
+ * directives.
  */
 function isLinterDirective(text: string): boolean {
 	const trimmed = text.trim();
@@ -246,32 +250,75 @@ function isLinterDirective(text: string): boolean {
 	);
 }
 
-function wrapWords(text: string, width: number): string[] {
+/**
+ * A wrapped line that opens with a list marker, code fence, tag, or NOTE (or,
+ * in a // comment, a linter directive) is read as that structure on the next
+ * pass, which changes the comment (a stray period, a fake list item). `line` is
+ * the full rest of the text, since a list marker needs words after it.
+ */
+function opensStructure(line: string, lineComment: boolean): boolean {
+	return (
+		isListLike(line) ||
+		isCodeFence(line) ||
+		isTagLine(line) ||
+		/^note:(?: |$)/i.test(line) ||
+		(lineComment && isLinterDirective(line))
+	);
+}
+
+function wrapWords(text: string, width: number, lineComment = false): string[] {
 	const words = text.split(/\s+/).filter(Boolean);
 	const lines: string[] = [];
 	let cur = "";
-	for (const w of words) {
+	for (let i = 0; i < words.length; i++) {
+		const w = words[i];
 		if (!cur.length) {
 			cur = w;
 			continue;
 		}
 		if (cur.length + 1 + w.length <= width) {
 			cur += " " + w;
+			continue;
+		}
+		// Carry words down until the new line no longer opens a structure.
+		const rest = words.slice(i).join(" ");
+		let carried = "";
+		while (opensStructure(carried + rest, lineComment) && cur.includes(" ")) {
+			const cut = cur.lastIndexOf(" ");
+			carried = `${cur.slice(cut + 1)} ${carried}`;
+			cur = cur.slice(0, cut);
+		}
+		const next = `${carried}${w}`;
+		if (opensStructure(carried + rest, lineComment)) {
+			cur += ` ${next}`;
 		} else {
 			lines.push(cur);
-			cur = w;
+			cur = next;
 		}
 	}
 	if (cur) {
 		lines.push(cur);
+	}
+	/**
+	 * A wrapped line that reads as a heading ("Default Options:") would end the
+	 * paragraph on the next pass, so join it to a neighbor.
+	 */
+	for (let k = 0; k < lines.length && lines.length > 1; k++) {
+		if (isHeadingLike(lines[k])) {
+			const into = k + 1 < lines.length ? k : k - 1;
+			lines.splice(into, 2, `${lines[into]} ${lines[into + 1]}`);
+			k = into - 1;
+		}
 	}
 	return lines.length ? lines : [""];
 }
 
 function buildJsDoc(indent: string, rawBody: string, width: number): string {
 	let lines = rawBody.split(/\n/).map((l) => l.replace(/^\s*\*? ?/, ""));
-	// Remove a single leading blank line (artifact of regex capture starting after
-	// /**) if content follows.
+	/**
+	 * Remove a single leading blank line (artifact of regex capture starting after
+	 * /**) if content follows.
+	 */
 	while (
 		lines.length > 1 &&
 		lines[0].trim() === "" &&
@@ -293,6 +340,8 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 	}
 	const out: string[] = [];
 	let para: string[] = [];
+	// True while `para` holds a NOTE sentence that runs onto the next lines.
+	let noteOpen = false;
 	let inFence = false;
 	const prefix = indent + " * ";
 	const avail = Math.max(10, width - prefix.length);
@@ -336,11 +385,16 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 		text = maybeAddPeriod(text);
 		const pieces = splitNoteSentences(text);
 		for (const piece of pieces) {
-			for (const l of wrapWords(piece, avail)) {
+			/**
+			 * Each piece starts its own line, so it gets the NOTE casing and the period
+			 * that the next pass would give it.
+			 */
+			for (const l of wrapWords(maybeAddPeriod(normalizeNote(piece)), avail)) {
 				out.push(prefix + l);
 			}
 		}
 		para = [];
+		noteOpen = false;
 	}
 
 	let lineIndex = -1;
@@ -430,13 +484,50 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 						noteLine += ".";
 					}
 				}
-				out.push(prefix + noteLine);
+				if (
+					/^NOTE: /.test(noteLine) &&
+					!/(?<=\S)[.!?]['")\]]*(?= |$)/.test(noteLine)
+				) {
+					/**
+					 * The NOTE sentence runs onto the next lines: collect it until the
+					 * sentence ends, so its tail does not join the following paragraph.
+					 */
+					para.push(noteLine);
+					noteOpen = true;
+				} else {
+					out.push(prefix + noteLine);
+				}
 			}
 			continue;
 		}
 		para.push(trimmed);
+		if (noteOpen) {
+			// Flush the NOTE sentence where it ends; the rest starts the next paragraph.
+			const joined = para.join(" ");
+			const stop = /(?<=\S)[.!?]['")\]]*(?= |$)/.exec(joined);
+			if (stop) {
+				const rest = joined.slice(stop.index + stop[0].length).trim();
+				para = [joined.slice(0, stop.index + stop[0].length)];
+				flush();
+				if (rest) {
+					para = [rest];
+				}
+			}
+		}
 	}
 	flush();
+	/**
+	 * A fence left open runs to the closing delimiter, and each pass would add one
+	 * more trailing blank line inside it: keep only one.
+	 */
+	while (
+		inFence &&
+		out.length > 1 &&
+		out[out.length - 1] === prefix.trimEnd() &&
+		out[out.length - 2] === prefix.trimEnd()
+	) {
+		out.pop();
+	}
 	/**
 	 * Style: ensure a space precedes the closing *\/ for consistency with blocks
 	 * generated elsewhere in this tool (merged line comment groups). Previously we
@@ -531,7 +622,7 @@ function wrapLineComments(
 			let text = body.replace(/\s+/g, " ").trim();
 			text = normalizeNote(text);
 			text = maybeAddPeriod(text);
-			const wrapped = wrapWords(text, avail).map((w) => prefix + w);
+			const wrapped = wrapWords(text, avail, true).map((w) => prefix + w);
 			if (wrapped.join("\n") !== line) {
 				changed = true;
 			}
@@ -554,7 +645,7 @@ function wrapLineComments(
 			if (k === group.length - 1 && !/:$/.test(text.trim())) {
 				text = maybeAddPeriod(text);
 			}
-			const wrapped = wrapWords(text, avail).map((w) => prefix + w);
+			const wrapped = wrapWords(text, avail, true).map((w) => prefix + w);
 			if (wrapped.join("\n") !== group[k].raw) {
 				changed = true;
 			}
@@ -574,56 +665,21 @@ function mergeLineCommentGroups(content: string): {
 	let i = 0;
 	let merged = false;
 
-	function qualifiesExplanatoryAfterStatement(start: number): boolean {
-		/**
-		 * Peek ahead to collect consecutive // lines (excluding triple slash) to
-		 * decide if they form a sufficiently large explanatory paragraph that
-		 * deserves merging directly after a terminated statement.
-		 */
-		const collected: string[] = [];
-		for (let k = start; k < lines.length; k++) {
-			const lm = /^(\s*)\/\/( ?)(.*)$/.exec(lines[k]);
-			if (!lm || /^\/\/\//.test(lines[k])) {
-				break;
-			}
-			const body = lm[3];
-			if (isLinterDirective(body) || /https?:\/\//.test(body)) {
-				break;
-			}
-			collected.push(body.trim());
-		}
-		if (collected.length < 3) {
-			return false; // lowered threshold from 4 -> 3 to permit shorter explanatory groups
-		}
-		if (!/^[A-Z]/.test(collected[0])) {
-			return false; // start with capitalized sentence
-		}
-		/**
-		 * Avoid matching directive-like or list-lists: require at least one line
-		 * containing a space (a sentence fragment vs a single token).
-		 */
-		return collected.some((c) => /\s/.test(c));
-	}
 	while (i < lines.length) {
 		if (/^\s*\/\//.test(lines[i]) && !/^\s*\/\/\//.test(lines[i])) {
 			const prev = i > 0 ? lines[i - 1] : "";
 			const prevTrim = prev.trim();
-			let contextEligible = prevTrim === "" || /[{}\]),;]$/.test(prevTrim);
-			/**
-			 * Heuristic: also allow large explanatory group after a statement ending
-			 * with ';' when it qualifies as explanatory so it can be elevated to a block
-			 * comment rather than remaining a run of // lines.
-			 */
-			if (
-				!contextEligible &&
-				/;\s*$/.test(prevTrim) &&
-				qualifiesExplanatoryAfterStatement(i)
-			) {
-				contextEligible = true;
-			}
+			const contextEligible = prevTrim === "" || /[{}\]),;]$/.test(prevTrim);
 			if (!contextEligible) {
-				out.push(lines[i]);
-				i++;
+				// Keep the whole run of // lines, so no group starts mid-comment.
+				do {
+					out.push(lines[i]);
+					i++;
+				} while (
+					i < lines.length &&
+					/^\s*\/\//.test(lines[i]) &&
+					!/^\s*\/\/\//.test(lines[i])
+				);
 				continue;
 			}
 			const group: { indent: string; text: string }[] = [];
@@ -730,6 +786,14 @@ export function parseAndTransformComments(
 	if (options.wrapLineComments) {
 		const w = wrapLineComments(working, options.width);
 		working = w.content;
+		/**
+		 * Wrapping can split one long // line into a group that merging takes, so
+		 * merge again now instead of on the next run.
+		 */
+		if (options.mergeLineComments && w.applied) {
+			working = mergeLineCommentGroups(working).content;
+			working = reflowJsDocBlocks(working, options.width).content;
+		}
 	}
 	return { original: input, transformed: working, changed: working !== input };
 }
