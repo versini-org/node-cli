@@ -17,7 +17,7 @@
 		"test:coverage": "turbo run test:coverage"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.6.2",
+		"@biomejs/biome": "2.6.3",
 		"@node-cli/biome-config": "workspace:*",
 		"@node-cli/comments": "workspace:*",
 		"@swc/cli": "0.8.1",
