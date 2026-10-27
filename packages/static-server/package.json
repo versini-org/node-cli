@@ -33,9 +33,9 @@
 	},
 	"dependencies": {
 		"@fastify/caching": "9.0.5",
-		"@fastify/compress": "9.2.2",
+		"@fastify/compress": "9.3.0",
 		"@fastify/cors": "11.3.1",
-		"@fastify/static": "10.1.7",
+		"@fastify/static": "10.1.8",
 		"@node-cli/logger": "workspace:*",
 		"@node-cli/parser": "workspace:*",
 		"fastify": "5.12.7",
