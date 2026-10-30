@@ -17,12 +17,12 @@
 		"test:coverage": "turbo run test:coverage"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.6.3",
+		"@biomejs/biome": "2.6.4",
 		"@node-cli/biome-config": "workspace:*",
 		"@node-cli/comments": "workspace:*",
-		"@swc/cli": "0.8.1",
+		"@swc/cli": "0.8.2",
 		"@swc/core": "1.16.20",
-		"@types/node": "26.6.5",
+		"@types/node": "26.6.6",
 		"barrelsby": "2.8.1",
 		"husky": "9.1.7",
 		"lint-staged": "17.6.0",
