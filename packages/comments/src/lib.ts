@@ -108,7 +108,8 @@ function normalizeNote(line: string): string {
 /**
  * Splits a paragraph before each 'NOTE: ' that starts a word. A NOTE runs to
  * the next NOTE or the end of the paragraph, not to its first sentence, so the
- * rest of the note stays with it.
+ * rest of the note stays with it. Inside a NOTE, another 'NOTE: ' starts a new
+ * one only after a sentence ends, so a NOTE can mention the marker.
  */
 function splitAtNotes(text: string): string[] {
 	const segments: string[] = [];
@@ -124,6 +125,13 @@ function splitAtNotes(text: string): string[] {
 		search = idx + 6;
 		// Not a boundary inside a word ("FOOTNOTE: ") or at the segment start.
 		if (idx === i || text[idx - 1] !== " ") {
+			continue;
+		}
+		// Only the tail before `idx` matters, so a long NOTE is not rescanned.
+		if (
+			text.startsWith("NOTE: ", i) &&
+			!/[.!?]['")\]]* $/.test(text.slice(Math.max(i, idx - 16), idx))
+		) {
 			continue;
 		}
 		segments.push(text.slice(i, idx).trim());
@@ -653,10 +661,20 @@ function mergeLineCommentGroups(content: string): {
 						}
 					}
 				}
-				const para = norm.join(" ").replace(/\s+/g, " ").trim();
+				// A `// NOTE:` line starts its own paragraph, as it does in buildJsDoc.
+				const paras: string[] = [];
+				for (const ln of norm) {
+					if (paras.length && !/^NOTE: /.test(ln)) {
+						paras[paras.length - 1] += ` ${ln}`;
+					} else {
+						paras.push(ln);
+					}
+				}
 				out.push(`${indent}/**`);
-				for (const seg of splitAtNotes(para)) {
-					out.push(`${indent} * ${seg}`);
+				for (const para of paras) {
+					for (const seg of splitAtNotes(para.replace(/\s+/g, " ").trim())) {
+						out.push(`${indent} * ${seg}`);
+					}
 				}
 				out.push(`${indent} */`);
 				i = j;

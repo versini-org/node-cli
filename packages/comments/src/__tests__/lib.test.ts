@@ -544,7 +544,46 @@ describe("parseAndTransformComments", () => {
 		expect(out).toBe(input);
 	});
 
-	it("isolates multiple NOTE sentences within merged // comment group", () => {
+	it("does not split a NOTE that mentions NOTE: mid-sentence", () => {
+		const input = [
+			"/**",
+			" * NOTE: the NOTE: prefix is uppercased by the tool.",
+			" */",
+		].join("\n");
+		expect(parseAndTransformComments(input, baseOpts).transformed).toBe(input);
+	});
+
+	it("does not split a NOTE at a NOTE: inside inline code", () => {
+		const input = [
+			"/**",
+			" * NOTE: Match `prefix NOTE: suffix` exactly.",
+			" */",
+		].join("\n");
+		expect(parseAndTransformComments(input, baseOpts).transformed).toBe(input);
+	});
+
+	it("keeps consecutive // NOTE lines apart in a merged group", () => {
+		const src = ["foo();", "// NOTE: first", "// NOTE: second", "bar();"].join(
+			"\n",
+		);
+		const out = parseAndTransformComments(src, {
+			width: 80,
+			wrapLineComments: true,
+			mergeLineComments: true,
+		}).transformed;
+		expect(out).toBe(
+			[
+				"foo();",
+				"/**",
+				" * NOTE: first.",
+				" * NOTE: second.",
+				" */",
+				"bar();",
+			].join("\n"),
+		);
+	});
+
+	it("starts each NOTE of a merged // group on its own line", () => {
 		const src = [
 			"// This performs the main task.",
 			"// NOTE: side effects may occur.",
@@ -557,11 +596,16 @@ describe("parseAndTransformComments", () => {
 			wrapLineComments: true,
 			mergeLineComments: true,
 		}).transformed;
-		const noteLines = out.split(/\n/).filter((l) => /NOTE: /.test(l));
-		expect(noteLines.length).toBe(2);
-		for (const l of noteLines) {
-			expect(l.trim()).toMatch(/\.$/);
-		}
+		expect(out).toBe(
+			[
+				"/**",
+				" * This performs the main task.",
+				" * NOTE: side effects may occur. It then produces output.",
+				" * NOTE: results are cached for 5 minutes.",
+				" */",
+				"function run() {}",
+			].join("\n"),
+		);
 	});
 
 	it("merges line comments after lines ending with },", () => {
@@ -662,8 +706,14 @@ describe("parseAndTransformComments", () => {
 			...baseOpts,
 			width: 120,
 		}).transformed;
-		expect(out).toMatch(/Success!\n \* NOTE: edge case follows\./);
-		expect(out).toMatch(/Continue processing\./);
+		expect(out).toBe(
+			[
+				"/**",
+				" * Success!",
+				" * NOTE: edge case follows. Continue processing.",
+				" */",
+			].join("\n"),
+		);
 	});
 
 	it("does not force period on NOTE line ending with continuation word when followed by continuation line", () => {
