@@ -106,60 +106,28 @@ function normalizeNote(line: string): string {
 }
 
 /**
- * ' at start or immediately after a sentence terminator + space.
+ * Splits a paragraph before each 'NOTE: ' that starts a word. A NOTE runs to
+ * the next NOTE or the end of the paragraph, not to its first sentence, so the
+ * rest of the note stays with it.
  */
-function splitNoteSentences(text: string): string[] {
-	if (!/NOTE: /.test(text)) {
-		return [text];
-	}
+function splitAtNotes(text: string): string[] {
 	const segments: string[] = [];
 	// `i` is where the current segment starts; `search` skips past non-boundaries.
 	let i = 0;
 	let search = 0;
-	while (i < text.length) {
+	for (;;) {
 		const idx = text.indexOf("NOTE: ", search);
 		if (idx === -1) {
-			const tail = text.slice(i).trim();
-			if (tail) {
-				segments.push(tail);
-			}
+			segments.push(text.slice(i).trim());
 			break;
 		}
-		/**
-		 * Boundary heuristics: start of text, sentence punctuation + space, OR a
-		 * plain space (allows splitting even when author forgot to terminate the
-		 * previous sentence before starting a NOTE clause).
-		 */
-		const boundary =
-			idx === 0 ||
-			/[.!?] /.test(text.slice(Math.max(0, idx - 2), idx + 1)) ||
-			text[idx - 1] === " ";
-		if (!boundary) {
-			search = idx + 6; // skip this occurrence, keep the text before it
+		search = idx + 6;
+		// Not a boundary inside a word ("FOOTNOTE: ") or at the segment start.
+		if (idx === i || text[idx - 1] !== " ") {
 			continue;
 		}
-		const before = text.slice(i, idx).trim();
-		if (before) {
-			segments.push(before);
-		}
-		/**
-		 * The NOTE sentence ends at terminal punctuation followed by a space or the
-		 * end of text, so a "." or "?" inside a URL or a regex token does not cut it.
-		 */
-		const terminator = /(?<=\S)[.!?]['")\]]*(?= |$)/g;
-		terminator.lastIndex = idx;
-		const stop = terminator.exec(text);
-		const end = stop ? stop.index + stop[0].length : text.length;
-		let note = text.slice(idx, end).trim();
-		if (!/[.!?]$/.test(note)) {
-			note += ".";
-		}
-		segments.push(note);
-		i = end;
-		if (text[i] === " ") {
-			i++;
-		}
-		search = i;
+		segments.push(text.slice(i, idx).trim());
+		i = idx;
 	}
 	return segments.filter(Boolean);
 }
@@ -340,8 +308,6 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 	}
 	const out: string[] = [];
 	let para: string[] = [];
-	// True while `para` holds a NOTE sentence that runs onto the next lines.
-	let noteOpen = false;
 	let inFence = false;
 	const prefix = indent + " * ";
 	const avail = Math.max(10, width - prefix.length);
@@ -383,7 +349,7 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 		let text = para.join(" ").replace(/\s+/g, " ").trim();
 		text = normalizeNote(text);
 		text = maybeAddPeriod(text);
-		const pieces = splitNoteSentences(text);
+		const pieces = splitAtNotes(text);
 		for (const piece of pieces) {
 			/**
 			 * Each piece starts its own line, so it gets the NOTE casing and the period
@@ -394,12 +360,9 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 			}
 		}
 		para = [];
-		noteOpen = false;
 	}
 
-	let lineIndex = -1;
 	for (const raw of lines) {
-		lineIndex++;
 		const trimmed = raw.trimEnd();
 		if (isCodeFence(trimmed)) {
 			flush();
@@ -437,63 +400,10 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 					out.push(prefix.trimEnd());
 				}
 			} else {
-				let noteLine = normalizeNote(trimmed);
-				if (/^NOTE: /.test(noteLine) && !/[.!?]$/.test(noteLine)) {
-					/**
-					 * Structural lookahead: add period only if the NOTE line is followed by a
-					 * boundary (blank line, tag line, list item, heading, code fence, visually
-					 * indented code, another NOTE line, or end-of-block). If next non-blank
-					 * line is plain prose, skip.
-					 */
-					let addPeriod = true; // assume boundary until proven prose continuation
-					const look = lineIndex + 1;
-					while (look < lines.length) {
-						const rawNext = lines[look];
-						const cleaned = rawNext.replace(/^\s*\*? ?/, "").trimEnd();
-						const trimmedNext = cleaned.trim();
-						if (trimmedNext === "") {
-							// Blank line: definite boundary.
-							addPeriod = true;
-							break;
-						}
-						if (
-							/^NOTE: /i.test(trimmedNext) ||
-							isTagLine(trimmedNext) ||
-							isListLike(trimmedNext) ||
-							isHeadingLike(trimmedNext) ||
-							isCodeFence(trimmedNext) ||
-							isVisuallyIndentedCode(rawNext)
-						) {
-							addPeriod = true; // boundary structure
-							break;
-						}
-						// Anything else: treat as prose continuation.
-						addPeriod = false;
-						break;
-					}
-					/**
-					 * If this is the first NOTE line emitted in the block (no prior non-blank
-					 * paragraph lines), we still want a period for consistency even if a prose
-					 * continuation follows; treat it as a standalone NOTE sentence introducing
-					 * subsequent content.
-					 */
-					const hasPriorContent = out.some(
-						(l) => /\* [^ ]/.test(l) && !/\* NOTE: /.test(l),
-					);
-					if (addPeriod || !hasPriorContent) {
-						noteLine += ".";
-					}
-				}
-				if (
-					/^NOTE: /.test(noteLine) &&
-					!/(?<=\S)[.!?]['")\]]*(?= |$)/.test(noteLine)
-				) {
-					/**
-					 * The NOTE sentence runs onto the next lines: collect it until the
-					 * sentence ends, so its tail does not join the following paragraph.
-					 */
+				const noteLine = normalizeNote(trimmed);
+				if (/^NOTE: /.test(noteLine)) {
+					// A NOTE starts a paragraph and runs until the next boundary.
 					para.push(noteLine);
-					noteOpen = true;
 				} else {
 					out.push(prefix + noteLine);
 				}
@@ -501,19 +411,6 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 			continue;
 		}
 		para.push(trimmed);
-		if (noteOpen) {
-			// Flush the NOTE sentence where it ends; the rest starts the next paragraph.
-			const joined = para.join(" ");
-			const stop = /(?<=\S)[.!?]['")\]]*(?= |$)/.exec(joined);
-			if (stop) {
-				const rest = joined.slice(stop.index + stop[0].length).trim();
-				para = [joined.slice(0, stop.index + stop[0].length)];
-				flush();
-				if (rest) {
-					para = [rest];
-				}
-			}
-		}
 	}
 	flush();
 	/**
@@ -758,7 +655,7 @@ function mergeLineCommentGroups(content: string): {
 				}
 				const para = norm.join(" ").replace(/\s+/g, " ").trim();
 				out.push(`${indent}/**`);
-				for (const seg of splitNoteSentences(para)) {
+				for (const seg of splitAtNotes(para)) {
 					out.push(`${indent} * ${seg}`);
 				}
 				out.push(`${indent} */`);

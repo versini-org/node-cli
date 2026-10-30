@@ -134,8 +134,7 @@ describe("parseAndTransformComments properties", () => {
 	 * still has changes after a fix. Scope (decided 2026-10-23): realistic prose
 	 * only (see realistic-source.ts); degenerate input such as an empty or stacked
 	 * "note:" can still need two passes. Mutants: skip the merge after wrapping
-	 * (fails after 137 runs), flush a NOTE only at a line end (258 runs), disable
-	 * the wrap guard (red in 9 of 10 runs).
+	 * (fails after 137 runs), disable the wrap guard (red in 9 of 10 runs).
 	 */
 	it("is idempotent on realistic prose", () => {
 		const realisticOptions = fc.record({
@@ -154,8 +153,8 @@ describe("parseAndTransformComments properties", () => {
 
 	/**
 	 * Reflowing rearranges words; it never splits, drops, or invents one (a URL or
-	 * a regex token must survive whole). Mutant: the NOTE sentence terminator back
-	 * to `/[.!?]/g` in splitNoteSentences; fails after 40 runs.
+	 * a regex token must survive whole). Mutant: drop the word-boundary check in
+	 * splitAtNotes, so "aNOTE:" splits; fails after 16 runs.
 	 */
 	it("keeps every comment word intact", () => {
 		fc.assert(

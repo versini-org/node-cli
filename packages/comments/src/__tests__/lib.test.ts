@@ -463,7 +463,7 @@ describe("parseAndTransformComments", () => {
 		}
 	});
 
-	it("isolates mid-paragraph NOTE sentence inside a JSDoc block", () => {
+	it("starts a mid-paragraph NOTE on its own line and keeps the rest with it", () => {
 		const input = [
 			"/**",
 			" * This operation performs work and may take time NOTE: use with caution if running on production systems. It returns a result",
@@ -473,24 +473,17 @@ describe("parseAndTransformComments", () => {
 			...baseOpts,
 			width: 120,
 		}).transformed;
-		// Ensure NOTE is on its own line.
-		expect(
-			/\n \* NOTE: use with caution if running on production systems\.\n/.test(
-				out,
-			),
-		).toBe(true);
-		/**
-		 * Preceding sentence fragments present and end with period somewhere before
-		 * NOTE line.
-		 */
-		expect(out).toMatch(/This operation performs work and may take time\.\n/);
-		// Trailing sentence appears after NOTE line with terminal period.
-		expect(/NOTE: use with caution[\s\S]*It returns a result\./.test(out)).toBe(
-			true,
+		expect(out).toBe(
+			[
+				"/**",
+				" * This operation performs work and may take time.",
+				" * NOTE: use with caution if running on production systems. It returns a result.",
+				" */",
+			].join("\n"),
 		);
 	});
 
-	it("keeps NOTE at start of JSDoc on its own line with added period", () => {
+	it("joins a leading NOTE line with the prose that follows it", () => {
 		const input = [
 			"/**",
 			" * note: must initialize the runtime before calling any methods",
@@ -501,12 +494,54 @@ describe("parseAndTransformComments", () => {
 			...baseOpts,
 			width: 100,
 		}).transformed;
-		const noteLine = out
-			.split(/\n/)
-			.find((l) => /NOTE: must initialize/.test(l));
-		expect(noteLine).toBeDefined();
-		expect(/\.$/.test(noteLine || "")).toBe(true);
-		expect(out).toMatch(/subsequent calls depend on global state\./);
+		expect(out).toBe(
+			[
+				"/**",
+				" * NOTE: must initialize the runtime before calling any methods subsequent calls depend on global",
+				" * state.",
+				" */",
+			].join("\n"),
+		);
+	});
+
+	it("keeps a NOTE paragraph whole after its first sentence", () => {
+		const input = [
+			"/**",
+			" * Intro sentence that wraps across a full line of text to fill the width here.",
+			" * NOTE: setting A is MUTUALLY EXCLUSIVE with setting B — sending both breaks it,",
+			" * indistinguishable from an outage. We send B and never A; a guard checks that",
+			" * invariant.",
+			" */",
+		].join("\n");
+		const out = parseAndTransformComments(input, {
+			...baseOpts,
+			width: 80,
+		}).transformed;
+		expect(out).toBe(
+			[
+				"/**",
+				" * Intro sentence that wraps across a full line of text to fill the width here.",
+				" * NOTE: setting A is MUTUALLY EXCLUSIVE with setting B — sending both breaks",
+				" * it, indistinguishable from an outage. We send B and never A; a guard checks",
+				" * that invariant.",
+				" */",
+			].join("\n"),
+		);
+	});
+
+	it("keeps an indented NOTE paragraph whole after a sentence ending in ).", () => {
+		const input = [
+			"\t\t/**",
+			"\t\t * NOTE: workingImageUrl reflects prior TURNS only (the tool `context` is",
+			"\t\t * fixed per request). Two edits issued in a single turn rely on the model's",
+			"\t\t * own inputImages for the second one.",
+			"\t\t */",
+		].join("\n");
+		const out = parseAndTransformComments(input, {
+			...baseOpts,
+			width: 80,
+		}).transformed;
+		expect(out).toBe(input);
 	});
 
 	it("isolates multiple NOTE sentences within merged // comment group", () => {
@@ -643,13 +678,14 @@ describe("parseAndTransformComments", () => {
 			...baseOpts,
 			width: 100,
 		}).transformed;
-		/**
-		 * New structural policy: first NOTE line always gets period even if followed
-		 * by prose.
-		 */
-		expect(out).toMatch(/when the code is not in\./);
-		// Ensure final sentence has period.
-		expect(/completely random\./.test(out)).toBe(true);
+		expect(out).toBe(
+			[
+				"/**",
+				" * NOTE: we are still using the good old lodash uniqueId when the code is not in production, so that",
+				" * the results are a little bit more consistent tests after test instead of being completely random.",
+				" */",
+			].join("\n"),
+		);
 	});
 
 	it("handles diffLines with different length arrays", () => {
