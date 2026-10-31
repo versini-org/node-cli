@@ -106,6 +106,65 @@ function normalizeNote(line: string): string {
 }
 
 /**
+ * Inline code keeps its whitespace through a reflow. While a text is collapsed
+ * and split, the spaces and tabs of its code spans are held as private-use
+ * characters (not whitespace, so they neither collapse nor break a line, and a
+ * NOTE inside code is not split off). Each piece that is then wrapped keeps the
+ * hold only when one of its spans has a run of two spaces or a tab: every span
+ * of the piece then wraps as one word, so no line starts inside a span and a
+ * later pass, even on a single // line, pairs the same backticks. Otherwise the
+ * piece collapses as before, and so does a text whose backticks do not pair up
+ * or whose code has other whitespace.
+ */
+const HELD_SPACE = "\uE000";
+const HELD_TAB = "\uE001";
+
+// The text with its code held, or null when it is not held at all.
+function protectCodeSpans(text: string): string | null {
+	// One split pairs the backticks in order; an even part count means a stray.
+	const parts = text.split("`");
+	if (
+		parts.length % 2 === 0 ||
+		/[\uE000\uE001]/.test(text) ||
+		parts.some((p, i) => i % 2 === 1 && /[^\S \t]/.test(p))
+	) {
+		return null;
+	}
+	return parts
+		.map((p, i) =>
+			i % 2 === 1
+				? p.replaceAll(" ", HELD_SPACE).replaceAll("\t", HELD_TAB)
+				: p,
+		)
+		.join("`");
+}
+
+/**
+ * A held piece about to be wrapped at `width`: kept held when it has a run of
+ * spaces or a tab in code and each held word fits with the period it may get (a
+ * trailing period does not count, so the next pass, which sees the period,
+ * decides the same), else released and collapsed.
+ */
+function settleHeldPiece(piece: string, width: number): string {
+	const keep =
+		/\uE000\uE000|\uE001/.test(piece) &&
+		piece
+			.split(/\s+/)
+			.every(
+				(w) => !/[\uE000\uE001]/.test(w) || w.replace(/\.$/, "").length < width,
+			);
+	return keep
+		? piece
+		: piece.replace(/[\uE000\uE001]/g, " ").replace(/\s+/g, " ");
+}
+
+function releaseCodeSpaces(lines: string[], held: boolean): string[] {
+	return held
+		? lines.map((l) => l.replaceAll(HELD_SPACE, " ").replaceAll(HELD_TAB, "\t"))
+		: lines;
+}
+
+/**
  * Splits a paragraph before each 'NOTE: ' that starts a word. A NOTE runs to
  * the next NOTE or the end of the paragraph, not to its first sentence, so the
  * rest of the note stays with it. Inside a NOTE, another 'NOTE: ' starts a new
@@ -388,16 +447,25 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 		if (!para.length) {
 			return;
 		}
-		let text = para.join(" ").replace(/\s+/g, " ").trim();
+		// Trimmed first, so code wrapped across lines gets one joining space.
+		const joined = para.map((l) => l.trim()).join(" ");
+		const held = protectCodeSpans(joined);
+		let text = (held ?? joined).replace(/\s+/g, " ").trim();
 		text = normalizeNote(text);
 		text = maybeAddPeriod(text);
 		const pieces = splitAtNotes(text);
 		for (const piece of pieces) {
 			/**
 			 * Each piece starts its own line, so it gets the NOTE casing and the period
-			 * that the next pass would give it.
+			 * that the next pass would give it. It is also the paragraph the next pass
+			 * sees, so the hold is decided per piece.
 			 */
-			for (const l of wrapWords(maybeAddPeriod(normalizeNote(piece)), avail)) {
+			let next = maybeAddPeriod(normalizeNote(piece));
+			if (held !== null) {
+				next = settleHeldPiece(next, avail);
+			}
+			const wrapped = wrapWords(next, avail);
+			for (const l of releaseCodeSpaces(wrapped, held !== null)) {
 				out.push(prefix + l);
 			}
 		}
@@ -525,11 +593,17 @@ function wrapLineBody(
 ): string[] {
 	const prefix = indent + "// ";
 	const avail = Math.max(10, width - prefix.length);
-	let text = normalizeNote(body.replace(/\s+/g, " ").trim());
+	const held = protectCodeSpans(body);
+	let text = normalizeNote((held ?? body).replace(/\s+/g, " ").trim());
 	if (addPeriod) {
 		text = maybeAddPeriod(text);
 	}
-	return wrapWords(text, avail, true).map((w) => prefix + w);
+	if (held !== null) {
+		text = settleHeldPiece(text, avail);
+	}
+	return releaseCodeSpaces(wrapWords(text, avail, true), held !== null).map(
+		(w) => prefix + w,
+	);
 }
 
 function wrapLineComments(
