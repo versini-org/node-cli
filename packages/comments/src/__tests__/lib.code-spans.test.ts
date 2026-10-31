@@ -125,3 +125,102 @@ describe("parseAndTransformComments keeps inline-code spaces", () => {
 		);
 	});
 });
+
+describe("parseAndTransformComments holds code only where it stays stable", () => {
+	const lineOnly = {
+		width: 80,
+		wrapLineComments: true,
+		mergeLineComments: false,
+	};
+	const fits = (out: string, width: number) =>
+		out.split("\n").every((l) => l.length <= width);
+
+	it("collapses held code that would push a // line over the width", () => {
+		for (const [input, width] of [
+			[
+				"// `git log --format  %H --since yesterday` - inspect the changes.",
+				44,
+			],
+			["// `foo bar baz qux quux corge` @param x `a  b`", 34],
+			["// `git status --short` NOTE: `/  /`", 24],
+		] as const) {
+			expect(fits(stable(input, { ...lineOnly, width }), width)).toBe(true);
+		}
+	});
+
+	it("does not hold a paragraph that starts like a list item", () => {
+		for (const [input, width] of [
+			[lines("/**", " * 1.", " * `a b NOTE: c` d", " */"), 14],
+			[
+				lines(
+					"/**",
+					" * -",
+					" * `aaaa bbbb cccc dddd eeee ffff gggg hhhh` `x NOTE: y`",
+					" */",
+				),
+				40,
+			],
+		] as const) {
+			stable(input, { ...opts, width });
+		}
+	});
+
+	it("does not hold a list item marked by a tab", () => {
+		const input = lines(
+			"/**",
+			" * -\t`a  b` more words `foo bar baz qux` end.",
+			" */",
+		);
+		for (const width of [20, 21, 80]) {
+			stable(input, { ...opts, width });
+		}
+	});
+
+	it("leaves a note: glued to a word as written", () => {
+		stable("// aaaaaaaaaaaaaaaaaaaaaaa note:`x`", { ...lineOnly, width: 30 });
+		stable("x\n// see note:x - done.", { ...lineOnly, width: 13 });
+		stable("x\n// Options: note:x - done.", { ...lineOnly, width: 13 });
+		stable("x\n// Details NOTE:example - more words", {
+			...lineOnly,
+			width: 20,
+		});
+		expect(run("x\n// note:x and more")).toContain("note:x");
+	});
+
+	it("does not hold code written with runs of backticks", () => {
+		expect(run(lines("/**", " * The ``a  b`` form.", " */"))).toContain(
+			"``a b``",
+		);
+		// Paired one by one, " then " would be held as code.
+		expect(
+			stable("// Write ``` then  `x  y`, then ``` again", lineOnly),
+		).not.toContain("then  ");
+	});
+
+	it("keeps a literal private-use character as it is", () => {
+		const own = String.fromCharCode(0xe000);
+		expect(
+			stable(lines("/**", ` * Keep ${own} and \`a  b\`.`, " */")),
+		).toContain(own);
+		expect(stable(`x\n// Keep ${own} and \`a  b\`.`, lineOnly)).toContain(own);
+	});
+
+	it("collapses code that has other whitespace", () => {
+		const nbsp = String.fromCharCode(0xa0);
+		expect(
+			stable(lines("/**", ` * Run \`a${nbsp}b  c\` now.`, " */")),
+		).toContain("`a b c`");
+	});
+
+	it("keeps a lone tab in code", () => {
+		const input = lines("/**", " * Split on `a\tb` here.", " */");
+		expect(run(input)).toBe(input);
+	});
+
+	it("holds code that fills a line exactly, period included", () => {
+		const code = `\`${"a".repeat(36)}  ${"b".repeat(36)}\``;
+		const out = stable(lines("/**", ` * see ${code}.`, " */"));
+		expect(out).toContain(` * ${code}.`);
+		expect(fits(out, 80)).toBe(true);
+	});
+});

@@ -101,23 +101,28 @@ function maybeAddPeriod(line: string): string {
 	return needsTerminalPunctuation(line) ? line + "." : line;
 }
 
+// Only "note:" plus a space or the line end is a NOTE, as everywhere else.
 function normalizeNote(line: string): string {
-	return line.replace(/^note:/i, "NOTE:");
+	return line.replace(/^note:(?= |$)/i, "NOTE:");
 }
 
 /**
  * Inline code keeps its whitespace through a reflow. While a text is collapsed
  * and split, the spaces and tabs of its code spans are held as private-use
  * characters (not whitespace, so they neither collapse nor break a line, and a
- * NOTE inside code is not split off). Each piece that is then wrapped keeps the
- * hold only when one of its spans has a run of two spaces or a tab: every span
- * of the piece then wraps as one word, so no line starts inside a span and a
- * later pass, even on a single // line, pairs the same backticks. Otherwise the
- * piece collapses as before, and so does a text whose backticks do not pair up
- * or whose code has other whitespace.
+ * NOTE inside code is not split off). A piece keeps the hold when one of its
+ * spans has a run of two spaces or a tab and every line it wraps to fits: each
+ * span then wraps as one word, so no line starts inside code, and a later pass,
+ * even on a single // line, sees lines that already fit and pairs the same
+ * backticks. Otherwise the piece collapses as before, and so does a text whose
+ * backticks do not pair up or come in runs (``code``), or whose code has other
+ * whitespace.
  */
 const HELD_SPACE = "\uE000";
 const HELD_TAB = "\uE001";
+const HELD_ANY = new RegExp(`[${HELD_SPACE}${HELD_TAB}]`);
+const HELD_ALL = new RegExp(HELD_ANY.source, "g");
+const HELD_RUN = new RegExp(`${HELD_SPACE}{2}|${HELD_TAB}`);
 
 // The text with its code held, or null when it is not held at all.
 function protectCodeSpans(text: string): string | null {
@@ -125,7 +130,8 @@ function protectCodeSpans(text: string): string | null {
 	const parts = text.split("`");
 	if (
 		parts.length % 2 === 0 ||
-		/[\uE000\uE001]/.test(text) ||
+		text.includes("``") ||
+		HELD_ANY.test(text) ||
 		parts.some((p, i) => i % 2 === 1 && /[^\S \t]/.test(p))
 	) {
 		return null;
@@ -140,28 +146,28 @@ function protectCodeSpans(text: string): string | null {
 }
 
 /**
- * A held piece about to be wrapped at `width`: kept held when it has a run of
- * spaces or a tab in code and each held word fits with the period it may get (a
- * trailing period does not count, so the next pass, which sees the period,
- * decides the same), else released and collapsed.
+ * Wraps a piece at `width`. Held code is kept only when the piece has a run of
+ * spaces or a tab in code and every wrapped line fits; otherwise the code
+ * collapses and the piece wraps as before.
  */
-function settleHeldPiece(piece: string, width: number): string {
-	const keep =
-		/\uE000\uE000|\uE001/.test(piece) &&
-		piece
-			.split(/\s+/)
-			.every(
-				(w) => !/[\uE000\uE001]/.test(w) || w.replace(/\.$/, "").length < width,
+function wrapCodePiece(
+	piece: string,
+	width: number,
+	held: boolean,
+	lineComment = false,
+): string[] {
+	if (held && HELD_RUN.test(piece)) {
+		const lines = wrapWords(piece, width, lineComment);
+		if (lines.every((l) => l.length <= width)) {
+			return lines.map((l) =>
+				l.replace(HELD_ALL, (c) => (c === HELD_SPACE ? " " : "\t")),
 			);
-	return keep
-		? piece
-		: piece.replace(/[\uE000\uE001]/g, " ").replace(/\s+/g, " ");
-}
-
-function releaseCodeSpaces(lines: string[], held: boolean): string[] {
-	return held
-		? lines.map((l) => l.replaceAll(HELD_SPACE, " ").replaceAll(HELD_TAB, "\t"))
-		: lines;
+		}
+	}
+	const plain = held
+		? piece.replace(HELD_ALL, " ").replace(/\s+/g, " ")
+		: piece;
+	return wrapWords(plain, width, lineComment);
 }
 
 /**
@@ -449,7 +455,13 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 		}
 		// Trimmed first, so code wrapped across lines gets one joining space.
 		const joined = para.map((l) => l.trim()).join(" ");
-		const held = protectCodeSpans(joined);
+		/**
+		 * A paragraph that starts like a list item ("1." on a line of its own) is a
+		 * list line on the next pass, which then pairs the rest alone: not held.
+		 */
+		const held = isListLike(joined.replace(/\s+/g, " "))
+			? null
+			: protectCodeSpans(joined);
 		let text = (held ?? joined).replace(/\s+/g, " ").trim();
 		text = normalizeNote(text);
 		text = maybeAddPeriod(text);
@@ -460,12 +472,8 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 			 * that the next pass would give it. It is also the paragraph the next pass
 			 * sees, so the hold is decided per piece.
 			 */
-			let next = maybeAddPeriod(normalizeNote(piece));
-			if (held !== null) {
-				next = settleHeldPiece(next, avail);
-			}
-			const wrapped = wrapWords(next, avail);
-			for (const l of releaseCodeSpaces(wrapped, held !== null)) {
+			const next = maybeAddPeriod(normalizeNote(piece));
+			for (const l of wrapCodePiece(next, avail, held !== null)) {
 				out.push(prefix + l);
 			}
 		}
@@ -598,12 +606,7 @@ function wrapLineBody(
 	if (addPeriod) {
 		text = maybeAddPeriod(text);
 	}
-	if (held !== null) {
-		text = settleHeldPiece(text, avail);
-	}
-	return releaseCodeSpaces(wrapWords(text, avail, true), held !== null).map(
-		(w) => prefix + w,
-	);
+	return wrapCodePiece(text, avail, held !== null, true).map((w) => prefix + w);
 }
 
 function wrapLineComments(
