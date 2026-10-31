@@ -417,6 +417,97 @@ describe("parseAndTransformComments keeps structure", () => {
 		expect(run(input)).toBe(input);
 	});
 
+	it("joins a numbered-looking line after a merged // bullet list", () => {
+		const afterProse = lines(
+			"foo();",
+			"// - a",
+			"// Then the limit is",
+			"// 10. The client must not exceed it.",
+			"bar();",
+		);
+		expect(run(afterProse)).toBe(
+			lines(
+				"foo();",
+				"/**",
+				" * - a",
+				" * Then the limit is 10. The client must not exceed it.",
+				" */",
+				"bar();",
+			),
+		);
+		const afterHeading = lines(
+			"foo();",
+			"// - a",
+			"// Overview:",
+			"// The limit is",
+			"// 10. The client must not exceed it.",
+			"bar();",
+		);
+		expect(run(afterHeading)).toBe(
+			lines(
+				"foo();",
+				"/**",
+				" * - a",
+				" * Overview:",
+				" * The limit is 10. The client must not exceed it.",
+				" */",
+				"bar();",
+			),
+		);
+	});
+
+	it("keeps a ``` fence inside a ```` fence as code", () => {
+		const fence = [
+			"````md",
+			"```sh",
+			"rm -f a.tmp",
+			"echo keep.txt",
+			"```",
+			"````",
+		];
+		const merged = lines(
+			"foo();",
+			"// Example:",
+			...fence.map((l) => `// ${l}`),
+			"bar();",
+		);
+		expect(run(merged)).toBe(
+			lines(
+				"foo();",
+				"/**",
+				" * Example:",
+				...fence.map((l) => ` * ${l}`),
+				" */",
+				"bar();",
+			),
+		);
+		const jsDoc = lines(
+			"/**",
+			" * Example:",
+			...fence.map((l) => ` * ${l}`),
+			" */",
+		);
+		expect(run(jsDoc)).toBe(jsDoc);
+	});
+
+	it("merges a // group with an optional colon as 1.1.6 did", () => {
+		const input = lines(
+			"foo();",
+			"// Use the key:? prefix to mark a field as",
+			"// optional in the config file",
+			"bar();",
+		);
+		expect(run(input)).toBe(
+			lines(
+				"foo();",
+				"/**",
+				" * Use the key:? prefix to mark a field as optional in the config file.",
+				" */",
+				"bar();",
+			),
+		);
+	});
+
 	it("keeps (?: regex lines of a merged // group line by line", () => {
 		const input = lines(
 			"foo();",
