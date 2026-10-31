@@ -456,6 +456,25 @@ describe("parseAndTransformComments keeps structure", () => {
 		);
 	});
 
+	it("joins a merged // line that only looks like a heading mid-sentence", () => {
+		const input = lines(
+			"foo();",
+			"// This is configured from the",
+			"// Default Options:",
+			"// list below",
+			"bar();",
+		);
+		expect(run(input)).toBe(
+			lines(
+				"foo();",
+				"/**",
+				" * This is configured from the Default Options: list below.",
+				" */",
+				"bar();",
+			),
+		);
+	});
+
 	it("keeps a ``` fence inside a ```` fence as code", () => {
 		const fence = [
 			"````md",

@@ -664,7 +664,9 @@ function mergedJsDocLines(texts: string[]): string[] {
 				kind !== "prose" ||
 				note ||
 				((item || heading) &&
-					(endsSentence(last) || /:$/.test(last) || list === openList))
+					(endsSentence(last) ||
+						/:$/.test(last) ||
+						(item && list === openList)))
 			) {
 				const as = item ? "item" : heading ? "heading" : "prose";
 				start(
