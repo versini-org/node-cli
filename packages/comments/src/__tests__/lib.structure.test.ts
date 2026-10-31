@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 import { parseAndTransformComments } from "../lib.js";
 
 /**
- * Structure a reflow must keep: list items and blank-line paragraphs in a
- * merged // group, runs of spaces inside inline code, and regex lines the merge
- * path keeps line by line (issue 727).
+ * Structure a reflow must keep: list items, tags, headings, NOTE lines and
+ * blank-line paragraphs in a merged // group, hand-wrapped sentences that only
+ * look like structure, and regex lines kept line by line (issue 727).
  */
 const opts = { width: 80, wrapLineComments: true, mergeLineComments: true };
 const run = (input: string) =>
@@ -75,18 +75,345 @@ describe("parseAndTransformComments keeps structure", () => {
 		);
 	});
 
-	it("keeps runs of spaces inside inline code in a JSDoc paragraph", () => {
-		const input = lines("/**", " * Collapses `a  b` in prose.", " */");
+	it("joins a merged // line that only looks like a tag mid-sentence", () => {
+		const input = lines(
+			"foo();",
+			"// Calls the handler registered through the",
+			"// @Injectable decorator on the class",
+			"bar();",
+		);
+		expect(run(input)).toBe(
+			lines(
+				"foo();",
+				"/**",
+				" * Calls the handler registered through the @Injectable decorator on the class.",
+				" */",
+				"bar();",
+			),
+		);
+	});
+
+	it("joins a merged // line that only looks like a numbered item mid-sentence", () => {
+		const input = lines(
+			"foo();",
+			"// The limit is",
+			"// 10. The client must not exceed it.",
+			"bar();",
+		);
+		expect(run(input)).toBe(
+			lines(
+				"foo();",
+				"/**",
+				" * The limit is 10. The client must not exceed it.",
+				" */",
+				"bar();",
+			),
+		);
+	});
+
+	it("keeps the lines after a merged // list item on their own lines", () => {
+		const input = lines(
+			"foo();",
+			"// - item one",
+			"//   continued text",
+			"// 2. Not-prose class",
+			"// Must be processed first",
+			"bar();",
+		);
+		expect(run(input)).toBe(
+			lines(
+				"foo();",
+				"/**",
+				" * - item one",
+				" *   continued text",
+				" * 2. Not-prose class",
+				" * Must be processed first.",
+				" */",
+				"bar();",
+			),
+		);
+	});
+
+	it("starts a NOTE at a lowercase note: line of a merged // group", () => {
+		const input = lines(
+			"foo();",
+			"// Be careful.",
+			"// note:",
+			"// Never send tokens to this host.",
+			"bar();",
+		);
+		expect(run(input)).toBe(
+			lines(
+				"foo();",
+				"/**",
+				" * Be careful.",
+				" * NOTE: Never send tokens to this host.",
+				" */",
+				"bar();",
+			),
+		);
+	});
+
+	it("still reflows a JSDoc block whose code fence contains (?:", () => {
+		const input = lines(
+			"/**",
+			" * Parses the header and returns the value; this sentence is long enough that it must wrap at eighty.",
+			" *",
+			" * ```ts",
+			" * const re = /(?:a|b)+/;",
+			" * ```",
+			" */",
+		);
+		expect(run(input)).toBe(
+			lines(
+				"/**",
+				" * Parses the header and returns the value; this sentence is long enough that it",
+				" * must wrap at eighty.",
+				" *",
+				" * ```ts",
+				" * const re = /(?:a|b)+/;",
+				" * ```",
+				" *",
+				" */",
+			),
+		);
+	});
+
+	it("keeps a merged // bullet after an unindented continuation", () => {
+		const input = lines(
+			"foo();",
+			"// - Never log credentials",
+			"// or secret keys",
+			"// - Delete temporary files",
+			"bar();",
+		);
+		const once = run(input);
+		expect(once).toContain("\n * - Delete temporary files\n");
+		expect(run(once)).toBe(once);
+	});
+
+	it("keeps indented lines after a merged // tag as they are", () => {
+		const input = lines(
+			"foo();",
+			"// @example",
+			"//   const a = useTheme();",
+			"//   <Icon />",
+			"bar();",
+		);
+		expect(run(input)).toBe(
+			lines(
+				"foo();",
+				"/**",
+				" * @example",
+				" *   const a = useTheme();",
+				" *   <Icon />",
+				" */",
+				"bar();",
+			),
+		);
+	});
+
+	it("keeps a heading of a merged // group on its own line", () => {
+		const input = lines(
+			"foo();",
+			"// Overview:",
+			"// This module does X.",
+			"bar();",
+		);
+		expect(run(input)).toBe(
+			lines(
+				"foo();",
+				"/**",
+				" * Overview:",
+				" * This module does X.",
+				" */",
+				"bar();",
+			),
+		);
+	});
+
+	it("keeps a merged // group with a fenced arrow line by line", () => {
+		const input = lines(
+			"foo();",
+			"// The limit was raised from 9 to",
+			"// 10. See the table:",
+			"// ```",
+			"// old -> new",
+			"// ```",
+			"bar();",
+		);
+		expect(run(input)).toBe(
+			lines(
+				"foo();",
+				"/**",
+				" * The limit was raised from 9 to",
+				" * 10. See the table:",
+				" * ```",
+				" * old -> new",
+				" * ```",
+				" */",
+				"bar();",
+			),
+		);
+	});
+
+	it("keeps a JSDoc block with an arrow inside nested fences verbatim", () => {
+		const input = lines(
+			"/**",
+			" * ````markdown",
+			" * a -> b",
+			" * ```sh",
+			" * rm -f scratch.tmp",
+			" * echo keep.txt;",
+			" * ```",
+			" * ````",
+			" */",
+		);
 		expect(run(input)).toBe(input);
 	});
 
-	it("keeps runs of spaces inside inline code in a NOTE", () => {
-		const input = lines("/**", " * NOTE: Match `/  /g`, not `/ /g`.", " */");
-		expect(run(input)).toBe(input);
+	it("escapes a comment closer in a merged // group", () => {
+		const input = lines(
+			"foo();",
+			"// Strips a */ closer",
+			"// from the text.",
+			"bar();",
+		);
+		expect(run(input)).toBe(
+			lines(
+				"foo();",
+				"/**",
+				" * Strips a *\\/ closer from the text.",
+				" */",
+				"bar();",
+			),
+		);
 	});
 
-	it("keeps runs of spaces inside inline code in a // comment", () => {
-		const input = lines("function f() {", "\t// Match `/  /g` only.", "}");
+	it("keeps a merged // Pattern explanation: group line by line", () => {
+		const input = lines(
+			"foo();",
+			"// Pattern explanation:",
+			"// a b c",
+			"// d e f",
+			"bar();",
+		);
+		expect(run(input)).toBe(
+			lines(
+				"foo();",
+				"/**",
+				" * Pattern explanation:",
+				" * a b c",
+				" * d e f",
+				" */",
+				"bar();",
+			),
+		);
+	});
+
+	it("keeps the lines and indent of a code fence in a merged // group", () => {
+		const input = lines(
+			"foo();",
+			"// Example:",
+			"// ```",
+			"// if (a) {",
+			"//   run();",
+			"// }",
+			"// ```",
+			"bar();",
+		);
+		expect(run(input)).toBe(
+			lines(
+				"foo();",
+				"/**",
+				" * Example:",
+				" * ```",
+				" * if (a) {",
+				" *   run();",
+				" * }",
+				" * ```",
+				" */",
+				"bar();",
+			),
+		);
+	});
+
+	it("ends a merged // list at a blank line", () => {
+		const input = lines(
+			"foo();",
+			"// - one",
+			"//",
+			"// The limit is",
+			"// 10. The client must not exceed it.",
+			"bar();",
+		);
+		expect(run(input)).toBe(
+			lines(
+				"foo();",
+				"/**",
+				" * - one",
+				" *",
+				" * The limit is 10. The client must not exceed it.",
+				" *",
+				" */",
+				"bar();",
+			),
+		);
+	});
+
+	it("drops the indent of a merged // line after a blank line or prose", () => {
+		const afterBlank = lines(
+			"foo();",
+			"// Intro.",
+			"//",
+			"//   indented text",
+			"bar();",
+		);
+		expect(run(afterBlank)).toBe(
+			lines(
+				"foo();",
+				"/**",
+				" * Intro.",
+				" *",
+				" * indented text.",
+				" *",
+				" */",
+				"bar();",
+			),
+		);
+		const afterProse = lines("foo();", "// Done.", "//   NOTE: x y", "bar();");
+		expect(run(afterProse)).toBe(
+			lines("foo();", "/**", " * Done.", " * NOTE: x y.", " */", "bar();"),
+		);
+	});
+
+	it("starts a merged // heading after a sentence end", () => {
+		const input = lines(
+			"foo();",
+			"// Done.",
+			"// Overview:",
+			"// This module does X.",
+			"bar();",
+		);
+		expect(run(input)).toBe(
+			lines(
+				"foo();",
+				"/**",
+				" * Done.",
+				" * Overview:",
+				" * This module does X.",
+				" */",
+				"bar();",
+			),
+		);
+	});
+
+	it("keeps a JSDoc block with an optional-colon regex verbatim", () => {
+		const input = lines(
+			"/**",
+			" * /^prefix:?  suffix$/ matches an optional colon and exactly two spaces.",
+			" */",
+		);
 		expect(run(input)).toBe(input);
 	});
 
