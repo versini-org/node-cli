@@ -20,6 +20,7 @@ const word = fc.oneof(
 			"@media",
 			"https://example.com/docs/retry.html",
 			"`run()`",
+			"`x -  y`",
 			"(for example)",
 			"API",
 			"v2",

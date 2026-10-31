@@ -31,6 +31,8 @@ const token = fc.oneof(
 		"biome-ignore",
 		"license",
 		"Pattern explanation:",
+		"`a  b`",
+		"`",
 	),
 	fc.stringMatching(/^[a-zA-Z]{1,12}$/),
 );

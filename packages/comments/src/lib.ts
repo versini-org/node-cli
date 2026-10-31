@@ -210,8 +210,46 @@ function isCodeFence(line: string): boolean {
 	return /^```/.test(line.trim());
 }
 
+/**
+ * The backtick count of the code fence open after `line`, given the one open
+ * before it (0 when none). A fence closes only at a bare run of at least as
+ * many backticks, so ``` inside a ```` fence is code.
+ */
+function nextFence(open: number, line: string): number {
+	const m = /^(`{3,})(.*)$/.exec(line.trim());
+	if (!m) {
+		return open;
+	}
+	if (!open) {
+		return m[1].length;
+	}
+	return m[1].length >= open && m[2].trim() === "" ? 0 : open;
+}
+
 function isVisuallyIndentedCode(line: string): boolean {
 	return /^\s{2,}\S/.test(line);
+}
+
+/**
+ * A block kept line for line: an arrow, a comment closer or "Pattern
+ * explanation:" anywhere, a regex group outside a code fence (a fenced regex
+ * example does not freeze the prose around it), and with `optionalColon` an
+ * optional colon (":?", as in a regex). The JSDoc reflow counts ":?" and the //
+ * merge does not, as in 1.1.6, so every group the merge keeps line for line is
+ * also kept by the reflow that follows it.
+ */
+function isStructuredBlock(lines: string[], optionalColon: boolean): boolean {
+	let fence = 0;
+	return lines.some((l) => {
+		fence = nextFence(fence, l);
+		return (
+			/->/.test(l) ||
+			/\*\//.test(l) ||
+			(optionalColon && /:\?/.test(l)) ||
+			/Pattern explanation:/i.test(l) ||
+			(!fence && /\(\?:/.test(l))
+		);
+	});
 }
 
 /**
@@ -316,7 +354,8 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 	}
 	const out: string[] = [];
 	let para: string[] = [];
-	let inFence = false;
+	// Backtick count of the open code fence, 0 when none.
+	let fence = 0;
 	const prefix = indent + " * ";
 	const avail = Math.max(10, width - prefix.length);
 
@@ -325,12 +364,7 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 	 * preserve each original line verbatim (no paragraph joining or sentence
 	 * period insertion) to avoid altering carefully aligned or enumerated lines.
 	 */
-	const structured = lines.some(
-		(l) =>
-			/->/.test(l) ||
-			/(\(?:\?|\*\/)/.test(l) ||
-			/Pattern explanation:/i.test(l),
-	);
+	const structured = isStructuredBlock(lines, true);
 	if (structured) {
 		for (const raw of lines) {
 			const trimmed = raw.trimEnd();
@@ -372,13 +406,14 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 
 	for (const raw of lines) {
 		const trimmed = raw.trimEnd();
-		if (isCodeFence(trimmed)) {
+		const next = nextFence(fence, trimmed);
+		if (next !== fence) {
 			flush();
-			inFence = !inFence;
+			fence = next;
 			out.push(prefix + trimmed);
 			continue;
 		}
-		if (inFence) {
+		if (fence) {
 			/**
 			 * Inside a code fence we preserve content verbatim, but for a blank line we
 			 * still prefer the canonical ' *' (no trailing space after the star) instead
@@ -426,7 +461,7 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 	 * more trailing blank line inside it: keep only one.
 	 */
 	while (
-		inFence &&
+		fence &&
 		out.length > 1 &&
 		out[out.length - 1] === prefix.trimEnd() &&
 		out[out.length - 2] === prefix.trimEnd()
@@ -478,6 +513,25 @@ function reflowJsDocBlocks(
 	return { content: out, blocks: blocks.length };
 }
 
+/**
+ * Wraps one // comment body to `width`, adding a period when `addPeriod` is
+ * set.
+ */
+function wrapLineBody(
+	indent: string,
+	body: string,
+	width: number,
+	addPeriod: boolean,
+): string[] {
+	const prefix = indent + "// ";
+	const avail = Math.max(10, width - prefix.length);
+	let text = normalizeNote(body.replace(/\s+/g, " ").trim());
+	if (addPeriod) {
+		text = maybeAddPeriod(text);
+	}
+	return wrapWords(text, avail, true).map((w) => prefix + w);
+}
+
 function wrapLineComments(
 	content: string,
 	width: number,
@@ -522,12 +576,7 @@ function wrapLineComments(
 				i++;
 				continue;
 			}
-			const prefix = indent + "// ";
-			const avail = Math.max(10, width - prefix.length);
-			let text = body.replace(/\s+/g, " ").trim();
-			text = normalizeNote(text);
-			text = maybeAddPeriod(text);
-			const wrapped = wrapWords(text, avail, true).map((w) => prefix + w);
+			const wrapped = wrapLineBody(indent, body, width, true);
 			if (wrapped.join("\n") !== line) {
 				changed = true;
 			}
@@ -543,14 +592,7 @@ function wrapLineComments(
 		 */
 		for (let k = 0; k < group.length; k++) {
 			const { indent, body } = group[k];
-			const prefix = indent + "// ";
-			const avail = Math.max(10, width - prefix.length);
-			let text = body.replace(/\s+/g, " ").trim();
-			text = normalizeNote(text);
-			if (k === group.length - 1 && !/:$/.test(text.trim())) {
-				text = maybeAddPeriod(text);
-			}
-			const wrapped = wrapWords(text, avail, true).map((w) => prefix + w);
+			const wrapped = wrapLineBody(indent, body, width, k === group.length - 1);
 			if (wrapped.join("\n") !== group[k].raw) {
 				changed = true;
 			}
@@ -559,6 +601,92 @@ function wrapLineComments(
 		i = j;
 	}
 	return { content: out.join("\n"), applied: changed };
+}
+
+/**
+ * The kind of list a line opens or continues: "-" items, numbered items or
+ * tags.
+ */
+function listKind(text: string): string {
+	if (/^\d+\. /.test(text)) {
+		return "number";
+	}
+	if (isListLike(text)) {
+		return "bullet";
+	}
+	return isTagLine(text) ? "tag" : "";
+}
+
+/**
+ * The JSDoc lines for a merged // group, built so the reflow that follows reads
+ * them like a hand-written block. Only prose takes a continuation: the line
+ * after a list item, tag, heading or indented line keeps its own line (and its
+ * indent), and so do blank lines, NOTE lines and fenced code. An indented line
+ * after a blank line or prose loses its indent. A list, tag or heading line
+ * after prose starts its own line only after a sentence end or a colon, or when
+ * it continues the list open since the last blank line or heading (the same
+ * kind of item). Otherwise it continues the prose, so a hand-wrapped sentence
+ * that reaches "@Injectable" or "10." at the start of a line is not split
+ * there. The last prose line ends with a period, as in 1.1.6, which matters
+ * when the reflow keeps the block line for line.
+ */
+function mergedJsDocLines(texts: string[]): string[] {
+	const lines: string[][] = [];
+	// What the current line started as, and the text last added to it.
+	let kind = "blank";
+	let last = "";
+	let openList = "";
+	let fence = 0;
+	const start = (text: string, as: string) => {
+		lines.push([text]);
+		kind = as;
+	};
+	for (const raw of texts) {
+		const text = normalizeNote(raw.trim());
+		const next = nextFence(fence, text);
+		if (next !== fence) {
+			fence = next;
+			start(text, "fence");
+		} else if (fence) {
+			start(raw.trimEnd(), "fence");
+		} else if (text === "") {
+			start("", "blank");
+			openList = "";
+		} else {
+			const list = listKind(text);
+			const item = list !== "";
+			// A bare "NOTE:" starts a NOTE that the next line continues.
+			const note = /^NOTE:(?: |$)/.test(text);
+			const heading = !item && !note && isHeadingLike(text);
+			const keepIndent =
+				/^\s/.test(raw) && (item || kind !== "prose") && kind !== "blank";
+			if (
+				kind !== "prose" ||
+				note ||
+				((item || heading) &&
+					(endsSentence(last) ||
+						/:$/.test(last) ||
+						(item && list === openList)))
+			) {
+				const as = item ? "item" : heading ? "heading" : "prose";
+				start(
+					keepIndent ? raw.trimEnd() : text,
+					keepIndent && !item ? "indented" : as,
+				);
+				if (item || heading) {
+					openList = list;
+				}
+			} else {
+				lines[lines.length - 1].push(text);
+			}
+		}
+		last = text;
+	}
+	const out = lines.map((parts) => parts.join(" "));
+	if (kind === "prose") {
+		out[out.length - 1] = maybeAddPeriod(out[out.length - 1]);
+	}
+	return out;
 }
 
 function mergeLineCommentGroups(content: string): {
@@ -607,18 +735,14 @@ function mergeLineCommentGroups(content: string): {
 			}
 			if (group.length >= 2) {
 				/**
-				 * Structured explanatory blocks: now we CONVERT them into a multi-line JSDoc block
-				 * while preserving each original line (instead of merging into a single paragraph).
-				 * We must escape any raw '*\/' inside the body to avoid premature termination.
-				 * Definition of structured:
-				 * presence of arrows (->), regex tokens (?:, *\/), or the phrase 'Pattern explanation:'.
+				 * Structured explanatory blocks: now we CONVERT them into a multi-line
+				 * JSDoc block while preserving each original line (instead of merging into
+				 * a single paragraph). We must escape any raw '*\/' inside the body to
+				 * avoid premature termination. Definition of structured: see
+				 * isStructuredBlock.
 				 */
-				const structured = group.some(
-					(g) =>
-						/->/.test(g.text) ||
-						/(\(\?:|\*\/)/.test(g.text) ||
-						/Pattern explanation:/i.test(g.text),
-				);
+				const texts = group.map((g) => g.text);
+				const structured = isStructuredBlock(texts, false);
 				if (structured) {
 					const indent = group[0].indent;
 					out.push(`${indent}/**`);
@@ -635,46 +759,12 @@ function mergeLineCommentGroups(content: string): {
 				const indent = group[0].indent;
 				merged = true;
 				/**
-				 * We only want to add terminal punctuation once at the end of the merged
-				 * paragraph, not after every original line (which can create spurious
-				 * periods mid-sentence when lines were simple wraps). We also avoid
-				 * appending a period if the final line ends with a colon introducing a
-				 * list.
+				 * The reflow that runs next builds the paragraphs, keeping list items, NOTE
+				 * lines and blank lines, which a joined group would lose.
 				 */
-				const norm = group.map((g) => normalizeNote(g.text.trim()));
-				/**
-				 * We only want to add terminal punctuation once at the end of the merged
-				 * paragraph, not after every original line (which can create spurious
-				 * periods mid-sentence when lines were simple wraps). We also avoid
-				 * appending a period if the final line ends with a colon introducing a
-				 * list.
-				 */
-				let lastIdx = norm.length - 1;
-				while (lastIdx > 0 && norm[lastIdx].trim() === "") {
-					lastIdx--;
-				}
-				for (let k = 0; k < norm.length; k++) {
-					if (k === lastIdx) {
-						const ln = norm[k];
-						if (!/:$/.test(ln.trim())) {
-							norm[k] = maybeAddPeriod(ln);
-						}
-					}
-				}
-				// A `// NOTE:` line starts its own paragraph, as it does in buildJsDoc.
-				const paras: string[] = [];
-				for (const ln of norm) {
-					if (paras.length && !/^NOTE: /.test(ln)) {
-						paras[paras.length - 1] += ` ${ln}`;
-					} else {
-						paras.push(ln);
-					}
-				}
 				out.push(`${indent}/**`);
-				for (const para of paras) {
-					for (const seg of splitAtNotes(para.replace(/\s+/g, " ").trim())) {
-						out.push(`${indent} * ${seg}`);
-					}
+				for (const text of mergedJsDocLines(texts)) {
+					out.push(text ? `${indent} * ${text}` : `${indent} *`);
 				}
 				out.push(`${indent} */`);
 				i = j;
