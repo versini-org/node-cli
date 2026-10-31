@@ -7,7 +7,7 @@ CLI tool to reflow, normalize, wrap, and (optionally) merge JavaScript / TypeScr
 - Reflows JSDoc comment blocks to a target max width while preserving code fences, lists, tags, headings, visually‑indented code, and structured regex / pattern explanation sections.
 - Wraps `//` single‑line comments (soft paragraph detection) with smart sentence termination (adds a trailing period only where appropriate).
 - Optional merging of consecutive `//` lines into a synthetically generated multi‑line JSDoc block (preserves structured groups verbatim; converts explanatory paragraphs into wrapped sentences).
-- NOTE normalization (`note:` → `NOTE:`) and safe sentence splitting for multiple NOTE sentences in one block.
+- NOTE normalization (`note:` → `NOTE:`): each NOTE starts its own line and keeps the rest of its paragraph with it.
 - Defensive regex design (linear JSDoc extraction, indentation & size caps) to mitigate pathological input / ReDoS risk.
 - Dry‑run diff mode with minimal, colorized unified style output and deterministic exit codes for CI enforcement.
 - Glob expansion for simple patterns (`*`, `**`, `?`) via internal expander (no shell dependency) – quote globs in shells that expand themselves (e.g. zsh) to ensure consistent behavior.
@@ -117,7 +117,7 @@ interface FileResult {
 
 - Adds a terminal period to sentences lacking final punctuation (unless ending with a colon, tag line, list marker, or detected continuation).
 - Treats `@tag` lines as JSDoc tags, except scoped package names (`@auth0/auth0-react`) and CSS at-rules (`@keyframes`, `@media`, `@layer`, ...) that open a wrapped prose line; those stay part of the sentence.
-- Normalizes `NOTE:` capitalization and splits multiple NOTE sentences safely.
+- Normalizes `NOTE:` capitalization and starts each NOTE on its own line, running to the end of its paragraph.
 - Skips wrapping/merging for linter and tool directive comments, including:
   - ESLint (`eslint-disable`, `eslint-enable`, `eslint-disable-next-line`, etc.)
   - Biome (`biome-ignore`)

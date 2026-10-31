@@ -463,7 +463,7 @@ describe("parseAndTransformComments", () => {
 		}
 	});
 
-	it("isolates mid-paragraph NOTE sentence inside a JSDoc block", () => {
+	it("starts a mid-paragraph NOTE on its own line and keeps the rest with it", () => {
 		const input = [
 			"/**",
 			" * This operation performs work and may take time NOTE: use with caution if running on production systems. It returns a result",
@@ -473,24 +473,17 @@ describe("parseAndTransformComments", () => {
 			...baseOpts,
 			width: 120,
 		}).transformed;
-		// Ensure NOTE is on its own line.
-		expect(
-			/\n \* NOTE: use with caution if running on production systems\.\n/.test(
-				out,
-			),
-		).toBe(true);
-		/**
-		 * Preceding sentence fragments present and end with period somewhere before
-		 * NOTE line.
-		 */
-		expect(out).toMatch(/This operation performs work and may take time\.\n/);
-		// Trailing sentence appears after NOTE line with terminal period.
-		expect(/NOTE: use with caution[\s\S]*It returns a result\./.test(out)).toBe(
-			true,
+		expect(out).toBe(
+			[
+				"/**",
+				" * This operation performs work and may take time.",
+				" * NOTE: use with caution if running on production systems. It returns a result.",
+				" */",
+			].join("\n"),
 		);
 	});
 
-	it("keeps NOTE at start of JSDoc on its own line with added period", () => {
+	it("joins a leading NOTE line with the prose that follows it", () => {
 		const input = [
 			"/**",
 			" * note: must initialize the runtime before calling any methods",
@@ -501,15 +494,96 @@ describe("parseAndTransformComments", () => {
 			...baseOpts,
 			width: 100,
 		}).transformed;
-		const noteLine = out
-			.split(/\n/)
-			.find((l) => /NOTE: must initialize/.test(l));
-		expect(noteLine).toBeDefined();
-		expect(/\.$/.test(noteLine || "")).toBe(true);
-		expect(out).toMatch(/subsequent calls depend on global state\./);
+		expect(out).toBe(
+			[
+				"/**",
+				" * NOTE: must initialize the runtime before calling any methods subsequent calls depend on global",
+				" * state.",
+				" */",
+			].join("\n"),
+		);
 	});
 
-	it("isolates multiple NOTE sentences within merged // comment group", () => {
+	it("keeps a NOTE paragraph whole after its first sentence", () => {
+		const input = [
+			"/**",
+			" * Intro sentence that wraps across a full line of text to fill the width here.",
+			" * NOTE: setting A is MUTUALLY EXCLUSIVE with setting B — sending both breaks it,",
+			" * indistinguishable from an outage. We send B and never A; a guard checks that",
+			" * invariant.",
+			" */",
+		].join("\n");
+		const out = parseAndTransformComments(input, {
+			...baseOpts,
+			width: 80,
+		}).transformed;
+		expect(out).toBe(
+			[
+				"/**",
+				" * Intro sentence that wraps across a full line of text to fill the width here.",
+				" * NOTE: setting A is MUTUALLY EXCLUSIVE with setting B — sending both breaks",
+				" * it, indistinguishable from an outage. We send B and never A; a guard checks",
+				" * that invariant.",
+				" */",
+			].join("\n"),
+		);
+	});
+
+	it("keeps an indented NOTE paragraph whole after a sentence ending in ).", () => {
+		const input = [
+			"\t\t/**",
+			"\t\t * NOTE: workingImageUrl reflects prior TURNS only (the tool `context` is",
+			"\t\t * fixed per request). Two edits issued in a single turn rely on the model's",
+			"\t\t * own inputImages for the second one.",
+			"\t\t */",
+		].join("\n");
+		const out = parseAndTransformComments(input, {
+			...baseOpts,
+			width: 80,
+		}).transformed;
+		expect(out).toBe(input);
+	});
+
+	it("does not split a NOTE that mentions NOTE: mid-sentence", () => {
+		const input = [
+			"/**",
+			" * NOTE: the NOTE: prefix is uppercased by the tool.",
+			" */",
+		].join("\n");
+		expect(parseAndTransformComments(input, baseOpts).transformed).toBe(input);
+	});
+
+	it("does not split a NOTE at a NOTE: inside inline code", () => {
+		const input = [
+			"/**",
+			" * NOTE: Match `prefix NOTE: suffix` exactly.",
+			" */",
+		].join("\n");
+		expect(parseAndTransformComments(input, baseOpts).transformed).toBe(input);
+	});
+
+	it("keeps consecutive // NOTE lines apart in a merged group", () => {
+		const src = ["foo();", "// NOTE: first", "// NOTE: second", "bar();"].join(
+			"\n",
+		);
+		const out = parseAndTransformComments(src, {
+			width: 80,
+			wrapLineComments: true,
+			mergeLineComments: true,
+		}).transformed;
+		expect(out).toBe(
+			[
+				"foo();",
+				"/**",
+				" * NOTE: first.",
+				" * NOTE: second.",
+				" */",
+				"bar();",
+			].join("\n"),
+		);
+	});
+
+	it("starts each NOTE of a merged // group on its own line", () => {
 		const src = [
 			"// This performs the main task.",
 			"// NOTE: side effects may occur.",
@@ -522,11 +596,16 @@ describe("parseAndTransformComments", () => {
 			wrapLineComments: true,
 			mergeLineComments: true,
 		}).transformed;
-		const noteLines = out.split(/\n/).filter((l) => /NOTE: /.test(l));
-		expect(noteLines.length).toBe(2);
-		for (const l of noteLines) {
-			expect(l.trim()).toMatch(/\.$/);
-		}
+		expect(out).toBe(
+			[
+				"/**",
+				" * This performs the main task.",
+				" * NOTE: side effects may occur. It then produces output.",
+				" * NOTE: results are cached for 5 minutes.",
+				" */",
+				"function run() {}",
+			].join("\n"),
+		);
 	});
 
 	it("merges line comments after lines ending with },", () => {
@@ -627,8 +706,14 @@ describe("parseAndTransformComments", () => {
 			...baseOpts,
 			width: 120,
 		}).transformed;
-		expect(out).toMatch(/Success!\n \* NOTE: edge case follows\./);
-		expect(out).toMatch(/Continue processing\./);
+		expect(out).toBe(
+			[
+				"/**",
+				" * Success!",
+				" * NOTE: edge case follows. Continue processing.",
+				" */",
+			].join("\n"),
+		);
 	});
 
 	it("does not force period on NOTE line ending with continuation word when followed by continuation line", () => {
@@ -643,13 +728,14 @@ describe("parseAndTransformComments", () => {
 			...baseOpts,
 			width: 100,
 		}).transformed;
-		/**
-		 * New structural policy: first NOTE line always gets period even if followed
-		 * by prose.
-		 */
-		expect(out).toMatch(/when the code is not in\./);
-		// Ensure final sentence has period.
-		expect(/completely random\./.test(out)).toBe(true);
+		expect(out).toBe(
+			[
+				"/**",
+				" * NOTE: we are still using the good old lodash uniqueId when the code is not in production, so that",
+				" * the results are a little bit more consistent tests after test instead of being completely random.",
+				" */",
+			].join("\n"),
+		);
 	});
 
 	it("handles diffLines with different length arrays", () => {
