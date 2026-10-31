@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.6](https://github.com/versini-org/node-cli/compare/comments-v1.1.5...comments-v1.1.6) (2026-10-31)
+
+
+### Bug Fixes
+
+* **comments:** keep a NOTE paragraph whole instead of splitting it after its first sentence ([#726](https://github.com/versini-org/node-cli/issues/726)) ([21542f7](https://github.com/versini-org/node-cli/commit/21542f7a4ba90642897376aea3048d8c8de7817e))
+
 ## [1.1.5](https://github.com/versini-org/node-cli/compare/comments-v1.1.4...comments-v1.1.5) (2026-10-23)
 
 
