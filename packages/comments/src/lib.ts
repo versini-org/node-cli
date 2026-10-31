@@ -101,38 +101,45 @@ function maybeAddPeriod(line: string): string {
 	return needsTerminalPunctuation(line) ? line + "." : line;
 }
 
-// Only "note:" plus a space or the line end is a NOTE, as everywhere else.
 function normalizeNote(line: string): string {
-	return line.replace(/^note:(?= |$)/i, "NOTE:");
+	return line.replace(/^note:/i, "NOTE:");
 }
 
 /**
  * Inline code keeps its whitespace through a reflow. While a text is collapsed
  * and split, the spaces and tabs of its code spans are held as private-use
- * characters (not whitespace, so they neither collapse nor break a line, and a
- * NOTE inside code is not split off). A piece keeps the hold when one of its
- * spans has a run of two spaces or a tab and every line it wraps to fits: each
- * span then wraps as one word, so no line starts inside code, and a later pass,
- * even on a single // line, sees lines that already fit and pairs the same
- * backticks. Otherwise the piece collapses as before, and so does a text whose
- * backticks do not pair up or come in runs (``code``), or whose code has other
- * whitespace.
+ * characters (not whitespace, so they neither collapse nor break a line). A
+ * piece keeps the hold when one of its spans has a run of two spaces or a tab
+ * and every line it wraps to fits: each span then wraps as one word, so no line
+ * starts inside code, and a later pass, even on a single // line, sees lines
+ * that already fit and pairs the same backticks. Otherwise the piece collapses
+ * as before, and so does a text whose backticks do not pair up, come in runs
+ * (``code``) or are escaped, whose code has other whitespace or a NOTE, or that
+ * is too long to hold.
  */
 const HELD_SPACE = "\uE000";
 const HELD_TAB = "\uE001";
 const HELD_ANY = new RegExp(`[${HELD_SPACE}${HELD_TAB}]`);
 const HELD_ALL = new RegExp(HELD_ANY.source, "g");
 const HELD_RUN = new RegExp(`${HELD_SPACE}{2}|${HELD_TAB}`);
+// The JSDoc body cap, so a huge // line never builds per-span arrays either.
+const MAX_HELD_TEXT = 500_000;
 
 // The text with its code held, or null when it is not held at all.
 function protectCodeSpans(text: string): string | null {
+	if (text.length > MAX_HELD_TEXT) {
+		return null;
+	}
 	// One split pairs the backticks in order; an even part count means a stray.
 	const parts = text.split("`");
 	if (
 		parts.length % 2 === 0 ||
 		text.includes("``") ||
+		text.includes("\\`") ||
 		HELD_ANY.test(text) ||
-		parts.some((p, i) => i % 2 === 1 && /[^\S \t]/.test(p))
+		parts.some(
+			(p, i) => i % 2 === 1 && (/[^\S \t]/.test(p) || p.includes("NOTE: ")),
+		)
 	) {
 		return null;
 	}
@@ -147,8 +154,8 @@ function protectCodeSpans(text: string): string | null {
 
 /**
  * Wraps a piece at `width`. Held code is kept only when the piece has a run of
- * spaces or a tab in code and every wrapped line fits; otherwise the code
- * collapses and the piece wraps as before.
+ * spaces or a tab in code and every wrapped line fits and reads the same on the
+ * next pass; otherwise the code collapses and the piece wraps as before.
  */
 function wrapCodePiece(
 	piece: string,
@@ -158,7 +165,8 @@ function wrapCodePiece(
 ): string[] {
 	if (held && HELD_RUN.test(piece)) {
 		const lines = wrapWords(piece, width, lineComment);
-		if (lines.every((l) => l.length <= width)) {
+		// A later line opening with "note:" would be upper-cased by the next pass.
+		if (lines.every((l, i) => l.length <= width && !(i && /^note:/i.test(l)))) {
 			return lines.map((l) =>
 				l.replace(HELD_ALL, (c) => (c === HELD_SPACE ? " " : "\t")),
 			);

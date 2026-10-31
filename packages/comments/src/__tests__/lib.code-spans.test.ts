@@ -28,9 +28,24 @@ describe("parseAndTransformComments keeps inline-code spaces", () => {
 		}
 	});
 
-	it("does not split a NOTE at a NOTE: inside held code", () => {
-		const input = lines("/**", " * Use `a  NOTE: b` here.", " */");
-		expect(run(input)).toBe(input);
+	it("splits a NOTE inside code as before, so every line fits", () => {
+		for (const [input, width, wrap] of [
+			[
+				lines(
+					"/**",
+					" * Logs `[averyveryverylongidentifier], NOTE: something` here.",
+					" */",
+				),
+				36,
+				true,
+			],
+			[lines("/**", " * Use `a  NOTE: b` Options:", " */"), 20, false],
+		] as const) {
+			const o = { ...opts, width, wrapLineComments: wrap };
+			const out = stable(input, o);
+			expect(out).toContain(" * NOTE: ");
+			expect(out.split("\n").every((l) => l.length <= width)).toBe(true);
+		}
 	});
 
 	it("never starts a line inside held code (case 1)", () => {
@@ -176,15 +191,36 @@ describe("parseAndTransformComments holds code only where it stays stable", () =
 		}
 	});
 
-	it("leaves a note: glued to a word as written", () => {
-		stable("// aaaaaaaaaaaaaaaaaaaaaaa note:`x`", { ...lineOnly, width: 30 });
-		stable("x\n// see note:x - done.", { ...lineOnly, width: 13 });
-		stable("x\n// Options: note:x - done.", { ...lineOnly, width: 13 });
-		stable("x\n// Details NOTE:example - more words", {
-			...lineOnly,
-			width: 20,
-		});
-		expect(run("x\n// note:x and more")).toContain("note:x");
+	it("normalizes note: as before", () => {
+		expect(run("x\n// note:example", lineOnly)).toContain("// NOTE:example");
+		const merged = run(
+			lines(
+				"foo();",
+				"// Load the config first.",
+				"// note:\tthe cache is cleared",
+			),
+		);
+		expect(merged).toContain("\n * NOTE: the cache is cleared.");
+	});
+
+	it("does not hold code that would start a line with a glued note:", () => {
+		const input = lines(
+			"const y = 2",
+			"// 10.\t`longcodeidentifier\t1.`\tnote:x\tFoo:\t`x\ty`\tbaz,\te.g.",
+			"const x = 1;",
+		);
+		stable(input, { ...opts, width: 27 });
+	});
+
+	it("does not pair escaped backticks as code", () => {
+		const input = lines(
+			"/**",
+			" * Escape an opening \\` in prose.  NOTE: Also escape a closing \\` here.",
+			" */",
+		);
+		const out = stable(input);
+		expect(out).toContain("\n * NOTE: Also escape");
+		expect(out).not.toContain("prose.  ");
 	});
 
 	it("does not hold code written with runs of backticks", () => {
