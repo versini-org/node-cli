@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.7](https://github.com/versini-org/node-cli/compare/comments-v1.1.6...comments-v1.1.7) (2026-10-31)
+
+
+### Bug Fixes
+
+* **comments:** keep list items, blank-line paragraphs and (?: lines in merged comments ([#729](https://github.com/versini-org/node-cli/issues/729)) ([6edb9b5](https://github.com/versini-org/node-cli/commit/6edb9b5444acf6c50d7aa216637dc3156d66d90b))
+
 ## [1.1.6](https://github.com/versini-org/node-cli/compare/comments-v1.1.5...comments-v1.1.6) (2026-10-31)
 
 
