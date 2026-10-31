@@ -106,6 +106,27 @@ function normalizeNote(line: string): string {
 }
 
 /**
+ * Reflowing collapses runs of whitespace, which would change `a  b` in inline
+ * code. Each space of such a run is held as a private-use character (not
+ * whitespace, so it neither collapses nor breaks a line) and released once the
+ * lines are wrapped. Single spaces stay breakable.
+ */
+const HELD_SPACE = "\uE000";
+
+function holdCodeSpaces(text: string): string {
+	if (text.includes(HELD_SPACE)) {
+		return text;
+	}
+	return text.replace(/`[^`]*`/g, (code) =>
+		code.replace(/ {2,}/g, (run) => HELD_SPACE.repeat(run.length)),
+	);
+}
+
+function releaseCodeSpaces(lines: string[], held: boolean): string[] {
+	return held ? lines.map((l) => l.replaceAll(HELD_SPACE, " ")) : lines;
+}
+
+/**
  * Splits a paragraph before each 'NOTE: ' that starts a word. A NOTE runs to
  * the next NOTE or the end of the paragraph, not to its first sentence, so the
  * rest of the note stays with it. Inside a NOTE, another 'NOTE: ' starts a new
@@ -327,9 +348,7 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 	 */
 	const structured = lines.some(
 		(l) =>
-			/->/.test(l) ||
-			/(\(?:\?|\*\/)/.test(l) ||
-			/Pattern explanation:/i.test(l),
+			/->/.test(l) || /(\(\?:|\*\/)/.test(l) || /Pattern explanation:/i.test(l),
 	);
 	if (structured) {
 		for (const raw of lines) {
@@ -354,7 +373,10 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 		if (!para.length) {
 			return;
 		}
-		let text = para.join(" ").replace(/\s+/g, " ").trim();
+		const joined = para.join(" ");
+		let text = holdCodeSpaces(joined);
+		const held = text !== joined;
+		text = text.replace(/\s+/g, " ").trim();
 		text = normalizeNote(text);
 		text = maybeAddPeriod(text);
 		const pieces = splitAtNotes(text);
@@ -363,7 +385,8 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 			 * Each piece starts its own line, so it gets the NOTE casing and the period
 			 * that the next pass would give it.
 			 */
-			for (const l of wrapWords(maybeAddPeriod(normalizeNote(piece)), avail)) {
+			const wrapped = wrapWords(maybeAddPeriod(normalizeNote(piece)), avail);
+			for (const l of releaseCodeSpaces(wrapped, held)) {
 				out.push(prefix + l);
 			}
 		}
@@ -524,10 +547,13 @@ function wrapLineComments(
 			}
 			const prefix = indent + "// ";
 			const avail = Math.max(10, width - prefix.length);
-			let text = body.replace(/\s+/g, " ").trim();
-			text = normalizeNote(text);
+			let text = holdCodeSpaces(body);
+			const held = text !== body;
+			text = normalizeNote(text.replace(/\s+/g, " ").trim());
 			text = maybeAddPeriod(text);
-			const wrapped = wrapWords(text, avail, true).map((w) => prefix + w);
+			const wrapped = releaseCodeSpaces(wrapWords(text, avail, true), held).map(
+				(w) => prefix + w,
+			);
 			if (wrapped.join("\n") !== line) {
 				changed = true;
 			}
@@ -545,12 +571,15 @@ function wrapLineComments(
 			const { indent, body } = group[k];
 			const prefix = indent + "// ";
 			const avail = Math.max(10, width - prefix.length);
-			let text = body.replace(/\s+/g, " ").trim();
-			text = normalizeNote(text);
+			let text = holdCodeSpaces(body);
+			const held = text !== body;
+			text = normalizeNote(text.replace(/\s+/g, " ").trim());
 			if (k === group.length - 1 && !/:$/.test(text.trim())) {
 				text = maybeAddPeriod(text);
 			}
-			const wrapped = wrapWords(text, avail, true).map((w) => prefix + w);
+			const wrapped = releaseCodeSpaces(wrapWords(text, avail, true), held).map(
+				(w) => prefix + w,
+			);
 			if (wrapped.join("\n") !== group[k].raw) {
 				changed = true;
 			}
@@ -635,46 +664,14 @@ function mergeLineCommentGroups(content: string): {
 				const indent = group[0].indent;
 				merged = true;
 				/**
-				 * We only want to add terminal punctuation once at the end of the merged
-				 * paragraph, not after every original line (which can create spurious
-				 * periods mid-sentence when lines were simple wraps). We also avoid
-				 * appending a period if the final line ends with a colon introducing a
-				 * list.
+				 * One JSDoc line per // line: the reflow that runs next joins the
+				 * paragraphs and keeps list items, NOTE lines and blank lines, which a
+				 * joined group would lose.
 				 */
-				const norm = group.map((g) => normalizeNote(g.text.trim()));
-				/**
-				 * We only want to add terminal punctuation once at the end of the merged
-				 * paragraph, not after every original line (which can create spurious
-				 * periods mid-sentence when lines were simple wraps). We also avoid
-				 * appending a period if the final line ends with a colon introducing a
-				 * list.
-				 */
-				let lastIdx = norm.length - 1;
-				while (lastIdx > 0 && norm[lastIdx].trim() === "") {
-					lastIdx--;
-				}
-				for (let k = 0; k < norm.length; k++) {
-					if (k === lastIdx) {
-						const ln = norm[k];
-						if (!/:$/.test(ln.trim())) {
-							norm[k] = maybeAddPeriod(ln);
-						}
-					}
-				}
-				// A `// NOTE:` line starts its own paragraph, as it does in buildJsDoc.
-				const paras: string[] = [];
-				for (const ln of norm) {
-					if (paras.length && !/^NOTE: /.test(ln)) {
-						paras[paras.length - 1] += ` ${ln}`;
-					} else {
-						paras.push(ln);
-					}
-				}
 				out.push(`${indent}/**`);
-				for (const para of paras) {
-					for (const seg of splitAtNotes(para.replace(/\s+/g, " ").trim())) {
-						out.push(`${indent} * ${seg}`);
-					}
+				for (const g of group) {
+					const text = g.text.trim();
+					out.push(text ? `${indent} * ${text}` : `${indent} *`);
 				}
 				out.push(`${indent} */`);
 				i = j;

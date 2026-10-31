@@ -4,9 +4,9 @@ CLI tool to reflow, normalize, wrap, and (optionally) merge JavaScript / TypeScr
 
 ## Features
 
-- Reflows JSDoc comment blocks to a target max width while preserving code fences, lists, tags, headings, visually‑indented code, and structured regex / pattern explanation sections.
+- Reflows JSDoc comment blocks to a target max width while preserving code fences, lists, tags, headings, visually‑indented code, runs of spaces inside inline code, and structured regex / pattern explanation sections.
 - Wraps `//` single‑line comments (soft paragraph detection) with smart sentence termination (adds a trailing period only where appropriate).
-- Optional merging of consecutive `//` lines into a synthetically generated multi‑line JSDoc block (preserves structured groups verbatim; converts explanatory paragraphs into wrapped sentences).
+- Optional merging of consecutive `//` lines into a synthetically generated multi‑line JSDoc block (preserves structured groups verbatim; reflows the rest like any JSDoc block, keeping list items and blank-line paragraphs).
 - NOTE normalization (`note:` → `NOTE:`): each NOTE starts its own line and keeps the rest of its paragraph with it.
 - Defensive regex design (linear JSDoc extraction, indentation & size caps) to mitigate pathological input / ReDoS risk.
 - Dry‑run diff mode with minimal, colorized unified style output and deterministic exit codes for CI enforcement.
