@@ -106,6 +106,79 @@ function normalizeNote(line: string): string {
 }
 
 /**
+ * Inline code keeps its whitespace through a reflow. While a text is collapsed
+ * and split, the spaces and tabs of its code spans are held as private-use
+ * characters (not whitespace, so they neither collapse nor break a line). A
+ * piece keeps the hold when one of its spans has a run of two spaces or a tab
+ * and every line it wraps to fits: each span then wraps as one word, so no line
+ * starts inside code, and a later pass, even on a single // line, sees lines
+ * that already fit and pairs the same backticks. Otherwise the piece collapses
+ * as before, and so does a text whose backticks do not pair up, come in runs
+ * (``code``) or are escaped, whose code has other whitespace or a NOTE, or that
+ * is too long to hold.
+ */
+const HELD_SPACE = "\uE000";
+const HELD_TAB = "\uE001";
+const HELD_ANY = new RegExp(`[${HELD_SPACE}${HELD_TAB}]`);
+const HELD_ALL = new RegExp(HELD_ANY.source, "g");
+const HELD_RUN = new RegExp(`${HELD_SPACE}{2}|${HELD_TAB}`);
+// The JSDoc body cap, so a huge // line never builds per-span arrays either.
+const MAX_HELD_TEXT = 500_000;
+
+// The text with its code held, or null when it is not held at all.
+function protectCodeSpans(text: string): string | null {
+	if (text.length > MAX_HELD_TEXT) {
+		return null;
+	}
+	// One split pairs the backticks in order; an even part count means a stray.
+	const parts = text.split("`");
+	if (
+		parts.length % 2 === 0 ||
+		text.includes("``") ||
+		text.includes("\\`") ||
+		HELD_ANY.test(text) ||
+		parts.some(
+			(p, i) => i % 2 === 1 && (/[^\S \t]/.test(p) || /NOTE:[ \t]/.test(p)),
+		)
+	) {
+		return null;
+	}
+	return parts
+		.map((p, i) =>
+			i % 2 === 1
+				? p.replaceAll(" ", HELD_SPACE).replaceAll("\t", HELD_TAB)
+				: p,
+		)
+		.join("`");
+}
+
+/**
+ * Wraps a piece at `width`. Held code is kept only when the piece has a run of
+ * spaces or a tab in code and every wrapped line fits and reads the same on the
+ * next pass; otherwise the code collapses and the piece wraps as before.
+ */
+function wrapCodePiece(
+	piece: string,
+	width: number,
+	held: boolean,
+	lineComment = false,
+): string[] {
+	if (held && HELD_RUN.test(piece)) {
+		const lines = wrapWords(piece, width, lineComment);
+		// A later line opening with "note:" would be upper-cased by the next pass.
+		if (lines.every((l, i) => l.length <= width && !(i && /^note:/i.test(l)))) {
+			return lines.map((l) =>
+				l.replace(HELD_ALL, (c) => (c === HELD_SPACE ? " " : "\t")),
+			);
+		}
+	}
+	const plain = held
+		? piece.replace(HELD_ALL, " ").replace(/\s+/g, " ")
+		: piece;
+	return wrapWords(plain, width, lineComment);
+}
+
+/**
  * Splits a paragraph before each 'NOTE: ' that starts a word. A NOTE runs to
  * the next NOTE or the end of the paragraph, not to its first sentence, so the
  * rest of the note stays with it. Inside a NOTE, another 'NOTE: ' starts a new
@@ -388,16 +461,27 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 		if (!para.length) {
 			return;
 		}
-		let text = para.join(" ").replace(/\s+/g, " ").trim();
+		// Trimmed first, so code wrapped across lines gets one joining space.
+		const joined = para.map((l) => l.trim()).join(" ");
+		/**
+		 * A paragraph that starts like a list item ("1." on a line of its own) is a
+		 * list line on the next pass, which then pairs the rest alone: not held.
+		 */
+		const held = isListLike(joined.replace(/\s+/g, " "))
+			? null
+			: protectCodeSpans(joined);
+		let text = (held ?? joined).replace(/\s+/g, " ").trim();
 		text = normalizeNote(text);
 		text = maybeAddPeriod(text);
 		const pieces = splitAtNotes(text);
 		for (const piece of pieces) {
 			/**
 			 * Each piece starts its own line, so it gets the NOTE casing and the period
-			 * that the next pass would give it.
+			 * that the next pass would give it. It is also the paragraph the next pass
+			 * sees, so the hold is decided per piece.
 			 */
-			for (const l of wrapWords(maybeAddPeriod(normalizeNote(piece)), avail)) {
+			const next = maybeAddPeriod(normalizeNote(piece));
+			for (const l of wrapCodePiece(next, avail, held !== null)) {
 				out.push(prefix + l);
 			}
 		}
@@ -525,11 +609,15 @@ function wrapLineBody(
 ): string[] {
 	const prefix = indent + "// ";
 	const avail = Math.max(10, width - prefix.length);
-	let text = normalizeNote(body.replace(/\s+/g, " ").trim());
+	// A list item is kept as one line once merged, so it wraps as before.
+	const held = isListLike(body.replace(/\s+/g, " "))
+		? null
+		: protectCodeSpans(body);
+	let text = normalizeNote((held ?? body).replace(/\s+/g, " ").trim());
 	if (addPeriod) {
 		text = maybeAddPeriod(text);
 	}
-	return wrapWords(text, avail, true).map((w) => prefix + w);
+	return wrapCodePiece(text, avail, held !== null, true).map((w) => prefix + w);
 }
 
 function wrapLineComments(
