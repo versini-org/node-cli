@@ -40,6 +40,13 @@ describe("parseAndTransformComments keeps inline-code spaces", () => {
 				true,
 			],
 			[lines("/**", " * Use `a  NOTE: b` Options:", " */"), 20, false],
+			// A tab after the marker splits like a space once it collapses.
+			[lines("/**", " * `a NOTE:\tb`", " */"), 13, false],
+			[
+				lines("/**", ` * see \`a NOTE:\tb  c\` and ${"x".repeat(30)}`, " */"),
+				40,
+				true,
+			],
 		] as const) {
 			const o = { ...opts, width, wrapLineComments: wrap };
 			const out = stable(input, o);
@@ -188,6 +195,14 @@ describe("parseAndTransformComments holds code only where it stays stable", () =
 		);
 		for (const width of [20, 21, 80]) {
 			stable(input, { ...opts, width });
+		}
+	});
+
+	it("does not hold a // list item that a merge keeps as one line", () => {
+		const input = lines("foo();", "// * `trail  ` `1. b`", "const x = 1;");
+		for (const merge of [false, true]) {
+			const o = { ...opts, width: 13, mergeLineComments: merge };
+			expect(fits(stable(input, o), 13)).toBe(true);
 		}
 	});
 

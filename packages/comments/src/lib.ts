@@ -138,7 +138,7 @@ function protectCodeSpans(text: string): string | null {
 		text.includes("\\`") ||
 		HELD_ANY.test(text) ||
 		parts.some(
-			(p, i) => i % 2 === 1 && (/[^\S \t]/.test(p) || p.includes("NOTE: ")),
+			(p, i) => i % 2 === 1 && (/[^\S \t]/.test(p) || /NOTE:[ \t]/.test(p)),
 		)
 	) {
 		return null;
@@ -609,7 +609,10 @@ function wrapLineBody(
 ): string[] {
 	const prefix = indent + "// ";
 	const avail = Math.max(10, width - prefix.length);
-	const held = protectCodeSpans(body);
+	// A list item is kept as one line once merged, so it wraps as before.
+	const held = isListLike(body.replace(/\s+/g, " "))
+		? null
+		: protectCodeSpans(body);
 	let text = normalizeNote((held ?? body).replace(/\s+/g, " ").trim());
 	if (addPeriod) {
 		text = maybeAddPeriod(text);
