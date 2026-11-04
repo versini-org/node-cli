@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.4](https://github.com/versini-org/node-cli/compare/utilities-v2.1.3...utilities-v2.1.4) (2026-11-04)
+
+
+### Bug Fixes
+
+* bump non-breaking dependencies to latest ([#733](https://github.com/versini-org/node-cli/issues/733)) ([4c4706c](https://github.com/versini-org/node-cli/commit/4c4706cbf2678985eae62242a69481ab60148d4a))
+
 ## [2.1.3](https://github.com/versini-org/node-cli/compare/utilities-v2.1.2...utilities-v2.1.3) (2026-10-19)
 
 

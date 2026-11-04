@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.8](https://github.com/versini-org/node-cli/compare/comments-v1.1.7...comments-v1.1.8) (2026-11-04)
+
+
+### Bug Fixes
+
+* bump non-breaking dependencies to latest ([#733](https://github.com/versini-org/node-cli/issues/733)) ([4c4706c](https://github.com/versini-org/node-cli/commit/4c4706cbf2678985eae62242a69481ab60148d4a))
+
 ## [1.1.7](https://github.com/versini-org/node-cli/compare/comments-v1.1.6...comments-v1.1.7) (2026-11-01)
 
 
