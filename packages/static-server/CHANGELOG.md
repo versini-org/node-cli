@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.22](https://github.com/versini-org/node-cli/compare/static-server-v4.1.21...static-server-v4.1.22) (2026-11-04)
+
+
+### Bug Fixes
+
+* bump non-breaking dependencies to latest ([#736](https://github.com/versini-org/node-cli/issues/736)) ([572d9b4](https://github.com/versini-org/node-cli/commit/572d9b4d9d8698c81da713e82b963c1e312bb658))
+
 ## [4.1.21](https://github.com/versini-org/node-cli/compare/static-server-v4.1.20...static-server-v4.1.21) (2026-11-04)
 
 
