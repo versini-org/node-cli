@@ -1,7 +1,7 @@
 {
 	"packages/biome-config": "1.0.0",
 	"packages/bundlecheck": "2.1.14",
-	"packages/bundlesize": "5.3.2",
+	"packages/bundlesize": "5.3.3",
 	"packages/envtools": "5.0.0",
 	"packages/logger": "2.1.4",
 	"packages/parser": "3.1.4",

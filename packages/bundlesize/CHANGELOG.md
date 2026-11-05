@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.3.3](https://github.com/versini-org/node-cli/compare/bundlesize-v5.3.2...bundlesize-v5.3.3) (2026-11-05)
+
+
+### Bug Fixes
+
+* bump glob to v14 in bundlesize ([#742](https://github.com/versini-org/node-cli/issues/742)) ([f9281c9](https://github.com/versini-org/node-cli/commit/f9281c985f27f877eb995ca94393b90fc12444dd))
+
 ## [5.3.2](https://github.com/versini-org/node-cli/compare/bundlesize-v5.3.1...bundlesize-v5.3.2) (2026-11-04)
 
 
