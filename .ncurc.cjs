@@ -16,17 +16,6 @@ module.exports = defineConfig({
 	root: true,
 
 	/**
-	 * Exclude zod updates, as we don't want to update zod from v3 to v4 automatically.
-	 * https://github.com/raineorshine/npm-check-updates?tab=readme-ov-file#filterversion
-	 */
-	filterResults: (packageName) => {
-		if (packageName.startsWith("zod")) {
-			return false;
-		}
-		return true;
-	},
-
-	/**
 	 * Mirror pnpm-workspace.yaml's `minimumReleaseAge: 420` (7 hours), skipping it
 	 * for our own packages. Keep this a duration STRING: ncu reads a bare number
 	 * as days, so `1` here would silently gate at 24h instead of 7h.
