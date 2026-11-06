@@ -3,8 +3,7 @@ import { JSDOC_BLOCK_TAGS } from "../jsdoc-tags.js";
 import { parseAndTransformComments } from "../lib.js";
 
 /**
- * Only a known block tag ends an @example body, and a titled // @example starts
- * its own line (issue 745).
+ * Only a known block tag ends an @example body (issue 745).
  */
 const opts = { width: 80, wrapLineComments: true, mergeLineComments: true };
 const run = (input: string) =>
@@ -16,6 +15,9 @@ describe("parseAndTransformComments ends @example bodies at known tags", () => {
 		["@observable price = 0"],
 		["@computed get total() {"],
 		['@import "theme.css";'],
+		// Left out of JSDOC_BLOCK_TAGS on purpose, so Sass stays code.
+		["@function rem($px) {"],
+		["@mixin center {"],
 	])("keeps %s inside the example as code", (code) => {
 		const input = lines(
 			"/**",
@@ -48,13 +50,11 @@ describe("parseAndTransformComments ends @example bodies at known tags", () => {
 		);
 	});
 
-	it("starts a titled // @example on its own line after a summary without a period", () => {
+	it("keeps a // sentence that wraps at a capitalized word after @example in one piece", () => {
 		const input = lines(
 			"foo();",
-			"// Usage",
-			"// @example Basic usage",
-			"// const a = 1",
-			"// const b = 2",
+			"// The reflow keeps the body of an",
+			"// @example JSDoc tag line for line, and joins the prose after it",
 			"bar();",
 		);
 		const once = run(input);
@@ -62,15 +62,86 @@ describe("parseAndTransformComments ends @example bodies at known tags", () => {
 			lines(
 				"foo();",
 				"/**",
-				" * Usage.",
-				" * @example Basic usage",
-				" * const a = 1",
-				" * const b = 2",
+				" * The reflow keeps the body of an @example JSDoc tag line for line, and joins",
+				" * the prose after it.",
 				" */",
 				"bar();",
 			),
 		);
 		expect(run(once)).toBe(once);
+	});
+
+	// TypeDoc, Closure, custom-elements manifest, Doxygen and other block tags.
+	it.each([
+		"categoryDescription",
+		"groupDescription",
+		"document",
+		"sortStrategy",
+		"inline",
+		"expandType",
+		"inlineType",
+		"mergeModuleWith",
+		"preventExpand",
+		"preventInline",
+		"primaryExport",
+		"useDeclaredType",
+		"showCategories",
+		"hideCategories",
+		"showGroups",
+		"hideGroups",
+		"disableGroups",
+		"final",
+		"export",
+		"define",
+		"suppress",
+		"nocollapse",
+		"nosideeffects",
+		"record",
+		"struct",
+		"dict",
+		"unrestricted",
+		"externs",
+		"modifies",
+		"slot",
+		"csspart",
+		"cssprop",
+		"cssproperty",
+		"cssstate",
+		"attr",
+		"attribute",
+		"element",
+		"tag",
+		"tagname",
+		"brief",
+		"details",
+		"tparam",
+		"retval",
+		"pre",
+		"post",
+		"bug",
+		"examples",
+		"preserve",
+		"usageNotes",
+		"publicApi",
+	])("ends an example at @%s", (tag) => {
+		const input = lines(
+			"/**",
+			" * @example",
+			" * foo()",
+			` * @${tag} the value`,
+			" * and the rest",
+			" */",
+		);
+		expect(run(input)).toBe(
+			lines(
+				"/**",
+				" * @example",
+				" * foo()",
+				` * @${tag} the value`,
+				" * and the rest.",
+				" */",
+			),
+		);
 	});
 
 	it("stores every tag name lowercased, as endsExample compares them", () => {

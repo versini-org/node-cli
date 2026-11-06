@@ -126,7 +126,7 @@ interface FileResult {
   - StyleLint (`stylelint-disable`, `stylelint-enable`)
   - Coverage tools (`v8 ignore`, `c8 ignore`, `istanbul ignore`)
   - URLs (`https://...`)
-- Preserves fenced code blocks, visually indented code blocks and the code of an `@example` tag (up to the next tag or closing fence) in JSDoc.
+- Preserves fenced code blocks, visually indented code blocks and the code of an `@example` tag (up to the next known JSDoc tag or closing fence) in JSDoc.
 - Structured explanation groups (regex / pattern walkthroughs) remain line‑stable to avoid unintended semantic changes.
 - Protects against pathological inputs with maximum indentation and comment body size limits.
 

@@ -316,11 +316,11 @@ function isExampleTag(line: string): boolean {
 
 /**
  * Whether `line` (with its indent) ends an open @example body: a known block
- * tag (see JSDOC_BLOCK_TAGS), lowercase and indented by at most one space, like
- * the tags isExampleTag accepts. A decorator inside the example is code, so an
- * unknown one (`@observable price = 0`), an indented or capitalized one
- * (`@Component({`) does not end it, and neither does one followed by anything
- * but a space, "{", ":" or the end of the line (`@property()`,
+ * tag (see JSDOC_BLOCK_TAGS), starting lowercase, indented by at most one
+ * space, like the tags isExampleTag accepts. A decorator inside the example is
+ * code, so an unknown one (`@observable price = 0`), an indented or capitalized
+ * one (`@Component({`) does not end it, and neither does one followed by
+ * anything but a space, "{", ":" or the end of the line (`@property()`,
  * `@di.injectable()`, `@click="save"`).
  */
 function endsExample(line: string): boolean {
@@ -793,10 +793,10 @@ function mergedJsDocLines(texts: string[]): string[] {
 			if (
 				kind !== "prose" ||
 				note ||
-				// An @example alone, with a caption or with a capitalized title ("Basic
-				// usage") never continues a sentence, even one without a period. A
-				// lowercase word after it ("@example tag") may be prose.
-				/^@example(?:$|\s+<caption>|\s+[A-Z])/.test(text) ||
+				// An @example alone or with a caption never continues a sentence, even
+				// one without a period. Any other word after it may be prose that wraps
+				// there ("an @example JSDoc tag"), so a plain title is not told apart.
+				/^@example(?:$|\s+<caption>)/.test(text) ||
 				((item || heading) &&
 					(endsSentence(last) ||
 						/:$/.test(last) ||

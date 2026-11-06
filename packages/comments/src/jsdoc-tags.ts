@@ -1,10 +1,14 @@
 /**
- * Block tag names from JSDoc, TSDoc, TypeScript and TypeDoc, lowercased. Only
- * one of these ends an @example body, so a decorator in the example's code
- * ("@observable price = 0", "@computed get total()") stays code.
+ * Block tag names from JSDoc, TSDoc, TypeScript, TypeDoc, Closure Compiler, the
+ * custom elements manifest and Doxygen, lowercased. Only one of these ends
+ * an @example body, so a decorator in the example's code whose name is not a
+ * tag ("@observable price = 0", "@computed get total()") stays code, while one
+ * named like a tag ("@readonly") still ends it.
  *
  * "import", "function" and "mixin" are left out on purpose: they are also CSS,
  * Sass or TypeScript lines that an example's code is likely to hold.
+ * "property", "namespace" and "return" are CSS or Sass at-rules too, but stay
+ * in as tags that doc comments use far more often.
  *
  */
 export const JSDOC_BLOCK_TAGS = new Set([
@@ -108,13 +112,66 @@ export const JSDOC_BLOCK_TAGS = new Set([
 	"typeparam",
 	// TypeScript and TypeDoc.
 	"category",
+	"categorydescription",
+	"disablegroups",
+	"document",
 	"expand",
+	"expandtype",
 	"group",
+	"groupdescription",
 	"hidden",
+	"hidecategories",
+	"hidegroups",
+	"inline",
+	"inlinetype",
+	"mergemodulewith",
 	"overload",
+	"preventexpand",
+	"preventinline",
+	"primaryexport",
 	"satisfies",
+	"showcategories",
+	"showgroups",
+	"sortstrategy",
 	"template",
+	"usedeclaredtype",
+	// Closure Compiler.
+	"define",
+	"dict",
+	"export",
+	"externs",
+	"final",
+	"modifies",
+	"nocollapse",
+	"nosideeffects",
+	"record",
+	"struct",
+	"suppress",
+	"unrestricted",
+	// Custom elements manifest (web components, Lit).
+	"attr",
+	"attribute",
+	"csspart",
+	"cssprop",
+	"cssproperty",
+	"cssstate",
+	"element",
+	"slot",
+	"tag",
+	"tagname",
+	// Doxygen.
+	"brief",
+	"bug",
+	"details",
+	"post",
+	"pre",
+	"retval",
+	"tparam",
 	// Common outside the standards.
+	"examples",
 	"note",
+	"preserve",
+	"publicapi",
+	"usagenotes",
 	"warning",
 ]);
