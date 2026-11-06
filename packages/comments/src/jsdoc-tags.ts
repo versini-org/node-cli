@@ -1,14 +1,16 @@
 /**
  * Block tag names from JSDoc, TSDoc, TypeScript, TypeDoc, Closure Compiler, the
- * custom elements manifest and Doxygen, lowercased. Only one of these ends
- * an @example body, so a decorator in the example's code whose name is not a
- * tag ("@observable price = 0", "@computed get total()") stays code, while one
- * named like a tag ("@readonly") still ends it.
+ * custom elements manifest and Doxygen, plus common pragmas, lowercased. Only a
+ * line that opens with one of these ends an @example body, so a decorator in
+ * the example's code whose name is not a tag ("@observable price = 0",
+ * "@computed get total()") stays code, while one named like a tag ("@readonly")
+ * still ends it.
  *
  * "import", "function" and "mixin" are left out on purpose: they are also CSS,
- * Sass or TypeScript lines that an example's code is likely to hold.
- * "property", "namespace" and "return" are CSS or Sass at-rules too, but stay
- * in as tags that doc comments use far more often.
+ * Sass or TypeScript lines that an example's code is likely to hold;
+ * endsExample matches their JSDoc forms instead. "property", "namespace" and
+ * "return" are CSS or Sass at-rules too, but stay in as tags that doc comments
+ * use far more often.
  *
  */
 export const JSDOC_BLOCK_TAGS = new Set([
@@ -140,6 +142,7 @@ export const JSDOC_BLOCK_TAGS = new Set([
 	"dict",
 	"export",
 	"externs",
+	"implicitcast",
 	"final",
 	"modifies",
 	"nocollapse",
@@ -147,6 +150,8 @@ export const JSDOC_BLOCK_TAGS = new Set([
 	"record",
 	"struct",
 	"suppress",
+	"noalias",
+	"nocompile",
 	"unrestricted",
 	// Custom elements manifest (web components, Lit).
 	"attr",
@@ -155,6 +160,7 @@ export const JSDOC_BLOCK_TAGS = new Set([
 	"cssprop",
 	"cssproperty",
 	"cssstate",
+	"customelement",
 	"element",
 	"slot",
 	"tag",
@@ -167,6 +173,13 @@ export const JSDOC_BLOCK_TAGS = new Set([
 	"pre",
 	"retval",
 	"tparam",
+	// Pragmas.
+	"jest-environment",
+	"jsx",
+	"jsxfrag",
+	"jsximportsource",
+	"jsxruntime",
+	"vitest-environment",
 	// Common outside the standards.
 	"examples",
 	"note",

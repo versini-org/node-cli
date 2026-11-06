@@ -321,11 +321,21 @@ function isExampleTag(line: string): boolean {
  * code, so an unknown one (`@observable price = 0`), an indented or capitalized
  * one (`@Component({`) does not end it, and neither does one followed by
  * anything but a space, "{", ":" or the end of the line (`@property()`,
- * `@di.injectable()`, `@click="save"`).
+ * `@di.injectable()`, `@click="save"`). The JSDoc forms of the names left out
+ * of the set for their CSS and Sass forms end it too: `@function` or `@mixin`
+ * alone or with one name, and TypeScript's `@import {` or `@import *`.
  */
 function endsExample(line: string): boolean {
 	const tag = /^\s?@([a-z][\w-]*)(?=[\s{:]|$)/.exec(line);
-	return tag !== null && JSDOC_BLOCK_TAGS.has(tag[1].toLowerCase());
+	if (tag === null) {
+		return false;
+	}
+	const rest = line.trim();
+	return (
+		JSDOC_BLOCK_TAGS.has(tag[1].toLowerCase()) ||
+		/^@(?:function|mixin)(?:\s+[\w$.]+)?$/.test(rest) ||
+		/^@import\s+[{*]/.test(rest)
+	);
 }
 
 function isVisuallyIndentedCode(line: string): boolean {

@@ -17,11 +17,45 @@ describe("parseAndTransformComments moves through @example states", () => {
 			" * @example First",
 			" * a()",
 			" * @example Second",
-			" * @observable b = 0",
+			// A plain code line: it would get a period if the example closed here.
+			" * b()",
+			" * @observable c = 0",
 			" */",
 		);
 		expect(run(input)).toBe(input);
 	});
+
+	it.each([
+		// A tag name used as a call, a capitalized one, and one indented as code.
+		["@property() name = ''"],
+		["@Override"],
+		["  @returns x"],
+	])("keeps %s inside the example as code", (code) => {
+		const input = lines(
+			"/**",
+			" * @example",
+			" * foo()",
+			` * ${code}`,
+			" * y()",
+			" */",
+		);
+		expect(run(input)).toBe(input);
+	});
+
+	it.each([["@property() name = ''"], ["@Override"], ["  @returns x"]])(
+		"keeps %s inside a // example as code",
+		(code) => {
+			const input = lines(
+				"foo();",
+				"// @example",
+				"// foo()",
+				`// ${code}`,
+				"// y()",
+				"bar();",
+			);
+			expect(run(input)).toContain(` * foo()\n * ${code}\n * y()\n */`);
+		},
+	);
 
 	it("opens a second // @example while one is open", () => {
 		const input = lines(

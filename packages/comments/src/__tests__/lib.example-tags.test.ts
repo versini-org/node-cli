@@ -15,6 +15,7 @@ describe("parseAndTransformComments ends @example bodies at known tags", () => {
 		["@observable price = 0"],
 		["@computed get total() {"],
 		['@import "theme.css";'],
+		['@import url("print.css") print;'],
 		// Left out of JSDOC_BLOCK_TAGS on purpose, so Sass stays code.
 		["@function rem($px) {"],
 		["@mixin center {"],
@@ -123,6 +124,16 @@ describe("parseAndTransformComments ends @example bodies at known tags", () => {
 		"preserve",
 		"usageNotes",
 		"publicApi",
+		"implicitCast",
+		"noalias",
+		"nocompile",
+		"customElement",
+		"jest-environment",
+		"jsx",
+		"jsxFrag",
+		"jsxImportSource",
+		"jsxRuntime",
+		"vitest-environment",
 	])("ends an example at @%s", (tag) => {
 		const input = lines(
 			"/**",
@@ -144,9 +155,54 @@ describe("parseAndTransformComments ends @example bodies at known tags", () => {
 		);
 	});
 
+	// The JSDoc forms of names left out of JSDOC_BLOCK_TAGS for their code forms.
+	it.each([
+		["@function"],
+		["@function add"],
+		["@mixin"],
+		["@mixin Reveal"],
+		['@import { Foo } from "./foo"'],
+		['@import * as bar from "bar"'],
+	])("ends an example at the JSDoc form %s", (tag) => {
+		const input = lines(
+			"/**",
+			" * @example",
+			" * foo()",
+			` * ${tag}`,
+			" * and the rest",
+			" */",
+		);
+		expect(run(input)).toBe(
+			lines(
+				"/**",
+				" * @example",
+				" * foo()",
+				` * ${tag}`,
+				" * and the rest.",
+				" */",
+			),
+		);
+	});
+
 	it("stores every tag name lowercased, as endsExample compares them", () => {
 		for (const tag of JSDOC_BLOCK_TAGS) {
 			expect(tag).toBe(tag.toLowerCase());
+		}
+	});
+
+	/**
+	 * A listed name must also read as a tag in prose, or the line that ends an
+	 * example would be joined to the prose around it (CSS at-rules do not).
+	 */
+	it("reads every listed name as a tag in prose too", () => {
+		for (const tag of JSDOC_BLOCK_TAGS) {
+			const input = lines(
+				"/**",
+				" * Some prose that",
+				` * @${tag} continues`,
+				" */",
+			);
+			expect(run(input)).toContain(`\n * @${tag} continues\n`);
 		}
 	});
 });
