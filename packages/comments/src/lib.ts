@@ -338,7 +338,8 @@ function endsExample(line: string): boolean {
 		/^@(?:function|mixin)(?:\s+(?:[\w$.]+|[\w$./-]*[:~#][\w$.:~#/-]*))?$/.test(
 			rest,
 		) ||
-		/^@import\s*(?:[{*]|[A-Za-z_$][\w$]*\s*(?:,|\s+from\b))/.test(rest)
+		// Each branch owns its spaces, so no two quantifiers share a run of them.
+		/^@import\s*(?:[{*]|[A-Za-z_$][\w$]*(?:\s*,|\s+from\b))/.test(rest)
 	);
 }
 
