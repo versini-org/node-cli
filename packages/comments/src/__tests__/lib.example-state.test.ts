@@ -129,4 +129,46 @@ describe("parseAndTransformComments moves through @example states", () => {
 		);
 		expect(run(once)).toBe(once);
 	});
+
+	it("ends an example opened with one space at a JSDoc @function indented alike", () => {
+		const input = lines(
+			"/**",
+			" *  @example",
+			" *  foo()",
+			" *  @function add",
+			" *  and the rest",
+			" */",
+		);
+		expect(run(input)).toBe(
+			lines(
+				"/**",
+				" *  @example",
+				" *  foo()",
+				" *  @function add",
+				" * and the rest.",
+				" */",
+			),
+		);
+	});
+
+	it("ends an example at a tag followed by a brace", () => {
+		const input = lines(
+			"/**",
+			" * @example",
+			" * foo()",
+			" * @type{string} the value",
+			" * and the rest",
+			" */",
+		);
+		expect(run(input)).toBe(
+			lines(
+				"/**",
+				" * @example",
+				" * foo()",
+				" * @type{string} the value",
+				" * and the rest.",
+				" */",
+			),
+		);
+	});
 });

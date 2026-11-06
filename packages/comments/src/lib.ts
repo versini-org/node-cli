@@ -323,7 +323,9 @@ function isExampleTag(line: string): boolean {
  * anything but a space, "{", ":" or the end of the line (`@property()`,
  * `@di.injectable()`, `@click="save"`). The JSDoc forms of the names left out
  * of the set for their CSS and Sass forms end it too: `@function` or `@mixin`
- * alone or with one name, and TypeScript's `@import {` or `@import *`.
+ * alone or with one name or JSDoc namepath (`Cart#add`, `module:foo/bar~baz`,
+ * but not a Sass kebab name such as `large-text`), and TypeScript's `@import`
+ * with braces, a star or a default name followed by "," or "from".
  */
 function endsExample(line: string): boolean {
 	const tag = /^\s?@([a-z][\w-]*)(?=[\s{:]|$)/.exec(line);
@@ -333,8 +335,10 @@ function endsExample(line: string): boolean {
 	const rest = line.trim();
 	return (
 		JSDOC_BLOCK_TAGS.has(tag[1].toLowerCase()) ||
-		/^@(?:function|mixin)(?:\s+[\w$.]+)?$/.test(rest) ||
-		/^@import\s+[{*]/.test(rest)
+		/^@(?:function|mixin)(?:\s+(?:[\w$.]+|[\w$./-]*[:~#][\w$.:~#/-]*))?$/.test(
+			rest,
+		) ||
+		/^@import\s*(?:[{*]|[A-Za-z_$][\w$]*\s*(?:,|\s+from\b))/.test(rest)
 	);
 }
 
