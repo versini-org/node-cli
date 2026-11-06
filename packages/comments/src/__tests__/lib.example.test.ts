@@ -77,6 +77,57 @@ describe("parseAndTransformComments keeps @example bodies", () => {
 		expect(run(input)).toBe(input);
 	});
 
+	it("keeps a lowercase decorator call inside the example as code", () => {
+		const input = lines(
+			"/**",
+			" * @example",
+			" * @injectable()",
+			" * class Foo {}",
+			" * const x = new Foo()",
+			" */",
+		);
+		expect(run(input)).toBe(input);
+	});
+
+	it("opens an example whose tag is indented", () => {
+		const input = lines(
+			"/**",
+			" *  @example",
+			" * const a = 1",
+			" * const b = 2",
+			" */",
+		);
+		const once = run(input);
+		expect(once).toContain(" * const a = 1\n * const b = 2\n");
+		expect(run(once)).toBe(once);
+	});
+
+	it("does not treat @example-foo as an example", () => {
+		const input = lines("/**", " * @example-foo", " * a()", " * b()", " */");
+		expect(run(input)).toContain(" * a() b().");
+	});
+
+	it("reflows the prose after a fenced example", () => {
+		const input = lines(
+			"/**",
+			" * @example",
+			" * ```ts",
+			" * run();",
+			" * ```",
+			" *",
+			" * Any value that is not a number or is less than zero is ignored by the function here",
+			" */",
+		);
+		const once = run(input);
+		expect(once).toContain(
+			lines(
+				" * Any value that is not a number or is less than zero is ignored by the",
+				" * function here.",
+			),
+		);
+		expect(run(once)).toBe(once);
+	});
+
 	it("keeps the code lines of a merged // @example group", () => {
 		const input = lines(
 			"foo();",
@@ -96,5 +147,29 @@ describe("parseAndTransformComments keeps @example bodies", () => {
 				"bar();",
 			),
 		);
+	});
+
+	it("keeps the code lines of a merged // group whose @example is indented", () => {
+		const input = lines(
+			"foo();",
+			"//  @example",
+			"// const a = 1",
+			"// const b = 2",
+			"bar();",
+		);
+		expect(run(input)).toContain(" * const a = 1\n * const b = 2\n");
+	});
+
+	it("does not open an example for an @example joined to a // sentence", () => {
+		const input = lines(
+			"foo();",
+			"// Documents the",
+			"// @example tag using `foo",
+			"//   bar` as a literal value",
+			"bar();",
+		);
+		const once = run(input);
+		expect(once).toContain("`foo bar`");
+		expect(run(once)).toBe(once);
 	});
 });

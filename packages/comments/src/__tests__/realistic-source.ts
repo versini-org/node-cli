@@ -73,13 +73,33 @@ const jsDocBlock = fc.oneof(
 		.map(([h, p]) => [h, ...p]),
 	fc.constant(["```ts", "const value = run();", "```"]),
 );
-const tags = fc.array(
-	fc.oneof(
-		words(1, 8).map((w) => `@param name ${w}`),
-		words(1, 8).map((w) => `@returns ${w}`),
-	),
-	{ maxLength: 2 },
-);
+// An @example body: code lines, decorators and blanks, or a closed fence.
+const example = fc
+	.oneof(
+		fc.array(
+			fc.constantFrom(
+				"const value = run();",
+				"  return value;",
+				"<Icon />",
+				"@injectable()",
+				"@Component({ selector: 'app' })",
+				"",
+			),
+			{ minLength: 1, maxLength: 4 },
+		),
+		fc.constant(["```ts", "const value = run();", "```"]),
+	)
+	.map((body) => ["@example", ...body]);
+const tags = fc
+	.array(
+		fc.oneof(
+			words(1, 8).map((w) => [`@param name ${w}`]),
+			words(1, 8).map((w) => [`@returns ${w}`]),
+			example,
+		),
+		{ maxLength: 2 },
+	)
+	.map((t) => t.flat());
 
 const indent = fc.constantFrom("", "\t", "\t\t");
 const jsDoc = fc
@@ -91,6 +111,9 @@ const jsDoc = fc
 const lineComment = fc
 	.tuple(indent, handWrapped)
 	.map(([i, ls]) => ls.map((l) => `${i}// ${l}`));
+const exampleComment = fc
+	.tuple(indent, example)
+	.map(([i, ls]) => ls.map((l) => `${i}// ${l}`.trimEnd()));
 const directive = indent.map((i) => [
 	`${i}// biome-ignore lint/suspicious/noExplicitAny: legacy API`,
 ]);
@@ -103,6 +126,7 @@ export const realisticSource = fc
 		fc.oneof(
 			{ weight: 2, arbitrary: jsDoc },
 			{ weight: 2, arbitrary: lineComment },
+			exampleComment,
 			directive,
 			{ weight: 3, arbitrary: code },
 			fc.constant([""]),
