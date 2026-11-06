@@ -280,6 +280,73 @@ describe("parseAndTransformComments keeps @example bodies", () => {
 		expect(run(once)).toBe(once);
 	});
 
+	it("ends an example at a tag indented like its opener", () => {
+		const input = lines(
+			"/**",
+			" *  @example",
+			" *  foo()",
+			" *  @returns the cached value",
+			" *  or undefined",
+			" */",
+		);
+		const once = run(input);
+		expect(once).toContain(" * or undefined.\n");
+		expect(run(once)).toBe(once);
+	});
+
+	it.each([
+		["a generic decorator", "@injectable<Foo>()"],
+		["a template attribute", '@click="save"'],
+	])("keeps %s inside the example as code", (_, decorator) => {
+		const input = lines(
+			"/**",
+			" * @example",
+			` * ${decorator}`,
+			" * class Foo {}",
+			" * const x = new Foo()",
+			" */",
+		);
+		expect(run(input)).toBe(input);
+	});
+
+	it("keeps CSS at-rules inside the example as code", () => {
+		const input = lines(
+			"/**",
+			" * @example",
+			" * @media (min-width: 40rem)",
+			" * .a { color: red }",
+			" * @apply px-2",
+			" * .b {}",
+			" */",
+		);
+		expect(run(input)).toBe(input);
+	});
+
+	it("starts a captioned // @example on its own line after a summary without a period", () => {
+		const input = lines(
+			"foo();",
+			"// Usage",
+			"// @example <caption>Basic</caption>",
+			"// const a = 1",
+			"// const b = 2",
+			"bar();",
+		);
+		const once = run(input);
+		expect(once).toBe(
+			lines(
+				"foo();",
+				"/**",
+				" * Usage.",
+				" * @example <caption>Basic</caption>",
+				" * const a = 1",
+				" * const b = 2",
+				" */",
+				"bar();",
+			),
+		);
+		expect(run(once)).toBe(once);
+	});
+
 	it("does not open an example for an @example joined to a // sentence", () => {
 		const input = lines(
 			"foo();",

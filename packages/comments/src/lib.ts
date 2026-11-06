@@ -314,14 +314,15 @@ function isExampleTag(line: string): boolean {
 }
 
 /**
- * Whether `line` (with its indent) ends an open @example body: an unindented
- * lowercase tag. A decorator inside the example is code, so an indented or
- * capitalized one ("@Component({") does not end it, and neither does a call or
- * a member ("@injectable()", "@di.injectable()"), since a tag is never followed
- * by "(" or ".".
+ * Whether `line` (with its indent) ends an open @example body: a lowercase tag,
+ * indented no more than the tag that opened it (see isExampleTag). A decorator
+ * inside the example is code, so an indented or capitalized one
+ * ("@Component({") does not end it, and neither does one followed by anything
+ * but a space, "{" or the end of the line ("@injectable()", "@di.injectable()",
+ * "@click="save"").
  */
 function endsExample(line: string): boolean {
-	return /^@[a-z][\w-]*(?![\w(./-])/.test(line) && isTagLine(line);
+	return /^\s?@[a-z][\w-]*(?=[\s{]|$)/.test(line) && isTagLine(line);
 }
 
 function isVisuallyIndentedCode(line: string): boolean {
@@ -789,8 +790,9 @@ function mergedJsDocLines(texts: string[]): string[] {
 			if (
 				kind !== "prose" ||
 				note ||
-				// A bare @example never continues a sentence, even one without a period.
-				text === "@example" ||
+				// An @example alone or with a caption never continues a sentence, even
+				// one without a period.
+				/^@example(?:$|\s+<caption>)/.test(text) ||
 				((item || heading) &&
 					(endsSentence(last) ||
 						/:$/.test(last) ||
