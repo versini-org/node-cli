@@ -314,15 +314,15 @@ function isExampleTag(line: string): boolean {
 }
 
 /**
- * Whether `line` (with its indent) ends an open @example body: a lowercase tag,
- * indented no more than the tag that opened it (see isExampleTag). A decorator
- * inside the example is code, so an indented or capitalized one
- * ("@Component({") does not end it, and neither does one followed by anything
- * but a space, "{" or the end of the line ("@injectable()", "@di.injectable()",
- * "@click="save"").
+ * Whether `line` (with its indent) ends an open @example body: a lowercase tag
+ * indented by at most one space, like the tags isExampleTag accepts. A
+ * decorator inside the example is code, so an indented or capitalized one
+ * (`@Component({`) does not end it, and neither does one followed by anything
+ * but a space, "{", ":" or the end of the line (`@injectable()`,
+ * `@di.injectable()`, `@click="save"`).
  */
 function endsExample(line: string): boolean {
-	return /^\s?@[a-z][\w-]*(?=[\s{]|$)/.test(line) && isTagLine(line);
+	return /^\s?@[a-z][\w-]*(?=[\s{:]|$)/.test(line) && isTagLine(line);
 }
 
 function isVisuallyIndentedCode(line: string): boolean {

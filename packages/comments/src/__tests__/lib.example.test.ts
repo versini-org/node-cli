@@ -290,8 +290,39 @@ describe("parseAndTransformComments keeps @example bodies", () => {
 			" */",
 		);
 		const once = run(input);
-		expect(once).toContain(" * or undefined.\n");
+		expect(once).toBe(
+			lines(
+				"/**",
+				" *  @example",
+				" *  foo()",
+				" *  @returns the cached value",
+				" * or undefined.",
+				" */",
+			),
+		);
 		expect(run(once)).toBe(once);
+	});
+
+	it("ends an example at a tag followed by a colon", () => {
+		const input = lines(
+			"/**",
+			" * @example",
+			" * run()",
+			" * @default: 5",
+			" * the default value used",
+			" * when nothing is set",
+			" */",
+		);
+		expect(run(input)).toBe(
+			lines(
+				"/**",
+				" * @example",
+				" * run()",
+				" * @default: 5",
+				" * the default value used when nothing is set.",
+				" */",
+			),
+		);
 	});
 
 	it.each([
