@@ -19,8 +19,7 @@ describe("parseAndTransformComments ends @example bodies at known tags", () => {
 		// Left out of JSDOC_BLOCK_TAGS on purpose, so Sass stays code.
 		["@function rem($px) {"],
 		["@mixin center {"],
-		// A kebab-case name with no namepath separator is Sass, not JSDoc.
-		["@mixin large-text"],
+		["@mixin center{"],
 	])("keeps %s inside the example as code", (code) => {
 		const input = lines(
 			"/**",
@@ -151,43 +150,6 @@ describe("parseAndTransformComments ends @example bodies at known tags", () => {
 				" * @example",
 				" * foo()",
 				` * @${tag} the value`,
-				" * and the rest.",
-				" */",
-			),
-		);
-	});
-
-	// The JSDoc forms of names left out of JSDOC_BLOCK_TAGS for their code forms.
-	it.each([
-		["@function"],
-		["@function add"],
-		["@mixin"],
-		["@mixin Reveal"],
-		["@function $.fn.x"],
-		// JSDoc namepaths.
-		["@function Cart#add"],
-		["@function module:cart~add"],
-		["@mixin module:foo/bar"],
-		['@import { Foo } from "./foo"'],
-		['@import * as bar from "bar"'],
-		['@import{ Bar } from "./foo"'],
-		['@import Foo from "./foo"'],
-		['@import Foo, { Bar } from "./foo"'],
-	])("ends an example at the JSDoc form %s", (tag) => {
-		const input = lines(
-			"/**",
-			" * @example",
-			" * foo()",
-			` * ${tag}`,
-			" * and the rest",
-			" */",
-		);
-		expect(run(input)).toBe(
-			lines(
-				"/**",
-				" * @example",
-				" * foo()",
-				` * ${tag}`,
 				" * and the rest.",
 				" */",
 			),

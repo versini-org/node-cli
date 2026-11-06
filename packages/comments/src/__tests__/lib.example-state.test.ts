@@ -139,7 +139,8 @@ describe("parseAndTransformComments moves through @example states", () => {
 			" *  and the rest",
 			" */",
 		);
-		expect(run(input)).toBe(
+		const once = run(input);
+		expect(once).toBe(
 			lines(
 				"/**",
 				" *  @example",
@@ -149,26 +150,50 @@ describe("parseAndTransformComments moves through @example states", () => {
 				" */",
 			),
 		);
+		expect(run(once)).toBe(once);
 	});
 
-	it("ends an example at a tag followed by a brace", () => {
+	/**
+	 * A tag followed by "{", then the JSDoc forms of the names left out of
+	 * JSDOC_BLOCK_TAGS for their Sass and CSS forms.
+	 */
+	it.each([
+		["@type{string} the value"],
+		["@function"],
+		["@function add"],
+		["@function do-thing"],
+		["@mixin"],
+		["@mixin Reveal"],
+		["@mixin my-mixin"],
+		["@function $.fn.x"],
+		["@function Cart#add"],
+		["@function module:cart~add"],
+		["@mixin module:foo/bar"],
+		['@import { Foo } from "./foo"'],
+		['@import * as bar from "bar"'],
+		['@import{ Bar } from "./foo"'],
+		['@import Foo from "./foo"'],
+		['@import Foo, { Bar } from "./foo"'],
+	])("ends an example at %s", (tag) => {
 		const input = lines(
 			"/**",
 			" * @example",
 			" * foo()",
-			" * @type{string} the value",
+			` * ${tag}`,
 			" * and the rest",
 			" */",
 		);
-		expect(run(input)).toBe(
+		const once = run(input);
+		expect(once).toBe(
 			lines(
 				"/**",
 				" * @example",
 				" * foo()",
-				" * @type{string} the value",
+				` * ${tag}`,
 				" * and the rest.",
 				" */",
 			),
 		);
+		expect(run(once)).toBe(once);
 	});
 });

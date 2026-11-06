@@ -323,9 +323,11 @@ function isExampleTag(line: string): boolean {
  * anything but a space, "{", ":" or the end of the line (`@property()`,
  * `@di.injectable()`, `@click="save"`). The JSDoc forms of the names left out
  * of the set for their CSS and Sass forms end it too: `@function` or `@mixin`
- * alone or with one name or JSDoc namepath (`Cart#add`, `module:foo/bar~baz`,
- * but not a Sass kebab name such as `large-text`), and TypeScript's `@import`
- * with braces, a star or a default name followed by "," or "from".
+ * alone or with one name or JSDoc namepath (`do-thing`, `Cart#add`,
+ * `module:foo/bar~baz`), and TypeScript's `@import` with braces, a star or a
+ * default name followed by "," or "from". SCSS keeps its "(", "{" or quotes on
+ * the line, so it stays code; a bare indented-syntax `@mixin theme` ends the
+ * example, as it always has.
  */
 function endsExample(line: string): boolean {
 	const tag = /^\s?@([a-z][\w-]*)(?=[\s{:]|$)/.exec(line);
@@ -335,9 +337,7 @@ function endsExample(line: string): boolean {
 	const rest = line.trim();
 	return (
 		JSDOC_BLOCK_TAGS.has(tag[1].toLowerCase()) ||
-		/^@(?:function|mixin)(?:\s+(?:[\w$.]+|[\w$./-]*[:~#][\w$.:~#/-]*))?$/.test(
-			rest,
-		) ||
+		/^@(?:function|mixin)(?:\s+[\w$.:~#/-]+)?$/.test(rest) ||
 		// Each branch owns its spaces, so no two quantifiers share a run of them.
 		/^@import\s*(?:[{*]|[A-Za-z_$][\w$]*(?:\s*,|\s+from\b))/.test(rest)
 	);
