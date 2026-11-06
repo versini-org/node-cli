@@ -299,6 +299,19 @@ function nextFence(open: number, line: string): number {
 	return m[1].length >= open && m[2].trim() === "" ? 0 : open;
 }
 
+/**
+ * Whether an @example body is open after `line` (with its indent), given
+ * whether one was open before it. The body is code, kept line for line like a
+ * fence, and runs to the next tag. Only an unindented lowercase tag counts, so
+ * a decorator such as "@Component({" inside the example does not end it.
+ */
+function exampleAfter(open: boolean, line: string): boolean {
+	if (!/^@[a-z]/.test(line) || !isTagLine(line)) {
+		return open;
+	}
+	return /^@example(?![\w-])/.test(line);
+}
+
 function isVisuallyIndentedCode(line: string): boolean {
 	return /^\s{2,}\S/.test(line);
 }
@@ -429,6 +442,7 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 	let para: string[] = [];
 	// Backtick count of the open code fence, 0 when none.
 	let fence = 0;
+	let example = false;
 	const prefix = indent + " * ";
 	const avail = Math.max(10, width - prefix.length);
 
@@ -510,6 +524,12 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 			}
 			continue;
 		}
+		const inExample = example;
+		example = exampleAfter(example, trimmed);
+		if (inExample && example) {
+			out.push(trimmed === "" ? prefix.trimEnd() : prefix + trimmed);
+			continue;
+		}
 		if (
 			trimmed === "" ||
 			isListLike(trimmed) ||
@@ -541,11 +561,11 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 	}
 	flush();
 	/**
-	 * A fence left open runs to the closing delimiter, and each pass would add one
-	 * more trailing blank line inside it: keep only one.
+	 * A fence or @example left open runs to the closing delimiter, and each pass
+	 * would add one more trailing blank line inside it: keep only one.
 	 */
 	while (
-		fence &&
+		(fence || example) &&
 		out.length > 1 &&
 		out[out.length - 1] === prefix.trimEnd() &&
 		out[out.length - 2] === prefix.trimEnd()
@@ -725,6 +745,7 @@ function mergedJsDocLines(texts: string[]): string[] {
 	let last = "";
 	let openList = "";
 	let fence = 0;
+	let example = false;
 	const start = (text: string, as: string) => {
 		lines.push([text]);
 		kind = as;
@@ -732,10 +753,14 @@ function mergedJsDocLines(texts: string[]): string[] {
 	for (const raw of texts) {
 		const text = normalizeNote(raw.trim());
 		const next = nextFence(fence, text);
+		const inExample = example;
+		if (next === fence && !fence) {
+			example = exampleAfter(example, raw);
+		}
 		if (next !== fence) {
 			fence = next;
 			start(text, "fence");
-		} else if (fence) {
+		} else if (fence || (inExample && example)) {
 			start(raw.trimEnd(), "fence");
 		} else if (text === "") {
 			start("", "blank");
