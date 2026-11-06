@@ -300,21 +300,28 @@ function nextFence(open: number, line: string): number {
 }
 
 /**
- * Whether `line`, whatever its indent, is an @example tag. Its body is code,
- * kept line for line like a fence, until endsExample or a closing fence.
+ * Whether `line` (with its indent) is an @example tag, so not a package such as
+ * "@example/ui", and not indented like code (one stray space is fine). Its body
+ * is code, kept line for line like a fence, until endsExample or a closing
+ * fence.
  */
 function isExampleTag(line: string): boolean {
-	return /^@example(?![\w-])/.test(line.trim());
+	return (
+		!/^\s{2}/.test(line) &&
+		isTagLine(line) &&
+		/^@example(?![\w-])/.test(line.trim())
+	);
 }
 
 /**
  * Whether `line` (with its indent) ends an open @example body: an unindented
  * lowercase tag. A decorator inside the example is code, so an indented or
- * capitalized one ("@Component({") does not end it, and neither does a call
- * ("@injectable()"), since a tag is never followed by "(".
+ * capitalized one ("@Component({") does not end it, and neither does a call or
+ * a member ("@injectable()", "@di.injectable()"), since a tag is never followed
+ * by "(" or ".".
  */
 function endsExample(line: string): boolean {
-	return /^@[a-z][\w-]*(?![\w(/-])/.test(line) && isTagLine(line);
+	return /^@[a-z][\w-]*(?![\w(./-])/.test(line) && isTagLine(line);
 }
 
 function isVisuallyIndentedCode(line: string): boolean {
@@ -532,6 +539,8 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 			continue;
 		}
 		if (example && !endsExample(trimmed)) {
+			// No line of the example may overtake prose still waiting in `para`.
+			flush();
 			out.push(trimmed === "" ? prefix.trimEnd() : prefix + trimmed);
 			continue;
 		}
@@ -780,6 +789,8 @@ function mergedJsDocLines(texts: string[]): string[] {
 			if (
 				kind !== "prose" ||
 				note ||
+				// A bare @example never continues a sentence, even one without a period.
+				text === "@example" ||
 				((item || heading) &&
 					(endsSentence(last) ||
 						/:$/.test(last) ||
@@ -794,7 +805,7 @@ function mergedJsDocLines(texts: string[]): string[] {
 					openList = list;
 				}
 				// Only an @example on its own line opens one, not one joined to prose.
-				example = isExampleTag(text);
+				example = isExampleTag(raw);
 			} else {
 				lines[lines.length - 1].push(text);
 			}

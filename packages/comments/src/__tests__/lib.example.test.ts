@@ -160,6 +160,126 @@ describe("parseAndTransformComments keeps @example bodies", () => {
 		expect(run(input)).toContain(" * const a = 1\n * const b = 2\n");
 	});
 
+	it("keeps a sentence in order when a line starts with an @example/ package", () => {
+		const input = lines(
+			"/**",
+			" * Import the component from",
+			" * @example/ui and configure",
+			" * its props before rendering",
+			" */",
+		);
+		const once = run(input);
+		expect(once).toBe(
+			lines(
+				"/**",
+				" * Import the component from @example/ui and configure its props before",
+				" * rendering.",
+				" */",
+			),
+		);
+		expect(run(once)).toBe(once);
+	});
+
+	it("does not open an example for an @example in an indented code sample", () => {
+		const input = lines(
+			"/**",
+			" * Tag a usage sample like this:",
+			" *",
+			" *     @example",
+			" *     run();",
+			" *",
+			" * Then the prose that follows the sample is long enough that it should wrap at eighty columns",
+			" */",
+		);
+		expect(run(input)).toContain(
+			lines(
+				" * Then the prose that follows the sample is long enough that it should wrap at",
+				" * eighty columns.",
+			),
+		);
+	});
+
+	it("keeps a member decorator call inside the example as code", () => {
+		const input = lines(
+			"/**",
+			" * @example",
+			" * @di.injectable()",
+			" * class Foo {}",
+			" * const x = new Foo()",
+			" */",
+		);
+		expect(run(input)).toBe(input);
+	});
+
+	it("starts a bare // @example on its own line after a summary without a period", () => {
+		const input = lines(
+			"foo();",
+			"// Formats the date for display",
+			"// @example",
+			"// formatDate(new Date())",
+			"// formatDate(other)",
+			"bar();",
+		);
+		const once = run(input);
+		expect(once).toBe(
+			lines(
+				"foo();",
+				"/**",
+				" * Formats the date for display.",
+				" * @example",
+				" * formatDate(new Date())",
+				" * formatDate(other)",
+				" */",
+				"bar();",
+			),
+		);
+		expect(run(once)).toBe(once);
+	});
+
+	it("ends a merged // example at the next tag", () => {
+		const input = lines(
+			"foo();",
+			"// @example",
+			"// foo()",
+			"// @returns the count",
+			"// of a sentence that reaches",
+			"// 10. items",
+			"bar();",
+		);
+		const once = run(input);
+		expect(once).toBe(
+			lines(
+				"foo();",
+				"/**",
+				" * @example",
+				" * foo()",
+				" * @returns the count",
+				" * of a sentence that reaches 10. items.",
+				" */",
+				"bar();",
+			),
+		);
+		expect(run(once)).toBe(once);
+	});
+
+	it("reflows the prose after a fenced example in a merged // group", () => {
+		const input = lines(
+			"foo();",
+			"// @example",
+			"// ```ts",
+			"// x",
+			"// ```",
+			"// A sentence that reaches",
+			"// 10. items",
+			"bar();",
+		);
+		const once = run(input);
+		expect(once).toContain(
+			" * ```\n * A sentence that reaches 10. items.\n */",
+		);
+		expect(run(once)).toBe(once);
+	});
+
 	it("does not open an example for an @example joined to a // sentence", () => {
 		const input = lines(
 			"foo();",
