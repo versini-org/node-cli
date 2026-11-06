@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.9](https://github.com/versini-org/node-cli/compare/comments-v1.1.8...comments-v1.1.9) (2026-11-06)
+
+
+### Bug Fixes
+
+* **comments:** keep the code lines of an unfenced [@example](https://github.com/example) block as they are ([#744](https://github.com/versini-org/node-cli/issues/744)) ([908f20c](https://github.com/versini-org/node-cli/commit/908f20c7c0229ad43e8be7cffbbacb6eac5f5e69))
+
 ## [1.1.8](https://github.com/versini-org/node-cli/compare/comments-v1.1.7...comments-v1.1.8) (2026-11-04)
 
 
