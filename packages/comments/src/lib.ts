@@ -299,6 +299,32 @@ function nextFence(open: number, line: string): number {
 	return m[1].length >= open && m[2].trim() === "" ? 0 : open;
 }
 
+/**
+ * Whether `line` (with its indent) is an @example tag, so not a package such as
+ * "@example/ui", and not indented like code (one stray space is fine). Its body
+ * is code, kept line for line like a fence, until endsExample or a closing
+ * fence.
+ */
+function isExampleTag(line: string): boolean {
+	return (
+		!/^\s{2}/.test(line) &&
+		isTagLine(line) &&
+		/^@example(?![\w-])/.test(line.trim())
+	);
+}
+
+/**
+ * Whether `line` (with its indent) ends an open @example body: a lowercase tag
+ * indented by at most one space, like the tags isExampleTag accepts. A
+ * decorator inside the example is code, so an indented or capitalized one
+ * (`@Component({`) does not end it, and neither does one followed by anything
+ * but a space, "{", ":" or the end of the line (`@injectable()`,
+ * `@di.injectable()`, `@click="save"`).
+ */
+function endsExample(line: string): boolean {
+	return /^\s?@[a-z][\w-]*(?=[\s{:]|$)/.test(line) && isTagLine(line);
+}
+
 function isVisuallyIndentedCode(line: string): boolean {
 	return /^\s{2,}\S/.test(line);
 }
@@ -429,6 +455,7 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 	let para: string[] = [];
 	// Backtick count of the open code fence, 0 when none.
 	let fence = 0;
+	let example = false;
 	const prefix = indent + " * ";
 	const avail = Math.max(10, width - prefix.length);
 
@@ -493,6 +520,8 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 		const next = nextFence(fence, trimmed);
 		if (next !== fence) {
 			flush();
+			// The prose after a fenced example reflows again.
+			example = example && next !== 0;
 			fence = next;
 			out.push(prefix + trimmed);
 			continue;
@@ -510,6 +539,13 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 			}
 			continue;
 		}
+		if (example && !endsExample(trimmed)) {
+			// No line of the example may overtake prose still waiting in `para`.
+			flush();
+			out.push(trimmed === "" ? prefix.trimEnd() : prefix + trimmed);
+			continue;
+		}
+		example = isExampleTag(trimmed);
 		if (
 			trimmed === "" ||
 			isListLike(trimmed) ||
@@ -541,11 +577,11 @@ function buildJsDoc(indent: string, rawBody: string, width: number): string {
 	}
 	flush();
 	/**
-	 * A fence left open runs to the closing delimiter, and each pass would add one
-	 * more trailing blank line inside it: keep only one.
+	 * A fence or @example left open runs to the closing delimiter, and each pass
+	 * would add one more trailing blank line inside it: keep only one.
 	 */
 	while (
-		fence &&
+		(fence || example) &&
 		out.length > 1 &&
 		out[out.length - 1] === prefix.trimEnd() &&
 		out[out.length - 2] === prefix.trimEnd()
@@ -709,14 +745,15 @@ function listKind(text: string): string {
  * The JSDoc lines for a merged // group, built so the reflow that follows reads
  * them like a hand-written block. Only prose takes a continuation: the line
  * after a list item, tag, heading or indented line keeps its own line (and its
- * indent), and so do blank lines, NOTE lines and fenced code. An indented line
- * after a blank line or prose loses its indent. A list, tag or heading line
- * after prose starts its own line only after a sentence end or a colon, or when
- * it continues the list open since the last blank line or heading (the same
- * kind of item). Otherwise it continues the prose, so a hand-wrapped sentence
- * that reaches "@Injectable" or "10." at the start of a line is not split
- * there. The last prose line ends with a period, as in 1.1.6, which matters
- * when the reflow keeps the block line for line.
+ * indent), and so do blank lines, NOTE lines, fenced code and the body of an
+ * example tag on its own line (see isExampleTag). An indented line after a
+ * blank line or prose loses its indent. A list, tag or heading line after prose
+ * starts its own line only after a sentence end or a colon, or when it
+ * continues the list open since the last blank line or heading (the same kind
+ * of item). Otherwise it continues the prose, so a hand-wrapped sentence that
+ * reaches "@Injectable" or "10." at the start of a line is not split there. The
+ * last prose line ends with a period, as in 1.1.6, which matters when the
+ * reflow keeps the block line for line.
  */
 function mergedJsDocLines(texts: string[]): string[] {
 	const lines: string[][] = [];
@@ -725,6 +762,7 @@ function mergedJsDocLines(texts: string[]): string[] {
 	let last = "";
 	let openList = "";
 	let fence = 0;
+	let example = false;
 	const start = (text: string, as: string) => {
 		lines.push([text]);
 		kind = as;
@@ -733,9 +771,10 @@ function mergedJsDocLines(texts: string[]): string[] {
 		const text = normalizeNote(raw.trim());
 		const next = nextFence(fence, text);
 		if (next !== fence) {
+			example = example && next !== 0;
 			fence = next;
 			start(text, "fence");
-		} else if (fence) {
+		} else if (fence || (example && !endsExample(raw))) {
 			start(raw.trimEnd(), "fence");
 		} else if (text === "") {
 			start("", "blank");
@@ -751,6 +790,9 @@ function mergedJsDocLines(texts: string[]): string[] {
 			if (
 				kind !== "prose" ||
 				note ||
+				// An @example alone or with a caption never continues a sentence, even
+				// one without a period.
+				/^@example(?:$|\s+<caption>)/.test(text) ||
 				((item || heading) &&
 					(endsSentence(last) ||
 						/:$/.test(last) ||
@@ -764,6 +806,8 @@ function mergedJsDocLines(texts: string[]): string[] {
 				if (item || heading) {
 					openList = list;
 				}
+				// Only an @example on its own line opens one, not one joined to prose.
+				example = isExampleTag(raw);
 			} else {
 				lines[lines.length - 1].push(text);
 			}
