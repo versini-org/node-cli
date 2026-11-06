@@ -73,7 +73,10 @@ const jsDocBlock = fc.oneof(
 		.map(([h, p]) => [h, ...p]),
 	fc.constant(["```ts", "const value = run();", "```"]),
 );
-// An @example body: code lines, decorators and blanks, or a closed fence.
+/**
+ * An @example, with or without a title, then code lines, decorators and blanks,
+ * or a closed fence.
+ */
 const example = fc
 	.oneof(
 		fc.array(
@@ -83,13 +86,18 @@ const example = fc
 				"<Icon />",
 				"@injectable()",
 				"@Component({ selector: 'app' })",
+				"@observable price = 0",
 				"",
 			),
 			{ minLength: 1, maxLength: 4 },
 		),
 		fc.constant(["```ts", "const value = run();", "```"]),
 	)
-	.map((body) => ["@example", ...body]);
+	.chain((body) =>
+		fc
+			.constantFrom("@example", "@example Basic usage")
+			.map((tag) => [tag, ...body]),
+	);
 const tags = fc
 	.array(
 		fc.oneof(
