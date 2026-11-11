@@ -1,6 +1,6 @@
 {
 	"packages/biome-config": "1.0.0",
-	"packages/bundlecheck": "2.1.14",
+	"packages/bundlecheck": "2.1.15",
 	"packages/bundlesize": "5.3.4",
 	"packages/envtools": "5.0.0",
 	"packages/logger": "2.1.4",
@@ -8,7 +8,7 @@
 	"packages/perf": "2.1.4",
 	"packages/run": "2.1.8",
 	"packages/search": "4.1.8",
-	"packages/secret": "2.1.13",
+	"packages/secret": "2.1.14",
 	"packages/static-server": "4.1.24",
 	"packages/timer": "2.2.5",
 	"packages/utilities": "2.1.4",
