@@ -31,9 +31,9 @@
 		"rimraf": "6.1.4",
 		"turbo": "2.11.10",
 		"typescript": "6.0.3",
-		"vite": "8.3.6"
+		"vite": "8.3.8"
 	},
-	"packageManager": "pnpm@12.18.0",
+	"packageManager": "pnpm@12.19.0",
 	"engines": {
 		"node": ">=22"
 	}
