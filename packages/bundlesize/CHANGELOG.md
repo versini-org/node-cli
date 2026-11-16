@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.3.5](https://github.com/versini-org/node-cli/compare/bundlesize-v5.3.4...bundlesize-v5.3.5) (2026-11-16)
+
+
+### Bug Fixes
+
+* bump non-breaking dependencies to latest ([#753](https://github.com/versini-org/node-cli/issues/753)) ([098a8a2](https://github.com/versini-org/node-cli/commit/098a8a2757b7f6e0c40cb1e20186848e5b76d1b8))
+
 ## [5.3.4](https://github.com/versini-org/node-cli/compare/bundlesize-v5.3.3...bundlesize-v5.3.4) (2026-11-08)
 
 
