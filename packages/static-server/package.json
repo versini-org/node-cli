@@ -35,7 +35,7 @@
 		"@fastify/caching": "9.0.6",
 		"@fastify/compress": "9.3.0",
 		"@fastify/cors": "11.4.3",
-		"@fastify/static": "10.1.11",
+		"@fastify/static": "10.1.12",
 		"@node-cli/logger": "workspace:*",
 		"@node-cli/parser": "workspace:*",
 		"fastify": "5.12.8",
