@@ -22,7 +22,7 @@
 		"@node-cli/comments": "workspace:*",
 		"@swc/cli": "0.8.2",
 		"@swc/core": "1.16.22",
-		"@types/node": "26.6.10",
+		"@types/node": "26.6.11",
 		"barrelsby": "2.8.1",
 		"husky": "9.1.7",
 		"lint-staged": "17.6.2",
@@ -31,9 +31,9 @@
 		"rimraf": "6.1.4",
 		"turbo": "2.11.13",
 		"typescript": "6.0.3",
-		"vite": "8.3.8"
+		"vite": "8.4.0"
 	},
-	"packageManager": "pnpm@12.23.0",
+	"packageManager": "pnpm@12.24.0",
 	"engines": {
 		"node": ">=22"
 	}
